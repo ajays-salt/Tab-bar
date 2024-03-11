@@ -1,0 +1,438 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D0C2F0142B962B2900D9C6F9 /* CompaniesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C2F0132B962B2900D9C6F9 /* CompaniesCell.swift */; };
+		FA02AEBE2B971ED5005CCEA7 /* OlousLogo.svg in Resources */ = {isa = PBXBuildFile; fileRef = FA02AEBD2B971ED5005CCEA7 /* OlousLogo.svg */; };
+		FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */; };
+		FAB40D262B95912200B50B7F /* locationLogo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FAB40D252B95912200B50B7F /* locationLogo.jpg */; };
+		FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */; };
+		FAC251B82B9EB87D0076DE75 /* JobSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC251B72B9EB87D0076DE75 /* JobSearchResult.swift */; };
+		FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */; };
+		FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1392B9191C500E17AFD /* AppDelegate.swift */; };
+		FAC3A13C2B9191C600E17AFD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */; };
+		FAC3A13E2B9191C600E17AFD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A13D2B9191C600E17AFD /* ViewController.swift */; };
+		FAC3A1412B9191C600E17AFD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC3A13F2B9191C600E17AFD /* Main.storyboard */; };
+		FAC3A1432B9191C700E17AFD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAC3A1422B9191C700E17AFD /* Assets.xcassets */; };
+		FAC3A1462B9191C700E17AFD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC3A1442B9191C700E17AFD /* LaunchScreen.storyboard */; };
+		FAC3A14F2B91927200E17AFD /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A14E2B91927200E17AFD /* TabBarController.swift */; };
+		FAC3A1512B919F2500E17AFD /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1502B919F2500E17AFD /* HomeController.swift */; };
+		FAC3A1532B919F3F00E17AFD /* MyJobsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */; };
+		FAC3A1552B919F5400E17AFD /* InboxController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1542B919F5400E17AFD /* InboxController.swift */; };
+		FAC3A1572B919F6400E17AFD /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1562B919F6400E17AFD /* ProfileController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D0C2F0132B962B2900D9C6F9 /* CompaniesCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompaniesCell.swift; sourceTree = "<group>"; };
+		FA02AEBD2B971ED5005CCEA7 /* OlousLogo.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OlousLogo.svg; sourceTree = "<group>"; };
+		FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobsCell.swift; sourceTree = "<group>"; };
+		FAB40D252B95912200B50B7F /* locationLogo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = locationLogo.jpg; sourceTree = "<group>"; };
+		FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchPage.swift; sourceTree = "<group>"; };
+		FAC251B72B9EB87D0076DE75 /* JobSearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchResult.swift; sourceTree = "<group>"; };
+		FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobDetailScreen.swift; sourceTree = "<group>"; };
+		FAC3A1362B9191C500E17AFD /* olousTabBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = olousTabBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC3A1392B9191C500E17AFD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		FAC3A13D2B9191C600E17AFD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FAC3A1402B9191C600E17AFD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		FAC3A1422B9191C700E17AFD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FAC3A1452B9191C700E17AFD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		FAC3A1472B9191C700E17AFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FAC3A14E2B91927200E17AFD /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		FAC3A1502B919F2500E17AFD /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
+		FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyJobsController.swift; sourceTree = "<group>"; };
+		FAC3A1542B919F5400E17AFD /* InboxController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxController.swift; sourceTree = "<group>"; };
+		FAC3A1562B919F6400E17AFD /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC3A1332B9191C500E17AFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D0C2F0122B962AEC00D9C6F9 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				D0C2F0132B962B2900D9C6F9 /* CompaniesCell.swift */,
+				FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		FAB40D282B95AB9E00B50B7F /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A1502B919F2500E17AFD /* HomeController.swift */,
+				FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */,
+				FAC251B72B9EB87D0076DE75 /* JobSearchResult.swift */,
+				FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		FAC3A12D2B9191C500E17AFD = {
+			isa = PBXGroup;
+			children = (
+				FAC3A1382B9191C500E17AFD /* olousTabBar */,
+				FAC3A1372B9191C500E17AFD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FAC3A1372B9191C500E17AFD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A1362B9191C500E17AFD /* olousTabBar.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAC3A1382B9191C500E17AFD /* olousTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				D0C2F0122B962AEC00D9C6F9 /* Cells */,
+				FAC3A14D2B91925300E17AFD /* Controllers */,
+				FAC3A1392B9191C500E17AFD /* AppDelegate.swift */,
+				FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */,
+				FAC3A13D2B9191C600E17AFD /* ViewController.swift */,
+				FAC3A13F2B9191C600E17AFD /* Main.storyboard */,
+				FAC3A1422B9191C700E17AFD /* Assets.xcassets */,
+				FA02AEBD2B971ED5005CCEA7 /* OlousLogo.svg */,
+				FAB40D252B95912200B50B7F /* locationLogo.jpg */,
+				FAC3A1442B9191C700E17AFD /* LaunchScreen.storyboard */,
+				FAC3A1472B9191C700E17AFD /* Info.plist */,
+			);
+			path = olousTabBar;
+			sourceTree = "<group>";
+		};
+		FAC3A14D2B91925300E17AFD /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A14E2B91927200E17AFD /* TabBarController.swift */,
+				FAB40D282B95AB9E00B50B7F /* Home */,
+				FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */,
+				FAC3A1542B919F5400E17AFD /* InboxController.swift */,
+				FAC3A1562B919F6400E17AFD /* ProfileController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FAC3A1352B9191C500E17AFD /* olousTabBar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC3A14A2B9191C700E17AFD /* Build configuration list for PBXNativeTarget "olousTabBar" */;
+			buildPhases = (
+				FAC3A1322B9191C500E17AFD /* Sources */,
+				FAC3A1332B9191C500E17AFD /* Frameworks */,
+				FAC3A1342B9191C500E17AFD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = olousTabBar;
+			productName = olousTabBar;
+			productReference = FAC3A1362B9191C500E17AFD /* olousTabBar.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FAC3A12E2B9191C500E17AFD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					FAC3A1352B9191C500E17AFD = {
+						CreatedOnToolsVersion = 15.2;
+					};
+				};
+			};
+			buildConfigurationList = FAC3A1312B9191C500E17AFD /* Build configuration list for PBXProject "olousTabBar" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FAC3A12D2B9191C500E17AFD;
+			productRefGroup = FAC3A1372B9191C500E17AFD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC3A1352B9191C500E17AFD /* olousTabBar */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FAC3A1342B9191C500E17AFD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC3A1462B9191C700E17AFD /* LaunchScreen.storyboard in Resources */,
+				FAC3A1432B9191C700E17AFD /* Assets.xcassets in Resources */,
+				FAC3A1412B9191C600E17AFD /* Main.storyboard in Resources */,
+				FA02AEBE2B971ED5005CCEA7 /* OlousLogo.svg in Resources */,
+				FAB40D262B95912200B50B7F /* locationLogo.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC3A1322B9191C500E17AFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC251B82B9EB87D0076DE75 /* JobSearchResult.swift in Sources */,
+				FAC3A14F2B91927200E17AFD /* TabBarController.swift in Sources */,
+				FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */,
+				FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */,
+				FAC3A1552B919F5400E17AFD /* InboxController.swift in Sources */,
+				FAC3A13E2B9191C600E17AFD /* ViewController.swift in Sources */,
+				FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */,
+				D0C2F0142B962B2900D9C6F9 /* CompaniesCell.swift in Sources */,
+				FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */,
+				FAC3A1532B919F3F00E17AFD /* MyJobsController.swift in Sources */,
+				FAC3A13C2B9191C600E17AFD /* SceneDelegate.swift in Sources */,
+				FAC3A1512B919F2500E17AFD /* HomeController.swift in Sources */,
+				FAC3A1572B919F6400E17AFD /* ProfileController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		FAC3A13F2B9191C600E17AFD /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FAC3A1402B9191C600E17AFD /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		FAC3A1442B9191C700E17AFD /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FAC3A1452B9191C700E17AFD /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		FAC3A1482B9191C700E17AFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FAC3A1492B9191C700E17AFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FAC3A14B2B9191C700E17AFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M937Z35NWS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = olousTabBar/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.com.olousTabBar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FAC3A14C2B9191C700E17AFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M937Z35NWS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = olousTabBar/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.com.olousTabBar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FAC3A1312B9191C500E17AFD /* Build configuration list for PBXProject "olousTabBar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC3A1482B9191C700E17AFD /* Debug */,
+				FAC3A1492B9191C700E17AFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC3A14A2B9191C700E17AFD /* Build configuration list for PBXNativeTarget "olousTabBar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC3A14B2B9191C700E17AFD /* Debug */,
+				FAC3A14C2B9191C700E17AFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FAC3A12E2B9191C500E17AFD /* Project object */;
+}

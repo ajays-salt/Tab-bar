@@ -1,0 +1,305 @@
+//
+//  JobSearchController.swift
+//  olousTabBar
+//
+//  Created by Salt Technologies on 04/03/24.
+//
+
+import UIKit
+
+class JobSearchPage: UIViewController, UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    var jobSearchButton : UIButton = {
+        let button = UIButton()
+        button.setTitle("Search Jobs", for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = UIColor(hex: "#0079C4")
+        button.layer.cornerRadius = 12
+        return button
+    }()
+    
+    var jobSearchSection : UIView = UIView()
+    
+    var jobSearchInnerSection : UIView = UIView()
+    var searchIcon : UIImageView = UIImageView()
+    let jobsTextField = UITextField()
+    var locationIcon : UIImageView = UIImageView()
+    let locationTextField = UITextField()
+
+    
+    var topCompaniesView = UIView()
+    var companiesCollectionVC : UICollectionView!
+    var viewAllCompaniesButton : UIButton = {
+        let button = UIButton()
+        button.setTitle("View all", for: .normal)
+        button.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+        return button
+    }()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupJobSearchSection()
+        setupJobSearchInnerSection()
+        setupSearchJobsButton()
+        setupSeparatorView1()
+        
+        jobsTextField.delegate = self
+        jobsTextField.tag = 1
+        locationTextField.delegate = self
+        locationTextField.tag = 2
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        companiesCollectionVC = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        companiesCollectionVC.register(CompaniesCell.self, forCellWithReuseIdentifier: "id")
+        setupTopCompaniesView()
+
+    }
+    
+    
+    func setupJobSearchSection() {
+        jobSearchSection.backgroundColor = .systemBackground
+        // #007AFF systemBlue
+        jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(jobSearchSection)
+        
+        NSLayoutConstraint.activate([
+            jobSearchSection.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
+            jobSearchSection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            jobSearchSection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            jobSearchSection.heightAnchor.constraint(equalToConstant: 192)
+        ])
+    }
+    
+    
+        
+    func setupJobSearchInnerSection() {
+        jobSearchInnerSection.backgroundColor = .systemBackground
+        jobSearchInnerSection.layer.cornerRadius = 12
+        jobSearchInnerSection.layer.borderWidth = 1
+        
+        let borderColor = UIColor(hex: "#EAECF0")
+        jobSearchInnerSection.layer.borderColor = borderColor.cgColor
+        
+        jobSearchInnerSection.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchSection.addSubview(jobSearchInnerSection)
+        
+        NSLayoutConstraint.activate([
+            jobSearchInnerSection.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 16),
+            jobSearchInnerSection.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchInnerSection.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchInnerSection.heightAnchor.constraint(equalToConstant: 100)
+        ])
+        
+        searchIcon.image = UIImage(systemName: "magnifyingglass")
+        searchIcon.tintColor = UIColor(hex: "#667085")
+        searchIcon.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchInnerSection.addSubview(searchIcon)
+        
+        NSLayoutConstraint.activate([
+            searchIcon.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 14),
+            searchIcon.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 16),
+            searchIcon.widthAnchor.constraint(equalToConstant: 22),
+            searchIcon.heightAnchor.constraint(equalToConstant: 22)
+        ])
+        
+        let separatorLine = UIView()
+        separatorLine.backgroundColor = UIColor(hex: "#EAECF0")
+        jobSearchInnerSection.addSubview(separatorLine)
+        
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        separatorLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        separatorLine.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor).isActive = true
+        separatorLine.trailingAnchor.constraint(equalTo: jobSearchInnerSection.trailingAnchor).isActive = true
+        separatorLine.bottomAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: -49).isActive = true
+        
+        
+        jobsTextField.placeholder = "Enter Job Title"
+        jobsTextField.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchInnerSection.addSubview(jobsTextField)
+        
+        NSLayoutConstraint.activate([
+            jobsTextField.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 14),
+            jobsTextField.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 46),
+            jobsTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
+            jobsTextField.heightAnchor.constraint(equalToConstant: 25)
+        ])
+        
+        locationIcon.image = UIImage(named: "locationLogo")
+        locationIcon.tintColor = UIColor(hex: "#667085")
+        locationIcon.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchInnerSection.addSubview(locationIcon)
+        
+        NSLayoutConstraint.activate([
+            locationIcon.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 63),
+            locationIcon.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 18),
+            locationIcon.widthAnchor.constraint(equalToConstant: 21),
+            locationIcon.heightAnchor.constraint(equalToConstant: 26)
+        ])
+        
+        locationTextField.placeholder = "Enter Location"
+        locationTextField.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchInnerSection.addSubview(locationTextField)
+        
+        NSLayoutConstraint.activate([
+            locationTextField.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 63),
+            locationTextField.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 47),
+            locationTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
+            locationTextField.heightAnchor.constraint(equalToConstant: 25)
+        ])
+        
+        
+        
+    }
+    
+    func setupSearchJobsButton() {
+        jobSearchButton.addTarget(self, action: #selector(didTapSearchJobs), for: .touchUpInside)
+        
+        jobSearchButton.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchSection.addSubview(jobSearchButton)
+        
+        NSLayoutConstraint.activate([
+            jobSearchButton.topAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: 16),
+            jobSearchButton.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchButton.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchButton.heightAnchor.constraint(equalToConstant: 42)
+        ])
+    }
+    
+    @objc func didTapSearchJobs() {
+        let jobResultVC = JobSearchResult()
+        navigationController?.pushViewController(jobResultVC, animated: true)
+    }
+    
+    func setupTopCompaniesView() {
+        
+        topCompaniesView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(topCompaniesView)
+        
+        NSLayoutConstraint.activate([
+            topCompaniesView.topAnchor.constraint(equalTo: jobSearchButton.bottomAnchor, constant: 60),
+            topCompaniesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topCompaniesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topCompaniesView.heightAnchor.constraint(equalToConstant: 261)
+        ])
+        
+        let label = UILabel()
+        label.text = "Top Companies"
+        label.font = .boldSystemFont(ofSize: 20)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        topCompaniesView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 10),
+            label.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
+            label.widthAnchor.constraint(equalToConstant: 170),
+            label.heightAnchor.constraint(equalToConstant: 24)
+        ])
+        
+        viewAllCompaniesButton.addTarget(self, action: #selector(didTapViewAllCompanies), for: .touchUpInside)
+        viewAllCompaniesButton.translatesAutoresizingMaskIntoConstraints = false
+        topCompaniesView.addSubview(viewAllCompaniesButton)
+        
+        NSLayoutConstraint.activate([
+            viewAllCompaniesButton.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 10),
+            viewAllCompaniesButton.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: view.frame.width - 93),
+            viewAllCompaniesButton.widthAnchor.constraint(equalToConstant: 73),
+            viewAllCompaniesButton.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
+        setupCompaniesCollectionVC()
+    }
+    func setupCompaniesCollectionVC() {
+        companiesCollectionVC.showsHorizontalScrollIndicator = false
+        
+        companiesCollectionVC.dataSource = self
+        companiesCollectionVC.delegate = self
+        
+        companiesCollectionVC.translatesAutoresizingMaskIntoConstraints = false
+        topCompaniesView.addSubview(companiesCollectionVC)
+        
+        NSLayoutConstraint.activate([
+            companiesCollectionVC.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 60),
+            companiesCollectionVC.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
+            companiesCollectionVC.trailingAnchor.constraint(equalTo: topCompaniesView.trailingAnchor),
+            companiesCollectionVC.bottomAnchor.constraint(equalTo: topCompaniesView.bottomAnchor, constant: -19)
+        ])
+    }
+    @objc func didTapViewAllCompanies() {
+        print(#function)
+    }
+    
+    func setupSeparatorView1() {
+        let separatorLine = UIView()
+        separatorLine.backgroundColor = .systemGray6
+        view.addSubview(separatorLine)
+        
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            separatorLine.topAnchor.constraint(equalTo: jobSearchButton.bottomAnchor, constant: 30),
+            separatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: 8)
+        ])
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        view.backgroundColor = .systemBackground
+        
+        tabBarController?.tabBar.isHidden = true
+        navigationController?.navigationBar.isHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        
+        tabBarController?.tabBar.isHidden = false
+        navigationController?.navigationBar.isHidden = true
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id", for: indexPath) as! CompaniesCell
+        cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        cell.layer.borderWidth = 1
+        cell.layer.cornerRadius = 12
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return .init(width: 228, height: 182)
+    }
+    
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        // This method gets called when the user taps on the text field
+        if(textField.tag == 1) {
+            print("jobs text field")
+        }
+        else {
+            print("locations text field")
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
+    }
+}
+
+
