@@ -28,11 +28,12 @@ class TabBarController: UITabBarController {
         inboxController.tabBarItem = UITabBarItem(title: "Inbox", image: UIImage(systemName: "text.bubble"), tag: 2)
         
         let profileController = ProfileController()
-        profileController.view.backgroundColor = .systemBackground
+//        profileController.view.backgroundColor = .systemBackground
+        let profileNavigationController = UINavigationController(rootViewController: profileController)
         profileController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"), tag: 3)
         
         // Set view controllers for the tab bar controller
-        self.viewControllers = [homeNavigationController, myJobsNavigationController, inboxController, profileController]
+        self.viewControllers = [homeNavigationController, myJobsNavigationController, inboxController, profileNavigationController]
         
           
         tabBar.frame = CGRect(x: tabBar.frame.origin.x,

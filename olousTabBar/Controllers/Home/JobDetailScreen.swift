@@ -68,7 +68,7 @@ class JobDetailScreen: UIViewController {
     let moreJobInfo = UIView()
     let sectorLabel : UILabel = {
         let label = UILabel()
-        label.text = "Residential, Commercial and Construction"
+        label.text = "Residential, Commercial, Construction"
         label.font = .systemFont(ofSize: 16)
         label.textColor = UIColor(hex: "#344054")
         label.numberOfLines = 0
@@ -100,6 +100,14 @@ class JobDetailScreen: UIViewController {
     }()
    
     let separatorLine4 = UIView()
+    let qualificationsLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Bachelor in Civil Engineering"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -124,6 +132,8 @@ class JobDetailScreen: UIViewController {
         setupRequirementsView()
         setupSeparatorLine3()
         setupMoreJobInfo()
+        setupSeparatorLine4()
+        additionalJobInfo()
     }
     
     func setupScrollView() {
@@ -524,15 +534,40 @@ class JobDetailScreen: UIViewController {
     }
     
     func setupSeparatorLine4() {
-        separatorLine3.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine3.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine3)
+        separatorLine4.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine4.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(separatorLine4)
         
         NSLayoutConstraint.activate([
-            separatorLine3.topAnchor.constraint(equalTo: requirementsView.bottomAnchor, constant: 16),
-            separatorLine3.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine3.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine3.heightAnchor.constraint(equalToConstant: 1)
+            separatorLine4.topAnchor.constraint(equalTo: vacancyLabel.bottomAnchor, constant: 16),
+            separatorLine4.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine4.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine4.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    func additionalJobInfo() {
+        let qualifications = UILabel()
+        qualifications.text = "Qualifications :"
+        qualifications.font = .boldSystemFont(ofSize: 16)
+        qualifications.tintColor = UIColor(hex: "#101828")
+        
+        qualifications.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(qualifications)
+        
+        NSLayoutConstraint.activate([
+            qualifications.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
+            qualifications.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            qualifications.heightAnchor.constraint(equalToConstant: 18)
+        ])
+        
+        qualificationsLabel.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(qualificationsLabel)
+        
+        NSLayoutConstraint.activate([
+            qualificationsLabel.topAnchor.constraint(equalTo: qualifications.bottomAnchor, constant: 6),
+            qualificationsLabel.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            qualificationsLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
         ])
     }
     

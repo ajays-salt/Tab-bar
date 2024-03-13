@@ -166,7 +166,6 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
         NSLayoutConstraint.activate([
             jobsCountLabel.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 20),
             jobsCountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            jobsCountLabel.heightAnchor.constraint(equalToConstant: 128),
             jobsCountLabel.heightAnchor.constraint(equalToConstant: 16)
         ])
     }
