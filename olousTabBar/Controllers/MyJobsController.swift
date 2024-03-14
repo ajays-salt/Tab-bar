@@ -93,7 +93,7 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
         notificationBellIcon.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(notificationBellIcon)
         NSLayoutConstraint.activate([
-            notificationBellIcon.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4),
+            notificationBellIcon.topAnchor.constraint(equalTo: view.topAnchor, constant: 4),
             notificationBellIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             notificationBellIcon.widthAnchor.constraint(equalToConstant: 30),
             notificationBellIcon.heightAnchor.constraint(equalToConstant: 36)
@@ -106,7 +106,7 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
         view.addSubview(categorySection)
         
         NSLayoutConstraint.activate([
-            categorySection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
+            categorySection.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
             categorySection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             categorySection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             categorySection.heightAnchor.constraint(equalToConstant: 50)
