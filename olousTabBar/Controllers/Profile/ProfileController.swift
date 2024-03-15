@@ -17,6 +17,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         let imageView = UIImageView()
         imageView.tintColor = UIColor(hex: "#344054")
         imageView.image = UIImage(systemName: "line.3.horizontal")
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
     let scrollView = UIScrollView()
@@ -85,6 +86,8 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.isHidden = true
+        
         employments = [
             Employment(companyName: "ABC Company", startYear: 2018, endYear: 2022, jobType: "Full-time"),
             Employment(companyName: "XYZ Inc.", startYear: 2020, endYear: 2021, jobType: "Part-time"),
@@ -98,11 +101,15 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         companyNameTextField.delegate = self
         
         setupViews()
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapBarsButton))
+        barsButton.addGestureRecognizer(tap)
     }
     
     func setupViews() {
-        setupBarsButton()
         setupScrollView()
+        setupBarsButton()
+        
         setupProfileCircleView()
         setupUserNameLabel()
         setupUserJobTitleLabel()
@@ -116,14 +123,20 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     
     func setupBarsButton() {
         barsButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(barsButton)
+        scrollView.addSubview(barsButton)
         
         NSLayoutConstraint.activate([
-            barsButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+            barsButton.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
             barsButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             barsButton.widthAnchor.constraint(equalToConstant: 35),
             barsButton.heightAnchor.constraint(equalToConstant: 40)
         ])
+    }
+    
+    @objc func didTapBarsButton(gesture: UITapGestureRecognizer) {
+        print(#function)
+        let vc = EditProfileVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func setupScrollView() {
@@ -132,7 +145,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: barsButton.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
@@ -155,7 +168,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         profileCircle.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(profileCircle)
         NSLayoutConstraint.activate([
-            profileCircle.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
+            profileCircle.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 30),
             profileCircle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (view.frame.width / 2 ) - 60),
             profileCircle.widthAnchor.constraint(equalToConstant: 120),
             profileCircle.heightAnchor.constraint(equalToConstant: 120)
@@ -216,7 +229,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         scrollView.addSubview(preferenceLabel)
         
         NSLayoutConstraint.activate([
-            preferenceLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 20),
+            preferenceLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 40),
             preferenceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
         ])
         
@@ -362,145 +375,10 @@ class ProfileController: UIViewController, UITextFieldDelegate {
             i += 1
         }
     }
+    
     @objc func didTapAddEmployment() {
-        print(#function)
-        
-        // Create a container view
-        let tempView = UIView()
-        tempView.translatesAutoresizingMaskIntoConstraints = false
-        tempView.backgroundColor = .systemGray6
-        tempView.layer.borderWidth = 1
-        tempView.layer.cornerRadius = 10
-        
-        // Add text field for company name
-        
-        companyNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        companyNameTextField.placeholder = "Company Name"
-        companyNameTextField.borderStyle = .roundedRect
-        tempView.addSubview(companyNameTextField)
-        
-        // Add start year picker
-        let start = UILabel()
-        start.text = "Start Date :"
-        let startYearPicker = UIDatePicker()
-        startYearPicker.translatesAutoresizingMaskIntoConstraints = false
-        startYearPicker.datePickerMode = .date
-        tempView.addSubview(startYearPicker)
-        
-        // Add end year picker
-        let end = UILabel()
-        end.text = "End Date :"
-        let endYearPicker = UIDatePicker()
-        endYearPicker.translatesAutoresizingMaskIntoConstraints = false
-        endYearPicker.datePickerMode = .date
-        tempView.addSubview(endYearPicker)
-        
-        // Add option field for job type
-        let jobTypeOptionField = UISegmentedControl(items: ["Full Time", "Part Time"])
-        jobTypeOptionField.translatesAutoresizingMaskIntoConstraints = false
-        jobTypeOptionField.selectedSegmentIndex = 0 // Default to Full Time
-        tempView.addSubview(jobTypeOptionField)
-        
-        // Add save button
-        let saveButton = UIButton(type: .system)
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.layer.borderWidth = 1
-        saveButton.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-        saveButton.layer.cornerRadius = 10
-        saveButton.tintColor = .white
-        saveButton.backgroundColor = UIColor(hex: "#0079C4")
-        saveButton.addTarget(self, action: #selector(saveEmployment(_:)), for: .touchUpInside)
-        tempView.addSubview(saveButton)
-        
-        // Add cancel button
-        let cancelButton = UIButton(type: .system)
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.layer.borderWidth = 1
-        cancelButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        cancelButton.layer.cornerRadius = 10
-        cancelButton.tintColor = UIColor(hex: "#344054")
-        cancelButton.addTarget(self, action: #selector(cancel(_:)), for: .touchUpInside)
-        tempView.addSubview(cancelButton)
-        
-        // Add the container view to the main view
-        self.view.addSubview(tempView)
-        self.scrollView.layer.opacity = 0.1
-
-        // Set constraints
-        NSLayoutConstraint.activate([
-            
-            tempView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-            tempView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            tempView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 32),
-            tempView.heightAnchor.constraint(equalToConstant: 350),
-            
-            companyNameTextField.topAnchor.constraint(equalTo: tempView.topAnchor, constant: 20),
-            companyNameTextField.leadingAnchor.constraint(equalTo: tempView.leadingAnchor, constant: 20),
-            companyNameTextField.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
-            
-            
-            startYearPicker.topAnchor.constraint(equalTo: companyNameTextField.bottomAnchor, constant: 20),
-            startYearPicker.leadingAnchor.constraint(equalTo: tempView.leadingAnchor, constant: 20),
-            startYearPicker.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
-            
-            endYearPicker.topAnchor.constraint(equalTo: startYearPicker.bottomAnchor, constant: 20),
-            endYearPicker.leadingAnchor.constraint(equalTo: tempView.leadingAnchor, constant: 20),
-            endYearPicker.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
-            
-            jobTypeOptionField.topAnchor.constraint(equalTo: endYearPicker.bottomAnchor, constant: 20),
-            jobTypeOptionField.leadingAnchor.constraint(equalTo: tempView.leadingAnchor, constant: 20),
-            jobTypeOptionField.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
-            
-            saveButton.topAnchor.constraint(equalTo: jobTypeOptionField.bottomAnchor, constant: 20),
-            saveButton.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
-            saveButton.widthAnchor.constraint(equalToConstant: 120),
-            saveButton.heightAnchor.constraint(equalToConstant: 40),
-            
-            cancelButton.topAnchor.constraint(equalTo: jobTypeOptionField.bottomAnchor, constant: 20),
-            cancelButton.leadingAnchor.constraint(equalTo: tempView.leadingAnchor, constant: 20),
-            cancelButton.widthAnchor.constraint(equalToConstant: 120),
-            cancelButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-
-    @objc func saveEmployment(_ sender: UIButton) {
-        // Retrieve values from UI components
-        guard let companyName = (sender.superview?.subviews[0] as? UITextField)?.text,
-              let startYearPicker = (sender.superview?.subviews[1] as? UIDatePicker),
-              let endYearPicker = (sender.superview?.subviews[2] as? UIDatePicker) else {
-            return // Exit if any required field is nil
-        }
-        
-        let calendar = Calendar.current
-        let startYear = calendar.component(.year, from: startYearPicker.date)
-        let endYear = calendar.component(.year, from: endYearPicker.date)
-        
-        // Determine job type based on selected segment
-        let jobType: String
-        if let segmentedControl = sender.superview?.subviews[3] as? UISegmentedControl {
-            jobType = segmentedControl.selectedSegmentIndex == 0 ? "Full Time" : "Part Time"
-        } else {
-            jobType = ""
-        }
-        
-        // Create Employment instance
-        let employment = Employment(companyName: companyName, startYear: startYear, endYear: endYear, jobType: jobType)
-        
-        // Add to employments array
-        employments.append(employment)
-        print(employments[employments.count - 1])
-        
-        // Close the temp view
-        sender.superview?.removeFromSuperview()
-        self.scrollView.layer.opacity = 1
-    }
-
-    @objc func cancel(_ sender: UIButton) {
-        // Close the temp view
-        self.scrollView.layer.opacity = 1
-        sender.superview?.removeFromSuperview()
+        let vc = AddEmploymentVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     func createEmploymentView(employment: Employment) -> UIView {
@@ -626,7 +504,8 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         }
     }
     @objc func didTapAddEducation() {
-        print(#function)
+        let vc = AddEducationVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     func createEducationView(education: Education) -> UIView {
         let educationView = UIView()
@@ -690,18 +569,6 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     }
 }
 
-struct Employment {
-    let companyName: String
-    let startYear: Int
-    let endYear: Int
-    let jobType: String
-}
 
-struct Education {
-    let collegeName: String
-    let startYear: Int
-    let endYear: Int
-    let courseType: String
-}
 
 

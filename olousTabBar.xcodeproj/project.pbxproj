@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		D0C2F0142B962B2900D9C6F9 /* CompaniesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C2F0132B962B2900D9C6F9 /* CompaniesCell.swift */; };
 		FA02AEBE2B971ED5005CCEA7 /* OlousLogo.svg in Resources */ = {isa = PBXBuildFile; fileRef = FA02AEBD2B971ED5005CCEA7 /* OlousLogo.svg */; };
+		FA7C4EBC2BA405CC00900BF8 /* AddEmploymentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7C4EBB2BA405CC00900BF8 /* AddEmploymentVC.swift */; };
+		FA7C4EBE2BA41FA600900BF8 /* AddEducationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7C4EBD2BA41FA600900BF8 /* AddEducationVC.swift */; };
+		FA7C4EC02BA4259600900BF8 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7C4EBF2BA4259500900BF8 /* EditProfileVC.swift */; };
+		FA7C4EC32BA4507C00900BF8 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7C4EC22BA4507C00900BF8 /* Model.swift */; };
 		FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */; };
 		FAB40D262B95912200B50B7F /* locationLogo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FAB40D252B95912200B50B7F /* locationLogo.jpg */; };
 		FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */; };
@@ -30,6 +34,10 @@
 /* Begin PBXFileReference section */
 		D0C2F0132B962B2900D9C6F9 /* CompaniesCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompaniesCell.swift; sourceTree = "<group>"; };
 		FA02AEBD2B971ED5005CCEA7 /* OlousLogo.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OlousLogo.svg; sourceTree = "<group>"; };
+		FA7C4EBB2BA405CC00900BF8 /* AddEmploymentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEmploymentVC.swift; sourceTree = "<group>"; };
+		FA7C4EBD2BA41FA600900BF8 /* AddEducationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEducationVC.swift; sourceTree = "<group>"; };
+		FA7C4EBF2BA4259500900BF8 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
+		FA7C4EC22BA4507C00900BF8 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobsCell.swift; sourceTree = "<group>"; };
 		FAB40D252B95912200B50B7F /* locationLogo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = locationLogo.jpg; sourceTree = "<group>"; };
 		FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchPage.swift; sourceTree = "<group>"; };
@@ -70,6 +78,40 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		FA7C4EBA2BA4052900900BF8 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A1562B919F6400E17AFD /* ProfileController.swift */,
+				FA7C4EBB2BA405CC00900BF8 /* AddEmploymentVC.swift */,
+				FA7C4EBD2BA41FA600900BF8 /* AddEducationVC.swift */,
+				FA7C4EBF2BA4259500900BF8 /* EditProfileVC.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		FA7C4EC12BA4500100900BF8 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C4EC22BA4507C00900BF8 /* Model.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		FA7C4EC42BA4510D00900BF8 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A1392B9191C500E17AFD /* AppDelegate.swift */,
+				FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */,
+				FAC3A13D2B9191C600E17AFD /* ViewController.swift */,
+				FAC3A13F2B9191C600E17AFD /* Main.storyboard */,
+				FAC3A1422B9191C700E17AFD /* Assets.xcassets */,
+				FA02AEBD2B971ED5005CCEA7 /* OlousLogo.svg */,
+				FAB40D252B95912200B50B7F /* locationLogo.jpg */,
+				FAC3A1442B9191C700E17AFD /* LaunchScreen.storyboard */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		FAB40D282B95AB9E00B50B7F /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -100,17 +142,11 @@
 		FAC3A1382B9191C500E17AFD /* olousTabBar */ = {
 			isa = PBXGroup;
 			children = (
+				FAC3A1472B9191C700E17AFD /* Info.plist */,
+				FA7C4EC42BA4510D00900BF8 /* Helpers */,
+				FA7C4EC12BA4500100900BF8 /* Model */,
 				D0C2F0122B962AEC00D9C6F9 /* Cells */,
 				FAC3A14D2B91925300E17AFD /* Controllers */,
-				FAC3A1392B9191C500E17AFD /* AppDelegate.swift */,
-				FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */,
-				FAC3A13D2B9191C600E17AFD /* ViewController.swift */,
-				FAC3A13F2B9191C600E17AFD /* Main.storyboard */,
-				FAC3A1422B9191C700E17AFD /* Assets.xcassets */,
-				FA02AEBD2B971ED5005CCEA7 /* OlousLogo.svg */,
-				FAB40D252B95912200B50B7F /* locationLogo.jpg */,
-				FAC3A1442B9191C700E17AFD /* LaunchScreen.storyboard */,
-				FAC3A1472B9191C700E17AFD /* Info.plist */,
 			);
 			path = olousTabBar;
 			sourceTree = "<group>";
@@ -122,7 +158,7 @@
 				FAB40D282B95AB9E00B50B7F /* Home */,
 				FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */,
 				FAC3A1542B919F5400E17AFD /* InboxController.swift */,
-				FAC3A1562B919F6400E17AFD /* ProfileController.swift */,
+				FA7C4EBA2BA4052900900BF8 /* Profile */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -205,13 +241,17 @@
 				FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */,
 				FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */,
 				FAC3A1552B919F5400E17AFD /* InboxController.swift in Sources */,
+				FA7C4EBE2BA41FA600900BF8 /* AddEducationVC.swift in Sources */,
 				FAC3A13E2B9191C600E17AFD /* ViewController.swift in Sources */,
 				FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */,
 				D0C2F0142B962B2900D9C6F9 /* CompaniesCell.swift in Sources */,
 				FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */,
+				FA7C4EC32BA4507C00900BF8 /* Model.swift in Sources */,
 				FAC3A1532B919F3F00E17AFD /* MyJobsController.swift in Sources */,
+				FA7C4EBC2BA405CC00900BF8 /* AddEmploymentVC.swift in Sources */,
 				FAC3A13C2B9191C600E17AFD /* SceneDelegate.swift in Sources */,
 				FAC3A1512B919F2500E17AFD /* HomeController.swift in Sources */,
+				FA7C4EC02BA4259600900BF8 /* EditProfileVC.swift in Sources */,
 				FAC3A1572B919F6400E17AFD /* ProfileController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

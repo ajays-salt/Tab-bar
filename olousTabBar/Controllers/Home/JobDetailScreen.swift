@@ -167,14 +167,14 @@ class JobDetailScreen: UIViewController {
             headerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 160)
+            headerView.heightAnchor.constraint(equalToConstant: 180)
         ])
         
         jobTitle.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(jobTitle)
         
         NSLayoutConstraint.activate([
-            jobTitle.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            jobTitle.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20),
             jobTitle.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             jobTitle.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 0),
             jobTitle.heightAnchor.constraint(equalToConstant: 24)
