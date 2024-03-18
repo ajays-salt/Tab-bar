@@ -239,7 +239,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     @objc func didTapJobSearchInnerSection() {
-        let jobSearchVC = JobSearchPage()
+        let jobSearchVC = JobSearchScreen()
         navigationController?.pushViewController(jobSearchVC, animated: true)
     }
     

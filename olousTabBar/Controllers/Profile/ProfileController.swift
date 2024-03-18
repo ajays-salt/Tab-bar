@@ -30,6 +30,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         label.font = .boldSystemFont(ofSize: 48)
         return label
     }()
+    var profileImageView : UIImageView!
     
     let userNameLabel : UILabel = {
         let label = UILabel()
@@ -134,7 +135,6 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapBarsButton(gesture: UITapGestureRecognizer) {
-        print(#function)
         let vc = EditProfileVC()
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -180,12 +180,31 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         
         
         profileCircleLabel.text = initials
-        
+//        profileCircleLabel.isHidden = true
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         profileCircle.addSubview(profileCircleLabel)
         NSLayoutConstraint.activate([
             profileCircleLabel.centerXAnchor.constraint(equalTo: profileCircle.centerXAnchor),
             profileCircleLabel.centerYAnchor.constraint(equalTo: profileCircle.centerYAnchor)
+        ])
+        
+        
+        
+        profileImageView = UIImageView(image: UIImage(systemName: "pencil"))
+        profileImageView.isHidden = true
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.clipsToBounds = true
+        profileImageView.layer.cornerRadius = profileCircle.frame.width / 2
+        
+        // Add the selected image view to the profile circle
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileCircle.addSubview(profileImageView)
+        
+        NSLayoutConstraint.activate([
+            profileImageView.topAnchor.constraint(equalTo: profileCircle.topAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: profileCircle.leadingAnchor),
+            profileImageView.trailingAnchor.constraint(equalTo: profileCircle.trailingAnchor),
+            profileImageView.bottomAnchor.constraint(equalTo: profileCircle.bottomAnchor)
         ])
     }
     func setupUserNameLabel() {

@@ -7,7 +7,24 @@
 
 import UIKit
 
-class JobSearchPage: UIViewController, UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    
+    var jobsArray = ["Paris", "New York", "Pimpri", "Lonar", "Berlin", "Partur", "Pune"]
+    var locationsArray = ["Paris", "New York", "Pimpri", "Lonar", "Berlin", "Partur", "Pune"]
+    var filteredJobs = [String]()
+    var filteredLocations = [String]()
+    
+    let jobsTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.isHidden = true
+        return tableView
+    }()
+    let locationsTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.isHidden = true
+        return tableView
+    }()
     
     var jobSearchButton : UIButton = {
         let button = UIButton()
@@ -49,6 +66,16 @@ class JobSearchPage: UIViewController, UITextFieldDelegate, UICollectionViewDele
         locationTextField.delegate = self
         locationTextField.tag = 2
         
+        
+        jobsTableView.delegate = self
+        jobsTableView.dataSource = self
+        locationsTableView.delegate = self
+        locationsTableView.dataSource = self
+        
+        setupJobsTableView()
+        setupLocationsTableView()
+        
+        
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         companiesCollectionVC = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -56,7 +83,6 @@ class JobSearchPage: UIViewController, UITextFieldDelegate, UICollectionViewDele
         setupTopCompaniesView()
 
     }
-    
     
     func setupJobSearchSection() {
         jobSearchSection.backgroundColor = .systemBackground
@@ -71,8 +97,6 @@ class JobSearchPage: UIViewController, UITextFieldDelegate, UICollectionViewDele
             jobSearchSection.heightAnchor.constraint(equalToConstant: 192)
         ])
     }
-    
-    
         
     func setupJobSearchInnerSection() {
         jobSearchInnerSection.backgroundColor = .systemBackground
@@ -151,6 +175,60 @@ class JobSearchPage: UIViewController, UITextFieldDelegate, UICollectionViewDele
         
         
         
+    }
+    
+    func setupJobsTableView() {
+        jobsTableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(jobsTableView)
+        NSLayoutConstraint.activate([
+            jobsTableView.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 50),
+            jobsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            jobsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            jobsTableView.heightAnchor.constraint(equalToConstant: 150)
+        ])
+    }
+    
+    func setupLocationsTableView() {
+        locationsTableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(locationsTableView)
+        NSLayoutConstraint.activate([
+            locationsTableView.topAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: 0),
+            locationsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            locationsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            locationsTableView.heightAnchor.constraint(equalToConstant: 130)
+        ])
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField == jobsTextField {
+            let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
+            filterJobs(with: searchText)
+        }
+        else {
+            let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
+            filterLocations(with: searchText)
+        }
+        return true
+    }
+    
+    // Step 5: Filter locations based on search text
+    func filterJobs(with searchText: String) {
+        filteredJobs = jobsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
+        jobsTableView.isHidden = filteredJobs.isEmpty
+        if(filteredJobs.count == jobsArray.count) {
+            filteredJobs.removeAll()
+            jobsTableView.isHidden = true
+        }
+        jobsTableView.reloadData()
+    }
+    func filterLocations(with searchText: String) {
+        filteredLocations = locationsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
+        locationsTableView.isHidden = filteredLocations.isEmpty
+        if(filteredLocations.count == locationsArray.count) {
+            filteredLocations.removeAll()
+            locationsTableView.isHidden = true
+        }
+        locationsTableView.reloadData()
     }
     
     func setupSearchJobsButton() {
@@ -299,6 +377,43 @@ class JobSearchPage: UIViewController, UITextFieldDelegate, UICollectionViewDele
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
+    }
+}
+
+extension JobSearchScreen : UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if tableView == jobsTableView {
+            return filteredJobs.count
+        }
+        else {
+            return filteredLocations.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        if tableView == jobsTableView {
+            cell.textLabel?.text = filteredJobs[indexPath.row]
+        }
+        else {
+            cell.textLabel?.text = filteredLocations[indexPath.row]
+        }
+        
+        cell.backgroundColor = .systemGray6
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView == jobsTableView {
+            let selectedJob = filteredJobs[indexPath.row]
+            jobsTextField.text = selectedJob
+            jobsTableView.isHidden = true
+        }
+        else {
+            let selectedLocation = filteredLocations[indexPath.row]
+            locationTextField.text = selectedLocation
+            locationsTableView.isHidden = true
+        }
     }
 }
 
