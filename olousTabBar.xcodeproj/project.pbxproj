@@ -112,6 +112,14 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		FAACA6B92BA9757400818F0C /* Tab Bar */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A14E2B91927200E17AFD /* TabBarController.swift */,
+			);
+			path = "Tab Bar";
+			sourceTree = "<group>";
+		};
 		FAB40D282B95AB9E00B50B7F /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,7 +162,7 @@
 		FAC3A14D2B91925300E17AFD /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				FAC3A14E2B91927200E17AFD /* TabBarController.swift */,
+				FAACA6B92BA9757400818F0C /* Tab Bar */,
 				FAB40D282B95AB9E00B50B7F /* Home */,
 				FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */,
 				FAC3A1542B919F5400E17AFD /* InboxController.swift */,

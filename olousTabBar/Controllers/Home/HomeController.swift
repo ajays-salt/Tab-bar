@@ -37,6 +37,14 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     let jobsTextField = UITextField()
     let locationTextField = UITextField()
     
+    let scrollSection = UIView()
+    var horizontalScrollView : UIScrollView!
+    let firstView = UIView()
+    let secondView = UIView()
+    let thirdView = UIView()
+    
+    let separatorLine = UIView()
+    
     var recommendedJobsView = UIView()
     var recommendedJobsCollectionVC : UICollectionView!
     var viewAllJobsButton : UIButton = {
@@ -70,6 +78,9 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         setupScrollView()
         setupJobSearchSection()
         setupJobSearchInnerSection()
+        
+        setupHorizontalScroll()
+        
         setupSeparatorView1()
         
         setupRecommendedJobsView()
@@ -79,7 +90,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         setupSeparatorView2()
         setupTopCompaniesView()
         
-        
+        setupFirstView()
         
         
         navigationController?.navigationBar.isHidden = true
@@ -243,16 +254,250 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         navigationController?.pushViewController(jobSearchVC, animated: true)
     }
     
+    
+    
+    func setupHorizontalScroll() {
+        scrollSection.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(scrollSection)
+        NSLayoutConstraint.activate([
+            scrollSection.topAnchor.constraint(equalTo: jobSearchSection.bottomAnchor, constant: 0),
+            scrollSection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            scrollSection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            scrollSection.heightAnchor.constraint(equalToConstant: 180)
+        ])
+        
+        horizontalScrollView = UIScrollView()
+        let contentWidth = (view.frame.width - 48) * CGFloat(3) + 16 * CGFloat(3) + 16// Total width of subviews including spacing
+        horizontalScrollView.contentSize = CGSize(width: contentWidth, height: 150)
+        
+        horizontalScrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollSection.addSubview(horizontalScrollView)
+        NSLayoutConstraint.activate([
+            horizontalScrollView.topAnchor.constraint(equalTo: scrollSection.topAnchor, constant: 0),
+            horizontalScrollView.leadingAnchor.constraint(equalTo: scrollSection.leadingAnchor),
+            horizontalScrollView.trailingAnchor.constraint(equalTo: scrollSection.trailingAnchor),
+            horizontalScrollView.widthAnchor.constraint(equalToConstant: view.frame.width * 3),
+            horizontalScrollView.heightAnchor.constraint(equalToConstant: 180)
+        ])
+        
+        firstView.backgroundColor = UIColor(hex: "#F0F9FF")
+        firstView.layer.borderColor = UIColor(hex: "#DEF2FF").cgColor
+        firstView.layer.borderWidth = 1
+        firstView.layer.cornerRadius = 8
+        
+        firstView.translatesAutoresizingMaskIntoConstraints = false
+        horizontalScrollView.addSubview(firstView)
+        NSLayoutConstraint.activate([
+            firstView.topAnchor.constraint(equalTo: horizontalScrollView.topAnchor, constant: 16),
+            firstView.leadingAnchor.constraint(equalTo: horizontalScrollView.leadingAnchor, constant: 16),
+            firstView.widthAnchor.constraint(equalToConstant: view.frame.width - 48),
+            firstView.heightAnchor.constraint(equalToConstant: 148)
+        ])
+        
+        
+        secondView.backgroundColor = UIColor(hex: "#FFFAEB")
+        secondView.layer.borderWidth = 1
+        secondView.layer.borderColor = UIColor(hex: "#FEF0C7").cgColor
+        secondView.layer.cornerRadius = 8
+        
+        secondView.translatesAutoresizingMaskIntoConstraints = false
+        horizontalScrollView.addSubview(secondView)
+        NSLayoutConstraint.activate([
+            secondView.topAnchor.constraint(equalTo: horizontalScrollView.topAnchor, constant: 16),
+            secondView.leadingAnchor.constraint(equalTo: firstView.trailingAnchor, constant: 16),
+            secondView.widthAnchor.constraint(equalToConstant: view.frame.width - 48),
+            secondView.heightAnchor.constraint(equalToConstant: 148)
+        ])
+        
+        thirdView.backgroundColor = UIColor(hex: "#ECFDF3")
+        thirdView.layer.borderWidth = 1
+        thirdView.layer.borderColor = UIColor(hex: "#DCFAE6").cgColor
+        thirdView.layer.cornerRadius = 8
+        
+        thirdView.translatesAutoresizingMaskIntoConstraints = false
+        horizontalScrollView.addSubview(thirdView)
+        NSLayoutConstraint.activate([
+            thirdView.topAnchor.constraint(equalTo: horizontalScrollView.topAnchor, constant: 16),
+            thirdView.leadingAnchor.constraint(equalTo: secondView.trailingAnchor, constant: 16),
+            thirdView.widthAnchor.constraint(equalToConstant: view.frame.width - 48),
+            thirdView.heightAnchor.constraint(equalToConstant: 148)
+        ])
+    }
+    
+    func setupFirstView() {
+        let circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
+        circleContainerView.backgroundColor = UIColor(hex: "#D7F0FF")
+        circleContainerView.layer.cornerRadius = 50
+        
+        circleContainerView.translatesAutoresizingMaskIntoConstraints = false
+        firstView.addSubview(circleContainerView)
+        NSLayoutConstraint.activate([
+            circleContainerView.topAnchor.constraint(equalTo: firstView.topAnchor, constant: 24),
+            circleContainerView.leadingAnchor.constraint(equalTo: firstView.leadingAnchor, constant: 16),
+            circleContainerView.widthAnchor.constraint(equalToConstant: 100),
+            circleContainerView.heightAnchor.constraint(equalToConstant: 100)
+        ])
+        
+        let profileCircleLabel : UILabel = {
+            let label = UILabel()
+            label.textAlignment = .center
+            label.textColor = UIColor(hex: "#0079C4")
+            label.font = .boldSystemFont(ofSize: 40)
+            return label
+        }()
+        profileCircleLabel.text = "AS"
+        
+        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
+        circleContainerView.addSubview(profileCircleLabel)
+        NSLayoutConstraint.activate([
+            profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
+            profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
+        ])
+        
+        
+        let percentLabel : UILabel = {
+            let label = UILabel()
+            label.textAlignment = .center
+            label.text = "75%"
+            label.textColor = UIColor(hex: "#219653")
+            label.font = .boldSystemFont(ofSize: 16)
+            return label
+        }()
+        
+        let percentView = UIView()
+        percentView.backgroundColor = UIColor(hex: "#E2FFEE")
+        percentView.layer.cornerRadius = 14
+        
+        percentView.translatesAutoresizingMaskIntoConstraints = false
+        firstView.addSubview(percentView)
+        NSLayoutConstraint.activate([
+            percentView.topAnchor.constraint(equalTo: circleContainerView.bottomAnchor, constant: -18),
+            percentView.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
+            percentView.widthAnchor.constraint(equalToConstant: 50),
+            percentView.heightAnchor.constraint(equalToConstant: 32)
+        ])
+        
+        percentLabel.translatesAutoresizingMaskIntoConstraints = false
+        percentView.addSubview(percentLabel)
+        NSLayoutConstraint.activate([
+            percentLabel.centerXAnchor.constraint(equalTo: percentView.centerXAnchor),
+            percentLabel.centerYAnchor.constraint(equalTo: percentView.centerYAnchor)
+        ])
+        
+        
+        // Calculate the center and radius of the circle
+        let center = CGPoint(x: circleContainerView.bounds.midX, y: circleContainerView.bounds.midY)
+        let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
+        
+        // Calculate the end angle based on the percentage (0.75 for 75%)
+        let percentage: CGFloat = 0.75
+        let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
+        let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
+
+        // Create a circular path for the green layer
+        let greenPath = UIBezierPath(arcCenter: center,
+                                     radius: radius,
+                                     startAngle: CGFloat.pi / 2,
+                                     endAngle: greenEndAngle,
+                                     clockwise: true)
+
+        let greenBorderLayer : CAShapeLayer = {
+            let greenBorderLayer = CAShapeLayer()
+            greenBorderLayer.path = greenPath.cgPath
+            greenBorderLayer.lineWidth = 6 // Border width
+            greenBorderLayer.strokeColor = UIColor(hex: "#27AE60").cgColor // Border color
+            greenBorderLayer.fillColor = UIColor.clear.cgColor
+            return greenBorderLayer
+        }()
+        circleContainerView.layer.addSublayer(greenBorderLayer)
+        
+        
+        // regular border without green color
+        let normalPath = UIBezierPath(arcCenter: center,
+                                      radius: radius,
+                                      startAngle: greenEndAngle,
+                                      endAngle: normalEndAngle,
+                                      clockwise: true)
+
+        // Create shape layer for the normal circle border
+        let normalBorderLayer : CAShapeLayer = {
+            let normalBorderLayer = CAShapeLayer()
+            normalBorderLayer.path = normalPath.cgPath
+            normalBorderLayer.lineWidth = 6 // Border width
+            normalBorderLayer.strokeColor = UIColor(hex: "#EAECF0").cgColor // Border color
+            normalBorderLayer.fillColor = UIColor.clear.cgColor
+            return normalBorderLayer
+        }()
+        circleContainerView.layer.addSublayer(normalBorderLayer)
+        
+        
+        // ************************************ right side info of circleView **********************************************
+        
+        let userNameLabel : UILabel = {
+            let label = UILabel()
+            label.text = "Hi, Ajay Sarkate"
+            label.font = .boldSystemFont(ofSize: 18)
+            label.textColor = UIColor(hex: "#101828")
+            return label
+        }()
+        
+        let pendingLabel : UILabel = {
+            let label = UILabel()
+            let attributedString = NSMutableAttributedString(string: "5 pending actions")
+            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#EB5757"), range: NSRange(location: 0, length: 1))
+            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#344054"), range: NSRange(location: 1, length: attributedString.length - 1))
+        
+            label.attributedText = attributedString
+            label.font = .systemFont(ofSize: 16)
+            return label
+        }()
+        
+        let updateProfilButton : UIButton = {
+            let button = UIButton()
+            
+            let title = NSAttributedString(string: "   Update your profile   ",
+                                                attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
+                                                             .foregroundColor: UIColor(hex: "#00629E")])
+            button.setAttributedTitle(title, for: .normal)
+            button.backgroundColor = UIColor(hex: "#D7F0FF")
+            button.layer.cornerRadius = 12
+            button.addTarget(self, action: #selector(didTapUpdateProfile), for: .touchUpInside)
+            return button
+        }()
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        
+        // Add subviews to stack view
+        stackView.addArrangedSubview(userNameLabel)
+        stackView.addArrangedSubview(pendingLabel)
+        stackView.addArrangedSubview(updateProfilButton)
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        firstView.addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: firstView.topAnchor, constant: 20),
+            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
+//            stackView.trailingAnchor.constraint(equalTo: firstView.trailingAnchor, constant: -16),
+//            stackView.bottomAnchor.constraint(equalTo: firstView.bottomAnchor, constant: -16)
+        ])
+    }
+    
+    @objc func didTapUpdateProfile() {
+        tabBarController?.selectedIndex = 3
+        UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
+    }
+    
     func setupSeparatorView1() {
-        let separatorLine = UIView()
+        
         separatorLine.backgroundColor = UIColor(hex: "#F9FAFB")
-//        separatorLine.backgroundColor = .systemGray4
         
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(separatorLine)
         
         NSLayoutConstraint.activate([
-            separatorLine.topAnchor.constraint(equalTo: jobSearchSection.bottomAnchor),
+            separatorLine.topAnchor.constraint(equalTo: scrollSection.bottomAnchor),
             separatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: 8)
@@ -266,7 +511,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         scrollView.addSubview(recommendedJobsView)
         
         NSLayoutConstraint.activate([
-            recommendedJobsView.topAnchor.constraint(equalTo: jobSearchSection.bottomAnchor, constant: 16),
+            recommendedJobsView.topAnchor.constraint(equalTo: separatorLine.bottomAnchor, constant: 16),
             recommendedJobsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             recommendedJobsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             recommendedJobsView.heightAnchor.constraint(equalToConstant: 278)
@@ -404,9 +649,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             companiesCollectionVC.bottomAnchor.constraint(equalTo: topCompaniesView.bottomAnchor, constant: -19)
         ])
     }
-    
-    
-    
     
     
     

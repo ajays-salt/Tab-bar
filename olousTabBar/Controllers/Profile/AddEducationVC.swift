@@ -58,6 +58,8 @@ class AddEducationVC: UIViewController {
         collegeNameTextField.placeholder = "College Name"
         collegeNameTextField.borderStyle = .roundedRect
         collegeNameTextField.layer.borderWidth = 1
+        collegeNameTextField.layer.cornerRadius = 6
+        collegeNameTextField.layer.borderColor = UIColor(hex: "#667085").cgColor
         tempView.addSubview(collegeNameTextField)
         
         // Add start year picker
@@ -144,7 +146,7 @@ class AddEducationVC: UIViewController {
               let companyName = companyNameField.text, !companyName.isEmpty,
               let startYearPicker = sender.superview?.subviews[2] as? UIDatePicker,
               let endYearPicker = sender.superview?.subviews[4] as? UIDatePicker else {
-            collegeNameTextField.placeholder = "Company can't be empty"
+            collegeNameTextField.placeholder = "College can't be empty"
             collegeNameTextField.layer.borderColor = UIColor.systemRed.cgColor
             return // Exit if any required field is nil or companyName is empty
         }

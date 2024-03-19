@@ -58,6 +58,8 @@ class AddEmploymentVC: UIViewController {
         companyNameTextField.placeholder = "Company Name"
         companyNameTextField.borderStyle = .roundedRect
         companyNameTextField.layer.borderWidth = 1
+        companyNameTextField.layer.cornerRadius = 6
+        companyNameTextField.layer.borderColor = UIColor(hex: "#667085").cgColor
         tempView.addSubview(companyNameTextField)
         
         // Add start year picker
