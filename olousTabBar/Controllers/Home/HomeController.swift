@@ -91,7 +91,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         setupTopCompaniesView()
         
         setupFirstView()
-        
+        setupSecondView()
+        setupThirdView()
         
         navigationController?.navigationBar.isHidden = true
     }
@@ -267,6 +268,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         ])
         
         horizontalScrollView = UIScrollView()
+        horizontalScrollView.showsHorizontalScrollIndicator = false
         let contentWidth = (view.frame.width - 48) * CGFloat(3) + 16 * CGFloat(3) + 16// Total width of subviews including spacing
         horizontalScrollView.contentSize = CGSize(width: contentWidth, height: 150)
         
@@ -478,15 +480,161 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         firstView.addSubview(stackView)
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: firstView.topAnchor, constant: 20),
-            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
-//            stackView.trailingAnchor.constraint(equalTo: firstView.trailingAnchor, constant: -16),
-//            stackView.bottomAnchor.constraint(equalTo: firstView.bottomAnchor, constant: -16)
+            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16)
+        ])
+    }
+    
+    func setupSecondView() {
+        let circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
+        circleContainerView.backgroundColor = UIColor(hex: "#FFE28F")
+        circleContainerView.layer.opacity = 0.4
+        circleContainerView.layer.cornerRadius = 50
+        
+        circleContainerView.translatesAutoresizingMaskIntoConstraints = false
+        secondView.addSubview(circleContainerView)
+        NSLayoutConstraint.activate([
+            circleContainerView.topAnchor.constraint(equalTo: secondView.topAnchor, constant: 24),
+            circleContainerView.leadingAnchor.constraint(equalTo: secondView.leadingAnchor, constant: 16),
+            circleContainerView.widthAnchor.constraint(equalToConstant: 100),
+            circleContainerView.heightAnchor.constraint(equalToConstant: 100)
+        ])
+        
+        let profileCircleLabel : UILabel = {
+            let label = UILabel()
+            label.textAlignment = .center
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 40)
+            return label
+        }()
+        profileCircleLabel.text = "48"
+        
+        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
+        secondView.addSubview(profileCircleLabel)
+        NSLayoutConstraint.activate([
+            profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
+            profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
+        ])
+        
+        
+        let recruiterActionsLabel : UILabel = {
+            let label = UILabel()
+            let attributedString = NSMutableAttributedString(string: "Recruiter actions on your profile")
+//            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#EB5757"), range: NSRange(location: 0, length: 1))
+            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#344054"), range: NSRange(location: 0, length: attributedString.length ))
+        
+            label.attributedText = attributedString
+            label.font = .systemFont(ofSize: 18)
+            label.numberOfLines = 0
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        
+        let viewDetailsButton : UIButton = {
+            let button = UIButton()
+            
+            let title = NSAttributedString(string: "   View details   ",
+                                                attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
+                                                             .foregroundColor: UIColor(hex: "#00629E")])
+            button.setAttributedTitle(title, for: .normal)
+            button.backgroundColor = UIColor(hex: "#D7F0FF")
+            button.layer.cornerRadius = 12
+            button.addTarget(self, action: #selector(didTapViewActionDetails), for: .touchUpInside)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            return button
+        }()
+        
+        secondView.addSubview(recruiterActionsLabel)
+        secondView.addSubview(viewDetailsButton)
+        NSLayoutConstraint.activate([
+            recruiterActionsLabel.topAnchor.constraint(equalTo: secondView.topAnchor, constant: 30),
+            recruiterActionsLabel.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
+            recruiterActionsLabel.trailingAnchor.constraint(equalTo: secondView.trailingAnchor, constant: -16),
+            
+            viewDetailsButton.topAnchor.constraint(equalTo: recruiterActionsLabel.bottomAnchor, constant: 20),
+            viewDetailsButton.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16)
+        ])
+    }
+    
+    func setupThirdView() {
+        let circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
+        circleContainerView.backgroundColor = UIColor(hex: "#CEF4DE")
+        circleContainerView.layer.opacity = 0.4
+        circleContainerView.layer.cornerRadius = 50
+        
+        circleContainerView.translatesAutoresizingMaskIntoConstraints = false
+        thirdView.addSubview(circleContainerView)
+        NSLayoutConstraint.activate([
+            circleContainerView.topAnchor.constraint(equalTo: thirdView.topAnchor, constant: 24),
+            circleContainerView.leadingAnchor.constraint(equalTo: thirdView.leadingAnchor, constant: 16),
+            circleContainerView.widthAnchor.constraint(equalToConstant: 100),
+            circleContainerView.heightAnchor.constraint(equalToConstant: 100)
+        ])
+        
+        let profileCircleLabel : UILabel = {
+            let label = UILabel()
+            label.textAlignment = .center
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 40)
+            return label
+        }()
+        profileCircleLabel.text = "128"
+        
+        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
+        thirdView.addSubview(profileCircleLabel)
+        NSLayoutConstraint.activate([
+            profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
+            profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
+        ])
+        
+        
+        let searchAppearanceLabel : UILabel = {
+            let label = UILabel()
+            let attributedString = NSMutableAttributedString(string: "Search appearance")
+//            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#EB5757"), range: NSRange(location: 0, length: 1))
+            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#344054"), range: NSRange(location: 0, length: attributedString.length ))
+        
+            label.attributedText = attributedString
+            label.font = .systemFont(ofSize: 18)
+            label.numberOfLines = 0
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        
+        let viewDetailsButton : UIButton = {
+            let button = UIButton()
+            
+            let title = NSAttributedString(string: "   View details   ",
+                                                attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
+                                                             .foregroundColor: UIColor(hex: "#00629E")])
+            button.setAttributedTitle(title, for: .normal)
+            button.backgroundColor = UIColor(hex: "#D7F0FF")
+            button.layer.cornerRadius = 12
+            button.addTarget(self, action: #selector(didTapViewSearchAppearanceDetails), for: .touchUpInside)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            return button
+        }()
+        
+        thirdView.addSubview(searchAppearanceLabel)
+        thirdView.addSubview(viewDetailsButton)
+        NSLayoutConstraint.activate([
+            searchAppearanceLabel.topAnchor.constraint(equalTo: thirdView.topAnchor, constant: 30),
+            searchAppearanceLabel.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
+            searchAppearanceLabel.trailingAnchor.constraint(equalTo: thirdView.trailingAnchor, constant: -16),
+            
+            viewDetailsButton.topAnchor.constraint(equalTo: searchAppearanceLabel.bottomAnchor, constant: 20),
+            viewDetailsButton.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16)
         ])
     }
     
     @objc func didTapUpdateProfile() {
         tabBarController?.selectedIndex = 3
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
+    }
+    @objc func didTapViewActionDetails() {
+        
+    }
+    @objc func didTapViewSearchAppearanceDetails() {
+        
     }
     
     func setupSeparatorView1() {

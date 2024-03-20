@@ -9,7 +9,13 @@ import UIKit
 
 class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    var headerView : UIView!
+    var topSection : UIView!
+    var filterScrollView : UIScrollView!
+    var filterOptions = [
+        "Workplace": ["All", "Office", "Remote"],
+        "Job Type": ["All", "Full-time", "Part-time", "Contract"],
+        "Location": ["All", "City", "Suburb", "Remote"]
+    ]
     
     var jobsCountLabel : UILabel = {
         let label = UILabel()
@@ -28,23 +34,131 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     }
     
     func setupViews() {
-        setupHeaderView()
+        setupFilterScrollView()
+        setupUI()
+        
         setupJobsCountLabel()
         setupJobsCollectionView()
     }
     
-    func setupHeaderView() {
-        headerView = UIView()
-        headerView.backgroundColor = .systemGray4
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(headerView)
+    func setupFilterScrollView() {
+        
+        topSection = UIView()
+        
+        topSection.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(topSection)
+        NSLayoutConstraint.activate([
+            topSection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            topSection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topSection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topSection.heightAnchor.constraint(equalToConstant: 80)
+        ])
+        
+        filterScrollView = UIScrollView()
+        filterScrollView.translatesAutoresizingMaskIntoConstraints = false
+        filterScrollView.showsHorizontalScrollIndicator = false
+        
+        let contentWidth = (view.frame.width - 48) * CGFloat(3) - 16 // Total width of subviews including spacing
+        filterScrollView.contentSize = CGSize(width: contentWidth, height: 80)
+        
+        filterScrollView.translatesAutoresizingMaskIntoConstraints = false
+        topSection.addSubview(filterScrollView)
+        NSLayoutConstraint.activate([
+            filterScrollView.topAnchor.constraint(equalTo: topSection.topAnchor, constant: 20),
+            filterScrollView.leadingAnchor.constraint(equalTo: topSection.leadingAnchor),
+            filterScrollView.trailingAnchor.constraint(equalTo: topSection.trailingAnchor),
+            filterScrollView.heightAnchor.constraint(equalToConstant: 80)
+        ])
+    }
+    
+    
+    func setupUI() {
+        addFilterButton(title: "Date posted", at: 0)
+        addFilterButton(title: "Workplace", at: 1)
+        addFilterButton(title: "Job type", at: 2)
+        addFilterButton(title: "Sectorrrrrrrrrrrr", at: 3)
+        addFilterButton(title: "Experience", at: 4)
+        addFilterButton(title: "Salary", at: 5)
+        addFilterButton(title: "Profession", at: 6)
+    }
+    
+    func addFilterButton(title: String, at index: Int) {
+        let filterButton = UIButton(type: .system)
+        filterButton.translatesAutoresizingMaskIntoConstraints = false
+        filterButton.layer.borderWidth = 1.0 // Add border
+        filterButton.layer.cornerRadius = 8
+        filterButton.layer.borderColor = UIColor(hex: "#EAECF0").cgColor // Set border color
+        filterButton.contentHorizontalAlignment = .left // Align content to the left
+        filterButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        filterButton.backgroundColor = .systemBackground
+        
+        // Set title and drop-down icon
+        if let dropDownImage = UIImage(systemName: "chevron.down") {
+            let titleWithIcon = NSAttributedString(string: title, attributes: [.font: UIFont.systemFont(ofSize: 16)]) // Customize font size as needed
+            let attributedTitle = NSMutableAttributedString(string: "   ") // Add empty spaces at the start
+            attributedTitle.append(titleWithIcon)
+            
+            // Add drop-down icon to the end of the title
+            let attachment = NSTextAttachment()
+            attachment.image = dropDownImage
+            let attachmentString = NSAttributedString(attachment: attachment)
+            attributedTitle.append(NSAttributedString(string: " "))
+            attributedTitle.append(attachmentString)
+            attributedTitle.append(NSAttributedString(string: "   "))
+            
+            filterButton.setAttributedTitle(attributedTitle, for: .normal)
+            filterButton.semanticContentAttribute = .forceRightToLeft
+        }
+        
+        filterScrollView.addSubview(filterButton)
         
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 104)
+            filterButton.topAnchor.constraint(equalTo: filterScrollView.topAnchor),
+            filterButton.heightAnchor.constraint(equalToConstant: 40)
         ])
+        
+        if index > 0 {
+            let previousButton = filterScrollView.subviews[index - 1] // Get the previous button
+            filterButton.leadingAnchor.constraint(equalTo: previousButton.trailingAnchor, constant: 10).isActive = true // Adjust spacing as needed
+        } else {
+            // For the first button, set its leading anchor to the scroll view's leading anchor
+            filterButton.leadingAnchor.constraint(equalTo: filterScrollView.leadingAnchor, constant: 20).isActive = true // Adjust spacing as needed
+        }
+
+        
+        filterButton.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
+        filterButton.tag = index // Assign a tag to identify the filter
+    }
+
+    
+    // MARK: - Filter Button Actions
+    @objc func filterButtonTapped(_ sender: UIButton) {
+        switch sender.tag {
+        case 0:
+            workplaceButtonTapped()
+        case 1:
+            jobTypeButtonTapped()
+        case 2:
+            locationButtonTapped()
+        default:
+            break
+        }
+    }
+    
+    // Separate methods for handling taps on each button
+    func workplaceButtonTapped() {
+        // Implement logic for Workplace button tap
+        print("Workplace button tapped")
+    }
+    
+    func jobTypeButtonTapped() {
+        // Implement logic for Job Type button tap
+        print("Job Type button tapped")
+    }
+    
+    func locationButtonTapped() {
+        // Implement logic for Location button tap
+        print("Location button tapped")
     }
     
     func setupJobsCountLabel() {
@@ -52,7 +166,7 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
         view.addSubview(jobsCountLabel)
         
         NSLayoutConstraint.activate([
-            jobsCountLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            jobsCountLabel.topAnchor.constraint(equalTo: topSection.bottomAnchor, constant: 6),
             jobsCountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             jobsCountLabel.heightAnchor.constraint(equalToConstant: 128),
             jobsCountLabel.heightAnchor.constraint(equalToConstant: 16)
