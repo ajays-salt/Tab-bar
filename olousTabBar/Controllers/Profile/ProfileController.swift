@@ -13,14 +13,20 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     var educations = [Education]()
     
     
-    let barsButton : UIImageView = {
-        let imageView = UIImageView()
-        imageView.tintColor = UIColor(hex: "#344054")
-        imageView.image = UIImage(systemName: "line.3.horizontal")
-        imageView.isUserInteractionEnabled = true
-        return imageView
+    let profileEditButton : UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.adjustsImageSizeForAccessibilityContentSizeCategory = true
+        button.tintColor = UIColor(hex: "#667085")
+        button.backgroundColor = .systemBackground
+        button.layer.cornerRadius = 20
+        button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        button.layer.borderWidth = 1
+        return button
     }()
     let scrollView = UIScrollView()
+    
+    var headerView = UIView()
     
     let profileCircle = UIView()
     let profileCircleLabel : UILabel = {
@@ -52,6 +58,19 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         label.textColor = UIColor(hex: "#667085")
         label.font = .systemFont(ofSize: 14)
         return label
+    }()
+    
+    let preferenceEditButton : UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.tintColor = UIColor(hex: "#667085")
+        button.backgroundColor = .systemBackground
+        
+        let image = UIImage(systemName: "pencil")?.withRenderingMode(.alwaysTemplate)
+        let resizedImage = image?.resized(to: CGSize(width: 20, height: 20))
+        button.setImage(resizedImage, for: .normal)
+        
+        return button
     }()
     
     let jobTypeLabel : UILabel = {
@@ -103,13 +122,12 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         
         setupViews()
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapBarsButton))
-        barsButton.addGestureRecognizer(tap)
     }
     
     func setupViews() {
         setupScrollView()
-        setupBarsButton()
+        setupHeaderView()
+        setupProfileEditButton()
         
         setupProfileCircleView()
         setupUserNameLabel()
@@ -122,19 +140,20 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         setupOtherUI3()
     }
     
-    func setupBarsButton() {
-        barsButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(barsButton)
+    func setupProfileEditButton() {
+        profileEditButton.addTarget(self, action: #selector(didTapProfileEditButton), for: .touchUpInside)
+        profileEditButton.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(profileEditButton)
         
         NSLayoutConstraint.activate([
-            barsButton.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
-            barsButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            barsButton.widthAnchor.constraint(equalToConstant: 35),
-            barsButton.heightAnchor.constraint(equalToConstant: 40)
+            profileEditButton.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 24),
+            profileEditButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            profileEditButton.widthAnchor.constraint(equalToConstant: 40),
+            profileEditButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     
-    @objc func didTapBarsButton(gesture: UITapGestureRecognizer) {
+    @objc func didTapProfileEditButton(gesture: UITapGestureRecognizer) {
         let vc = EditProfileVC()
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -160,16 +179,29 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         let contentHeight = view.bounds.height + extraSpaceHeight
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
+    
+    func setupHeaderView() {
+        headerView.backgroundColor = UIColor(hex: "#F0F9FF")
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(headerView)
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 30),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 160)
+        ])
+    }
 
     func setupProfileCircleView() {
         profileCircle.backgroundColor = UIColor(hex: "#D7F0FF")
         profileCircle.layer.cornerRadius = 60
         
         profileCircle.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(profileCircle)
+        headerView.addSubview(profileCircle)
         NSLayoutConstraint.activate([
-            profileCircle.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 30),
-            profileCircle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (view.frame.width / 2 ) - 60),
+//            profileCircle.topAnchor.constraint(equalTo: headerView.top, constant: 30),
+            profileCircle.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            profileCircle.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
             profileCircle.widthAnchor.constraint(equalToConstant: 120),
             profileCircle.heightAnchor.constraint(equalToConstant: 120)
         ])
@@ -209,30 +241,30 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     }
     func setupUserNameLabel() {
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(userNameLabel)
+        headerView.addSubview(userNameLabel)
         
         NSLayoutConstraint.activate([
-            userNameLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            userNameLabel.topAnchor.constraint(equalTo: profileCircle.bottomAnchor, constant: 12),
+            userNameLabel.topAnchor.constraint(equalTo: profileCircle.topAnchor, constant: 16),
+            userNameLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
             userNameLabel.heightAnchor.constraint(equalToConstant: 24)
         ])
     }
     func setupUserJobTitleLabel() {
         jobTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(jobTitleLabel)
+        headerView.addSubview(jobTitleLabel)
         
         NSLayoutConstraint.activate([
-            jobTitleLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            jobTitleLabel.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 12)
+            jobTitleLabel.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 12),
+            jobTitleLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
         ])
     }
     func setupLocationLabel() {
         locationLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(locationLabel)
+        headerView.addSubview(locationLabel)
         
         NSLayoutConstraint.activate([
-            locationLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 6)
+            locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 6),
+            locationLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
         ])
     }
     
@@ -248,8 +280,17 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         scrollView.addSubview(preferenceLabel)
         
         NSLayoutConstraint.activate([
-            preferenceLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 40),
+            preferenceLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 40),
             preferenceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+        ])
+        
+        preferenceEditButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(preferenceEditButton)
+        NSLayoutConstraint.activate([
+            preferenceEditButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 40),
+            preferenceEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            preferenceEditButton.widthAnchor.constraint(equalToConstant: 20),
+            preferenceEditButton.heightAnchor.constraint(equalToConstant: 20)
         ])
         
         
@@ -585,6 +626,15 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
+    }
+}
+
+extension UIImage {
+    func resized(to newSize: CGSize) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+        defer { UIGraphicsEndImageContext() }
+        draw(in: CGRect(origin: .zero, size: newSize))
+        return UIGraphicsGetImageFromCurrentImageContext()
     }
 }
 

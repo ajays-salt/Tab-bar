@@ -399,7 +399,7 @@ extension JobSearchScreen : UITableViewDelegate, UITableViewDataSource {
             cell.textLabel?.text = filteredLocations[indexPath.row]
         }
         
-        cell.backgroundColor = .systemGray6
+        cell.backgroundColor = UIColor(hex: "#FFFFFF")
         return cell
     }
     
