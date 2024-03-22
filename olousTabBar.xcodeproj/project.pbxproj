@@ -16,6 +16,7 @@
 		FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */; };
 		FAB40D262B95912200B50B7F /* locationLogo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FAB40D252B95912200B50B7F /* locationLogo.jpg */; };
 		FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */; };
+		FAB7B9852BAD424B00B5A9FA /* FilterOptionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB7B9842BAD424B00B5A9FA /* FilterOptionsCell.swift */; };
 		FAC251B82B9EB87D0076DE75 /* JobSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC251B72B9EB87D0076DE75 /* JobSearchResult.swift */; };
 		FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */; };
 		FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1392B9191C500E17AFD /* AppDelegate.swift */; };
@@ -41,6 +42,7 @@
 		FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobsCell.swift; sourceTree = "<group>"; };
 		FAB40D252B95912200B50B7F /* locationLogo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = locationLogo.jpg; sourceTree = "<group>"; };
 		FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchPage.swift; sourceTree = "<group>"; };
+		FAB7B9842BAD424B00B5A9FA /* FilterOptionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterOptionsCell.swift; sourceTree = "<group>"; };
 		FAC251B72B9EB87D0076DE75 /* JobSearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchResult.swift; sourceTree = "<group>"; };
 		FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobDetailScreen.swift; sourceTree = "<group>"; };
 		FAC3A1362B9191C500E17AFD /* olousTabBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = olousTabBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,6 +76,7 @@
 			children = (
 				D0C2F0132B962B2900D9C6F9 /* CompaniesCell.swift */,
 				FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */,
+				FAB7B9842BAD424B00B5A9FA /* FilterOptionsCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -131,6 +134,22 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		FAB7B9862BAD440700B5A9FA /* MyJobs */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */,
+			);
+			path = MyJobs;
+			sourceTree = "<group>";
+		};
+		FAB7B9872BAD441400B5A9FA /* Inbox */ = {
+			isa = PBXGroup;
+			children = (
+				FAC3A1542B919F5400E17AFD /* InboxController.swift */,
+			);
+			path = Inbox;
+			sourceTree = "<group>";
+		};
 		FAC3A12D2B9191C500E17AFD = {
 			isa = PBXGroup;
 			children = (
@@ -163,9 +182,9 @@
 			isa = PBXGroup;
 			children = (
 				FAACA6B92BA9757400818F0C /* Tab Bar */,
+				FAB7B9862BAD440700B5A9FA /* MyJobs */,
+				FAB7B9872BAD441400B5A9FA /* Inbox */,
 				FAB40D282B95AB9E00B50B7F /* Home */,
-				FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */,
-				FAC3A1542B919F5400E17AFD /* InboxController.swift */,
 				FA7C4EBA2BA4052900900BF8 /* Profile */,
 			);
 			path = Controllers;
@@ -252,6 +271,7 @@
 				FA7C4EBE2BA41FA600900BF8 /* AddEducationVC.swift in Sources */,
 				FAC3A13E2B9191C600E17AFD /* ViewController.swift in Sources */,
 				FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */,
+				FAB7B9852BAD424B00B5A9FA /* FilterOptionsCell.swift in Sources */,
 				D0C2F0142B962B2900D9C6F9 /* CompaniesCell.swift in Sources */,
 				FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */,
 				FA7C4EC32BA4507C00900BF8 /* Model.swift in Sources */,

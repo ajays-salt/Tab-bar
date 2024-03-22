@@ -189,6 +189,8 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
     }
     
     func setupLocationsTableView() {
+        locationsTableView.layer.borderWidth = 1
+        locationsTableView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         locationsTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(locationsTableView)
         NSLayoutConstraint.activate([

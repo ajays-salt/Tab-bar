@@ -12,10 +12,21 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     var topSection : UIView!
     var filterScrollView : UIScrollView!
     var filterOptions = [
-        "Workplace": ["All", "Office", "Remote"],
-        "Job Type": ["All", "Full-time", "Part-time", "Contract"],
-        "Location": ["All", "City", "Suburb", "Remote"]
+        "Date posted": ["Last 24 hrs", "Last week", "Last month"],
+        "Workplace": ["Office", "Remote", "Hybrid"],
+        "Location": ["Pune", "Mumbai", "Bangalore", "Hyderabad", "Gurgaon", "Delhi"],
+        "Sector": ["Residential", "Commercial", "Industrial", "Irrigation"],
+        "Experience": ["Fresher", "0-2", "2-4", "4-10"],
+        "Salary": ["0-3", "3-6", "6-10", "10+"],
+        "Job type": ["Full-time", "Part-time", "Internship", "Contract"],
     ]
+    
+    var selectedFilterArray: [String] = []
+    
+    var filterTableView : UITableView!
+    var isFilterOptionsHidden = true
+    
+    var blurView : UIView!
     
     var jobsCountLabel : UILabel = {
         let label = UILabel()
@@ -35,10 +46,13 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     
     func setupViews() {
         setupFilterScrollView()
-        setupUI()
+        
+        setupFilterButtons()
         
         setupJobsCountLabel()
         setupJobsCollectionView()
+        
+        setupFilterTableView()
     }
     
     func setupFilterScrollView() {
@@ -72,14 +86,14 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     }
     
     
-    func setupUI() {
+    func setupFilterButtons() {
         addFilterButton(title: "Date posted", at: 0)
         addFilterButton(title: "Workplace", at: 1)
-        addFilterButton(title: "Job type", at: 2)
-        addFilterButton(title: "Sectorrrrrrrrrrrr", at: 3)
+        addFilterButton(title: "Location", at: 2)
+        addFilterButton(title: "Sector", at: 3)
         addFilterButton(title: "Experience", at: 4)
         addFilterButton(title: "Salary", at: 5)
-        addFilterButton(title: "Profession", at: 6)
+        addFilterButton(title: "Job type", at: 6)
     }
     
     func addFilterButton(title: String, at index: Int) {
@@ -129,37 +143,140 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
         filterButton.addTarget(self, action: #selector(filterButtonTapped(_:)), for: .touchUpInside)
         filterButton.tag = index // Assign a tag to identify the filter
     }
-
+    
+    func setupFilterTableView() {
+        filterTableView = UITableView()
+        filterTableView.register(FilterOptionsCell.self, forCellReuseIdentifier: "FilterOptionsCell")
+        filterTableView.delegate = self
+        filterTableView.dataSource = self
+        
+        filterTableView.isHidden = true
+        filterTableView.layer.borderWidth = 1
+        filterTableView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        
+        filterTableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(filterTableView)
+        NSLayoutConstraint.activate([
+            filterTableView.topAnchor.constraint(equalTo: filterScrollView.bottomAnchor, constant: -20),
+            filterTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            filterTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            filterTableView.heightAnchor.constraint(equalToConstant: 200)
+        ])
+    }
     
     // MARK: - Filter Button Actions
     @objc func filterButtonTapped(_ sender: UIButton) {
+        if isFilterOptionsHidden == false {
+            isFilterOptionsHidden = true
+            filterTableView.isHidden = true
+            blurView.removeFromSuperview()
+            return
+        }
+        else {
+            filterTableView.isHidden = false
+            isFilterOptionsHidden = false
+            
+            blurView = UIView()
+            blurView.backgroundColor = .black
+            blurView.alpha = 0.4
+            blurView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(blurView)
+            NSLayoutConstraint.activate([
+                blurView.topAnchor.constraint(equalTo: filterTableView.bottomAnchor),
+                blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                blurView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+        }
         switch sender.tag {
         case 0:
-            workplaceButtonTapped()
+            datePostedButtonTapped()
         case 1:
-            jobTypeButtonTapped()
+            workplaceButtonTapped()
         case 2:
             locationButtonTapped()
+        case 3 :
+            sectorButtonTapped()
+        case 4:
+            experienceButtonTapped()
+        case 5:
+            salaryButtonTapped()
+        case 6:
+            jobTypeButtonTapped()
         default:
             break
         }
     }
     
     // Separate methods for handling taps on each button
-    func workplaceButtonTapped() {
-        // Implement logic for Workplace button tap
-        print("Workplace button tapped")
+    
+    func datePostedButtonTapped() {
+        guard let options = filterOptions["Date posted"] else {
+            return
+        }
+        selectedFilterArray = options
+        filterTableView.allowsMultipleSelection = false
+        filterTableView.reloadData()
     }
     
-    func jobTypeButtonTapped() {
-        // Implement logic for Job Type button tap
-        print("Job Type button tapped")
+    func workplaceButtonTapped() {
+        guard let options = filterOptions["Workplace"] else {
+            return
+        }
+        selectedFilterArray = options
+        filterTableView.allowsMultipleSelection = true
+        filterTableView.reloadData()
     }
     
     func locationButtonTapped() {
-        // Implement logic for Location button tap
-        print("Location button tapped")
+        guard let options = filterOptions["Location"] else {
+            return
+        }
+        selectedFilterArray = options
+        filterTableView.allowsMultipleSelection = true
+        filterTableView.reloadData()
     }
+    
+    func sectorButtonTapped() {
+        guard let options = filterOptions["Sector"] else {
+            return
+        }
+        selectedFilterArray = options
+        
+        filterTableView.reloadData()
+    }
+    func experienceButtonTapped() {
+        guard let options = filterOptions["Experience"] else {
+            return
+        }
+        selectedFilterArray = options
+        filterTableView.allowsMultipleSelection = false
+        filterTableView.reloadData()
+    }
+    func salaryButtonTapped() {
+        guard let options = filterOptions["Salary"] else {
+            return
+        }
+        selectedFilterArray = options
+        filterTableView.allowsMultipleSelection = true
+        filterTableView.reloadData()
+    }
+    func jobTypeButtonTapped() {
+        guard let options = filterOptions["Job type"] else {
+            return
+        }
+        selectedFilterArray = options
+        filterTableView.allowsMultipleSelection = false
+        filterTableView.reloadData()
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     
     func setupJobsCountLabel() {
         jobsCountLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -227,6 +344,39 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
         
         tabBarController?.tabBar.isHidden = false
         navigationController?.navigationBar.isHidden = true
+    }
+    
+}
+
+extension JobSearchResult : UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print(selectedFilterArray.count)
+        return selectedFilterArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "FilterOptionsCell", for: indexPath) as! FilterOptionsCell
+        let option = selectedFilterArray[indexPath.row]
+        cell.label.text = option
+        cell.selectionStyle = .none
+        // Assuming isChecked property in FilterOptionsCell indicates whether the option is selected
+        cell.isChecked = true// Implement isSelected method accordingly
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(#function)
+        let cell = tableView.cellForRow(at: indexPath) as! FilterOptionsCell
+        
+        cell.checkboxButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        print(#function)
+        let cell = tableView.cellForRow(at: indexPath) as! FilterOptionsCell
+        
+        cell.checkboxButton.setImage(UIImage(systemName: ""), for: .normal)
     }
     
 }
