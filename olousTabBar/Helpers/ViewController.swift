@@ -13,16 +13,17 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         let vc = TabBarController()
+        
         let tempView = vc.view!
+        view.backgroundColor = .systemBackground
         
         view.addSubview(tempView)
         addChild(vc)
         vc.didMove(toParent: self)
+        
         overrideUserInterfaceStyle = .light
         
-        
         tempView.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             tempView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -12),
             tempView.leadingAnchor.constraint(equalTo: view.leadingAnchor),

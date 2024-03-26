@@ -18,6 +18,10 @@ class AddEmploymentVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        overrideUserInterfaceStyle = .light
+        view.backgroundColor = .systemBackground
+        
         let pvc = ProfileController()
         employments = pvc.employments
         educations = pvc.educations

@@ -15,7 +15,6 @@ class FilterOptionsCell: UITableViewCell {
         button.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
         button.layer.cornerRadius = 4
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.isUserInteractionEnabled = true
         button.backgroundColor = .systemBackground
         return button
     }()
@@ -30,6 +29,8 @@ class FilterOptionsCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        checkboxButton.isUserInteractionEnabled = false
         
         contentView.addSubview(checkboxButton)
         contentView.addSubview(label)

@@ -56,6 +56,9 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        overrideUserInterfaceStyle = .light
+        view.backgroundColor = .systemBackground
+        
         setupJobSearchSection()
         setupJobSearchInnerSection()
         setupSearchJobsButton()

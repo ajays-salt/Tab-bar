@@ -74,7 +74,8 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        overrideUserInterfaceStyle = .light
+        view.backgroundColor = .systemBackground
         if isSelected == "Recommended" {
             recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         }

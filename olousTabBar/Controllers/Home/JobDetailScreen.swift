@@ -111,6 +111,10 @@ class JobDetailScreen: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        overrideUserInterfaceStyle = .light
+        view.backgroundColor = .systemBackground
+        
         setupViews()
 
         let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonTapped))

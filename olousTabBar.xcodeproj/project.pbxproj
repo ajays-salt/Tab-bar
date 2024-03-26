@@ -30,6 +30,10 @@
 		FAC3A1532B919F3F00E17AFD /* MyJobsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */; };
 		FAC3A1552B919F5400E17AFD /* InboxController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1542B919F5400E17AFD /* InboxController.swift */; };
 		FAC3A1572B919F6400E17AFD /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1562B919F6400E17AFD /* ProfileController.swift */; };
+		FACCE4D52BB285C500DAD5D2 /* RegistrationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACCE4D42BB285C500DAD5D2 /* RegistrationVC.swift */; };
+		FACCE4D72BB2CAA700DAD5D2 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACCE4D62BB2CAA700DAD5D2 /* LoginVC.swift */; };
+		FACCE4D92BB2D80B00DAD5D2 /* ForgotPassword1.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACCE4D82BB2D80B00DAD5D2 /* ForgotPassword1.swift */; };
+		FACCE4DC2BB2F3C600DAD5D2 /* ForgotPassword2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACCE4DB2BB2F3C600DAD5D2 /* ForgotPassword2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +62,10 @@
 		FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyJobsController.swift; sourceTree = "<group>"; };
 		FAC3A1542B919F5400E17AFD /* InboxController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxController.swift; sourceTree = "<group>"; };
 		FAC3A1562B919F6400E17AFD /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
+		FACCE4D42BB285C500DAD5D2 /* RegistrationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationVC.swift; sourceTree = "<group>"; };
+		FACCE4D62BB2CAA700DAD5D2 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
+		FACCE4D82BB2D80B00DAD5D2 /* ForgotPassword1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword1.swift; sourceTree = "<group>"; };
+		FACCE4DB2BB2F3C600DAD5D2 /* ForgotPassword2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +181,7 @@
 				FA7C4EC42BA4510D00900BF8 /* Helpers */,
 				FA7C4EC12BA4500100900BF8 /* Model */,
 				D0C2F0122B962AEC00D9C6F9 /* Cells */,
+				FACCE4D32BB283BB00DAD5D2 /* LogIn-Registration Screens */,
 				FAC3A14D2B91925300E17AFD /* Controllers */,
 			);
 			path = olousTabBar;
@@ -188,6 +197,17 @@
 				FA7C4EBA2BA4052900900BF8 /* Profile */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		FACCE4D32BB283BB00DAD5D2 /* LogIn-Registration Screens */ = {
+			isa = PBXGroup;
+			children = (
+				FACCE4D42BB285C500DAD5D2 /* RegistrationVC.swift */,
+				FACCE4D62BB2CAA700DAD5D2 /* LoginVC.swift */,
+				FACCE4D82BB2D80B00DAD5D2 /* ForgotPassword1.swift */,
+				FACCE4DB2BB2F3C600DAD5D2 /* ForgotPassword2.swift */,
+			);
+			path = "LogIn-Registration Screens";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -267,6 +287,7 @@
 				FAC3A14F2B91927200E17AFD /* TabBarController.swift in Sources */,
 				FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */,
 				FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */,
+				FACCE4D52BB285C500DAD5D2 /* RegistrationVC.swift in Sources */,
 				FAC3A1552B919F5400E17AFD /* InboxController.swift in Sources */,
 				FA7C4EBE2BA41FA600900BF8 /* AddEducationVC.swift in Sources */,
 				FAC3A13E2B9191C600E17AFD /* ViewController.swift in Sources */,
@@ -276,10 +297,13 @@
 				FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */,
 				FA7C4EC32BA4507C00900BF8 /* Model.swift in Sources */,
 				FAC3A1532B919F3F00E17AFD /* MyJobsController.swift in Sources */,
+				FACCE4DC2BB2F3C600DAD5D2 /* ForgotPassword2.swift in Sources */,
+				FACCE4D72BB2CAA700DAD5D2 /* LoginVC.swift in Sources */,
 				FA7C4EBC2BA405CC00900BF8 /* AddEmploymentVC.swift in Sources */,
 				FAC3A13C2B9191C600E17AFD /* SceneDelegate.swift in Sources */,
 				FAC3A1512B919F2500E17AFD /* HomeController.swift in Sources */,
 				FA7C4EC02BA4259600900BF8 /* EditProfileVC.swift in Sources */,
+				FACCE4D92BB2D80B00DAD5D2 /* ForgotPassword1.swift in Sources */,
 				FAC3A1572B919F6400E17AFD /* ProfileController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

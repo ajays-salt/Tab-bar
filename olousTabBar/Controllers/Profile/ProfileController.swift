@@ -108,6 +108,9 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
         
+        overrideUserInterfaceStyle = .light
+        view.backgroundColor = .systemBackground
+        
         employments = [
             Employment(companyName: "ABC Company", startYear: 2018, endYear: 2022, jobType: "Full-time"),
             Employment(companyName: "XYZ Inc.", startYear: 2020, endYear: 2021, jobType: "Part-time"),

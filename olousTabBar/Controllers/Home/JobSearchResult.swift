@@ -41,6 +41,9 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        overrideUserInterfaceStyle = .light
+        view.backgroundColor = .systemBackground
+        
         setupViews()
     }
     

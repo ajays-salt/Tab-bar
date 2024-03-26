@@ -45,6 +45,9 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        overrideUserInterfaceStyle = .light
+        view.backgroundColor = .systemBackground
 
         navigationItem.title = "Edit Profile"
         navigationItem.hidesBackButton = true
