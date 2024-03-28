@@ -323,10 +323,11 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         UserDefaults.standard.set(true, forKey: "isUserRegistered")
         
         // Navigate to the ViewController
-        let viewController = ViewController() // Replace ViewController with your default view controller's class name
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.overrideUserInterfaceStyle = .light
-        present(viewController, animated: true)
+        let vc = BasicDetails1()
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
     }
     
     func setupLogin() {

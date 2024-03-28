@@ -39,6 +39,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     let scrollSection = UIView()
     var horizontalScrollView : UIScrollView!
+    
+    // subViews in horizontal scroll
     let firstView = UIView()
     let secondView = UIView()
     let thirdView = UIView()
