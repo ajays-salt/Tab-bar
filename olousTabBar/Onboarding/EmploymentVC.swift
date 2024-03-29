@@ -14,8 +14,33 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
     
     var scrollView : UIScrollView!
     
+    
     var employmentStatusView : UIView!
     var selectedYesNoIndex: Int?
+    
+    var topBorderView : UIView! // for contentView
+    
+    var totalExperienceTextField : UITextField!
+    var jobTitleTextField : UITextField!
+    var cityTextField : UITextField!
+    var selectedCityOptionButton : UIButton?
+    
+    let startDatePicker: UIDatePicker = {
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "en_GB") // Set locale for correct date format
+        return datePicker
+    }()
+    let endDatePicker: UIDatePicker = {
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "en_GB") // Set locale for correct date format
+        return datePicker
+    }()
+    var squareButton: UIButton!
+    
+    var salaryTextField : UITextField!
+    var selectedNoticeOptionsButton : UIButton?
     
     var addEmploymentView : UIView!
     var bottomView : UIView!
@@ -264,7 +289,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
     
     func setupContentView() {
         let contentView = createContentView()
-        contentView.backgroundColor = UIColor(hex: "#EAECF0")
+//        contentView.backgroundColor = UIColor(hex: "#EAECF0")
         contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
         
@@ -274,6 +299,23 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
             contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             contentView.heightAnchor.constraint(equalToConstant: 400),
         ])
+        
+        
+        topBorderView = UIView()
+        topBorderView.isHidden = true
+        topBorderView.layer.borderWidth = 1
+        topBorderView.layer.cornerRadius = 8
+        topBorderView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set your desired border color
+        topBorderView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(topBorderView)
+        
+        NSLayoutConstraint.activate([
+            topBorderView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            topBorderView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            topBorderView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            topBorderView.heightAnchor.constraint(equalToConstant: 48) // Set your desired border thickness
+        ])
+        
         
         let expandButton = UIButton()
         expandButton.setImage(UIImage(systemName: "chevron.up"), for: .normal)
@@ -293,7 +335,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         contentView.addSubview(totalExperienceLabel)
         
         // Total Experience TextField
-        let totalExperienceTextField = UITextField()
+        totalExperienceTextField = UITextField()
         totalExperienceTextField.translatesAutoresizingMaskIntoConstraints = false
         totalExperienceTextField.borderStyle = .roundedRect
         totalExperienceTextField.placeholder = "Enter Total Experience"
@@ -330,7 +372,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         contentView.addSubview(jobTitleLabel)
         
         // Total Experience TextField
-        let jobTitleTextField = UITextField()
+        jobTitleTextField = UITextField()
         jobTitleTextField.translatesAutoresizingMaskIntoConstraints = false
         jobTitleTextField.borderStyle = .roundedRect
         jobTitleTextField.placeholder = "E.g. Civil Engineer"
@@ -348,12 +390,151 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         contentView.addSubview(cityLabel)
         
         // Total Experience TextField
-        let cityTextField = UITextField()
+        cityTextField = UITextField()
         cityTextField.translatesAutoresizingMaskIntoConstraints = false
         cityTextField.borderStyle = .roundedRect
         cityTextField.placeholder = "Mention the city you live in"
         cityTextField.delegate = self // Set delegate for this text field
         contentView.addSubview(cityTextField)
+        
+        
+        var suggestionsLabel = UILabel()
+        suggestionsLabel.text = "Suggestions :"
+        suggestionsLabel.font = .systemFont(ofSize: 16)
+        suggestionsLabel.textColor = UIColor(hex: "#667085")
+        suggestionsLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(suggestionsLabel)
+        
+        let cityOptions = ["Pune", "Mumbai", "Bangalore", "Gurugram", "Noida", "Delhi", "Hyderabad", "Kolkata"]
+        
+        let cityOptionsScrollView = UIScrollView()
+        cityOptionsScrollView.showsHorizontalScrollIndicator = false
+        cityOptionsScrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(cityOptionsScrollView)
+        
+        // Create and configure the stack view for options
+        let cityOptionsStackView = UIStackView()
+        cityOptionsStackView.axis = .horizontal
+        cityOptionsStackView.spacing = 12
+        cityOptionsStackView.translatesAutoresizingMaskIntoConstraints = false
+        cityOptionsScrollView.addSubview(cityOptionsStackView)
+        
+        // Add options buttons to the stack view
+        for option in cityOptions {
+            let optionButton = UIButton(type: .system)
+            optionButton.layer.borderWidth = 1
+            optionButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+            optionButton.layer.cornerRadius = 8
+            optionButton.setTitle("  \(option)  ", for: .normal)
+            optionButton.titleLabel?.font = .systemFont(ofSize: 18)
+            optionButton.setTitleColor(.black, for: .normal)
+            optionButton.addTarget(self, action: #selector(cityOptionButtonTapped(_:)), for: .touchUpInside)
+            optionButton.translatesAutoresizingMaskIntoConstraints = false
+            cityOptionsStackView.addArrangedSubview(optionButton)
+        }
+        
+        
+        let workingSinceLabel = UILabel()
+        workingSinceLabel.translatesAutoresizingMaskIntoConstraints = false
+        let attributedText5 = NSMutableAttributedString(string: "Working since")
+        let asterisk5 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText5.append(asterisk5)
+        workingSinceLabel.attributedText = attributedText5
+        workingSinceLabel.font = .boldSystemFont(ofSize: 16)
+        workingSinceLabel.textColor = UIColor(hex: "#344054")
+        contentView.addSubview(workingSinceLabel)
+        
+        startDatePicker.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(startDatePicker)
+       
+        let toLabel: UILabel = {
+            let label = UILabel()
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.text = "To"
+            label.font = .systemFont(ofSize: 18)
+            label.textColor = .black
+            return label
+        }()
+        contentView.addSubview(toLabel)
+        
+        endDatePicker.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(endDatePicker)
+        
+        startDatePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
+        endDatePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
+        
+        let presentLabel = UILabel()
+        presentLabel.text = "Present"
+        presentLabel.font = .systemFont(ofSize: 18)
+        presentLabel.textColor = UIColor(hex: "#667085")
+        presentLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(presentLabel)
+        
+        squareButton = UIButton()
+        squareButton.layer.borderWidth = 1
+        squareButton.layer.cornerRadius = 4
+        squareButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        squareButton.translatesAutoresizingMaskIntoConstraints = false
+        squareButton.addTarget(self, action: #selector(presentButtonTapped), for: .touchUpInside)
+        contentView.addSubview(squareButton)
+        
+        
+        let salaryLabel = UILabel()
+        let attributedText6 = NSMutableAttributedString(string: "Total experience (years)")
+        let asterisk6 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText6.append(asterisk6)
+        salaryLabel.attributedText = attributedText6
+        salaryLabel.font = .boldSystemFont(ofSize: 16)
+        salaryLabel.textColor = UIColor(hex: "#344054")
+        salaryLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(salaryLabel)
+        
+        // Total Experience TextField
+        salaryTextField = UITextField()
+        salaryTextField.borderStyle = .roundedRect
+        salaryTextField.placeholder = "Enter Total Experience"
+        salaryTextField.keyboardType = .decimalPad // Numeric keypad
+        salaryTextField.delegate = self // Set delegate for this text field
+        salaryTextField.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(salaryTextField)
+        
+        let noticePeriodLabel = UILabel()
+        let attributedText7 = NSMutableAttributedString(string: "Notice Period")
+        let asterisk7 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText7.append(asterisk7)
+        noticePeriodLabel.attributedText = attributedText7
+        noticePeriodLabel.font = .boldSystemFont(ofSize: 16)
+        noticePeriodLabel.textColor = UIColor(hex: "#344054")
+        noticePeriodLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(noticePeriodLabel)
+        
+        let noticePeriodOptions = ["Immediate", "0-15 days", "1 Month", "2 Months", "3 Months", "More than 3 Months", ]
+        
+        let noticeOptionsScrollView = UIScrollView()
+        noticeOptionsScrollView.showsHorizontalScrollIndicator = false
+        noticeOptionsScrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(noticeOptionsScrollView)
+        
+        // Create and configure the stack view for options
+        let noticeOptionsStackView = UIStackView()
+        noticeOptionsStackView.axis = .horizontal
+        noticeOptionsStackView.spacing = 12
+        noticeOptionsStackView.translatesAutoresizingMaskIntoConstraints = false
+        noticeOptionsScrollView.addSubview(noticeOptionsStackView)
+        
+        // Add options buttons to the stack view
+        for option in noticePeriodOptions {
+            let optionButton = UIButton(type: .system)
+            optionButton.layer.borderWidth = 1
+            optionButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+            optionButton.layer.cornerRadius = 8
+            optionButton.setTitle("  \(option)  ", for: .normal)
+            optionButton.titleLabel?.font = .systemFont(ofSize: 18)
+            optionButton.setTitleColor(.black, for: .normal)
+            optionButton.addTarget(self, action: #selector(noticeOptionButtonTapped(_:)), for: .touchUpInside)
+            optionButton.translatesAutoresizingMaskIntoConstraints = false
+            noticeOptionsStackView.addArrangedSubview(optionButton)
+        }
         
         NSLayoutConstraint.activate([
             expandButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
@@ -361,10 +542,10 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
             expandButton.widthAnchor.constraint(equalToConstant: 30),
             expandButton.heightAnchor.constraint(equalToConstant: 30),
             
-            totalExperienceLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            totalExperienceLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14),
             totalExperienceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            totalExperienceTextField.topAnchor.constraint(equalTo: totalExperienceLabel.bottomAnchor, constant: 10),
+            totalExperienceTextField.topAnchor.constraint(equalTo: totalExperienceLabel.bottomAnchor, constant: 13),
             totalExperienceTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             totalExperienceTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             totalExperienceTextField.heightAnchor.constraint(equalToConstant: 50),
@@ -392,9 +573,65 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
             cityTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             cityTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             cityTextField.heightAnchor.constraint(equalToConstant: 50),
+            
+            suggestionsLabel.topAnchor.constraint(equalTo: cityTextField.bottomAnchor, constant: 10),
+            suggestionsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            cityOptionsScrollView.topAnchor.constraint(equalTo: suggestionsLabel.bottomAnchor, constant: 10),
+            cityOptionsScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            cityOptionsScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            cityOptionsScrollView.heightAnchor.constraint(equalToConstant: 40),
+            cityOptionsStackView.topAnchor.constraint(equalTo: cityOptionsScrollView.topAnchor),
+            cityOptionsStackView.leadingAnchor.constraint(equalTo: cityOptionsScrollView.leadingAnchor),
+            cityOptionsStackView.trailingAnchor.constraint(equalTo: cityOptionsScrollView.trailingAnchor),
+            cityOptionsStackView.heightAnchor.constraint(equalToConstant: 40),
+            
+            workingSinceLabel.topAnchor.constraint(equalTo: cityOptionsScrollView.bottomAnchor, constant: 20),
+            workingSinceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            startDatePicker.topAnchor.constraint(equalTo: workingSinceLabel.bottomAnchor, constant: 6),
+            startDatePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            startDatePicker.widthAnchor.constraint(equalToConstant: 120),
+            startDatePicker.heightAnchor.constraint(equalToConstant: 60),
+
+            toLabel.centerYAnchor.constraint(equalTo: startDatePicker.centerYAnchor),
+            toLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            toLabel.widthAnchor.constraint(equalToConstant: 30),
+            
+            endDatePicker.topAnchor.constraint(equalTo: workingSinceLabel.bottomAnchor, constant: 6),
+            endDatePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            endDatePicker.widthAnchor.constraint(equalToConstant: 120),
+            endDatePicker.heightAnchor.constraint(equalToConstant: 60),
+            
+            presentLabel.topAnchor.constraint(equalTo: endDatePicker.bottomAnchor, constant: 10),
+            presentLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -45),
+            
+            squareButton.topAnchor.constraint(equalTo: endDatePicker.bottomAnchor, constant: 10),
+            squareButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            squareButton.widthAnchor.constraint(equalToConstant: 20),
+            squareButton.heightAnchor.constraint(equalToConstant: 20),
+
+            salaryLabel.topAnchor.constraint(equalTo: squareButton.bottomAnchor, constant: 20),
+            salaryLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            salaryTextField.topAnchor.constraint(equalTo: salaryLabel.bottomAnchor, constant: 10),
+            salaryTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            salaryTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            salaryTextField.heightAnchor.constraint(equalToConstant: 50),
+            
+            noticePeriodLabel.topAnchor.constraint(equalTo: salaryTextField.bottomAnchor, constant: 20),
+            noticePeriodLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            noticeOptionsScrollView.topAnchor.constraint(equalTo: noticePeriodLabel.bottomAnchor, constant: 10),
+            noticeOptionsScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            noticeOptionsScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            noticeOptionsScrollView.heightAnchor.constraint(equalToConstant: 40),
+            noticeOptionsStackView.topAnchor.constraint(equalTo: noticeOptionsScrollView.topAnchor),
+            noticeOptionsStackView.leadingAnchor.constraint(equalTo: noticeOptionsScrollView.leadingAnchor),
+            noticeOptionsStackView.trailingAnchor.constraint(equalTo: noticeOptionsScrollView.trailingAnchor),
+            noticeOptionsStackView.heightAnchor.constraint(equalToConstant: 40),
         ])
     }
-    
     @objc func didTapExpandButton(_ sender : UIButton) {
         if sender.image(for: .normal) == UIImage(systemName: "chevron.down") {
             sender.setImage(UIImage(systemName: "chevron.up"), for: .normal)
@@ -405,11 +642,19 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         guard let superview = sender.superview else { return }
         
         // Toggle the superview height
-        let newHeight: CGFloat = superview.frame.height == 50 ? 400 : 50
+        let newHeight: CGFloat = superview.frame.height == 48 ? 400 : 48
         superview.constraints.forEach { constraint in
             if constraint.firstAttribute == .height {
                 constraint.constant = newHeight
             }
+        }
+        if newHeight == 48 {
+            topBorderView.isHidden = false
+            superview.sendSubviewToBack(totalExperienceTextField)
+        }
+        else {
+            topBorderView.isHidden = true
+            superview.bringSubviewToFront(totalExperienceTextField)
         }
         
         // Animate the change
@@ -417,6 +662,48 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
             self.view.layoutIfNeeded()
         }
     }
+    @objc func cityOptionButtonTapped(_ sender: UIButton) {
+        // Deselect previous selected button
+        selectedCityOptionButton?.backgroundColor = nil
+
+        // Highlight the selected button
+        sender.backgroundColor = UIColor(hex: "#EAECF0")
+        selectedCityOptionButton = sender
+        
+        // Assign the text of the selected option to the textField
+        guard let title = sender.currentTitle?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        cityTextField.text = title
+    }
+    @objc func datePickerValueChanged() {
+        print(#function)
+    }
+    
+    var togglePresent : Bool = false
+    @objc func presentButtonTapped() {
+        print(#function)
+        
+        if togglePresent == false {
+            // set cgheckmark image in squareBox to show it is selected
+            endDatePicker.isHidden = true
+            togglePresent = true
+            squareButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+        }
+        else {
+            endDatePicker.isHidden = false
+            togglePresent = false
+            squareButton.setImage(UIImage(systemName: ""), for: .normal)
+        }
+            
+        
+    }
+    
+    @objc func noticeOptionButtonTapped(_ sender: UIButton) {
+        selectedNoticeOptionsButton?.backgroundColor = nil
+        sender.backgroundColor = UIColor(hex: "#EAECF0")
+        selectedNoticeOptionsButton = sender
+    }
+    
+    
     
     func createContentView() -> UIScrollView {
         let contentView = UIScrollView()
@@ -431,7 +718,6 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         
         return contentView
     }
-    
     
     func setupAddEmployment() {
         
