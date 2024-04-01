@@ -154,7 +154,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         
         
         let titleLabel = UILabel()
-        titleLabel.text = "Resume Headline"
+        titleLabel.text = "Employment"
         titleLabel.font = .boldSystemFont(ofSize: 24)
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -810,8 +810,8 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
     
     @objc func didTapNextButton() {
         print(#function)
-//        let vc = EmploymentVC()
-//        navigationController?.pushViewController(vc, animated: true)
+        let vc = ProjectsVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     
