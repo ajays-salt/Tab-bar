@@ -193,12 +193,10 @@ class ProjectsVC: UIViewController {
     }
     
     @objc func didTapBackButton() {
-        print(#function)
         navigationController?.popViewController(animated: true)
     }
     
     @objc func didTapNextButton() {
-        print(#function)
         let vc = QualificationsVC()
         navigationController?.pushViewController(vc, animated: true)
     }

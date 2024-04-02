@@ -42,7 +42,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     var startButton : UIButton!
     let startYearPlaceholder : UILabel = {
         let label = UILabel()
-        label.text = "Start Year"
+        label.text = "Select Year"
         label.textColor = UIColor(hex: "#667085")
         label.font = .systemFont(ofSize: 16)
         return label
@@ -53,6 +53,22 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         tableView.isHidden = true
         return tableView
     }()
+    
+    var passingButton : UIButton!
+    let passYearPlaceholder : UILabel = {
+        let label = UILabel()
+        label.text = "Select Year"
+        label.textColor = UIColor(hex: "#667085")
+        label.font = .systemFont(ofSize: 16)
+        return label
+    }()
+    var passArray = ["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"]
+    var passTableView : UITableView = {
+        let tableView = UITableView()
+        tableView.isHidden = true
+        return tableView
+    }()
+    
     
     var bottomView : UIView!
 
@@ -70,6 +86,9 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         
         startTableView.delegate = self
         startTableView.dataSource = self
+        
+        passTableView.delegate = self
+        passTableView.dataSource = self
         
         setupViews()
     }
@@ -444,6 +463,9 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     func filterCollege(with searchText: String) {
         filteredCollegeArray = collegeArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
         collegeTableView.isHidden = filteredCollegeArray.isEmpty
+        if collegeTableView.isHidden == false {
+            scrollView.bringSubviewToFront(collegeTableView)
+        }
         if(filteredCollegeArray.count == collegeArray.count) {
             filteredCollegeArray.removeAll()
             collegeTableView.isHidden = true
@@ -532,8 +554,50 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         startButton.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(startButton)
         
+        startTableView.layer.borderWidth = 1
+        startTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
         startTableView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(startTableView)
+        
+        // passing year UI
+        let passYearLabel : UILabel = {
+            let label = UILabel()
+            let attributedText1 = NSMutableAttributedString(string: "Passing year")
+            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+            attributedText1.append(asterisk1)
+            label.attributedText = attributedText1
+            label.font = .boldSystemFont(ofSize: 16)
+            label.textColor = UIColor(hex: "#344054")
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        scrollView.addSubview(passYearLabel)
+        
+        let container2 = UIView()
+        container2.translatesAutoresizingMaskIntoConstraints = false
+        container2.layer.borderWidth = 1 // Add border to the container
+        container2.layer.cornerRadius = 5 // Add corner radius for rounded corners
+        container2.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set border color
+        scrollView.addSubview(container2)
+        
+        passYearPlaceholder.translatesAutoresizingMaskIntoConstraints = false
+        container2.addSubview(passYearPlaceholder)
+        
+        passingButton = UIButton(type: .system)
+        passingButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        passingButton.tintColor = UIColor(hex: "#667085")
+        passingButton.addTarget(self, action: #selector(passDropdownButtonTapped), for: .touchUpInside)
+        
+        passingButton.translatesAutoresizingMaskIntoConstraints = false
+        container2.addSubview(passingButton)
+        
+        passTableView.layer.borderWidth = 1
+        passTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        passTableView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(passTableView)
+        
+        
+        let width = (view.frame.width - 52) / 2
         
         NSLayoutConstraint.activate([
             startYearLabel.topAnchor.constraint(equalTo: courseTypeStackView.bottomAnchor, constant: 20),
@@ -541,7 +605,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             
             container.topAnchor.constraint(equalTo: startYearLabel.bottomAnchor, constant: 10),
             container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            container.widthAnchor.constraint(equalToConstant: 150),
+            container.widthAnchor.constraint(equalToConstant: width),
             container.heightAnchor.constraint(equalToConstant: 50),
             
             startYearPlaceholder.centerYAnchor.constraint(equalTo: container.centerYAnchor),
@@ -552,8 +616,27 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             
             startTableView.topAnchor.constraint(equalTo: container.bottomAnchor),
             startTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            startTableView.widthAnchor.constraint(equalToConstant: 150),
+            startTableView.widthAnchor.constraint(equalToConstant: width),
             startTableView.heightAnchor.constraint(equalToConstant: 100),
+            
+            passYearLabel.topAnchor.constraint(equalTo: courseTypeStackView.bottomAnchor, constant: 20),
+            passYearLabel.leadingAnchor.constraint(equalTo: container.trailingAnchor, constant: 20),
+            
+            container2.topAnchor.constraint(equalTo: passYearLabel.bottomAnchor, constant: 10),
+            container2.leadingAnchor.constraint(equalTo: container.trailingAnchor, constant: 20),
+            container2.widthAnchor.constraint(equalToConstant: width),
+            container2.heightAnchor.constraint(equalToConstant: 50),
+            
+            passYearPlaceholder.centerYAnchor.constraint(equalTo: container2.centerYAnchor),
+            passYearPlaceholder.leadingAnchor.constraint(equalTo: container2.leadingAnchor, constant: 10),
+            
+            passingButton.centerYAnchor.constraint(equalTo: container2.centerYAnchor),
+            passingButton.trailingAnchor.constraint(equalTo: container2.trailingAnchor, constant: -10),
+            
+            passTableView.topAnchor.constraint(equalTo: container2.bottomAnchor),
+            passTableView.leadingAnchor.constraint(equalTo: container2.leadingAnchor),
+            passTableView.widthAnchor.constraint(equalToConstant: width),
+            passTableView.heightAnchor.constraint(equalToConstant: 100),
         ])
     }
     
@@ -585,6 +668,21 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         }
         
     }
+    
+    @objc func passDropdownButtonTapped(_ sender : UIButton) {
+        print(#function)
+        if sender.imageView?.image == UIImage(systemName: "chevron.down") {
+            sender.setImage(UIImage(systemName: "chevron.up"), for: .normal)
+            passTableView.isHidden = false
+            scrollView.bringSubviewToFront(passTableView)
+        }
+        else {
+            sender.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            passTableView.isHidden = true
+        }
+        
+    }
+
     
     
     
@@ -644,15 +742,25 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         ])
     }
     
+    
+    
     @objc func didTapBackButton() {
-        print(#function)
         navigationController?.popViewController(animated: true)
     }
     
     @objc func didTapNextButton() {
-        print(#function)
-//        let vc = QualificationsVC()
-//        navigationController?.pushViewController(vc, animated: true)
+        let vc = SkillsVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
     }
 }
 
@@ -663,6 +771,9 @@ extension QualificationsVC : UITableViewDelegate, UITableViewDataSource {
         }
         else if tableView == startTableView {
             return startArray.count
+        }
+        else if tableView == passTableView {
+            return passArray.count
         }
         else {
             return filteredCollegeArray.count
@@ -676,6 +787,9 @@ extension QualificationsVC : UITableViewDelegate, UITableViewDataSource {
         }
         else if tableView == startTableView {
             cell.textLabel?.text = startArray[indexPath.row]
+        }
+        else if tableView == passTableView {
+            cell.textLabel?.text = passArray[indexPath.row]
         }
         else {
             cell.textLabel?.text = filteredCollegeArray[indexPath.row]
@@ -695,7 +809,16 @@ extension QualificationsVC : UITableViewDelegate, UITableViewDataSource {
             collegeTableView.isHidden = true
         }
         if tableView == startTableView {
-            
+            startYearPlaceholder.text = startArray[indexPath.row]
+            startYearPlaceholder.textColor = UIColor.black
+            startButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            startTableView.isHidden = true
+        }
+        if tableView == passTableView {
+            passYearPlaceholder.text = passArray[indexPath.row]
+            passYearPlaceholder.textColor = UIColor.black
+            passingButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            passTableView.isHidden = true
         }
     }
     

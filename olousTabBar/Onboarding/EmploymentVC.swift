@@ -786,7 +786,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         
         
         NSLayoutConstraint.activate([
-            bottomView.topAnchor.constraint(equalTo: addEmploymentView.bottomAnchor),
+            bottomView.topAnchor.constraint(equalTo: addEmploymentView.bottomAnchor, constant: 5),
             bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomView.heightAnchor.constraint(equalToConstant: 100),

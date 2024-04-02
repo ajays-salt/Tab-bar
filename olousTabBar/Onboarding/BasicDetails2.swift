@@ -168,7 +168,7 @@ class BasicDetails2: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -105),
         ])
         
         let extraSpaceHeight: CGFloat = 50
@@ -456,7 +456,7 @@ class BasicDetails2: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         
         
         NSLayoutConstraint.activate([
-            bottomView.topAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            bottomView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0),
             bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomView.heightAnchor.constraint(equalToConstant: 100),
@@ -486,12 +486,12 @@ class BasicDetails2: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     
     
     func textViewDidChange(_ textView: UITextView) {
-        if textView.text.count > 30 {
-            let index = textView.text.index(textView.text.startIndex, offsetBy: 30)
+        if textView.text.count > 300 {
+            let index = textView.text.index(textView.text.startIndex, offsetBy: 300)
             textView.text = String(textView.text.prefix(upTo: index))
         }
         else {
-            let remainingCharacters = 30 - textView.text.count
+            let remainingCharacters = 300 - textView.text.count
             charactersLeftLabel.text = "\(remainingCharacters) characters left"
         }
     }
