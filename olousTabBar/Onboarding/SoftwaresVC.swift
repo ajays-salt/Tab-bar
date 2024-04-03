@@ -1,32 +1,32 @@
 //
-//  SkillsVC.swift
+//  SoftwaresVC.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 02/04/24.
+//  Created by Salt Technologies on 03/04/24.
 //
 
 import UIKit
 
-class SkillsVC: UIViewController, UITextFieldDelegate {
-
+class SoftwaresVC: UIViewController, UITextFieldDelegate {
+    
     var headerView : UIView!
     var circleContainerView : UIView!
     
     var scrollView : UIScrollView!
     
-    let skillsTextField = UITextField()
-    var skillsArray = ["Java", "C", "C++", "C#", "Swift", "Tekla", "iOS", "UIKit", "Programming", "C-Sharp", "Programming2", "Programming3"]
-    var filteredSkillsArray : [String] = []
-    let skillsTableView: UITableView = {
+    let softwareTextField = UITextField()
+    var softwareArray = ["Java", "C", "C++", "C#", "Programming", "Tekla Structures", "Bentley Systems", "Navisworks", "Infraworks", "Open Building Designer", "Vectorworks landmark"]
+    var filteredSoftwareArray : [String] = []
+    let softwareTableView: UITableView = {
         let tableView = UITableView()
         tableView.isHidden = true
         return tableView
     }()
     
-    var addedSkillsView : UIView!
-    var addedSkillsArray : [String] = []
-    var addedSkillsHashSet = Set<String>()
-    var addedSkillsViewHeightConstraint: NSLayoutConstraint!
+    var addedSoftwareView : UIView!
+    var addedSoftwareArray : [String] = []
+    var addedSoftwareHashSet = Set<String>()
+    var addedSoftwareViewHeightConstraint: NSLayoutConstraint!
     
     let suggestionsLabel : UILabel = {
         let label = UILabel()
@@ -35,22 +35,23 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         label.textColor = UIColor(hex: "#667085")
         return label
     }()
-    var suggestedSkillsView : UIView!
-    var suggestedSkillsArray = ["Dancing", "Singing", "Swimming", "Cooking", "Painting", "Tekla", "iOS", "UIKit", "Programming", "C-Sharp"]
-    var suggestedSkillsViewHeightConstraint: NSLayoutConstraint!
+    var suggestedSoftwareView : UIView!
+    var suggestedSoftwareArray = ["Dancing", "Singing", "Swimming", "Cooking", "Painting", "Tekla Structures", "Bentley Systems", "Navisworks", "Infraworks", "Open Building Designer"]
+    var suggestedSoftwareViewHeightConstraint: NSLayoutConstraint!
     
     var bottomView : UIView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        skillsTextField.delegate = self
-        skillsTableView.delegate = self
-        skillsTableView.dataSource = self
+        softwareTextField.delegate = self
+        softwareTableView.delegate = self
+        softwareTableView.dataSource = self
         
         setupViews()
+        
     }
     
     func setupViews() {
@@ -58,10 +59,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         setupScrollView()
         
         setupUI()
-        setupAddedSkillsView()
-        setupSuggestedSkillsView()
-        
-        setupAddLanguage()
+        setupAddedSoftwareView()
+        setupSuggestedSoftwareView()
         
         setupBottomView()
     }
@@ -98,7 +97,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "6/7"
+        profileCircleLabel.text = "7/7"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -113,7 +112,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 6 / 7
+        let percentage: CGFloat = 7 / 7
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -155,7 +154,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         
         
         let titleLabel = UILabel()
-        titleLabel.text = "Skills"
+        titleLabel.text = "Software"
         titleLabel.font = .boldSystemFont(ofSize: 24)
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -204,7 +203,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     func setupUI() {
         let titleLabel : UILabel =  {
             let label = UILabel()
-            label.text = "SKILLS"
+            label.text = "SOFTWARE"
             label.font = .boldSystemFont(ofSize: 20)
             label.textColor = UIColor(hex: "#101828")
             label.translatesAutoresizingMaskIntoConstraints = false
@@ -214,7 +213,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         
         let skillsLabel : UILabel = {
             let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Skills")
+            let attributedText1 = NSMutableAttributedString(string: "Softwares")
             let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
             attributedText1.append(asterisk1)
             label.attributedText = attributedText1
@@ -225,19 +224,19 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         }()
         scrollView.addSubview(skillsLabel)
         
-        skillsTextField.placeholder = "Add skills"
-        skillsTextField.borderStyle = .roundedRect
-        skillsTextField.layer.borderWidth = 1
-        skillsTextField.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        skillsTextField.layer.cornerRadius = 8
-        skillsTextField.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(skillsTextField)
+        softwareTextField.placeholder = "Add softwares"
+        softwareTextField.borderStyle = .roundedRect
+        softwareTextField.layer.borderWidth = 1
+        softwareTextField.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        softwareTextField.layer.cornerRadius = 8
+        softwareTextField.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(softwareTextField)
         
-        skillsTableView.layer.borderWidth = 1
-        skillsTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        skillsTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(skillsTableView)
-        scrollView.bringSubviewToFront(skillsTableView)
+        softwareTableView.layer.borderWidth = 1
+        softwareTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        softwareTableView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(softwareTableView)
+        scrollView.bringSubviewToFront(softwareTableView)
         
         
         NSLayoutConstraint.activate([
@@ -247,32 +246,32 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             skillsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
             skillsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            skillsTextField.topAnchor.constraint(equalTo: skillsLabel.bottomAnchor, constant: 10),
-            skillsTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            skillsTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            skillsTextField.heightAnchor.constraint(equalToConstant: 50),
+            softwareTextField.topAnchor.constraint(equalTo: skillsLabel.bottomAnchor, constant: 10),
+            softwareTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            softwareTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            softwareTextField.heightAnchor.constraint(equalToConstant: 50),
             
-            skillsTableView.topAnchor.constraint(equalTo: skillsTextField.bottomAnchor, constant: 10),
-            skillsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            skillsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            skillsTableView.heightAnchor.constraint(equalToConstant: 150),
+            softwareTableView.topAnchor.constraint(equalTo: softwareTextField.bottomAnchor, constant: 10),
+            softwareTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            softwareTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            softwareTableView.heightAnchor.constraint(equalToConstant: 150),
         ])
     }
     
-    func setupAddedSkillsView() {
-        addedSkillsView = UIView()
-        addedSkillsView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(addedSkillsView)
+    func setupAddedSoftwareView() {
+        addedSoftwareView = UIView()
+        addedSoftwareView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(addedSoftwareView)
         NSLayoutConstraint.activate([
-            addedSkillsView.topAnchor.constraint(equalTo: skillsTextField.bottomAnchor, constant: 20),
-            addedSkillsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addedSkillsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addedSoftwareView.topAnchor.constraint(equalTo: softwareTextField.bottomAnchor, constant: 20),
+            addedSoftwareView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            addedSoftwareView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
-        addedSkillsViewHeightConstraint = addedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
-        addedSkillsViewHeightConstraint.isActive = true
+        addedSoftwareViewHeightConstraint = addedSoftwareView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        addedSoftwareViewHeightConstraint.isActive = true
     }
     
-    func addAllSkills() {
+    func addAllSoftwares() {
         var currentLine = 0
         var currentXPosition: CGFloat = 0
         let buttonHeight: CGFloat = 30
@@ -280,7 +279,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         let containerViewWidth = UIScreen.main.bounds.width - 32
         var containerViewHeight: CGFloat = 0  // Variable to track the containerView's height
 
-        for option in addedSkillsArray {
+        for option in addedSoftwareArray {
             let optionButton = createButton(withTitle: option)
             // optionButton.addTarget(self, action: #selector(noticeOptionButtonTapped(_:)), for: .touchUpInside)
             
@@ -296,10 +295,10 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             }
             
             optionButton.translatesAutoresizingMaskIntoConstraints = false
-            addedSkillsView.addSubview(optionButton)
+            addedSoftwareView.addSubview(optionButton)
             NSLayoutConstraint.activate([
-                optionButton.topAnchor.constraint(equalTo: addedSkillsView.topAnchor, constant: CGFloat(currentLine) * (buttonHeight + buttonSpacing)),
-                optionButton.leadingAnchor.constraint(equalTo: addedSkillsView.leadingAnchor, constant: currentXPosition),
+                optionButton.topAnchor.constraint(equalTo: addedSoftwareView.topAnchor, constant: CGFloat(currentLine) * (buttonHeight + buttonSpacing)),
+                optionButton.leadingAnchor.constraint(equalTo: addedSoftwareView.leadingAnchor, constant: currentXPosition),
                 optionButton.heightAnchor.constraint(equalToConstant: buttonHeight)
                 
             ])
@@ -307,8 +306,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             // Update current X position
             currentXPosition += buttonWidth + buttonSpacing
         }
-        addedSkillsViewHeightConstraint.constant = containerViewHeight + 30
-        addedSkillsView.layoutIfNeeded()
+        addedSoftwareViewHeightConstraint.constant = containerViewHeight + 30
+        addedSoftwareView.layoutIfNeeded()
     }
     
     private func createButton(withTitle title: String) -> UIButton {
@@ -340,30 +339,30 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         return optionButton
     }
     
-    func setupSuggestedSkillsView() {
+    func setupSuggestedSoftwareView() {
         suggestionsLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(suggestionsLabel)
         
-        suggestedSkillsView = UIView()
-        suggestedSkillsView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(suggestedSkillsView)
+        suggestedSoftwareView = UIView()
+        suggestedSoftwareView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(suggestedSoftwareView)
         
         NSLayoutConstraint.activate([
-            suggestionsLabel.topAnchor.constraint(equalTo:addedSkillsView.bottomAnchor, constant: 20),
+            suggestionsLabel.topAnchor.constraint(equalTo:addedSoftwareView.bottomAnchor, constant: 20),
             suggestionsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            suggestedSkillsView.topAnchor.constraint(equalTo: suggestionsLabel.bottomAnchor, constant: 10),
-            suggestedSkillsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            suggestedSkillsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            suggestedSoftwareView.topAnchor.constraint(equalTo: suggestionsLabel.bottomAnchor, constant: 10),
+            suggestedSoftwareView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            suggestedSoftwareView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
         
-        suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 50) // Initial height set to 10
-        suggestedSkillsViewHeightConstraint.isActive = true
+        suggestedSoftwareViewHeightConstraint = suggestedSoftwareView.heightAnchor.constraint(equalToConstant: 50) // Initial height set to 10
+        suggestedSoftwareViewHeightConstraint.isActive = true
         
-        addSuggestedSkills()
+        addSuggestedSoftware()
     }
     
-    func addSuggestedSkills() {
+    func addSuggestedSoftware() {
         var currentLine = 0
         var currentXPosition: CGFloat = 0
         let buttonHeight: CGFloat = 30
@@ -371,14 +370,14 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         let containerViewWidth = UIScreen.main.bounds.width - 32
         var containerViewHeight: CGFloat = 0  // Variable to track the containerView's height
         var i = 0
-        for option in suggestedSkillsArray {
+        for option in suggestedSoftwareArray {
             let optionButton = createButton(withTitle: option)
             
-            if !addedSkillsHashSet.contains(option) { // only change color if buttons not already added in skillSet
+            if !addedSoftwareHashSet.contains(option) { // only change color if buttons not already added in skillSet
                 optionButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
                 optionButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
             }
-            optionButton.addTarget(self, action: #selector(suggestedSkillsButtonTapped(_:)), for: .touchUpInside)
+            optionButton.addTarget(self, action: #selector(suggestedSoftwareButtonTapped(_:)), for: .touchUpInside)
             
             let buttonWidth = optionButton.intrinsicContentSize.width
             // Check if adding this button exceeds the width of the containerView
@@ -392,10 +391,10 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             }
             
             optionButton.translatesAutoresizingMaskIntoConstraints = false
-            suggestedSkillsView.addSubview(optionButton)
+            suggestedSoftwareView.addSubview(optionButton)
             NSLayoutConstraint.activate([
-                optionButton.topAnchor.constraint(equalTo: suggestedSkillsView.topAnchor, constant: CGFloat(currentLine) * (buttonHeight + buttonSpacing)),
-                optionButton.leadingAnchor.constraint(equalTo: suggestedSkillsView.leadingAnchor, constant: currentXPosition),
+                optionButton.topAnchor.constraint(equalTo: suggestedSoftwareView.topAnchor, constant: CGFloat(currentLine) * (buttonHeight + buttonSpacing)),
+                optionButton.leadingAnchor.constraint(equalTo: suggestedSoftwareView.leadingAnchor, constant: currentXPosition),
                 optionButton.heightAnchor.constraint(equalToConstant: buttonHeight)
             ])
 
@@ -404,17 +403,19 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             optionButton.tag = i;
             i = i + 1
         }
-        suggestedSkillsViewHeightConstraint.constant = containerViewHeight + 30
-        suggestedSkillsView.layoutIfNeeded()
+        suggestedSoftwareViewHeightConstraint.constant = containerViewHeight + 30
+        suggestedSoftwareView.layoutIfNeeded()
     }
     
-    @objc func suggestedSkillsButtonTapped(_ sender : UIButton) {
+    @objc func suggestedSoftwareButtonTapped(_ sender : UIButton) {
         
-        let title = suggestedSkillsArray[sender.tag]
-        if !addedSkillsHashSet.contains(title) {
-            addedSkillsArray.append(title)
-            addedSkillsHashSet.insert(title)
-            addAllSkills()
+        let title = suggestedSoftwareArray[sender.tag]
+        if !addedSoftwareHashSet.contains(title) {
+            
+            addedSoftwareArray.append(title)
+            addedSoftwareHashSet.insert(title)
+            
+            addAllSoftwares()
             
             sender.layer.borderColor = UIColor(hex: "#0079C4").cgColor
             sender.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
@@ -423,7 +424,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
 
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField == skillsTextField {
+        if textField == softwareTextField {
             let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
             filterSkills(with: searchText)
         }
@@ -431,46 +432,24 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         return true
     }
     func filterSkills(with searchText: String) {
-        filteredSkillsArray = skillsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
+        filteredSoftwareArray = softwareArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
         
         // If there are no matching skills, add a special row to prompt the user to add the skill
-        if filteredSkillsArray.isEmpty && !searchText.isEmpty {
-            filteredSkillsArray.append("\(searchText)")
+        if filteredSoftwareArray.isEmpty && !searchText.isEmpty {
+            filteredSoftwareArray.append("\(searchText)")
         }
         
         // Show or hide the table view based on the filtered skills count
-        skillsTableView.isHidden = filteredSkillsArray.isEmpty
+        softwareTableView.isHidden = filteredSoftwareArray.isEmpty
         
-        if !skillsTableView.isHidden {
-            scrollView.bringSubviewToFront(skillsTableView)
+        if !softwareTableView.isHidden {
+            scrollView.bringSubviewToFront(softwareTableView)
         }
         
-        skillsTableView.reloadData()
+        softwareTableView.reloadData()
     }
     
     
-    func setupAddLanguage() {
-        print(view.frame.width)
-        let addLanguageView = AddLanguageView()
-        addLanguageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Add AddLanguageView to the view controller's view
-        scrollView.addSubview(addLanguageView)
-        
-        // Add constraints for AddLanguageView
-        NSLayoutConstraint.activate([
-            addLanguageView.topAnchor.constraint(equalTo: suggestedSkillsView.bottomAnchor, constant: 20),
-            addLanguageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addLanguageView.widthAnchor.constraint(equalToConstant: view.frame.width - 32), // Adjust width as needed
-            addLanguageView.heightAnchor.constraint(equalToConstant: 120),   // Adjust height as needed
-        ])
-        
-        addLanguageView.selectLanguageButton.addTarget(self, action: #selector(selectLanguageButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc func selectLanguageButtonTapped() {
-        print(#function)
-    }
     
     
     func setupBottomView() {
@@ -531,8 +510,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-        let vc = SoftwaresVC()
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = SkillsVC()
+//        navigationController?.pushViewController(vc, animated: true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -544,34 +523,35 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
+
 }
 
-extension SkillsVC : UITableViewDelegate, UITableViewDataSource {
+extension SoftwaresVC : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        filteredSkillsArray.count
+        filteredSoftwareArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        cell.textLabel?.text = filteredSkillsArray[indexPath.row]
+        cell.textLabel?.text = filteredSoftwareArray[indexPath.row]
         cell.selectionStyle = .none
-        if addedSkillsHashSet.contains(filteredSkillsArray[indexPath.row]) {
+        if addedSoftwareHashSet.contains(filteredSoftwareArray[indexPath.row]) {
             cell.backgroundColor = UIColor(hex: "#EAECF0")
         }
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if addedSkillsHashSet.contains(filteredSkillsArray[indexPath.row]) == false {
+        if addedSoftwareHashSet.contains(filteredSoftwareArray[indexPath.row]) == false {
             
-            addedSkillsArray.append(filteredSkillsArray[indexPath.row])
-            addedSkillsHashSet.insert(filteredSkillsArray[indexPath.row])
+            addedSoftwareArray.append(filteredSoftwareArray[indexPath.row])
+            addedSoftwareHashSet.insert(filteredSoftwareArray[indexPath.row])
             
-            addAllSkills()
-            addSuggestedSkills()
+            addAllSoftwares()
+            addSuggestedSoftware()
             
-            skillsTextField.text = nil
-            skillsTableView.isHidden = true
+            softwareTextField.text = nil
+            softwareTableView.isHidden = true
         }
     }
 }

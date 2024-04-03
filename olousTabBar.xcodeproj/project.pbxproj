@@ -33,6 +33,8 @@
 		FAC3A1532B919F3F00E17AFD /* MyJobsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */; };
 		FAC3A1552B919F5400E17AFD /* InboxController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1542B919F5400E17AFD /* InboxController.swift */; };
 		FAC3A1572B919F6400E17AFD /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1562B919F6400E17AFD /* ProfileController.swift */; };
+		FAC972412BBD2C630026C32D /* SoftwaresVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC972402BBD2C620026C32D /* SoftwaresVC.swift */; };
+		FAC972432BBD55380026C32D /* AddLanguageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC972422BBD55380026C32D /* AddLanguageView.swift */; };
 		FACCE4D52BB285C500DAD5D2 /* RegistrationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACCE4D42BB285C500DAD5D2 /* RegistrationVC.swift */; };
 		FACCE4D72BB2CAA700DAD5D2 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACCE4D62BB2CAA700DAD5D2 /* LoginVC.swift */; };
 		FACCE4D92BB2D80B00DAD5D2 /* ForgotPassword1.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACCE4D82BB2D80B00DAD5D2 /* ForgotPassword1.swift */; };
@@ -71,6 +73,8 @@
 		FAC3A1522B919F3F00E17AFD /* MyJobsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyJobsController.swift; sourceTree = "<group>"; };
 		FAC3A1542B919F5400E17AFD /* InboxController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxController.swift; sourceTree = "<group>"; };
 		FAC3A1562B919F6400E17AFD /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
+		FAC972402BBD2C620026C32D /* SoftwaresVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftwaresVC.swift; sourceTree = "<group>"; };
+		FAC972422BBD55380026C32D /* AddLanguageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLanguageView.swift; sourceTree = "<group>"; };
 		FACCE4D42BB285C500DAD5D2 /* RegistrationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationVC.swift; sourceTree = "<group>"; };
 		FACCE4D62BB2CAA700DAD5D2 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		FACCE4D82BB2D80B00DAD5D2 /* ForgotPassword1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword1.swift; sourceTree = "<group>"; };
@@ -232,6 +236,8 @@
 				FAD04C202BBA711F000E08E2 /* ProjectsVC.swift */,
 				FAD04C1E2BBA6EAB000E08E2 /* QualificationsVC.swift */,
 				FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */,
+				FAC972402BBD2C620026C32D /* SoftwaresVC.swift */,
+				FAC972422BBD55380026C32D /* AddLanguageView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -309,6 +315,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAC972432BBD55380026C32D /* AddLanguageView.swift in Sources */,
+				FAC972412BBD2C630026C32D /* SoftwaresVC.swift in Sources */,
 				FAA8EBD22BBBCA2100F11455 /* SkillsVC.swift in Sources */,
 				FAC251B82B9EB87D0076DE75 /* JobSearchResult.swift in Sources */,
 				FAC3A14F2B91927200E17AFD /* TabBarController.swift in Sources */,
