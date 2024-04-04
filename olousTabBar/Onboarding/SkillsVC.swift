@@ -23,7 +23,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         return tableView
     }()
     
-    var addedSkillsView : UIView!
+    var addedSkillsView : UICollectionView!
     var addedSkillsArray : [String] = []
     var addedSkillsHashSet = Set<String>()
     var addedSkillsViewHeightConstraint: NSLayoutConstraint!
@@ -35,7 +35,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         label.textColor = UIColor(hex: "#667085")
         return label
     }()
-    var suggestedSkillsView : UIView!
+    var suggestedSkillsView : UICollectionView!
+    var suggestedSkillsHashSet = Set<String>()
     var suggestedSkillsArray = ["Dancing", "Singing", "Swimming", "Cooking", "Painting", "Tekla", "iOS", "UIKit", "Programming", "C-Sharp"]
     var suggestedSkillsViewHeightConstraint: NSLayoutConstraint!
     
@@ -50,6 +51,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         skillsTableView.delegate = self
         skillsTableView.dataSource = self
         
+        
+        
         setupViews()
     }
     
@@ -60,8 +63,6 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         setupUI()
         setupAddedSkillsView()
         setupSuggestedSkillsView()
-        
-        setupAddLanguage()
         
         setupBottomView()
     }
@@ -260,7 +261,15 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     func setupAddedSkillsView() {
-        addedSkillsView = UIView()
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        
+        addedSkillsView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        addedSkillsView.register(Skill_Software_Cell.self, forCellWithReuseIdentifier: "skill1")
+        addedSkillsView.delegate = self
+        addedSkillsView.dataSource = self
+        
         addedSkillsView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(addedSkillsView)
         NSLayoutConstraint.activate([
@@ -268,48 +277,30 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             addedSkillsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             addedSkillsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
+        
         addedSkillsViewHeightConstraint = addedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         addedSkillsViewHeightConstraint.isActive = true
+        
+        reloadAddedSkills()
     }
     
-    func addAllSkills() {
-        var currentLine = 0
-        var currentXPosition: CGFloat = 0
-        let buttonHeight: CGFloat = 30
-        let buttonSpacing: CGFloat = 12
-        let containerViewWidth = UIScreen.main.bounds.width - 32
-        var containerViewHeight: CGFloat = 0  // Variable to track the containerView's height
-
-        for option in addedSkillsArray {
-            let optionButton = createButton(withTitle: option)
-            // optionButton.addTarget(self, action: #selector(noticeOptionButtonTapped(_:)), for: .touchUpInside)
+    func reloadAddedSkills() {
+        addedSkillsView.reloadData()
             
-            let buttonWidth = optionButton.intrinsicContentSize.width
-            // Check if adding this button exceeds the width of the containerView
-            if currentXPosition + buttonWidth + buttonSpacing > containerViewWidth {
-                // Move to a new line
-                currentLine += 1
-                currentXPosition = 0
-                // Update containerView's height
-                containerViewHeight += buttonHeight + buttonSpacing
-                print(containerViewHeight)
-            }
-            
-            optionButton.translatesAutoresizingMaskIntoConstraints = false
-            addedSkillsView.addSubview(optionButton)
-            NSLayoutConstraint.activate([
-                optionButton.topAnchor.constraint(equalTo: addedSkillsView.topAnchor, constant: CGFloat(currentLine) * (buttonHeight + buttonSpacing)),
-                optionButton.leadingAnchor.constraint(equalTo: addedSkillsView.leadingAnchor, constant: currentXPosition),
-                optionButton.heightAnchor.constraint(equalToConstant: buttonHeight)
-                
-            ])
-
-            // Update current X position
-            currentXPosition += buttonWidth + buttonSpacing
-        }
-        addedSkillsViewHeightConstraint.constant = containerViewHeight + 30
+        // Calculate the content size
         addedSkillsView.layoutIfNeeded()
+        let contentSize = addedSkillsView.collectionViewLayout.collectionViewContentSize
+        
+        // Update the height constraint based on content size
+        addedSkillsViewHeightConstraint.constant = contentSize.height
+        
+        // Update constraints
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
     }
+    
+    
     
     private func createButton(withTitle title: String) -> UIButton {
         let optionButton = UIButton(type: .system)
@@ -321,13 +312,13 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             .font: UIFont.systemFont(ofSize: 28),
             .baselineOffset: 9
         ]
-        let plusSymbolString = NSMutableAttributedString(string: "  +", attributes: plusSymbolAttributes)
+        let plusSymbolString = NSMutableAttributedString(string: " +", attributes: plusSymbolAttributes)
         
         let optionTextAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16),
             .baselineOffset: 12
         ]
-        let optionTextString = NSMutableAttributedString(string: " \(title)  ", attributes: optionTextAttributes)
+        let optionTextString = NSMutableAttributedString(string: "  \(title)  ", attributes: optionTextAttributes)
         
         let combinedString = NSMutableAttributedString()
         combinedString.append(plusSymbolString)
@@ -340,11 +331,47 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         return optionButton
     }
     
+    private func createButtonWithCancelMark(withTitle title: String) -> UIButton {
+        let optionButton = UIButton(type: .system)
+        optionButton.layer.borderWidth = 1
+        optionButton.layer.borderColor = UIColor(hex: "#0079C4").cgColor
+        optionButton.layer.cornerRadius = 8
+        
+        let plusSymbolAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 28),
+            .baselineOffset: 14
+        ]
+        let plusSymbolString = NSMutableAttributedString(string: "x ", attributes: plusSymbolAttributes)
+        
+        let optionTextAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 16),
+            .baselineOffset: 18
+        ]
+        let optionTextString = NSMutableAttributedString(string: " \(title)  ", attributes: optionTextAttributes)
+        
+        let combinedString = NSMutableAttributedString()
+        combinedString.append(optionTextString)
+        combinedString.append(plusSymbolString)
+        
+        optionButton.setAttributedTitle(combinedString, for: .normal)
+        optionButton.titleLabel?.font = .systemFont(ofSize: 18)
+        optionButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+        
+        return optionButton
+    }
+    
     func setupSuggestedSkillsView() {
         suggestionsLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(suggestionsLabel)
         
-        suggestedSkillsView = UIView()
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        
+        suggestedSkillsView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        suggestedSkillsView.register(Skill_Software_Cell.self, forCellWithReuseIdentifier: "skill1")
+        suggestedSkillsView.delegate = self
+        suggestedSkillsView.dataSource = self
+        
         suggestedSkillsView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(suggestedSkillsView)
         
@@ -357,10 +384,27 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             suggestedSkillsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
         
-        suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 50) // Initial height set to 10
+        suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         suggestedSkillsViewHeightConstraint.isActive = true
         
-        addSuggestedSkills()
+//        addSuggestedSkills()
+        reloadSuggestedSkills()
+    }
+    
+    func reloadSuggestedSkills() {
+        suggestedSkillsView.reloadData()
+            
+        // Calculate the content size
+        suggestedSkillsView.layoutIfNeeded()
+        let contentSize = suggestedSkillsView.collectionViewLayout.collectionViewContentSize
+        
+        // Update the height constraint based on content size
+        suggestedSkillsViewHeightConstraint.constant = contentSize.height
+        
+        // Update constraints
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     func addSuggestedSkills() {
@@ -388,7 +432,6 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
                 currentXPosition = 0
                 // Update containerView's height
                 containerViewHeight += buttonHeight + buttonSpacing
-                print(containerViewHeight)
             }
             
             optionButton.translatesAutoresizingMaskIntoConstraints = false
@@ -414,12 +457,14 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         if !addedSkillsHashSet.contains(title) {
             addedSkillsArray.append(title)
             addedSkillsHashSet.insert(title)
-            addAllSkills()
+//            addAllSkills()
+            reloadAddedSkills()
             
             sender.layer.borderColor = UIColor(hex: "#0079C4").cgColor
             sender.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         }
     }
+    
 
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -449,28 +494,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     
-    func setupAddLanguage() {
-        print(view.frame.width)
-        let addLanguageView = AddLanguageView()
-        addLanguageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Add AddLanguageView to the view controller's view
-        scrollView.addSubview(addLanguageView)
-        
-        // Add constraints for AddLanguageView
-        NSLayoutConstraint.activate([
-            addLanguageView.topAnchor.constraint(equalTo: suggestedSkillsView.bottomAnchor, constant: 20),
-            addLanguageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addLanguageView.widthAnchor.constraint(equalToConstant: view.frame.width - 32), // Adjust width as needed
-            addLanguageView.heightAnchor.constraint(equalToConstant: 120),   // Adjust height as needed
-        ])
-        
-        addLanguageView.selectLanguageButton.addTarget(self, action: #selector(selectLanguageButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc func selectLanguageButtonTapped() {
-        print(#function)
-    }
+   
     
     
     func setupBottomView() {
@@ -546,7 +570,85 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
 }
 
-extension SkillsVC : UITableViewDelegate, UITableViewDataSource {
+extension SkillsVC : UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if collectionView == suggestedSkillsView {
+            return suggestedSkillsArray.count
+        }
+        return addedSkillsArray.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "skill1", for: indexPath) as! Skill_Software_Cell
+        cell.layer.borderWidth = 1
+        cell.layer.cornerRadius = 8
+        if collectionView == addedSkillsView {
+            cell.textLabel.text = "  \(addedSkillsArray[indexPath.row])"
+            cell.symbolLabel.text = "  X"
+            cell.layer.borderColor = UIColor(hex: "#0079C4").cgColor
+            cell.textLabel.textColor = UIColor(hex: "#0079C4")
+            cell.symbolLabel.textColor = UIColor(hex: "#0079C4")
+        }
+        else {
+            if addedSkillsHashSet.contains(suggestedSkillsArray[indexPath.row]) {
+                cell.layer.borderColor = UIColor(hex: "#0079C4").cgColor
+                cell.textLabel.textColor = UIColor(hex: "#0079C4")
+                cell.symbolLabel.textColor = UIColor(hex: "#0079C4")
+            }
+            else {
+                cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+                cell.textLabel.textColor = UIColor(hex: "#98A2B3")
+                cell.symbolLabel.textColor = UIColor(hex: "#344054")
+            }
+            
+            cell.textLabel.text = " +"
+            cell.textLabel.font = .boldSystemFont(ofSize: 20)
+            cell.symbolLabel.text =  " \(suggestedSkillsArray[indexPath.row])"
+            cell.symbolLabel.font = .systemFont(ofSize: 16)
+        }
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        var text = ""
+        var width : CGFloat
+        if collectionView == addedSkillsView {
+            text = addedSkillsArray[indexPath.row]
+            width = text.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]).width
+        }
+        else {
+            text = suggestedSkillsArray[indexPath.row]
+            width = text.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]).width + 2
+        }
+        // Adjust spacing
+        return CGSize(width: width + 40, height: 30)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == addedSkillsView {
+            let t = addedSkillsArray[indexPath.row]
+            addedSkillsArray.remove(at: indexPath.row)
+            addedSkillsHashSet.remove(t)
+            if suggestedSkillsArray.contains(t) {
+                reloadSuggestedSkills()
+            }
+            reloadAddedSkills()
+        }
+        else {
+            let t = suggestedSkillsArray[indexPath.row]
+            if !addedSkillsHashSet.contains(t) {
+                addedSkillsArray.append(t)
+                addedSkillsHashSet.insert(t)
+                
+                reloadAddedSkills()
+                reloadSuggestedSkills()
+            }
+        }
+    }
+    
+    
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         filteredSkillsArray.count
     }
@@ -567,8 +669,8 @@ extension SkillsVC : UITableViewDelegate, UITableViewDataSource {
             addedSkillsArray.append(filteredSkillsArray[indexPath.row])
             addedSkillsHashSet.insert(filteredSkillsArray[indexPath.row])
             
-            addAllSkills()
-            addSuggestedSkills()
+            reloadAddedSkills()
+            reloadSuggestedSkills()
             
             skillsTextField.text = nil
             skillsTableView.isHidden = true
