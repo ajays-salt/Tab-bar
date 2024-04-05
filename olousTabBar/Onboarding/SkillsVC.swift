@@ -281,7 +281,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         addedSkillsViewHeightConstraint = addedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         addedSkillsViewHeightConstraint.isActive = true
         
-        reloadAddedSkills()
+//        reloadAddedSkills()
     }
     
     func reloadAddedSkills() {
@@ -300,65 +300,6 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         }
     }
     
-    
-    
-    private func createButton(withTitle title: String) -> UIButton {
-        let optionButton = UIButton(type: .system)
-        optionButton.layer.borderWidth = 1
-        optionButton.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-        optionButton.layer.cornerRadius = 8
-        
-        let plusSymbolAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 28),
-            .baselineOffset: 9
-        ]
-        let plusSymbolString = NSMutableAttributedString(string: " +", attributes: plusSymbolAttributes)
-        
-        let optionTextAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 16),
-            .baselineOffset: 12
-        ]
-        let optionTextString = NSMutableAttributedString(string: "  \(title)  ", attributes: optionTextAttributes)
-        
-        let combinedString = NSMutableAttributedString()
-        combinedString.append(plusSymbolString)
-        combinedString.append(optionTextString)
-        
-        optionButton.setAttributedTitle(combinedString, for: .normal)
-        optionButton.titleLabel?.font = .systemFont(ofSize: 18)
-        optionButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-        
-        return optionButton
-    }
-    
-    private func createButtonWithCancelMark(withTitle title: String) -> UIButton {
-        let optionButton = UIButton(type: .system)
-        optionButton.layer.borderWidth = 1
-        optionButton.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-        optionButton.layer.cornerRadius = 8
-        
-        let plusSymbolAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 28),
-            .baselineOffset: 14
-        ]
-        let plusSymbolString = NSMutableAttributedString(string: "x ", attributes: plusSymbolAttributes)
-        
-        let optionTextAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 16),
-            .baselineOffset: 18
-        ]
-        let optionTextString = NSMutableAttributedString(string: " \(title)  ", attributes: optionTextAttributes)
-        
-        let combinedString = NSMutableAttributedString()
-        combinedString.append(optionTextString)
-        combinedString.append(plusSymbolString)
-        
-        optionButton.setAttributedTitle(combinedString, for: .normal)
-        optionButton.titleLabel?.font = .systemFont(ofSize: 18)
-        optionButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-        
-        return optionButton
-    }
     
     func setupSuggestedSkillsView() {
         suggestionsLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -384,10 +325,10 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             suggestedSkillsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
         
-        suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 0) 
         suggestedSkillsViewHeightConstraint.isActive = true
         
-//        addSuggestedSkills()
+        
         reloadSuggestedSkills()
     }
     
@@ -406,65 +347,6 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             self.view.layoutIfNeeded()
         }
     }
-    
-    func addSuggestedSkills() {
-        var currentLine = 0
-        var currentXPosition: CGFloat = 0
-        let buttonHeight: CGFloat = 30
-        let buttonSpacing: CGFloat = 12
-        let containerViewWidth = UIScreen.main.bounds.width - 32
-        var containerViewHeight: CGFloat = 0  // Variable to track the containerView's height
-        var i = 0
-        for option in suggestedSkillsArray {
-            let optionButton = createButton(withTitle: option)
-            
-            if !addedSkillsHashSet.contains(option) { // only change color if buttons not already added in skillSet
-                optionButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
-                optionButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-            }
-            optionButton.addTarget(self, action: #selector(suggestedSkillsButtonTapped(_:)), for: .touchUpInside)
-            
-            let buttonWidth = optionButton.intrinsicContentSize.width
-            // Check if adding this button exceeds the width of the containerView
-            if currentXPosition + buttonWidth + buttonSpacing > containerViewWidth {
-                // Move to a new line
-                currentLine += 1
-                currentXPosition = 0
-                // Update containerView's height
-                containerViewHeight += buttonHeight + buttonSpacing
-            }
-            
-            optionButton.translatesAutoresizingMaskIntoConstraints = false
-            suggestedSkillsView.addSubview(optionButton)
-            NSLayoutConstraint.activate([
-                optionButton.topAnchor.constraint(equalTo: suggestedSkillsView.topAnchor, constant: CGFloat(currentLine) * (buttonHeight + buttonSpacing)),
-                optionButton.leadingAnchor.constraint(equalTo: suggestedSkillsView.leadingAnchor, constant: currentXPosition),
-                optionButton.heightAnchor.constraint(equalToConstant: buttonHeight)
-            ])
-
-            // Update current X position
-            currentXPosition += buttonWidth + buttonSpacing
-            optionButton.tag = i;
-            i = i + 1
-        }
-        suggestedSkillsViewHeightConstraint.constant = containerViewHeight + 30
-        suggestedSkillsView.layoutIfNeeded()
-    }
-    
-    @objc func suggestedSkillsButtonTapped(_ sender : UIButton) {
-        
-        let title = suggestedSkillsArray[sender.tag]
-        if !addedSkillsHashSet.contains(title) {
-            addedSkillsArray.append(title)
-            addedSkillsHashSet.insert(title)
-//            addAllSkills()
-            reloadAddedSkills()
-            
-            sender.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-            sender.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-        }
-    }
-    
 
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

@@ -478,7 +478,7 @@ class BasicDetails2: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-        let vc = EmploymentVC()
+        let vc = EmploymentsVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     

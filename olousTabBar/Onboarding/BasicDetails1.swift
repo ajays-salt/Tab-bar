@@ -352,8 +352,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-//        let vc = BasicDetails2()
-        let vc = SkillsVC()
+        let vc = BasicDetails2()
         navigationController?.pushViewController(vc, animated: true)
     }
     

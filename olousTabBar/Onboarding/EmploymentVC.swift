@@ -22,6 +22,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
     
     var totalExperienceTextField : UITextField!
     var jobTitleTextField : UITextField!
+    var companyTextField : UITextField!
     var cityTextField : UITextField!
     var selectedCityOptionButton : UIButton?
     
@@ -43,6 +44,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
     var selectedNoticeOptionsButton : UIButton?
     
     var addEmploymentView : UIView!
+    
     var bottomView : UIView!
     
     override func viewDidLoad() {
@@ -354,7 +356,7 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         contentView.addSubview(companyLabel)
         
         // Total Experience TextField
-        let companyTextField = UITextField()
+        companyTextField = UITextField()
         companyTextField.translatesAutoresizingMaskIntoConstraints = false
         companyTextField.borderStyle = .roundedRect
         companyTextField.placeholder = "E.g. Salt Technologies"
@@ -675,12 +677,10 @@ class EmploymentVC: UIViewController, UITextFieldDelegate {
         cityTextField.text = title
     }
     @objc func datePickerValueChanged() {
-        print(#function)
     }
     
     var togglePresent : Bool = false
     @objc func presentButtonTapped() {
-        print(#function)
         
         if togglePresent == false {
             // set cgheckmark image in squareBox to show it is selected

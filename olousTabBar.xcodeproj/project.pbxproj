@@ -13,6 +13,8 @@
 		FA7C4EBE2BA41FA600900BF8 /* AddEducationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7C4EBD2BA41FA600900BF8 /* AddEducationVC.swift */; };
 		FA7C4EC02BA4259600900BF8 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7C4EBF2BA4259500900BF8 /* EditProfileVC.swift */; };
 		FA7C4EC32BA4507C00900BF8 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7C4EC22BA4507C00900BF8 /* Model.swift */; };
+		FA9AB5682BBFB99E00D013BF /* EmploymentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9AB5672BBFB99E00D013BF /* EmploymentCell.swift */; };
+		FA9AB56A2BBFBDC600D013BF /* EmploymentsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9AB5692BBFBDC600D013BF /* EmploymentsVC.swift */; };
 		FAA2C5412BB404380006E7A6 /* BasicDetails2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA2C5402BB404380006E7A6 /* BasicDetails2.swift */; };
 		FAA8EBD22BBBCA2100F11455 /* SkillsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */; };
 		FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */; };
@@ -53,6 +55,8 @@
 		FA7C4EBD2BA41FA600900BF8 /* AddEducationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEducationVC.swift; sourceTree = "<group>"; };
 		FA7C4EBF2BA4259500900BF8 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
 		FA7C4EC22BA4507C00900BF8 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		FA9AB5672BBFB99E00D013BF /* EmploymentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmploymentCell.swift; sourceTree = "<group>"; };
+		FA9AB5692BBFBDC600D013BF /* EmploymentsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmploymentsVC.swift; sourceTree = "<group>"; };
 		FAA2C5402BB404380006E7A6 /* BasicDetails2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDetails2.swift; sourceTree = "<group>"; };
 		FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsVC.swift; sourceTree = "<group>"; };
 		FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobsCell.swift; sourceTree = "<group>"; };
@@ -243,6 +247,7 @@
 				FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */,
 				FAC972402BBD2C620026C32D /* SoftwaresVC.swift */,
 				FAC972422BBD55380026C32D /* AddLanguageView.swift */,
+				FA9AB5692BBFBDC600D013BF /* EmploymentsVC.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -252,6 +257,7 @@
 			children = (
 				FAF4B59E2BBE8651008E3645 /* LanguageCell.swift */,
 				FAF4B5A02BBEA728008E3645 /* Skill-Software Cell.swift */,
+				FA9AB5672BBFB99E00D013BF /* EmploymentCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -334,6 +340,7 @@
 				FAA8EBD22BBBCA2100F11455 /* SkillsVC.swift in Sources */,
 				FAC251B82B9EB87D0076DE75 /* JobSearchResult.swift in Sources */,
 				FAC3A14F2B91927200E17AFD /* TabBarController.swift in Sources */,
+				FA9AB5682BBFB99E00D013BF /* EmploymentCell.swift in Sources */,
 				FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */,
 				FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */,
 				FACCE4D52BB285C500DAD5D2 /* RegistrationVC.swift in Sources */,
@@ -344,6 +351,7 @@
 				FAA2C5412BB404380006E7A6 /* BasicDetails2.swift in Sources */,
 				FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */,
 				FAD04C1F2BBA6EAB000E08E2 /* QualificationsVC.swift in Sources */,
+				FA9AB56A2BBFBDC600D013BF /* EmploymentsVC.swift in Sources */,
 				FAE0A1EE2BB3D51500F07B29 /* BasicDetails1.swift in Sources */,
 				FAB7B9852BAD424B00B5A9FA /* FilterOptionsCell.swift in Sources */,
 				D0C2F0142B962B2900D9C6F9 /* CompaniesCell.swift in Sources */,
