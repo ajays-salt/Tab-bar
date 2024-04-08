@@ -9,6 +9,8 @@ import UIKit
 
 class JobDetailScreen: UIViewController {
     
+    var selectedJob : Job!
+    
     var scrollView : UIScrollView!
     var headerView : UIView!
     
@@ -49,18 +51,20 @@ class JobDetailScreen: UIViewController {
     
     let separatorLine1 = UIView()
     
-    let descriptionView = UIView()
-    let jobDescriptionItems = [
-        "Assist in creating marketing materials such as brochures, flyers, and social media posts.",
-        "Conduct market research to identify trends and opportunities for brand expansion.",
-        "Support the marketing team in organizing events and promotional campaigns.",
-        "Collaborate with designers and content creators to develop engaging content for various platforms."
-    ]
+    let responsibilityView = UIView()
+//    var jobDescriptionItems = [
+//        "Assist in creating marketing materials such as brochures, flyers, and social media posts.",
+//        "Conduct market research to identify trends and opportunities for brand expansion.",
+//        "Support the marketing team in organizing events and promotional campaigns.",
+//        "Collaborate with designers and content creators to develop engaging content for various platforms."
+//    ]
+    var jobResponsibilityItems : [String] = []
     let descriptionStackView = UIStackView()
     
     let separatorLine2 = UIView()
     
     let requirementsView = UIView()
+    var jobRequirementItems : [String] = []
     let requirementsStackView = UIStackView()
     
     let separatorLine3 = UIView()
@@ -115,11 +119,28 @@ class JobDetailScreen: UIViewController {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
+        assignValues()
         setupViews()
 
         let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonTapped))
         shareButton.image = UIImage(systemName: "")
         navigationItem.rightBarButtonItem = shareButton
+        
+    }
+    
+    func assignValues() {
+        jobTitle.text = selectedJob.title
+        companyName.text = selectedJob.companyName
+        jobLocationLabel.text = "\(selectedJob.location.city), \(selectedJob.location.state)"
+        
+        for responsibility in selectedJob.responsibilities {
+            let title = String(responsibility.title.dropFirst(3))
+            jobResponsibilityItems.append(title)
+        }
+        for requirement in selectedJob.requirements {
+            let title = String(requirement.title.dropFirst(3))
+            jobRequirementItems.append(title)
+        }
     }
     
     @objc func shareButtonTapped() {
@@ -131,7 +152,7 @@ class JobDetailScreen: UIViewController {
         setupScrollView()
         setupHeaderView()
         setupSeparatorLine1()
-        setupDescriptionView()
+        setupResponsibilityView()
         setupSeparatorLine2()
         setupRequirementsView()
         setupSeparatorLine3()
@@ -213,7 +234,6 @@ class JobDetailScreen: UIViewController {
         NSLayoutConstraint.activate([
             jobLocationLabel.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
             jobLocationLabel.leadingAnchor.constraint(equalTo: locationIcon.trailingAnchor, constant: 6),
-            jobLocationLabel.widthAnchor.constraint(equalToConstant: 125),
             jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
         
@@ -226,7 +246,7 @@ class JobDetailScreen: UIViewController {
         let symbolString = NSAttributedString(attachment: symbolAttachment)
         attributedString.append(symbolString)
         attributedString.append(NSAttributedString(string: " "))
-        let textString = NSAttributedString(string: "1-5 years")
+        let textString = NSAttributedString(string: "\(selectedJob.yearsOfExperience) years")
         attributedString.append(textString)
         
         jobExperienceLabel.attributedText = attributedString
@@ -237,7 +257,6 @@ class JobDetailScreen: UIViewController {
         NSLayoutConstraint.activate([
             jobExperienceLabel.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
             jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 6),
-            jobExperienceLabel.widthAnchor.constraint(equalToConstant: 100),
             jobExperienceLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
     
@@ -298,15 +317,15 @@ class JobDetailScreen: UIViewController {
         ])
     }
     
-    func setupDescriptionView() {
+    func setupResponsibilityView() {
         
-        descriptionView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(descriptionView)
+        responsibilityView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(responsibilityView)
         
         NSLayoutConstraint.activate([
-            descriptionView.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor),
-            descriptionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            descriptionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            responsibilityView.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor),
+            responsibilityView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            responsibilityView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
 //            descriptionView.heightAnchor.constraint(equalToConstant: 254)
         ])
         
@@ -316,19 +335,19 @@ class JobDetailScreen: UIViewController {
         rolesLabel.tintColor = UIColor(hex: "#101828")
         
         rolesLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionView.addSubview(rolesLabel)
+        responsibilityView.addSubview(rolesLabel)
         
         NSLayoutConstraint.activate([
-            rolesLabel.topAnchor.constraint(equalTo: descriptionView.topAnchor, constant: 16),
-            rolesLabel.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor, constant: 16),
-            rolesLabel.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor),
+            rolesLabel.topAnchor.constraint(equalTo: responsibilityView.topAnchor, constant: 16),
+            rolesLabel.leadingAnchor.constraint(equalTo: responsibilityView.leadingAnchor, constant: 16),
+            rolesLabel.trailingAnchor.constraint(equalTo: responsibilityView.trailingAnchor),
             rolesLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
         
         descriptionStackView.axis = .vertical
-        descriptionStackView.spacing = 8 // Adjust spacing between items
+        descriptionStackView.spacing = 0 // Adjust spacing between items
         
-        for item in jobDescriptionItems {
+        for item in jobResponsibilityItems {
             let bulletLabelText = "\u{2022} " // Unicode bullet symbol with a space
             let attributedText = NSMutableAttributedString(string: bulletLabelText, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24), NSAttributedString.Key.foregroundColor: UIColor.black])
             
@@ -343,13 +362,13 @@ class JobDetailScreen: UIViewController {
         }
         
         descriptionStackView.translatesAutoresizingMaskIntoConstraints = false
-        descriptionView.addSubview(descriptionStackView)
+        responsibilityView.addSubview(descriptionStackView)
         
         NSLayoutConstraint.activate([
             descriptionStackView.topAnchor.constraint(equalTo: rolesLabel.bottomAnchor, constant: 10),
-            descriptionStackView.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor, constant: 16),
-            descriptionStackView.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor, constant: -16),
-            descriptionStackView.bottomAnchor.constraint(equalTo: descriptionView.bottomAnchor, constant: 0)
+            descriptionStackView.leadingAnchor.constraint(equalTo: responsibilityView.leadingAnchor, constant: 16),
+            descriptionStackView.trailingAnchor.constraint(equalTo: responsibilityView.trailingAnchor, constant: -16),
+            descriptionStackView.bottomAnchor.constraint(equalTo: responsibilityView.bottomAnchor, constant: 0)
         ])
     }
     
@@ -359,7 +378,7 @@ class JobDetailScreen: UIViewController {
         scrollView.addSubview(separatorLine2)
         
         NSLayoutConstraint.activate([
-            separatorLine2.topAnchor.constraint(equalTo: descriptionView.bottomAnchor, constant: 16),
+            separatorLine2.topAnchor.constraint(equalTo: responsibilityView.bottomAnchor, constant: 16),
             separatorLine2.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine2.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine2.heightAnchor.constraint(equalToConstant: 1)
@@ -394,9 +413,9 @@ class JobDetailScreen: UIViewController {
         ])
         
         requirementsStackView.axis = .vertical
-        requirementsStackView.spacing = 8 // Adjust spacing between items
+        requirementsStackView.spacing = 0 // Adjust spacing between items
         
-        for item in jobDescriptionItems {
+        for item in jobRequirementItems {
             let bulletLabelText = "\u{2022} " // Unicode bullet symbol with a space
             let attributedText = NSMutableAttributedString(string: bulletLabelText, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24), NSAttributedString.Key.foregroundColor: UIColor.black])
             

@@ -437,7 +437,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-        let vc = SoftwaresVC()
+        let vc = BasicDetails2()
         navigationController?.pushViewController(vc, animated: true)
     }
     

@@ -248,7 +248,7 @@ class BasicDetails2: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         locationsTextField.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(locationsTextField)
         
-        var suggestionsLabel = UILabel()
+        let suggestionsLabel = UILabel()
         suggestionsLabel.text = "Suggestions :"
         suggestionsLabel.font = .systemFont(ofSize: 16)
         suggestionsLabel.textColor = UIColor(hex: "#667085")

@@ -749,7 +749,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-        let vc = SkillsVC()
+        let vc = EmploymentsVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     

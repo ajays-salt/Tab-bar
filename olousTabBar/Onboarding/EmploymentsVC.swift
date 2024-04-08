@@ -28,7 +28,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
 //        Experience(titleLabel: "Android Developer", companyNameLabel: "Tech Co.", noOfYearsLabel: 2, jobTypeLabel: "Part time"),
 //        Experience(titleLabel: "Web Developer", companyNameLabel: "Web Corp", noOfYearsLabel: 3, jobTypeLabel: "Full time")
 //    ]
-    var dataArray : [Experience] = []
+    var dataArray : [Experience1] = []
     var employmentsCVHeightConstraint: NSLayoutConstraint!
     
     
@@ -260,7 +260,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         employmentsCVHeightConstraint = employmentsCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         employmentsCVHeightConstraint.isActive = true
         
-        reloadCollectionView()
+//        reloadCollectionView()
     }
     
     func reloadCollectionView() {
@@ -613,10 +613,17 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         
         let firstInt = Int(start!)!
         let secondInt = Int(pass!)!
-        let combined = Double(firstInt) + Double(secondInt) / 100
+        let combined = Double(firstInt) + Double(secondInt) / 10
         
-        let exp = Experience(titleLabel: jobText!, companyNameLabel: cText!, noOfYearsLabel: combined, jobTypeLabel: jobtype!)
+        let exp = Experience1(titleLabel: jobText!, companyNameLabel: cText!, noOfYearsLabel: combined, jobTypeLabel: jobtype!)
         dataArray.append(exp)
+        
+        companyTextField.text = ""
+        jobTitleTextField.text = ""
+        startYearPlaceholder.text = ""
+        passYearPlaceholder.text = ""
+        
+        
         reloadCollectionView()
         
         
@@ -695,7 +702,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     
     @objc func didTapNextButton() {
         print(#function)
-        let vc = ProjectsVC()
+        let vc = SoftwaresVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -767,7 +774,7 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
         
         cell.titleLabel.text = exp.titleLabel
         cell.companyNameLabel.text = "| \(exp.companyNameLabel)"
-        cell.noOfYearsLabel.text = "\(exp.noOfYearsLabel) Year ,"
+        cell.noOfYearsLabel.text = "\(exp.noOfYearsLabel) Year,"
         cell.jobTypeLabel.text = exp.jobTypeLabel
         
         cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
@@ -785,7 +792,7 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
 }
 
 
-struct Experience {
+struct Experience1 {
     let titleLabel: String
     let companyNameLabel: String
     let noOfYearsLabel: Double

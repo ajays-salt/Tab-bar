@@ -9,6 +9,9 @@ import UIKit
 
 class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    var jobs: [Job] = []
+    let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+    
     var topSection : UIView!
     var filterScrollView : UIScrollView!
     var filterOptions = [
@@ -44,7 +47,23 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        setupViews()
+        // Call the fetchData function to fetch data and store it in an array
+        fetchData { result in
+            switch result {
+            case .success(let fetchedJobs):
+                self.jobs = fetchedJobs
+                print("Fetched \(self.jobs.count) jobs.")
+                // Here you can perform further operations with the fetched data
+            case .failure(let error):
+                print("Error fetching data: \(error)")
+            }
+            
+            DispatchQueue.main.async {
+                self.setupViews()
+            }
+        }
+        print(jobs.count)
+//        setupViews()
     }
     
     func setupViews() {
@@ -75,7 +94,7 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
         filterScrollView.translatesAutoresizingMaskIntoConstraints = false
         filterScrollView.showsHorizontalScrollIndicator = false
         
-        let contentWidth = (view.frame.width - 48) * CGFloat(3) - 16 // Total width of subviews including spacing
+        let contentWidth = (view.frame.width - 48) * CGFloat(2) - 16 // Total width of subviews including spacing
         filterScrollView.contentSize = CGSize(width: contentWidth, height: 80)
         
         filterScrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -282,6 +301,7 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     
     
     func setupJobsCountLabel() {
+        jobsCountLabel.text = "\(jobs.count) jobs found"
         jobsCountLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(jobsCountLabel)
         
@@ -313,11 +333,39 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return jobs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id2", for: indexPath) as! JobsCell
+        let job = jobs[indexPath.row]
+        
+        
+        
+        cell.jobTitle.text = job.title
+        cell.companyName.text = job.companyName
+        cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+        
+        let s = getTimeAgoString(from: job.createdAt)
+        cell.jobPostedTime.text = s
+        
+        let expText = attributedStringForExperience(job.yearsOfExperience)
+        cell.jobExperienceLabel.attributedText = expText
+        
+        // Fetch company logo asynchronously
+        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+        let companyLogoURLString = baseURLString + job.companyLogo
+        if let companyLogoURL = URL(string: companyLogoURLString) {
+            URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        print(image)
+                        cell.companyLogo.image = image
+                    }
+                }
+            }.resume()
+        }
+        
         cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         cell.layer.borderWidth = 1
         cell.layer.cornerRadius = 12
@@ -329,7 +377,9 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedJob = jobs[indexPath.row]
         let jobDetailVC = JobDetailScreen()
+        jobDetailVC.selectedJob = selectedJob
         navigationController?.pushViewController(jobDetailVC, animated: true)
     }
     
@@ -381,5 +431,83 @@ extension JobSearchResult : UITableViewDelegate, UITableViewDataSource {
         
         cell.checkboxButton.setImage(UIImage(systemName: ""), for: .normal)
     }
+    
+}
+
+extension JobSearchResult { // extension for networking use
+
+    // Define a function to fetch data from the API
+    func fetchData(completion: @escaping (Result<[Job], Error>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard let data = data, error == nil else {
+                completion(.failure(error ?? NSError(domain: "Unknown Error", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let jobResponse = try JSONDecoder().decode(JobResponse.self, from: data)
+                completion(.success(jobResponse.jobs))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    
+    func getTimeAgoString(from createdAt: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        guard let date = dateFormatter.date(from: createdAt) else {
+            return "Invalid date"
+        }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date, to: now)
+        
+        if let year = components.year, year > 0 {
+            return "\(year) year\(year == 1 ? "" : "s") ago"
+        } else if let month = components.month, month > 0 {
+            return "\(month) month\(month == 1 ? "" : "s") ago"
+        } else if let day = components.day, day > 0 {
+            return "\(day) day\(day == 1 ? "" : "s") ago"
+        } else if let hour = components.hour, hour > 0 {
+            return "\(hour) hour\(hour == 1 ? "" : "s") ago"
+        } else if let minute = components.minute, minute > 0 {
+            return "\(minute) minute\(minute == 1 ? "" : "s") ago"
+        } else {
+            return "Just now"
+        }
+    }
+    
+    func attributedStringForExperience(_ experience: String) -> NSAttributedString {
+        // Create a mutable attributed string
+        let attributedString = NSMutableAttributedString()
+        
+        attributedString.append(NSAttributedString(string: "|"))
+        
+        attributedString.append(NSAttributedString(string: "  "))
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
+        
+        let symbolString = NSAttributedString(attachment: symbolAttachment)
+        attributedString.append(symbolString)
+        
+        attributedString.append(NSAttributedString(string: " "))
+        attributedString.append(NSAttributedString(string: experience))
+        attributedString.append(NSAttributedString(string: " years"))
+        
+//        let textString = NSAttributedString(string: "1-5 years")
+//        attributedString.append(textString)
+
+        return attributedString
+    }
+
     
 }

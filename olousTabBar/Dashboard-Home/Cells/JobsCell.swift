@@ -18,7 +18,7 @@ class JobsCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "Valuation Analyst"
         label.textColor = UIColor(hex: "#101828")
-        label.font = .boldSystemFont(ofSize: 14)
+        label.font = .boldSystemFont(ofSize: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -26,7 +26,7 @@ class JobsCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "Company Name"
         label.textColor = UIColor(hex: "#667085")
-        label.font = .systemFont(ofSize: 12)
+        label.font = .systemFont(ofSize: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -114,7 +114,7 @@ class JobsCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             jobTitle.topAnchor.constraint(equalTo: topAnchor, constant: 74),
             jobTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            jobTitle.widthAnchor.constraint(equalToConstant: 196),
+//            jobTitle.widthAnchor.constraint(equalToConstant: 196),
             jobTitle.heightAnchor.constraint(equalToConstant: 20)
         ])
     }
@@ -148,7 +148,7 @@ class JobsCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             jobLocationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 128),
             jobLocationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 36),
-            jobLocationLabel.widthAnchor.constraint(equalToConstant: 125),
+//            jobLocationLabel.widthAnchor.constraint(equalToConstant: 125),
             jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
         
@@ -162,7 +162,7 @@ class JobsCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             jobPostedTime.topAnchor.constraint(equalTo: topAnchor, constant: 166),
             jobPostedTime.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            jobPostedTime.widthAnchor.constraint(equalToConstant: 76),
+//            jobPostedTime.widthAnchor.constraint(equalToConstant: 76),
             jobPostedTime.heightAnchor.constraint(equalToConstant: 20)
         ])
     }
@@ -193,8 +193,8 @@ class JobsCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             jobExperienceLabel.topAnchor.constraint(equalTo: topAnchor, constant: 126),
-            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 16),
-            jobExperienceLabel.widthAnchor.constraint(equalToConstant: 100),
+            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 10),
+//            jobExperienceLabel.widthAnchor.constraint(equalToConstant: 100),
             jobExperienceLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
     }

@@ -70,18 +70,6 @@ class EmploymentCell: UICollectionViewCell {
             v.translatesAutoresizingMaskIntoConstraints = false
             addSubview(v)
         }
-//        addSubview(titleLabel)
-//        addSubview(companyNameLabel)
-//        addSubview(noOfYearsLabel)
-//        addSubview(jobTypeLabel)
-//        addSubview(deleteButton)
-//        
-//        // Constraints
-//        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-//        companyNameLabel.translatesAutoresizingMaskIntoConstraints = false
-//        noOfYearsLabel.translatesAutoresizingMaskIntoConstraints = false
-//        jobTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-//        deleteButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),

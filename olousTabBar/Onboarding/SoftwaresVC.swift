@@ -439,8 +439,8 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-//        let vc = SoftwaresVC()
-//        navigationController?.pushViewController(vc, animated: true)
+        let vc = ProjectsVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
