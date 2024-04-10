@@ -134,11 +134,11 @@ class JobDetailScreen: UIViewController {
         jobLocationLabel.text = "\(selectedJob.location.city), \(selectedJob.location.state)"
         
         for responsibility in selectedJob.responsibilities {
-            let title = String(responsibility.title.dropFirst(3))
+            let title = String(responsibility.title.dropFirst(0))
             jobResponsibilityItems.append(title)
         }
         for requirement in selectedJob.requirements {
-            let title = String(requirement.title.dropFirst(3))
+            let title = String(requirement.title.dropFirst(0))
             jobRequirementItems.append(title)
         }
     }
@@ -237,6 +237,14 @@ class JobDetailScreen: UIViewController {
             jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
         
+        if let locationText = jobLocationLabel.text, locationText.count > 25 {
+            // If text exceeds 20 characters, set a fixed width of 150
+            jobLocationLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        } else {
+            // If text is within 20 characters, don't set a fixed width
+            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 200).isActive = true
+        }
+        
         
         let attributedString = NSMutableAttributedString()
         attributedString.append(NSAttributedString(string: "|"))
@@ -246,7 +254,7 @@ class JobDetailScreen: UIViewController {
         let symbolString = NSAttributedString(attachment: symbolAttachment)
         attributedString.append(symbolString)
         attributedString.append(NSAttributedString(string: " "))
-        let textString = NSAttributedString(string: "\(selectedJob.yearsOfExperience) years")
+        let textString = NSAttributedString(string: "\(selectedJob.yearsOfExperience == "" ? "0" : selectedJob.yearsOfExperience) years")
         attributedString.append(textString)
         
         jobExperienceLabel.attributedText = attributedString

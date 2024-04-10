@@ -13,7 +13,12 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Name :"
+        let attributedText1 = NSMutableAttributedString(string: "Name")
+        let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText1.append(asterisk1)
+        label.attributedText = attributedText1
+        label.font = .boldSystemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -28,7 +33,12 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     
     let emailLabel: UILabel = {
         let label = UILabel()
-        label.text = "Email :"
+        let attributedText1 = NSMutableAttributedString(string: "Email")
+        let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText1.append(asterisk1)
+        label.attributedText = attributedText1
+        label.font = .boldSystemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -41,9 +51,16 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         return textField
     }()
     
-    let passwordLabel: UILabel = {
+    
+    
+    let passwordLabel : UILabel = {
         let label = UILabel()
-        label.text = "Password :"
+        let attributedText1 = NSMutableAttributedString(string: "Password")
+        let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText1.append(asterisk1)
+        label.attributedText = attributedText1
+        label.font = .boldSystemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -52,8 +69,29 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         textField.placeholder = "Create a password"
         textField.borderStyle = .roundedRect
-        textField.isSecureTextEntry = true
-        textField.addTarget(self, action: #selector(passwordChanged), for: .editingChanged)
+//        textField.isSecureTextEntry = true
+//        textField.addTarget(self, action: #selector(passwordChanged), for: .editingChanged)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
+    }()
+    
+    let numberLabel: UILabel = {
+        let label = UILabel()
+        let attributedText1 = NSMutableAttributedString(string: "Mobile Number")
+        let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText1.append(asterisk1)
+        label.attributedText = attributedText1
+        label.font = .boldSystemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    let numberTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Enter Mobile Number"
+        textField.borderStyle = .roundedRect
+        textField.keyboardType = .numbersAndPunctuation
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -156,6 +194,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         nameTextField.delegate = self
         emailTextField.delegate = self
         passwordTextField.delegate = self
+        numberTextField.delegate = self
         
         overrideUserInterfaceStyle = .light
         
@@ -180,7 +219,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 160)
+            headerView.heightAnchor.constraint(equalToConstant: 130)
         ])
         
         let olousLogo : UIImageView = {
@@ -210,7 +249,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         headLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(headLabel)
         NSLayoutConstraint.activate([
-            headLabel.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 40),
+            headLabel.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 20),
             headLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
             headLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
@@ -241,10 +280,13 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         view.addSubview(emailTextField)
         view.addSubview(passwordLabel)
         view.addSubview(passwordTextField)
-        view.addSubview(passwordValidationLabel1)
-        view.addSubview(passwordValidationLabel2)
-        view.addSubview(checkmark1)
-        view.addSubview(checkmark2)
+//        view.addSubview(passwordValidationLabel1)
+//        view.addSubview(passwordValidationLabel2)
+//        view.addSubview(checkmark1)
+//        view.addSubview(checkmark2)
+        
+        view.addSubview(numberLabel)
+        view.addSubview(numberTextField)
         view.addSubview(getStartedButton)
         
         NSLayoutConstraint.activate([
@@ -272,29 +314,37 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
             passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             passwordTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            passwordValidationLabel1.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 16),
-            passwordValidationLabel1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            passwordValidationLabel1.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            passwordValidationLabel1.heightAnchor.constraint(equalToConstant: 30),
+            numberLabel.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 20),
+            numberLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
-            passwordValidationLabel2.topAnchor.constraint(equalTo: passwordValidationLabel1.bottomAnchor, constant: -4),
-            passwordValidationLabel2.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            passwordValidationLabel2.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            passwordValidationLabel2.heightAnchor.constraint(equalToConstant: 30),
+            numberTextField.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 8),
+            numberTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            numberTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            numberTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            checkmark1.centerYAnchor.constraint(equalTo: passwordValidationLabel1.centerYAnchor),
-//            checkmark1.topAnchor.constraint(equalTo: passwordValidationLabel1.topAnchor),
-            checkmark1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            checkmark1.widthAnchor.constraint(equalToConstant: 20),
-            checkmark1.heightAnchor.constraint(equalToConstant: 20),
+//            passwordValidationLabel1.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 16),
+//            passwordValidationLabel1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+//            passwordValidationLabel1.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+//            passwordValidationLabel1.heightAnchor.constraint(equalToConstant: 30),
+//            
+//            passwordValidationLabel2.topAnchor.constraint(equalTo: passwordValidationLabel1.bottomAnchor, constant: -4),
+//            passwordValidationLabel2.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+//            passwordValidationLabel2.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+//            passwordValidationLabel2.heightAnchor.constraint(equalToConstant: 30),
+//            
+//            checkmark1.centerYAnchor.constraint(equalTo: passwordValidationLabel1.centerYAnchor),
+////            checkmark1.topAnchor.constraint(equalTo: passwordValidationLabel1.topAnchor),
+//            checkmark1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+//            checkmark1.widthAnchor.constraint(equalToConstant: 20),
+//            checkmark1.heightAnchor.constraint(equalToConstant: 20),
+//            
+//            checkmark2.centerYAnchor.constraint(equalTo: passwordValidationLabel2.centerYAnchor),
+////            checkmark2.topAnchor.constraint(equalTo: passwordValidationLabel2.topAnchor),
+//            checkmark2.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+//            checkmark2.widthAnchor.constraint(equalToConstant: 20),
+//            checkmark2.heightAnchor.constraint(equalToConstant: 20),
             
-            checkmark2.centerYAnchor.constraint(equalTo: passwordValidationLabel2.centerYAnchor),
-//            checkmark2.topAnchor.constraint(equalTo: passwordValidationLabel2.topAnchor),
-            checkmark2.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            checkmark2.widthAnchor.constraint(equalToConstant: 20),
-            checkmark2.heightAnchor.constraint(equalToConstant: 20),
-            
-            getStartedButton.topAnchor.constraint(equalTo: checkmark2.bottomAnchor, constant: 30),
+            getStartedButton.topAnchor.constraint(equalTo: numberTextField.bottomAnchor, constant: 30),
             getStartedButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             getStartedButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             getStartedButton.heightAnchor.constraint(equalToConstant: 50),
@@ -319,15 +369,98 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     @objc private func getStartedButtonTapped() {
         // Your registration logic here
         
-        // Assuming registration is successful
-        UserDefaults.standard.set(true, forKey: "isUserRegistered")
+        guard let name = nameTextField.text, !name.isEmpty,
+              let email = emailTextField.text, !email.isEmpty, email.isValidEmail(),
+              let password = passwordTextField.text, !password.isEmpty,
+              let mobile = numberTextField.text, !mobile.isEmpty, mobile.isValidMobileNumber() else {
+            // Handle validation failure
+                let alertController = UIAlertController(title: "Alert!", message: "Fill all the details", preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                self.present(alertController, animated: true, completion: nil)
+            return
+        }
         
-        // Navigate to the ViewController
-        let vc = BasicDetails1()
-        let navVC = UINavigationController(rootViewController: vc)
-        navVC.modalPresentationStyle = .fullScreen
-        navVC.navigationBar.isHidden = true
-        present(navVC, animated: true)
+        let registrationData: [String: String] = [
+            "email": email,
+            "mobile": mobile,
+            "password": password,
+            "name": name
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: registrationData) else {
+            print("Failed to serialize registration data")
+            return
+        }
+        
+        // Create the request URL
+        let registrationURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/register")!
+        
+        // Create the request
+        var request = URLRequest(url: registrationURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        // Perform the request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            // Check for errors
+            if let error = error {
+                print("Registration request error: \(error)")
+                return
+            }
+            
+            // Check for response data
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+            
+            // Attempt to decode the response as a string
+            if let resp = String(data: data, encoding: .utf8) {
+                print(resp)
+                
+                // Attempt to parse the JSON response
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    // Check if the registration was successful
+                    if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = user["accessToken"] as? String {
+                        
+                        // Save the access token to UserDefaults or any other secure storage mechanism
+                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
+                        
+                        // Navigate to the BasicDetails1 view controller
+                        DispatchQueue.main.async {
+                            let vc = BasicDetails1()
+                            let navVC = UINavigationController(rootViewController: vc)
+                            navVC.modalPresentationStyle = .fullScreen
+                            navVC.navigationBar.isHidden = true
+                            self.present(navVC, animated: true)
+                        }
+                    } else if let msg = json["msg"] as? String, msg == "user already exists try login" {
+                        print("User already exists. Try login instead.")
+                        // Handle the case where the user already exists
+                        DispatchQueue.main.async {
+                            let alertController = UIAlertController(title: "Alert!", message: "User already exists", preferredStyle: .alert)
+                            
+                            let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                            
+                            alertController.addAction(cancelAction)
+                            
+                            self.present(alertController, animated: true, completion: nil)
+                        }
+                        
+                    } else {
+                        print("Unexpected response from server")
+                        // Handle other unexpected responses from the server
+                    }
+                } else {
+                    print("Failed to parse JSON response")
+                }
+            } else {
+                print("Failed to decode response as string")
+            }
+        }
+        task.resume()
     }
     
     func setupLogin() {
@@ -359,3 +492,22 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     }
 
 }
+
+extension String {
+    func isValidEmail() -> Bool {
+        // Implement email validation logic here
+        // Example validation:
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: self)
+    }
+    
+    func isValidMobileNumber() -> Bool {
+        // Implement mobile number validation logic here
+        // Example validation: Check if the string contains only digits and has a specific length
+        let mobileRegex = "^[0-9]{10}$"
+        let mobilePredicate = NSPredicate(format: "SELF MATCHES %@", mobileRegex)
+        return mobilePredicate.evaluate(with: self)
+    }
+}
+

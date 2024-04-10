@@ -353,13 +353,12 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
         cell.jobExperienceLabel.attributedText = expText
         
         // Fetch company logo asynchronously
-        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + job.companyLogo
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
                     DispatchQueue.main.async {
-                        print(image)
                         cell.companyLogo.image = image
                     }
                 }

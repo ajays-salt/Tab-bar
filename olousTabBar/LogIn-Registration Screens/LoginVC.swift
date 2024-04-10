@@ -207,12 +207,102 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func loginButtonTapped() {
-//        UserDefaults.standard.set(true, forKey: "isUserRegistered")
         
-        let viewController = ViewController() // Replace ViewController with your default view controller's class name
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.overrideUserInterfaceStyle = .light
-        present(viewController, animated: true)
+        guard let email = emailTextField.text, !email.isEmpty, email.isValidEmail(),
+              let password = passwordTextField.text, !password.isEmpty else {
+            
+                // Handle validation failure
+                let alertController = UIAlertController(title: "Alert!", message: "Fill all the details", preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                self.present(alertController, animated: true, completion: nil)
+            
+            return
+        }
+        
+        let loginData: [String: String] = [
+            "email": email,
+            "password": password
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: loginData) else {
+            print("Failed to serialize registration data")
+            return
+        }
+        
+        // Create the request URL
+        let loginURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/login")!
+        
+        // Create the request
+        var request = URLRequest(url: loginURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            // Check for errors
+            if let error = error {
+                print("Registration request error: \(error)")
+                return
+            }
+            
+            // Check for response data
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+            
+            // Attempt to decode the response as a string
+            if let resp = String(data: data, encoding: .utf8) {
+//                print(resp)
+                
+                // Attempt to parse the JSON response
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    // Check if the registration was successful
+                    print(json)
+                    if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
+                        
+                        // Save the access token to UserDefaults or any other secure storage mechanism
+                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
+                        
+                        // Navigate to the BasicDetails1 view controller
+                        DispatchQueue.main.async {
+//                            let vc = BasicDetails1()
+//                            let navVC = UINavigationController(rootViewController: vc)
+//                            navVC.modalPresentationStyle = .fullScreen
+//                            navVC.navigationBar.isHidden = true
+//                            self.present(navVC, animated: true)
+                            
+                            let viewController = ViewController() // Replace ViewController with your default view controller's class name
+                            viewController.modalPresentationStyle = .overFullScreen
+                            viewController.overrideUserInterfaceStyle = .light
+                            self.present(viewController, animated: true)
+                        }
+                    } else if let msg = json["msg"] as? String, msg == "Invalid credentials" {
+                        // Handle the case where the user already exists
+                        DispatchQueue.main.async {
+                            let alertController = UIAlertController(title: "Alert!", message: "Invalid Login Credentials", preferredStyle: .alert)
+                            
+                            let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                            
+                            alertController.addAction(cancelAction)
+                            
+                            self.present(alertController, animated: true, completion: nil)
+                        }
+                        
+                    } else {
+                        print("Unexpected response from server")
+                        // Handle other unexpected responses from the server
+                    }
+                } else {
+                    print("Failed to parse JSON response")
+                }
+            } else {
+                print("Failed to decode response as string")
+            }
+        }
+        task.resume()
     }
     
     @objc func signUpTapped() {

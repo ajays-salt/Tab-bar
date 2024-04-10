@@ -14,7 +14,7 @@ struct Job: Codable {
     let company: String
     let status: String
     let educationalQualification: [Qualification]
-    let experience: [Experience]
+    let experience: [Experience]?
     let softwares: [Software]
     let sectors: [Sector]
     let projectExperience: [ProjectExperience]

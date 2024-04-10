@@ -287,6 +287,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
             preferenceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
         ])
         
+        preferenceEditButton.addTarget(self, action: #selector(didTapEditPreference), for: .touchUpInside)
         preferenceEditButton.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(preferenceEditButton)
         NSLayoutConstraint.activate([
@@ -363,6 +364,13 @@ class ProfileController: UIViewController, UITextFieldDelegate {
             preferredLocationLabel.leadingAnchor.constraint(equalTo: preferredLocation.leadingAnchor),
             preferredLocationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
+    }
+    
+    @objc func didTapEditPreference() {
+        UserDefaults.standard.removeObject(forKey: "accessToken")
+        let vc = RegistrationVC()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     
     func setupSeparatorLine1() {

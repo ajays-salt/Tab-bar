@@ -152,6 +152,14 @@ class JobsCell: UICollectionViewCell {
             jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
         
+        if let locationText = jobLocationLabel.text, locationText.count > 25 {
+            // If text exceeds 20 characters, set a fixed width of 150
+            jobLocationLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        } else {
+            // If text is within 20 characters, don't set a fixed width
+            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
+        }
+        
         
         jobPostedTime.text = "1h ago"
         jobPostedTime.font = .systemFont(ofSize: 12)
@@ -165,6 +173,8 @@ class JobsCell: UICollectionViewCell {
 //            jobPostedTime.widthAnchor.constraint(equalToConstant: 76),
             jobPostedTime.heightAnchor.constraint(equalToConstant: 20)
         ])
+        
+        
     }
     
     func setupExperienceLabel() {

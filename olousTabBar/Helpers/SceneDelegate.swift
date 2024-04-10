@@ -13,41 +13,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         // Set up window and root view controller
         let window = UIWindow(windowScene: windowScene)
-//        let navigationController = UINavigationController()
-        let registrationVC = RegistrationVC()
-//        window.rootViewController = registrationVC
-        window.overrideUserInterfaceStyle = .light
-        self.window = window
-        window.makeKeyAndVisible()
-//        
-//        if #available(iOS 13.0, *) {
-//            window.overrideUserInterfaceStyle = .light
-//        }
-//        
-//        // Check if the user is registered
-        let isUserRegistered = UserDefaults.standard.bool(forKey: "isUserRegistered1")
-        if !isUserRegistered {
-            // If user is not registered, show RegistrationVC
-            print("Regisration")
-            let registrationVC = RegistrationVC() // Replace RegistrationVC with your registration view controller's class name
-            window.rootViewController = registrationVC
-        } else {
-            // If user is registered, show ViewController
-            print("View")
-            let viewController = ViewController() // Replace ViewController with your default view controller's class name
+        
+        if let _ = UserDefaults.standard.string(forKey: "accessToken") {
+            // Access token is present, navigate to the home screen
+            let viewController = ViewController() // Replace HomeViewController with your actual home view controller
             viewController.modalPresentationStyle = .overFullScreen
             
             window.rootViewController = viewController
             window.rootViewController?.modalPresentationStyle = .overFullScreen
         }
+        else {
+            let registrationVC = RegistrationVC()
+            window.rootViewController = registrationVC
+            window.overrideUserInterfaceStyle = .light
+            self.window = window
+            window.makeKeyAndVisible()
+        }
+        
+        
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
