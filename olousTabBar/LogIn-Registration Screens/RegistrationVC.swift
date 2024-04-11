@@ -428,7 +428,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
                         // Save the access token to UserDefaults or any other secure storage mechanism
                         UserDefaults.standard.set(accessToken, forKey: "accessToken")
                         
-                        // Navigate to the BasicDetails1 view controller
+                        // Navigate to the BasicDetails1 Onboarding screen
                         DispatchQueue.main.async {
                             let vc = BasicDetails1()
                             let navVC = UINavigationController(rootViewController: vc)

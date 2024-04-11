@@ -5,6 +5,7 @@
 //  Created by Salt Technologies on 27/03/24.
 //
 
+import Foundation
 import UIKit
 import MobileCoreServices
 
@@ -12,6 +13,9 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     
     var headerView : UIView!
     var circleContainerView : UIView!
+    
+    var fullNameTextField : UITextField!
+    var mobileNumberTextField : UITextField!
     
     var resumeContainer : UIView!
     var uploadLogoView : UIView!
@@ -160,7 +164,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         view.addSubview(fullNameLabel)
         
         // Full Name TextField
-        let fullNameTextField = UITextField()
+        fullNameTextField = UITextField()
         fullNameTextField.translatesAutoresizingMaskIntoConstraints = false
         fullNameTextField.borderStyle = .roundedRect
         fullNameTextField.placeholder = "Enter Full Name"
@@ -176,7 +180,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         view.addSubview(mobileNumberLabel)
         
         // Mobile Number TextField
-        let mobileNumberTextField = UITextField()
+        mobileNumberTextField = UITextField()
         mobileNumberTextField.translatesAutoresizingMaskIntoConstraints = false
         mobileNumberTextField.borderStyle = .roundedRect
         mobileNumberTextField.placeholder = "Enter Mobile Number"
@@ -185,22 +189,22 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         view.addSubview(mobileNumberTextField)
         
         // Total Experience Label
-        let totalExperienceLabel = UILabel()
-        totalExperienceLabel.translatesAutoresizingMaskIntoConstraints = false
-        let attributedText3 = NSMutableAttributedString(string: "Total experience (years)")
-        let asterisk3 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-        attributedText3.append(asterisk3)
-        totalExperienceLabel.attributedText = attributedText3
-        view.addSubview(totalExperienceLabel)
+//        let totalExperienceLabel = UILabel()
+//        totalExperienceLabel.translatesAutoresizingMaskIntoConstraints = false
+//        let attributedText3 = NSMutableAttributedString(string: "Total experience (years)")
+//        let asterisk3 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+//        attributedText3.append(asterisk3)
+//        totalExperienceLabel.attributedText = attributedText3
+//        view.addSubview(totalExperienceLabel)
         
         // Total Experience TextField
-        let totalExperienceTextField = UITextField()
-        totalExperienceTextField.translatesAutoresizingMaskIntoConstraints = false
-        totalExperienceTextField.borderStyle = .roundedRect
-        totalExperienceTextField.placeholder = "Enter Total Experience"
-        totalExperienceTextField.keyboardType = .decimalPad // Numeric keypad
-        totalExperienceTextField.delegate = self // Set delegate for this text field
-        view.addSubview(totalExperienceTextField)
+//        let totalExperienceTextField = UITextField()
+//        totalExperienceTextField.translatesAutoresizingMaskIntoConstraints = false
+//        totalExperienceTextField.borderStyle = .roundedRect
+//        totalExperienceTextField.placeholder = "Enter Total Experience"
+//        totalExperienceTextField.keyboardType = .decimalPad // Numeric keypad
+//        totalExperienceTextField.delegate = self // Set delegate for this text field
+//        view.addSubview(totalExperienceTextField)
         
         // Constraints
         NSLayoutConstraint.activate([
@@ -218,19 +222,22 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             mobileNumberTextField.leadingAnchor.constraint(equalTo: mobileNumberLabel.leadingAnchor),
             mobileNumberTextField.trailingAnchor.constraint(equalTo: fullNameTextField.trailingAnchor),
             
-            totalExperienceLabel.topAnchor.constraint(equalTo: mobileNumberTextField.bottomAnchor, constant: 16),
-            totalExperienceLabel.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
-            
-            totalExperienceTextField.topAnchor.constraint(equalTo: totalExperienceLabel.bottomAnchor, constant: 8),
-            totalExperienceTextField.leadingAnchor.constraint(equalTo: totalExperienceLabel.leadingAnchor),
-            totalExperienceTextField.trailingAnchor.constraint(equalTo: fullNameTextField.trailingAnchor)
+//            totalExperienceLabel.topAnchor.constraint(equalTo: mobileNumberTextField.bottomAnchor, constant: 16),
+//            totalExperienceLabel.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
+//            
+//            totalExperienceTextField.topAnchor.constraint(equalTo: totalExperienceLabel.bottomAnchor, constant: 8),
+//            totalExperienceTextField.leadingAnchor.constraint(equalTo: totalExperienceLabel.leadingAnchor),
+//            totalExperienceTextField.trailingAnchor.constraint(equalTo: fullNameTextField.trailingAnchor)
         ])
     }
     
     func setupResumeUploadView() {
         let uploadResumeLabel = UILabel()
         uploadResumeLabel.translatesAutoresizingMaskIntoConstraints = false
-        uploadResumeLabel.text = "Upload Resume"
+        let attributedText2 = NSMutableAttributedString(string: "Upload Resume")
+        let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText2.append(asterisk2)
+        uploadResumeLabel.attributedText = attributedText2
         view.addSubview(uploadResumeLabel)
         
         // Upload Button Container
@@ -292,7 +299,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         
         
         NSLayoutConstraint.activate([
-            uploadResumeLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 400),
+            uploadResumeLabel.topAnchor.constraint(equalTo: mobileNumberTextField.bottomAnchor, constant: 20),
             uploadResumeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             resumeContainer.topAnchor.constraint(equalTo: uploadResumeLabel.bottomAnchor, constant: 8),
@@ -356,11 +363,33 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         navigationController?.pushViewController(vc, animated: true)
     }
     
+    
+    
     @objc func uploadButtonTapped() {
-        // Open file picker to select a file to upload
-        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf])
+        requestPermissionForFileUpload()
+    }
+    
+    func requestPermissionForFileUpload() {
+        let alertController = UIAlertController(title: "Permission Request", message: "Your app needs permission to upload files.", preferredStyle: .alert)
+        
+        // Add action to request permission
+        let grantPermissionAction = UIAlertAction(title: "Grant Permission", style: .default) { (_) in
+            // Request permission to access files
+            self.presentDocumentPicker()
+        }
+        alertController.addAction(grantPermissionAction)
+        
+        // Add cancel action
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        // Present the alert controller
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func presentDocumentPicker() {
+        let documentPicker = UIDocumentPickerViewController(documentTypes: [String(kUTTypePDF)], in: .import)
         documentPicker.delegate = self
-        documentPicker.allowsMultipleSelection = false
         present(documentPicker, animated: true, completion: nil)
     }
     
@@ -397,5 +426,79 @@ extension BasicDetails1: UIDocumentPickerDelegate {
         
         // Make the uploadedFileView visible
         uploadedFileView.isHidden = false
+        
+        uploadFileToServer(fileURL: selectedFileURL)
     }
+    
+    func uploadFileToServer(fileURL: URL) {
+        let serverURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/onBoarding")!
+        var request = URLRequest(url: serverURL)
+        request.httpMethod = "POST"
+
+        // Retrieve access token from UserDefaults
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access token not found in UserDefaults")
+            return
+        }
+
+        // Correctly add the access token in the Authorization header
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        // Create multipart form data
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        var body = Data()
+
+        // Add file data
+        do {
+            let fileData = try Data(contentsOf: fileURL)
+            let fileName = fileURL.lastPathComponent
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"resume\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
+            body.append(fileData)
+            body.append("\r\n".data(using: .utf8)!)
+        } catch {
+            print("Error reading file data: \(error)")
+            return
+        }
+
+        // Add end boundary
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+        // Create URLSessionUploadTask using the corrected method
+        URLSession.shared.uploadTask(with: request, from: body) { (data, response, error) in
+            // Check for errors
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+
+            // Check for response status code
+            guard let httpResponse = response as? HTTPURLResponse,
+                  !(400...599).contains(httpResponse.statusCode) else {
+                print("Server Error")
+                return
+            }
+            print(httpResponse)
+
+            // Handle response data if needed
+            if let data = data {
+                // Parse response data if needed
+                print("Response: \(String(data: data, encoding: .utf8) ?? "")")
+            }
+
+            // File uploaded successfully
+            print("File uploaded successfully")
+        }.resume()
+    }
+    
+//    do {
+//        try URLSession.shared.upload(for: request, from: data) { (data, response, error) in
+//            // Handle response here
+//        }
+//    } catch {
+//        print("Error: \(error)")
+//    }
+
 }

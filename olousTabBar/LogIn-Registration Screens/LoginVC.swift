@@ -268,16 +268,16 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                         
                         // Navigate to the BasicDetails1 view controller
                         DispatchQueue.main.async {
-//                            let vc = BasicDetails1()
-//                            let navVC = UINavigationController(rootViewController: vc)
-//                            navVC.modalPresentationStyle = .fullScreen
-//                            navVC.navigationBar.isHidden = true
-//                            self.present(navVC, animated: true)
+                            let vc = BasicDetails1()
+                            let navVC = UINavigationController(rootViewController: vc)
+                            navVC.modalPresentationStyle = .fullScreen
+                            navVC.navigationBar.isHidden = true
+                            self.present(navVC, animated: true)
                             
-                            let viewController = ViewController() // Replace ViewController with your default view controller's class name
-                            viewController.modalPresentationStyle = .overFullScreen
-                            viewController.overrideUserInterfaceStyle = .light
-                            self.present(viewController, animated: true)
+//                            let viewController = ViewController()
+//                            viewController.modalPresentationStyle = .overFullScreen
+//                            viewController.overrideUserInterfaceStyle = .light
+//                            self.present(viewController, animated: true)
                         }
                     } else if let msg = json["msg"] as? String, msg == "Invalid credentials" {
                         // Handle the case where the user already exists

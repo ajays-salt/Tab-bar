@@ -19,15 +19,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Set up window and root view controller
         let window = UIWindow(windowScene: windowScene)
         
+        
+//
         if let _ = UserDefaults.standard.string(forKey: "accessToken") {
             // Access token is present, navigate to the home screen
-            let viewController = ViewController() // Replace HomeViewController with your actual home view controller
-            viewController.modalPresentationStyle = .overFullScreen
+//            let viewController = ViewController()
+//            viewController.modalPresentationStyle = .overFullScreen
+//            
+//            window.rootViewController = viewController
+//            window.rootViewController?.modalPresentationStyle = .overFullScreen
             
-            window.rootViewController = viewController
+            let vc = BasicDetails1()
+            let navVC = UINavigationController(rootViewController: vc)
+            navVC.modalPresentationStyle = .overFullScreen
+            navVC.navigationBar.isHidden = true
+            window.rootViewController = navVC
             window.rootViewController?.modalPresentationStyle = .overFullScreen
+            self.window = window
+            window.makeKeyAndVisible()
         }
         else {
+            
             let registrationVC = RegistrationVC()
             window.rootViewController = registrationVC
             window.overrideUserInterfaceStyle = .light
