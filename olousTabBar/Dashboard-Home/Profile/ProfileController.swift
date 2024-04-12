@@ -10,7 +10,7 @@ import UIKit
 class ProfileController: UIViewController, UITextFieldDelegate {
     
     var employments = [Employment]()
-    var educations = [Education]()
+    var educations = [EducationTemp]()
     
     
     let profileEditButton : UIButton = {
@@ -118,7 +118,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         ]
         
         educations = [
-            Education(collegeName: "Dr D Y Patil University, Pune", startYear: 2020, endYear: 2023, courseType: "Full-Time")
+            EducationTemp(collegeName: "Dr D Y Patil University, Pune", startYear: 2020, endYear: 2023, courseType: "Full-Time")
         ]
         
         companyNameTextField.delegate = self
@@ -578,7 +578,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         let vc = AddEducationVC()
         navigationController?.pushViewController(vc, animated: true)
     }
-    func createEducationView(education: Education) -> UIView {
+    func createEducationView(education: EducationTemp) -> UIView {
         let educationView = UIView()
         
         // Add companyName label

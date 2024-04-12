@@ -12,7 +12,7 @@ class AddEmploymentVC: UIViewController {
     let companyNameTextField = UITextField()
     
     var employments = [Employment]()
-    var educations = [Education]()
+    var educations = [EducationTemp]()
     
     var isMadeChanges : Bool = false
     

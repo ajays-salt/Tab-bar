@@ -20,6 +20,8 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         return label
     }()
     
+    var loader: UIActivityIndicatorView!
+    
     var scrollView : UIScrollView!
     
     var employmentsCV : UICollectionView!
@@ -28,7 +30,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
 //        Experience(titleLabel: "Android Developer", companyNameLabel: "Tech Co.", noOfYearsLabel: 2, jobTypeLabel: "Part time"),
 //        Experience(titleLabel: "Web Developer", companyNameLabel: "Web Corp", noOfYearsLabel: 3, jobTypeLabel: "Full time")
 //    ]
-    var dataArray : [Experience1] = []
+    var dataArray : [Employment] = []
     var employmentsCVHeightConstraint: NSLayoutConstraint!
     
     
@@ -616,7 +618,8 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         let combined = Double(firstInt) + Double(secondInt) / 10
         
         let exp = Experience1(titleLabel: jobText!, companyNameLabel: cText!, noOfYearsLabel: combined, jobTypeLabel: jobtype!)
-        dataArray.append(exp)
+        let emp = Employment(companyName: cText!, yearsOfExperience: "\(combined)", employmentDesignation: jobText!, employmentPeriod: "", employmentType: jobtype!)
+        dataArray.append(emp)
         
         companyTextField.text = ""
         jobTitleTextField.text = ""
@@ -772,10 +775,11 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "exp", for: indexPath) as! EmploymentCell
         let exp = dataArray[indexPath.row]
         
-        cell.titleLabel.text = exp.titleLabel
-        cell.companyNameLabel.text = "| \(exp.companyNameLabel)"
-        cell.noOfYearsLabel.text = "\(exp.noOfYearsLabel) Year,"
-        cell.jobTypeLabel.text = exp.jobTypeLabel
+        cell.titleLabel.text = exp.employmentDesignation
+        cell.companyNameLabel.text = exp.companyName
+        cell.noOfYearsLabel.text = exp.yearsOfExperience
+        cell.jobTypeLabel.text = exp.employmentType
+//        exp.employmentPeriod
         
         cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
         
@@ -797,4 +801,79 @@ struct Experience1 {
     let companyNameLabel: String
     let noOfYearsLabel: Double
     let jobTypeLabel: String
+}
+
+
+extension EmploymentsVC {
+    func fetchAndParseEducation() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/experience") else {
+            print("Invalid URL")
+            return
+        }
+        
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        DispatchQueue.main.async {
+            self.scrollView.alpha = 0
+            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "No error description")")
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let softwaresResponse = try decoder.decode(SoftwaresResponse.self, from: data)
+                let cleanedString = softwaresResponse.softwares
+                    .replacingOccurrences(of: "\\n", with: "")
+                    .replacingOccurrences(of: "\\\"", with: "\"")
+                    .replacingOccurrences(of: "\\", with: "") // Additional cleaning for any leftover backslashes
+                
+                // Regex to find the JSON array
+                let regex = try NSRegularExpression(pattern: "\\[.*?\\]", options: .dotMatchesLineSeparators)
+                if let match = regex.firstMatch(in: cleanedString, options: [], range: NSRange(cleanedString.startIndex..., in: cleanedString)) {
+                    let range = Range(match.range, in: cleanedString)!
+                    let jsonArrayString = String(cleanedString[range])
+                    
+                    if let jsonData = jsonArrayString.data(using: .utf8),
+                       let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [Any] {
+                        
+//                        print(jsonObject)
+                        
+                        do {
+                            let decoder = JSONDecoder()
+                            self.dataArray = try decoder.decode([Employment].self, from: jsonData)
+                            print("Decoded data: \(self.dataArray)")
+                            DispatchQueue.main.async {
+                                self.reloadCollectionView()
+                            }
+                        } catch {
+                            print("Failed to decode JSON: \(error)")
+                        }
+                        
+                    }
+                } else {
+                    print("No JSON array found")
+                }
+            } catch {
+                print("Failed to decode or clean JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+                self.loader.stopAnimating()
+                self.scrollView.alpha = 1
+                print("loader stopped")
+            }
+        }.resume()
+    }
 }

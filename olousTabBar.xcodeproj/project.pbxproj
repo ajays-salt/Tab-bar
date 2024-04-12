@@ -18,6 +18,7 @@
 		FAA2C5412BB404380006E7A6 /* BasicDetails2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA2C5402BB404380006E7A6 /* BasicDetails2.swift */; };
 		FAA8EBD22BBBCA2100F11455 /* SkillsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */; };
 		FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */; };
+		FAAF181D2BC9053B0087699B /* EducationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAF181C2BC9053B0087699B /* EducationCell.swift */; };
 		FAB40D262B95912200B50B7F /* locationLogo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FAB40D252B95912200B50B7F /* locationLogo.jpg */; };
 		FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */; };
 		FAB7B9852BAD424B00B5A9FA /* FilterOptionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB7B9842BAD424B00B5A9FA /* FilterOptionsCell.swift */; };
@@ -62,6 +63,7 @@
 		FAA2C5402BB404380006E7A6 /* BasicDetails2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDetails2.swift; sourceTree = "<group>"; };
 		FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsVC.swift; sourceTree = "<group>"; };
 		FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobsCell.swift; sourceTree = "<group>"; };
+		FAAF181C2BC9053B0087699B /* EducationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EducationCell.swift; sourceTree = "<group>"; };
 		FAB40D252B95912200B50B7F /* locationLogo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = locationLogo.jpg; sourceTree = "<group>"; };
 		FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchPage.swift; sourceTree = "<group>"; };
 		FAB7B9842BAD424B00B5A9FA /* FilterOptionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterOptionsCell.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 				FAF4B5A02BBEA728008E3645 /* Skill-Software Cell.swift */,
 				FA9AB5672BBFB99E00D013BF /* EmploymentCell.swift */,
 				FACDFA832BC3A9FD00E35ED1 /* ProjectCell.swift */,
+				FAAF181C2BC9053B0087699B /* EducationCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -350,6 +353,7 @@
 				FA9AB5682BBFB99E00D013BF /* EmploymentCell.swift in Sources */,
 				FAB40D2A2B95ABC600B50B7F /* JobSearchPage.swift in Sources */,
 				FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */,
+				FAAF181D2BC9053B0087699B /* EducationCell.swift in Sources */,
 				FACCE4D52BB285C500DAD5D2 /* RegistrationVC.swift in Sources */,
 				FAC3A1552B919F5400E17AFD /* InboxController.swift in Sources */,
 				FA7C4EBE2BA41FA600900BF8 /* AddEducationVC.swift in Sources */,

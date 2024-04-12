@@ -12,47 +12,26 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     var headerView : UIView!
     var circleContainerView : UIView!
     
-    var scrollView : UIScrollView!
-    
-    var qualificationOptionsScrollView : UIScrollView!
-    var selectedSpecializationOption : UIButton?
-    
-    var isOtherComponentsHidden : Bool = true
-    
-    let specializationTextField = UITextField()
-    var degreeDropdownButton : UIButton!
-    var degreeArray = ["Civil Engineering", "Btech Architecture", "Interior Designing", "xyz degree", "No degree", "Piece of Paper"]
-    let degreeTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.isHidden = true
-        return tableView
-    }()
-    
-    let collegeTextField = UITextField()
-    var collegeArray = ["Civil Engineering", "B.Tech Architecture", "Bsc Interior Design", "xyz degree", "No degree", "Piece of Paper"]
-    var filteredCollegeArray : [String] = []
-    let collegeTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.isHidden = true
-        return tableView
-    }()
-    
-    var selectedCourseTypeOption : UIButton?
-    
-    var startButton : UIButton!
-    let startYearPlaceholder : UILabel = {
+    var titleLabel : UILabel = {
         let label = UILabel()
-        label.text = "Select Year"
-        label.textColor = UIColor(hex: "#667085")
-        label.font = .systemFont(ofSize: 16)
+        label.text = "ADD YOUR QUALIFICATION"
+        label.font = .boldSystemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "#101828")
         return label
     }()
-    var startArray = ["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"]
-    var startTableView : UITableView = {
-        let tableView = UITableView()
-        tableView.isHidden = true
-        return tableView
-    }()
+    
+    var loader: UIActivityIndicatorView!
+    
+    var scrollView : UIScrollView!
+    
+    var employmentsCV : UICollectionView!
+    var dataArray : [Education] = []
+    var employmentsCVHeightConstraint: NSLayoutConstraint!
+    
+    
+    var educationTextField : UITextField!
+    var collegeTextField : UITextField!
+    var marksTextField : UITextField!
     
     var passingButton : UIButton!
     let passYearPlaceholder : UILabel = {
@@ -62,13 +41,18 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         label.font = .systemFont(ofSize: 16)
         return label
     }()
-    var passArray = ["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"]
+    var passArray = ["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013"]
     var passTableView : UITableView = {
         let tableView = UITableView()
+        tableView.layer.borderWidth = 1
+        tableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
         tableView.isHidden = true
         return tableView
     }()
     
+    var selectedEmploymentTypeOption : UIButton?
+    
+    var saveButton : UIButton!
     
     var bottomView : UIView!
 
@@ -77,30 +61,37 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        degreeTableView.delegate = self
-        degreeTableView.dataSource = self
-        
-        collegeTextField.delegate = self
-        collegeTableView.delegate = self
-        collegeTableView.dataSource = self
-        
-        startTableView.delegate = self
-        startTableView.dataSource = self
-        
-        passTableView.delegate = self
-        passTableView.dataSource = self
-        
+        fetchAndParseEducation()
+
         setupViews()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+//        loader.center = view.center
+        loader.style = UIActivityIndicatorView.Style.medium
+        loader.hidesWhenStopped = true
+        
+        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        view.addSubview(loader)
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
+            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+        ])
     }
     
     func setupViews() {
         setupHeaderView()
+        setupTitle()
         setupScrollView()
         
-        setupQualification()
-        
-        setupUI()
-        setupUI2()
+                
+        setupEmploymentsView()
+        setupAddEmployment()
         
         setupBottomView()
     }
@@ -218,13 +209,23 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         ])
     }
     
+    func setupTitle() {
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleLabel)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+        ])
+    }
+    
     func setupScrollView() {
         scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
@@ -240,243 +241,97 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     
-    func setupQualification() {
-        var qualificationsLabel : UILabel =  {
-            let label = UILabel()
-            label.text = "QUALIFICATIONS"
-            label.font = .boldSystemFont(ofSize: 20)
-            label.textColor = UIColor(hex: "#101828")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        scrollView.addSubview(qualificationsLabel)
+    func setupEmploymentsView() {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
         
+        employmentsCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        employmentsCV.register(EducationCell.self, forCellWithReuseIdentifier: "edu")
+        employmentsCV.delegate = self
+        employmentsCV.dataSource = self
         
-        let highestQualificationLabel : UILabel = {
-            let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Highest qualifications")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        scrollView.addSubview(highestQualificationLabel)
-        
-        let qualificationOptions = ["Masters", "Bachelors", "Diploma", "ITI", "12th", "10th"]
-        
-        qualificationOptionsScrollView = UIScrollView()
-        qualificationOptionsScrollView.showsHorizontalScrollIndicator = false
-        qualificationOptionsScrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(qualificationOptionsScrollView)
-        
-        // Create and configure the stack view for options
-        let qualificationOptionsStackView = UIStackView()
-        qualificationOptionsStackView.axis = .horizontal
-        qualificationOptionsStackView.spacing = 12
-        qualificationOptionsStackView.translatesAutoresizingMaskIntoConstraints = false
-        qualificationOptionsScrollView.addSubview(qualificationOptionsStackView)
-        
-        // Add options buttons to the stack view
-        for option in qualificationOptions {
-            let optionButton = UIButton(type: .system)
-            optionButton.layer.borderWidth = 1
-            optionButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-            optionButton.layer.cornerRadius = 8
-            optionButton.setTitle("  \(option)  ", for: .normal)
-            optionButton.titleLabel?.font = .systemFont(ofSize: 16)
-            optionButton.setTitleColor(.black, for: .normal)
-            optionButton.addTarget(self, action: #selector(specializationOptionButtonTapped(_:)), for: .touchUpInside)
-            optionButton.translatesAutoresizingMaskIntoConstraints = false
-            qualificationOptionsStackView.addArrangedSubview(optionButton)
-        }
-        
+        employmentsCV.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(employmentsCV)
         NSLayoutConstraint.activate([
-            qualificationsLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
-            qualificationsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            highestQualificationLabel.topAnchor.constraint(equalTo: qualificationsLabel.bottomAnchor, constant: 20),
-            highestQualificationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            qualificationOptionsScrollView.topAnchor.constraint(equalTo: highestQualificationLabel.bottomAnchor, constant: 10),
-            qualificationOptionsScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            qualificationOptionsScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            qualificationOptionsScrollView.heightAnchor.constraint(equalToConstant: 40),
-            qualificationOptionsStackView.topAnchor.constraint(equalTo: qualificationOptionsScrollView.topAnchor),
-            qualificationOptionsStackView.leadingAnchor.constraint(equalTo: qualificationOptionsScrollView.leadingAnchor),
-            qualificationOptionsStackView.trailingAnchor.constraint(equalTo: qualificationOptionsScrollView.trailingAnchor),
-            qualificationOptionsStackView.heightAnchor.constraint(equalToConstant: 40),
+            employmentsCV.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 10),
+            employmentsCV.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            employmentsCV.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
-    }
-    @objc func specializationOptionButtonTapped(_ sender: UIButton) {
-        // Deselect previous selected button
-        selectedSpecializationOption?.backgroundColor = nil
-        selectedSpecializationOption?.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        selectedSpecializationOption?.titleLabel?.textColor = nil
-
-        // Highlight the selected button
-        sender.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-        sender.titleLabel?.textColor = UIColor(hex: "#0079C4")
-        sender.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         
-        selectedSpecializationOption = sender
+        employmentsCVHeightConstraint = employmentsCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        employmentsCVHeightConstraint.isActive = true
         
+//        reloadCollectionView()
     }
     
-    func setupUI() {
-        let specializationLabel : UILabel = {
+    func reloadCollectionView() {
+        employmentsCV.reloadData()
+            
+        // Calculate the content size
+        employmentsCV.layoutIfNeeded()
+        let contentSize = employmentsCV.collectionViewLayout.collectionViewContentSize
+        
+        // Update the height constraint based on content size
+        employmentsCVHeightConstraint.constant = contentSize.height
+        
+        // Update constraints
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func setupAddEmployment() {
+        
+        let addNewExpLabel : UILabel = {
             let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Specialization")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
+            label.text = "Add New Qualification"
+            label.font = .boldSystemFont(ofSize: 18)
             label.textColor = UIColor(hex: "#344054")
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        scrollView.addSubview(specializationLabel)
+        scrollView.addSubview(addNewExpLabel)
         
-        specializationTextField.placeholder = "E.g. Civil Engineering"
-        specializationTextField.borderStyle = .none
-        specializationTextField.inputView = nil
-        specializationTextField.isUserInteractionEnabled = false
+        let companyLabel = UILabel()
+        companyLabel.translatesAutoresizingMaskIntoConstraints = false
+        let attributedText2 = NSMutableAttributedString(string: "Education name ")
+        let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText2.append(asterisk2)
+        companyLabel.attributedText = attributedText2
+        companyLabel.font = .boldSystemFont(ofSize: 16)
+        companyLabel.textColor = UIColor(hex: "#344054")
+        scrollView.addSubview(companyLabel)
         
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        container.layer.borderWidth = 1 // Add border to the container
-        container.layer.cornerRadius = 5 // Add corner radius for rounded corners
-        container.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set border color
-        scrollView.addSubview(container)
+        // company TextField
+        educationTextField = UITextField()
+        educationTextField.translatesAutoresizingMaskIntoConstraints = false
+        educationTextField.borderStyle = .roundedRect
+        educationTextField.placeholder = "E.g. B.Tech Civil"
+        educationTextField.delegate = self // Set delegate for this text field
+        scrollView.addSubview(educationTextField)
         
-        specializationTextField.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(specializationTextField)
+        let jobTitleLabel = UILabel()
+        jobTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        let attributedText3 = NSMutableAttributedString(string: "Board/University ")
+        let asterisk3 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText3.append(asterisk3)
+        jobTitleLabel.attributedText = attributedText3
+        jobTitleLabel.font = .boldSystemFont(ofSize: 16)
+        jobTitleLabel.textColor = UIColor(hex: "#344054")
+        scrollView.addSubview(jobTitleLabel)
         
-        // Create a dropdown button
-        degreeDropdownButton = UIButton(type: .system)
-        degreeDropdownButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-        degreeDropdownButton.tintColor = UIColor(hex: "#667085")
-        degreeDropdownButton.addTarget(self, action: #selector(degreeDropdownButtonTapped), for: .touchUpInside)
-        
-        degreeDropdownButton.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(degreeDropdownButton)
-        
-        degreeTableView.layer.borderWidth = 1
-        degreeTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        degreeTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(degreeTableView)
-        
-        
-        NSLayoutConstraint.activate([
-            specializationLabel.topAnchor.constraint(equalTo: qualificationOptionsScrollView.bottomAnchor, constant: 20),
-            specializationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            container.topAnchor.constraint(equalTo: specializationLabel.bottomAnchor, constant: 10),
-            container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            container.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            container.heightAnchor.constraint(equalToConstant: 50),
-            
-            specializationTextField.topAnchor.constraint(equalTo: container.topAnchor),
-            specializationTextField.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8), // Adjust left padding
-            specializationTextField.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -28),
-            specializationTextField.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            
-            degreeDropdownButton.widthAnchor.constraint(equalToConstant: 40), // Adjust the width as needed
-            degreeDropdownButton.heightAnchor.constraint(equalToConstant: 20), // Adjust the height as needed
-            degreeDropdownButton.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            degreeDropdownButton.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16), // Adjust spacing from right edge of container
-            
-            degreeTableView.topAnchor.constraint(equalTo: container.bottomAnchor, constant: 10),
-            degreeTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            degreeTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            degreeTableView.heightAnchor.constraint(equalToConstant: 150),
-        ])
-        
-        
-        let collegeLabel : UILabel = {
-            let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "University / Institute")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        scrollView.addSubview(collegeLabel)
-        
-        collegeTextField.placeholder = "E.g. IIT Bombay"
-        collegeTextField.borderStyle = .roundedRect
-        collegeTextField.layer.borderWidth = 1
-        collegeTextField.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        collegeTextField.layer.cornerRadius = 8
+        // jobTitle TextField
+        collegeTextField = UITextField()
         collegeTextField.translatesAutoresizingMaskIntoConstraints = false
+        collegeTextField.borderStyle = .roundedRect
+        collegeTextField.placeholder = "E.g. IIT Bombay"
+        collegeTextField.delegate = self // Set delegate for this text field
         scrollView.addSubview(collegeTextField)
         
-        collegeTableView.layer.borderWidth = 1
-        collegeTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        collegeTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(collegeTableView)
-        scrollView.bringSubviewToFront(collegeTableView)
         
-        NSLayoutConstraint.activate([
-            collegeLabel.topAnchor.constraint(equalTo: specializationTextField.bottomAnchor, constant: 20),
-            collegeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            collegeTextField.topAnchor.constraint(equalTo: collegeLabel.bottomAnchor, constant: 10),
-            collegeTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            collegeTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            collegeTextField.heightAnchor.constraint(equalToConstant: 50),
-            
-            collegeTableView.topAnchor.constraint(equalTo: collegeTextField.bottomAnchor, constant: 10),
-            collegeTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            collegeTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            collegeTableView.heightAnchor.constraint(equalToConstant: 100),
-        ])
-    }
-    
-    @objc func degreeDropdownButtonTapped(_ sender : UIButton) {
-        print(#function)
-        if sender.imageView?.image == UIImage(systemName: "chevron.down") {
-            sender.setImage(UIImage(systemName: "chevron.up"), for: .normal)
-            degreeTableView.isHidden = false
-            scrollView.bringSubviewToFront(degreeTableView)
-        }
-        else {
-            sender.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-            degreeTableView.isHidden = true
-        }
-        
-    }
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField == collegeTextField {
-            let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
-            filterCollege(with: searchText)
-        }
-        
-        return true
-    }
-    func filterCollege(with searchText: String) {
-        filteredCollegeArray = collegeArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
-        collegeTableView.isHidden = filteredCollegeArray.isEmpty
-        if collegeTableView.isHidden == false {
-            scrollView.bringSubviewToFront(collegeTableView)
-        }
-        if(filteredCollegeArray.count == collegeArray.count) {
-            filteredCollegeArray.removeAll()
-            collegeTableView.isHidden = true
-        }
-        collegeTableView.reloadData()
-    }
-    
-    func setupUI2() {
-        let courseTypeLabel : UILabel = {
+        let marksLabel : UILabel = {
             let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Course type")
+            let attributedText1 = NSMutableAttributedString(string: "Marks Obtained ")
             let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
             attributedText1.append(asterisk1)
             label.attributedText = attributedText1
@@ -485,84 +340,20 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        scrollView.addSubview(courseTypeLabel)
+        scrollView.addSubview(marksLabel)
         
-        let courseTypeOptions = ["Full-Time", "Part-Time", "Distance Education"]
+        marksTextField = UITextField()
+        marksTextField.translatesAutoresizingMaskIntoConstraints = false
+        marksTextField.borderStyle = .roundedRect
+        marksTextField.placeholder = "9.5 cgpa Or 95 percentile"
+        marksTextField.delegate = self // Set delegate for this text field
+        scrollView.addSubview(marksTextField)
         
-        let courseTypeStackView = UIStackView()
-        courseTypeStackView.axis = .horizontal
-        courseTypeStackView.spacing = 12
-        courseTypeStackView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(courseTypeStackView)
-        
-        // Add options buttons to the stack view
-        for option in courseTypeOptions {
-            let optionButton = UIButton(type: .system)
-            optionButton.layer.borderWidth = 1
-            optionButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-            optionButton.layer.cornerRadius = 8
-            optionButton.setTitle("  \(option)  ", for: .normal)
-            optionButton.titleLabel?.font = .systemFont(ofSize: 16)
-            optionButton.setTitleColor(.black, for: .normal)
-            optionButton.addTarget(self, action: #selector(courseTypeButtonTapped(_:)), for: .touchUpInside)
-            optionButton.translatesAutoresizingMaskIntoConstraints = false
-            courseTypeStackView.addArrangedSubview(optionButton)
-        }
-        
-        
-        NSLayoutConstraint.activate([
-            courseTypeLabel.topAnchor.constraint(equalTo: collegeTextField.bottomAnchor, constant: 20),
-            courseTypeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            courseTypeStackView.topAnchor.constraint(equalTo: courseTypeLabel.bottomAnchor, constant: 10),
-            courseTypeStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-        ])
-        
-        
-        let startYearLabel : UILabel = {
-            let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Starting year")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        scrollView.addSubview(startYearLabel)
-        
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        container.layer.borderWidth = 1 // Add border to the container
-        container.layer.cornerRadius = 5 // Add corner radius for rounded corners
-        container.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set border color
-        scrollView.addSubview(container)
-        
-        
-        
-        startYearPlaceholder.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(startYearPlaceholder)
-        
-        // Create a dropdown button
-        startButton = UIButton(type: .system)
-        startButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-        startButton.tintColor = UIColor(hex: "#667085")
-        startButton.addTarget(self, action: #selector(startDropdownButtonTapped), for: .touchUpInside)
-        
-        startButton.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(startButton)
-        
-        startTableView.layer.borderWidth = 1
-        startTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        startTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(startTableView)
         
         // passing year UI
         let passYearLabel : UILabel = {
             let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Passing year")
+            let attributedText1 = NSMutableAttributedString(string: "Year of Passing")
             let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
             attributedText1.append(asterisk1)
             label.attributedText = attributedText1
@@ -573,11 +364,15 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         }()
         scrollView.addSubview(passYearLabel)
         
-        let container2 = UIView()
-        container2.translatesAutoresizingMaskIntoConstraints = false
-        container2.layer.borderWidth = 1 // Add border to the container
-        container2.layer.cornerRadius = 5 // Add corner radius for rounded corners
-        container2.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set border color
+        let container2 : UIView = {
+            let views = UIView()
+            views.translatesAutoresizingMaskIntoConstraints = false
+            views.layer.borderWidth = 1 // Add border to the container
+            views.layer.cornerRadius = 5 // Add corner radius for rounded corners
+            views.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set border color
+            
+            return views
+        }()
         scrollView.addSubview(container2)
         
         passYearPlaceholder.translatesAutoresizingMaskIntoConstraints = false
@@ -591,41 +386,105 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         passingButton.translatesAutoresizingMaskIntoConstraints = false
         container2.addSubview(passingButton)
         
-        passTableView.layer.borderWidth = 1
-        passTableView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        passTableView.delegate = self
+        passTableView.dataSource = self
         passTableView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(passTableView)
         
         
+        let jobTypeLabel : UILabel = {
+            let label = UILabel()
+            let attributedText1 = NSMutableAttributedString(string: "Employment type")
+            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+            attributedText1.append(asterisk1)
+            label.attributedText = attributedText1
+            label.font = .boldSystemFont(ofSize: 16)
+            label.textColor = UIColor(hex: "#344054")
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        scrollView.addSubview(jobTypeLabel)
+        
+        let jobTypeOptions = ["Full-Time", "Part-Time", "Distance Learning"]
+        
+        let jobStackView = UIStackView()
+        jobStackView.axis = .horizontal
+        jobStackView.spacing = 12
+        jobStackView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(jobStackView)
+        
+        // Add options buttons to the stack view
+        for option in jobTypeOptions {
+            let optionButton = UIButton(type: .system)
+            optionButton.layer.borderWidth = 1
+            optionButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+            optionButton.layer.cornerRadius = 8
+            optionButton.setTitle("  \(option)  ", for: .normal)
+            optionButton.titleLabel?.font = .systemFont(ofSize: 16)
+            optionButton.setTitleColor(.black, for: .normal)
+            optionButton.addTarget(self, action: #selector(employmentTypeButtonTapped(_:)), for: .touchUpInside)
+            optionButton.translatesAutoresizingMaskIntoConstraints = false
+            jobStackView.addArrangedSubview(optionButton)
+            
+            if option == "Full-Time" {
+                optionButton.layer.borderColor = UIColor(hex: "#0079C4").cgColor
+                optionButton.titleLabel?.textColor = UIColor(hex: "#0079C4")
+                optionButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+                
+                selectedEmploymentTypeOption = optionButton
+            }
+        }
+        
+        saveButton = UIButton()
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveButton.layer.cornerRadius = 8
+        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(saveButton)
+        
         let width = (view.frame.width - 52) / 2
         
         NSLayoutConstraint.activate([
-            startYearLabel.topAnchor.constraint(equalTo: courseTypeStackView.bottomAnchor, constant: 20),
-            startYearLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            container.topAnchor.constraint(equalTo: startYearLabel.bottomAnchor, constant: 10),
-            container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            container.widthAnchor.constraint(equalToConstant: width),
-            container.heightAnchor.constraint(equalToConstant: 50),
+            addNewExpLabel.topAnchor.constraint(equalTo: employmentsCV.bottomAnchor, constant: 30),
+            addNewExpLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            startYearPlaceholder.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            startYearPlaceholder.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
+            companyLabel.topAnchor.constraint(equalTo: addNewExpLabel.bottomAnchor, constant: 15),
+            companyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            startButton.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            startButton.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
+            educationTextField.topAnchor.constraint(equalTo: companyLabel.bottomAnchor, constant: 10),
+            educationTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            educationTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            educationTextField.heightAnchor.constraint(equalToConstant: 50),
             
-            startTableView.topAnchor.constraint(equalTo: container.bottomAnchor),
-            startTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            startTableView.widthAnchor.constraint(equalToConstant: width),
-            startTableView.heightAnchor.constraint(equalToConstant: 100),
+            jobTitleLabel.topAnchor.constraint(equalTo: educationTextField.bottomAnchor, constant: 20),
+            jobTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            passYearLabel.topAnchor.constraint(equalTo: courseTypeStackView.bottomAnchor, constant: 20),
-            passYearLabel.leadingAnchor.constraint(equalTo: container.trailingAnchor, constant: 20),
+            collegeTextField.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 10),
+            collegeTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            collegeTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            collegeTextField.heightAnchor.constraint(equalToConstant: 50),
+            
+            
+            marksLabel.topAnchor.constraint(equalTo: collegeTextField.bottomAnchor, constant: 20),
+            marksLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            marksTextField.topAnchor.constraint(equalTo: marksLabel.bottomAnchor, constant: 10),
+            marksTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            marksTextField.widthAnchor.constraint(equalToConstant: width - 10),
+            marksTextField.heightAnchor.constraint(equalToConstant: 40),
+            
+            passYearLabel.topAnchor.constraint(equalTo: marksLabel.topAnchor),
+            passYearLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: width + 20),
             
             container2.topAnchor.constraint(equalTo: passYearLabel.bottomAnchor, constant: 10),
-            container2.leadingAnchor.constraint(equalTo: container.trailingAnchor, constant: 20),
+            container2.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: width + 20),
             container2.widthAnchor.constraint(equalToConstant: width),
-            container2.heightAnchor.constraint(equalToConstant: 50),
+            container2.heightAnchor.constraint(equalToConstant: 40),
             
             passYearPlaceholder.centerYAnchor.constraint(equalTo: container2.centerYAnchor),
             passYearPlaceholder.leadingAnchor.constraint(equalTo: container2.leadingAnchor, constant: 10),
@@ -637,40 +496,23 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             passTableView.leadingAnchor.constraint(equalTo: container2.leadingAnchor),
             passTableView.widthAnchor.constraint(equalToConstant: width),
             passTableView.heightAnchor.constraint(equalToConstant: 100),
+            
+            jobTypeLabel.topAnchor.constraint(equalTo: container2.bottomAnchor, constant: 20),
+            jobTypeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            jobStackView.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 10),
+            jobStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            saveButton.topAnchor.constraint(equalTo: jobStackView.bottomAnchor, constant: 20),
+            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            saveButton.widthAnchor.constraint(equalToConstant: 80),
+            saveButton.heightAnchor.constraint(equalToConstant: 40),
         ])
-    }
-    
-    @objc func courseTypeButtonTapped(_ sender: UIButton) {
-        // Deselect previous selected button
-        selectedCourseTypeOption?.backgroundColor = nil
-        selectedCourseTypeOption?.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        selectedCourseTypeOption?.titleLabel?.textColor = nil
-
-        // Highlight the selected button
-        sender.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-        sender.titleLabel?.textColor = UIColor(hex: "#0079C4")
-        sender.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         
-        selectedCourseTypeOption = sender
-        
-    }
-    
-    @objc func startDropdownButtonTapped(_ sender : UIButton) {
-        print(#function)
-        if sender.imageView?.image == UIImage(systemName: "chevron.down") {
-            sender.setImage(UIImage(systemName: "chevron.up"), for: .normal)
-            startTableView.isHidden = false
-            scrollView.bringSubviewToFront(startTableView)
-        }
-        else {
-            sender.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-            startTableView.isHidden = true
-        }
         
     }
     
     @objc func passDropdownButtonTapped(_ sender : UIButton) {
-        print(#function)
         if sender.imageView?.image == UIImage(systemName: "chevron.down") {
             sender.setImage(UIImage(systemName: "chevron.up"), for: .normal)
             passTableView.isHidden = false
@@ -682,11 +524,80 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         }
         
     }
+    
+    @objc func employmentTypeButtonTapped(_ sender: UIButton) {
+        // Deselect previous selected button
+        selectedEmploymentTypeOption?.backgroundColor = nil
+        selectedEmploymentTypeOption?.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        selectedEmploymentTypeOption?.titleLabel?.textColor = nil
 
+        // Highlight the selected button
+        sender.layer.borderColor = UIColor(hex: "#0079C4").cgColor
+        sender.titleLabel?.textColor = UIColor(hex: "#0079C4")
+        sender.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+        
+        selectedEmploymentTypeOption = sender
+    }
     
+    @objc func saveButtonTapped() {
+        let educationText = educationTextField.text
+        let collegeText = collegeTextField.text
+        let marks = marksTextField.text
+        let pass = passYearPlaceholder.text
+        let courseType = selectedEmploymentTypeOption?.titleLabel?.text
+        
+        var isEmpty = false
+        
+        [educationText, collegeText, marks, pass, courseType].forEach { x in
+            if x == "" {
+                isEmpty = true
+                let alertController = UIAlertController(title: "Alert!", message: "Fill in all the details", preferredStyle: .alert)
+                
+                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                
+                alertController.addAction(cancelAction)
+                
+                present(alertController, animated: true, completion: nil)
+            }
+        }
+        
+        if isEmpty {
+            return
+        }
+        
+        let passInt = Int(pass!)!
+        
+        let edu = Education(
+            educationName: educationText!,
+            yearOfPassing: pass!,
+            boardOrUniversity: collegeText!,
+            marksObtained: marks!
+        )
+        
+        dataArray.append(edu)
+        
+        educationTextField.text = ""
+        collegeTextField.text = ""
+        marksTextField.text = ""
+        passYearPlaceholder.text = ""
+        
+        
+        reloadCollectionView()
+        
+        
+    }
     
-    
-    
+    @objc func deleteCell(_ sender : UIButton) {
+        print(#function)
+        guard let cell = sender.superview as? EducationCell, // Adjust the number of superviews according to your cell's hierarchy
+            let indexPath = employmentsCV.indexPath(for: cell)
+        else {
+            return
+        }
+        
+        dataArray.remove(at: indexPath.row)
+        reloadCollectionView()
+    }
     
     
     
@@ -725,7 +636,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         
         
         NSLayoutConstraint.activate([
-            bottomView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            bottomView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 5),
             bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomView.heightAnchor.constraint(equalToConstant: 100),
@@ -742,16 +653,16 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         ])
     }
     
-    
-    
     @objc func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
     
     @objc func didTapNextButton() {
+        uploadEducationData()
         let vc = EmploymentsVC()
         navigationController?.pushViewController(vc, animated: true)
     }
+    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
@@ -762,64 +673,202 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
+    
 }
 
-extension QualificationsVC : UITableViewDelegate, UITableViewDataSource {
+extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == degreeTableView {
-            return degreeArray.count
-        }
-        else if tableView == startTableView {
-            return startArray.count
-        }
-        else if tableView == passTableView {
-            return passArray.count
-        }
-        else {
-            return filteredCollegeArray.count
-        }
+        return passArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        if tableView == degreeTableView {
-            cell.textLabel?.text = degreeArray[indexPath.row]
-        }
-        else if tableView == startTableView {
-            cell.textLabel?.text = startArray[indexPath.row]
-        }
-        else if tableView == passTableView {
-            cell.textLabel?.text = passArray[indexPath.row]
-        }
-        else {
-            cell.textLabel?.text = filteredCollegeArray[indexPath.row]
-        }
+        cell.textLabel?.text = passArray[indexPath.row]
         cell.selectionStyle = .none
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView == degreeTableView {
-            specializationTextField.text = degreeArray[indexPath.row]
-            degreeDropdownButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-            degreeTableView.isHidden = true
-        }
-        if tableView == collegeTableView {
-            collegeTextField.text = filteredCollegeArray[indexPath.row]
-            collegeTableView.isHidden = true
-        }
-        if tableView == startTableView {
-            startYearPlaceholder.text = startArray[indexPath.row]
-            startYearPlaceholder.textColor = UIColor.black
-            startButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-            startTableView.isHidden = true
-        }
-        if tableView == passTableView {
-            passYearPlaceholder.text = passArray[indexPath.row]
-            passYearPlaceholder.textColor = UIColor.black
-            passingButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-            passTableView.isHidden = true
-        }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 40
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        passYearPlaceholder.text = passArray[indexPath.row]
+        passYearPlaceholder.textColor = UIColor.black
+        passingButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        passTableView.isHidden = true
+    }
+    
+    
+    
+    // collectionView delegate methods
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return dataArray.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "edu", for: indexPath) as! EducationCell
+        
+        let edu = dataArray[indexPath.row]
+        
+        cell.educationLabel.text = edu.educationName
+        cell.collegeLabel.text = "l  \(edu.boardOrUniversity ?? "")"
+        cell.passYearLabel.text = "\(edu.yearOfPassing ?? ""),"
+        
+        cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
+        
+        cell.layer.borderWidth = 1
+        cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        cell.layer.cornerRadius = 12
+    
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width - 32, height: 80)
+    }
 }
+
+extension QualificationsVC { // extension to fetch API
+    
+    func fetchAndParseEducation() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/qualifications") else {
+            print("Invalid URL")
+            return
+        }
+        
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        DispatchQueue.main.async {
+            self.scrollView.alpha = 0
+            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "No error description")")
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let softwaresResponse = try decoder.decode(SoftwaresResponse.self, from: data)
+                let cleanedString = softwaresResponse.softwares
+                    .replacingOccurrences(of: "\\n", with: "")
+                    .replacingOccurrences(of: "\\\"", with: "\"")
+                    .replacingOccurrences(of: "\\", with: "") // Additional cleaning for any leftover backslashes
+                
+                // Regex to find the JSON array
+                let regex = try NSRegularExpression(pattern: "\\[.*?\\]", options: .dotMatchesLineSeparators)
+                if let match = regex.firstMatch(in: cleanedString, options: [], range: NSRange(cleanedString.startIndex..., in: cleanedString)) {
+                    let range = Range(match.range, in: cleanedString)!
+                    let jsonArrayString = String(cleanedString[range])
+                    
+                    if let jsonData = jsonArrayString.data(using: .utf8),
+                       let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [Any] {
+                        
+//                        print(jsonObject)
+                        
+                        do {
+                            let decoder = JSONDecoder()
+                            self.dataArray = try decoder.decode([Education].self, from: jsonData)
+                            print("Decoded data: \(self.dataArray)")
+                            DispatchQueue.main.async {
+                                self.reloadCollectionView()
+                            }
+                        } catch {
+                            print("Failed to decode JSON: \(error)")
+                        }
+                        
+                    }
+                } else {
+                    print("No JSON array found")
+                }
+            } catch {
+                print("Failed to decode or clean JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+                self.loader.stopAnimating()
+                self.scrollView.alpha = 1
+                print("loader stopped")
+            }
+        }.resume()
+    }
+    
+    func uploadEducationData() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        guard let jsonData = encodeEducationArray() else {
+            print("Failed to encode education data")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization") // Replace `accessToken` with your actual token
+        request.httpBody = jsonData
+        
+        DispatchQueue.main.async {
+            self.scrollView.alpha = 0
+            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+
+        let session = URLSession.shared
+        session.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if httpResponse.statusCode == 200 {
+                print("Data successfully uploaded")
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Server response: \(responseString)")
+                }
+            } else {
+                print("Failed to upload data, status code: \(httpResponse.statusCode)")
+                print(data , error)
+            }
+            
+            DispatchQueue.main.async {
+                self.loader.stopAnimating()
+                self.scrollView.alpha = 1
+                print("loader stopped")
+            }
+        }.resume()
+    }
+
+    
+    func encodeEducationArray() -> Data? {
+        do {
+            let educationDictionary = ["education": dataArray]
+            let jsonData = try JSONEncoder().encode(educationDictionary)
+            return jsonData
+        } catch {
+            print("Error encoding dataArray to JSON: \(error)")
+            return nil
+        }
+    }
+
+}
+

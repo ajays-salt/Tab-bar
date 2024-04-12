@@ -17,6 +17,8 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     var fullNameTextField : UITextField!
     var mobileNumberTextField : UITextField!
     
+    var isResumeUploaded = false
+    
     var resumeContainer : UIView!
     var uploadLogoView : UIView!
     var clickToUploadLabel : UILabel!
@@ -359,6 +361,18 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
+        
+//        guard let name = fullNameTextField.text, !name.isEmpty,
+//              isResumeUploaded == true,
+//              let mobile = mobileNumberTextField.text, !mobile.isEmpty, mobile.isValidMobileNumber() else {
+//            // Handle validation failure
+//                let alertController = UIAlertController(title: "Alert!", message: "Fill all the details", preferredStyle: .alert)
+//                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+//                alertController.addAction(cancelAction)
+//                self.present(alertController, animated: true, completion: nil)
+//            return
+//        }
+        
         let vc = QualificationsVC()
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -490,6 +504,7 @@ extension BasicDetails1: UIDocumentPickerDelegate {
 
             // File uploaded successfully
             print("File uploaded successfully")
+            self.isResumeUploaded = true
         }.resume()
     }
     
