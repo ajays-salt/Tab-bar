@@ -74,10 +74,11 @@ class EmploymentCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            titleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 160),
             
             companyNameLabel.topAnchor.constraint(equalTo: titleLabel.topAnchor),
-            companyNameLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 6),
-            companyNameLabel.widthAnchor.constraint(equalToConstant: 150),
+            companyNameLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 4),
+            companyNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 140),
             
             noOfYearsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             noOfYearsLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),

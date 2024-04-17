@@ -12,6 +12,8 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     var headerView : UIView!
     var circleContainerView : UIView!
     
+    var loader: UIActivityIndicatorView!
+    
     var titleLabel : UILabel = {
         let label = UILabel()
         label.text = "ADD YOUR PROJECTS"
@@ -23,10 +25,10 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     var scrollView : UIScrollView!
     
     var employmentsCV : UICollectionView!
-//    var dataArray : [Project] = [
-//        Project(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps that are of high quality and bug-free. It should be able to handle iPad UI as well and it should have push notifications along with firebase connection and RESTful APIs and backend services to let user connect with backend", description: "Travel journal app uild iPhone apps that are of high quality and bug-free. It should be able to handle iPad UI as well and it should have push notifications"),
-//        Project(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps", description: "Travel journal app"),
-//        Project(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps", description: "Travel journal app"),
+//    var dataArray : [Project1] = [
+//        Project1(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps that are of high quality and bug-free. It should be able to handle iPad UI as well and it should have push notifications along with firebase connection and RESTful APIs and backend services to let user connect with backend", description: "Travel journal app uild iPhone apps that are of high quality and bug-free. It should be able to handle iPad UI as well and it should have push notifications"),
+//        Project1(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps", description: "Travel journal app"),
+//        Project1(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps", description: "Travel journal app"),
 //    ]
     var dataArray : [Project] = []
     var employmentsCVHeightConstraint: NSLayoutConstraint!
@@ -67,8 +69,28 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
+        fetchProjects()
+        
         setupViews()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+        loader.style = UIActivityIndicatorView.Style.medium
+        loader.hidesWhenStopped = true
+        
+        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        view.addSubview(loader)
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
+            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+        ])
+    }
+    
     func setupViews() {
         setupHeaderView()
         setupTitle()
@@ -112,7 +134,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "4/7"
+        profileCircleLabel.text = "5/7"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -127,7 +149,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 4 / 7
+        let percentage: CGFloat = 5 / 7
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -215,7 +237,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 50
+        let extraSpaceHeight: CGFloat = 300
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -257,6 +279,36 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         
         // Update the height constraint based on content size
         employmentsCVHeightConstraint.constant = contentSize.height
+//        print("Content Size ", contentSize.height)
+        
+        if contentSize.height > 500 {
+            let extraSpaceHeight: CGFloat = 400
+//            print(extraSpaceHeight)
+            
+            // Add extra space at the bottom
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
+            
+            // Calculate content size
+            let contentHeight = view.bounds.height + extraSpaceHeight
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+        
+        if contentSize.height > 1000 {
+            var extraSpaceHeight: CGFloat = 800
+            if contentSize.height < 1200 {
+                extraSpaceHeight = 600
+            }
+            
+            // Add extra space at the bottom
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
+            
+            // Calculate content size
+            let contentHeight = view.bounds.height + extraSpaceHeight
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+        
+        
+        
         
         // Update constraints
         UIView.animate(withDuration: 0.3) {
@@ -419,7 +471,8 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             return
         }
         
-        let project = Project(name: cText, role: jobText, responsibility: start, description: pass)
+//        let project = Project1(name: cText, role: jobText, responsibility: start, description: pass)
+        let project = Project(projectName: cText, role: jobText, responsibility: start, description: pass)
         dataArray.append(project)
         
         nameTextField.text = ""
@@ -504,6 +557,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
+        uploadProjects()
         let vc = SkillsVC()
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -529,8 +583,8 @@ extension ProjectsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataS
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "project", for: indexPath) as! ProjectCell
         let project = dataArray[indexPath.row]
         
-        cell.projectName.text = project.name
-        cell.projectRole.text = "l  \(project.role)"
+        cell.projectName.text = project.projectName
+        cell.projectRole.text = project.role
         cell.projectDescription.text = project.description
         cell.projectResponsibility.text = project.responsibility
         
@@ -544,15 +598,163 @@ extension ProjectsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataS
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width - 32, height: 150)
+        let project = dataArray[indexPath.row]
+        
+        let padding: CGFloat = 6 // Adjust padding as necessary
+        let labelWidth = collectionView.bounds.width - (padding * 2)
+        
+        let descriptionFont = UIFont.systemFont(ofSize: 14)
+        let responsibilityFont = UIFont.systemFont(ofSize: 14)
+        let fixedHeightFont = UIFont.systemFont(ofSize: 18) // Assuming the single-line labels use this
+        
+        // Calculate heights for the dynamic height labels
+        let descriptionHeight = project.description.heightWithConstrainedWidth(width: labelWidth, font: descriptionFont)
+        let responsibilityHeight = project.responsibility.heightWithConstrainedWidth(width: labelWidth, font: responsibilityFont)
+        
+        // Add heights for the fixed single-line labels
+        let fixedHeight = fixedHeightFont.lineHeight // Since they are single line, we can use line height directly
+
+        // Calculate total height
+        let totalHeight = descriptionHeight + responsibilityHeight + (fixedHeight * 2) + (padding * 3) // Adjust number of paddings as needed
+        
+        return CGSize(width: view.frame.width - 32, height: totalHeight + 30)
     }
+
     
 }
 
+extension String {
+    func heightWithConstrainedWidth(width: CGFloat, font: UIFont) -> CGFloat {
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = self.boundingRect(with: constraintRect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: font], context: nil)
+        return ceil(boundingBox.height)
+    }
+}
 
-struct Project {
+
+struct Project1 {
     let name: String
     let role: String
     let responsibility: String
     let description: String
+}
+
+
+extension ProjectsVC {
+    struct ProjectsResponse: Codable {
+        let softwares: String
+    }
+
+    struct Project: Codable {
+        let projectName: String
+        let role: String
+        let responsibility: String
+        let description: String
+        
+        enum CodingKeys: String, CodingKey {
+            case projectName = "Project Name"
+            case role = "Role"
+            case responsibility = "Responsibility"
+            case description = "Description"
+        }
+    }
+    
+    func fetchProjects() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/projects") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        DispatchQueue.main.async {
+            self.loader.startAnimating()
+            self.scrollView.alpha = 0
+            print("Loader should be visible now")
+        }
+        
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self = self, let data = data, error == nil else {
+                return
+            }
+            
+            do {
+                let outerResponse = try JSONDecoder().decode(ProjectsResponse.self, from: data)
+                let projectsString = outerResponse.softwares
+                
+                // Extract the JSON part directly
+                if let jsonStartIndex = projectsString.range(of: "\\[", options: .regularExpression)?.lowerBound {
+                    let jsonPart = String(projectsString[jsonStartIndex...])
+                    if let projectsData = jsonPart.data(using: .utf8) {
+                        let projects = try JSONDecoder().decode([Project].self, from: projectsData)
+                        DispatchQueue.main.async {
+                            print("Fetched Projects: \(projects)")
+                            self.dataArray = projects
+                            self.reloadCollectionView()
+                        }
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    print("Failed to decode JSON: \(error)")
+                    self.fetchProjects()
+                }
+            }
+            
+            DispatchQueue.main.async {
+                self.loader.stopAnimating()
+                self.scrollView.alpha = 1
+                print("Loader stopped")
+            }
+        }.resume()
+    }
+    
+    func uploadProjects() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        do {
+            let projectsData = ["projects": dataArray]
+            let jsonData = try JSONEncoder().encode(projectsData)
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode projects to JSON: \(error)")
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Failed to upload projects, status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                return
+            }
+            
+            if httpResponse.statusCode == 200 {
+                print("Projects successfully uploaded.")
+            } else {
+                print("Failed to upload projects, status code: \(httpResponse.statusCode)")
+            }
+            
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Server response: \(responseString)")
+            }
+            if let error = error {
+                print("Error uploading projects: \(error.localizedDescription)")
+            }
+            
+        }.resume()
+    }
+    
 }

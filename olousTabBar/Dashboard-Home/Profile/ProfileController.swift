@@ -9,7 +9,7 @@ import UIKit
 
 class ProfileController: UIViewController, UITextFieldDelegate {
     
-    var employments = [Employment]()
+    var employments = [EmploymentTemp]()
     var educations = [EducationTemp]()
     
     
@@ -112,9 +112,9 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         view.backgroundColor = .systemBackground
         
         employments = [
-            Employment(companyName: "ABC Company", startYear: 2018, endYear: 2022, jobType: "Full-time"),
-            Employment(companyName: "XYZ Inc.", startYear: 2020, endYear: 2021, jobType: "Part-time"),
-            Employment(companyName: "Salt Tech", startYear: 2020, endYear: 2021, jobType: "Full-time")
+            EmploymentTemp(companyName: "ABC Company", startYear: 2018, endYear: 2022, jobType: "Full-time"),
+            EmploymentTemp(companyName: "XYZ Inc.", startYear: 2020, endYear: 2021, jobType: "Part-time"),
+            EmploymentTemp(companyName: "Salt Tech", startYear: 2020, endYear: 2021, jobType: "Full-time")
         ]
         
         educations = [
@@ -452,7 +452,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    func createEmploymentView(employment: Employment) -> UIView {
+    func createEmploymentView(employment: EmploymentTemp) -> UIView {
         let employmentView = UIView()
         
         // Add companyName label

@@ -46,7 +46,7 @@ struct Employment: Codable {
     let yearsOfExperience: String
     let employmentDesignation: String
     let employmentPeriod: String
-    let employmentType: String
+    let employmentType: String?
 
     enum CodingKeys: String, CodingKey {
         case companyName = "Company Name"
@@ -60,4 +60,34 @@ struct Employment: Codable {
 // Assuming there is an array of experience
 struct ExperienceList: Decodable {
     let experience: [Employment]
+}
+
+
+
+struct UserProfileUpdate: Codable {
+    let hobbies: String
+    let preferredWorkType: String
+    let willingToRelocate: String
+    let gender: String
+    let noticePeriod: String
+    let currentlyEmployed: String
+    let permanentAddress: Address
+    let currentAddress: Address
+    let currentCtc: Int
+    let expectedCtc: Int
+    let language: [Language]
+    let portfolio: String
+}
+
+struct Address: Codable {
+    let address: String
+    let pinCode: String
+}
+
+struct Language: Codable {
+    let language: String
+    let proficiencyLevel: String
+    let read: Bool
+    let write: Bool
+    let speak: Bool
 }

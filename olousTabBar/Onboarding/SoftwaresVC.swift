@@ -15,6 +15,8 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     var headerView : UIView!
     var circleContainerView : UIView!
     
+    var loader: UIActivityIndicatorView!
+    
     var scrollView : UIScrollView!
     
     let skillsTextField = UITextField()
@@ -40,7 +42,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     }()
     var suggestedSkillsView : UICollectionView!
     var suggestedSkillsHashSet = Set<String>()
-    var suggestedSkillsArray = [ "Swimming", "Cooking", "Painting", "Tekla", "NavisWorks", "Bentley Systems", "Programming", "Infraworks"]
+    var suggestedSkillsArray : [String] = []
     var suggestedSkillsViewHeightConstraint: NSLayoutConstraint!
     
     var bottomView : UIView!
@@ -54,9 +56,27 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         skillsTableView.delegate = self
         skillsTableView.dataSource = self
         
-        
+        fetchAndProcessSoftwares()
         
         setupViews()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+//        loader.center = view.center
+        loader.style = UIActivityIndicatorView.Style.medium
+        loader.hidesWhenStopped = true
+        
+        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        view.addSubview(loader)
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
+            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+        ])
     }
     
     func setupViews() {
@@ -102,7 +122,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "7/7"
+        profileCircleLabel.text = "4/7"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -117,7 +137,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 6.9 / 7
+        let percentage: CGFloat = 4 / 7
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -265,7 +285,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     
     func setupAddedSkillsView() {
         
-        let layout = UICollectionViewFlowLayout()
+        let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         
         addedSkillsView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -308,7 +328,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         suggestionsLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(suggestionsLabel)
         
-        let layout = UICollectionViewFlowLayout()
+        let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         
         suggestedSkillsView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -359,6 +379,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         
         return true
     }
+    
     func filterSkills(with searchText: String) {
         filteredSkillsArray = skillsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
         
@@ -376,9 +397,6 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         
         skillsTableView.reloadData()
     }
-    
-    
-   
     
     
     func setupBottomView() {
@@ -439,6 +457,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
+        uploadAddedSkills()
         let vc = ProjectsVC()
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -514,6 +533,7 @@ extension SoftwaresVC : UITableViewDelegate, UITableViewDataSource, UICollection
             let t = addedSkillsArray[indexPath.row]
             addedSkillsArray.remove(at: indexPath.row)
             addedSkillsHashSet.remove(t)
+            suggestedSkillsArray.append(t)
             if suggestedSkillsArray.contains(t) {
                 reloadSuggestedSkills()
             }
@@ -524,6 +544,8 @@ extension SoftwaresVC : UITableViewDelegate, UITableViewDataSource, UICollection
             if !addedSkillsHashSet.contains(t) {
                 addedSkillsArray.append(t)
                 addedSkillsHashSet.insert(t)
+                
+                suggestedSkillsArray.remove(at: indexPath.row)
                 
                 reloadAddedSkills()
                 reloadSuggestedSkills()
@@ -562,3 +584,152 @@ extension SoftwaresVC : UITableViewDelegate, UITableViewDataSource, UICollection
     }
 }
 
+extension SoftwaresVC {
+    struct SoftwareFetchResponse: Codable {
+        let softwareSuggestions: String
+        let softwares: String
+    }
+
+    // Fetch and process softwares from API
+    func fetchAndProcessSoftwares() {
+        guard let url = URL(string: "https://9828-2405-201-a420-20-8cb7-88c4-12c9-a25e.ngrok-free.app/api/v1/user/candidate/softwares") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        // Include accessToken for Authorization
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        DispatchQueue.main.async {
+            self.scrollView.alpha = 0
+            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            do {
+                // Decode the JSON into the SoftwareFetchResponse struct
+                let response = try JSONDecoder().decode(SoftwareFetchResponse.self, from: data)
+                print("Software Suggestions: \(response.softwareSuggestions)")
+                print("Softwares: \(response.softwares)")
+                
+                print("Space")
+                
+                let processedSoftwares = self.processSoftwareString(softwareString: response.softwares)
+                print("Processed Softwares: \(processedSoftwares)")
+                let pss = self.processSoftwareString(softwareString: response.softwareSuggestions)
+                print("Processed Suggestions: \(pss)")
+                
+                self.addedSkillsArray = processedSoftwares
+                self.suggestedSkillsArray = pss
+                DispatchQueue.main.async {
+                    self.reloadAddedSkills()
+                    self.reloadSuggestedSkills()
+                }
+                
+            } catch {
+                print("Failed to decode or process data: \(error)")
+            }
+            DispatchQueue.main.async {
+                self.loader.stopAnimating()
+                self.scrollView.alpha = 1
+                print("loader stopped")
+            }
+        }.resume()
+    }
+    
+    // Function to process the software string
+    func processSoftwareString(softwareString: String) -> [String] {
+        // Check if the string is in JSON-like array format
+        if softwareString.hasPrefix("[") {
+            // Attempt to parse it as JSON
+            if let data = softwareString.data(using: .utf8),
+               let jsonArray = try? JSONDecoder().decode([String].self, from: data) {
+                return jsonArray.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            }
+        }
+        
+        // Normalize the string by removing newline characters
+        let normalizedString = softwareString.replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\"", with: "") // Remove quotes
+        
+        // Split the string based on commas if not JSON
+        return normalizedString.components(separatedBy: ", ")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+    }
+    func parseNumberedSoftwareSuggestions(suggestions: String) -> [String] {
+        // Split the string into individual lines assuming each new line is a separate suggestion
+        let lines = suggestions.components(separatedBy: .newlines)
+        
+        // Use a regular expression to extract the software name after the number and period
+        let regexPattern = "\\d+\\.\\s*(.+)"
+        
+        var softwareNames = [String]()
+        
+        for line in lines {
+            if let regex = try? NSRegularExpression(pattern: regexPattern),
+               let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+               let range = Range(match.range(at: 1), in: line) {
+                let name = line[range].trimmingCharacters(in: .whitespacesAndNewlines)
+                softwareNames.append(name)
+            }
+        }
+        
+        return softwareNames
+    }
+    
+    func uploadAddedSkills() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
+        // Prepare the URLRequest
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Include accessToken for Authorization if needed
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        // Prepare the JSON body
+        let json: [String: Any] = ["softwares": addedSkillsArray]
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: json, options: [])
+        } catch {
+            print("Failed to encode softwares to JSON: \(error)")
+            return
+        }
+        
+        // Perform the URLSession task
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Error in URLSession data task: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("Successfully uploaded softwares")
+            } else {
+                print("Failed to upload softwares with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+            }
+            
+            // You might want to handle the response data if needed
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    print("Response JSON: \(json)")
+                }
+            } catch {
+                print("Failed to parse response data: \(error)")
+            }
+        }.resume()
+    }
+}

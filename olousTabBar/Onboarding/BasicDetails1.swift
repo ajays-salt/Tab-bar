@@ -373,7 +373,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
 //            return
 //        }
         
-        let vc = QualificationsVC()
+        let vc = PreferencesVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     

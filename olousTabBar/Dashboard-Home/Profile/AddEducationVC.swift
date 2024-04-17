@@ -11,7 +11,7 @@ class AddEducationVC: UIViewController {
 
     let collegeNameTextField = UITextField()
     
-    var employments = [Employment]()
+    var employments = [EmploymentTemp]()
     var educations = [EducationTemp]()
     
     var isMadeChanges : Bool = false
@@ -168,7 +168,7 @@ class AddEducationVC: UIViewController {
         }
         
         // Create Employment instance
-        let employment = Employment(companyName: companyName, startYear: startYear, endYear: endYear, jobType: jobType)
+        let employment = EmploymentTemp(companyName: companyName, startYear: startYear, endYear: endYear, jobType: jobType)
         
         // Add to employments array
         employments.append(employment)

@@ -12,6 +12,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     var headerView : UIView!
     var circleContainerView : UIView!
     
+    var loader: UIActivityIndicatorView!
+    
     var scrollView : UIScrollView!
     
     let skillsTextField = UITextField()
@@ -51,9 +53,27 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         skillsTableView.delegate = self
         skillsTableView.dataSource = self
         
-        
+        fetchAndProcessSoftwares()
         
         setupViews()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+//        loader.center = view.center
+        loader.style = UIActivityIndicatorView.Style.medium
+        loader.hidesWhenStopped = true
+        
+        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        view.addSubview(loader)
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
+            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+        ])
     }
     
     func setupViews() {
@@ -99,7 +119,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "6/7"
+        profileCircleLabel.text = "5/7"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -114,7 +134,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 6 / 7
+        let percentage: CGFloat = 5 / 7
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -262,7 +282,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     
     func setupAddedSkillsView() {
         
-        let layout = UICollectionViewFlowLayout()
+        let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         
         addedSkillsView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -305,7 +325,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         suggestionsLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(suggestionsLabel)
         
-        let layout = UICollectionViewFlowLayout()
+        let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         
         suggestedSkillsView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -437,7 +457,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-        let vc = BasicDetails2()
+        uploadAddedSkills()
+        let vc = ViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -512,6 +533,7 @@ extension SkillsVC : UITableViewDelegate, UITableViewDataSource, UICollectionVie
             let t = addedSkillsArray[indexPath.row]
             addedSkillsArray.remove(at: indexPath.row)
             addedSkillsHashSet.remove(t)
+            suggestedSkillsArray.append(t)
             if suggestedSkillsArray.contains(t) {
                 reloadSuggestedSkills()
             }
@@ -522,6 +544,8 @@ extension SkillsVC : UITableViewDelegate, UITableViewDataSource, UICollectionVie
             if !addedSkillsHashSet.contains(t) {
                 addedSkillsArray.append(t)
                 addedSkillsHashSet.insert(t)
+                
+                suggestedSkillsArray.remove(at: indexPath.row)
                 
                 reloadAddedSkills()
                 reloadSuggestedSkills()
@@ -557,5 +581,182 @@ extension SkillsVC : UITableViewDelegate, UITableViewDataSource, UICollectionVie
             skillsTextField.text = nil
             skillsTableView.isHidden = true
         }
+    }
+}
+
+extension SkillsVC {
+    struct SkillsFetchResponse: Codable {
+        let softwareSuggestions: String
+        let softwares: String
+    }
+
+    // Fetch and process softwares from API
+    func fetchAndProcessSoftwares() {
+        guard let url = URL(string: "https://9828-2405-201-a420-20-8cb7-88c4-12c9-a25e.ngrok-free.app/api/v1/user/candidate/softwares") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        // Include accessToken for Authorization
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        DispatchQueue.main.async {
+            self.scrollView.alpha = 0
+            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            do {
+                // Decode the JSON into the SoftwareFetchResponse struct
+                let response = try JSONDecoder().decode(SkillsFetchResponse.self, from: data)
+                print("Software Suggestions: \(response.softwareSuggestions)")
+                print("Softwares: \(response.softwares)")
+                
+                print("Space")
+                
+                let processedSoftwares = self.processSoftwareString(softwareString: response.softwares)
+                print("Processed Softwares: \(processedSoftwares)")
+                let pss = self.processSoftwareString(softwareString: response.softwareSuggestions)
+                print("Processed Suggestions: \(pss)")
+                
+                self.addedSkillsArray = processedSoftwares
+                self.suggestedSkillsArray = pss
+                DispatchQueue.main.async {
+                    self.reloadAddedSkills()
+                    self.reloadSuggestedSkills()
+                }
+                
+            } catch {
+                print("Failed to decode or process data: \(error)")
+            }
+            DispatchQueue.main.async {
+                self.loader.stopAnimating()
+                self.scrollView.alpha = 1
+                print("loader stopped")
+            }
+        }.resume()
+    }
+    
+    // Function to process the software string
+    func processSoftwareString(softwareString: String) -> [String] {
+        // Check if the string is in JSON-like array format
+        if softwareString.hasPrefix("[") {
+            // Attempt to parse it as JSON
+            if let data = softwareString.data(using: .utf8),
+               let jsonArray = try? JSONDecoder().decode([String].self, from: data) {
+                return jsonArray.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            }
+        }
+        
+        // Normalize the string by removing newline characters
+        let normalizedString = softwareString.replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\"", with: "") // Remove quotes
+        
+        // Split the string based on commas if not JSON
+        return normalizedString.components(separatedBy: ", ")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+    }
+    func parseNumberedSoftwareSuggestions(suggestions: String) -> [String] {
+        // Split the string into individual lines assuming each new line is a separate suggestion
+        let lines = suggestions.components(separatedBy: .newlines)
+        
+        // Use a regular expression to extract the software name after the number and period
+        let regexPattern = "\\d+\\.\\s*(.+)"
+        
+        var softwareNames = [String]()
+        
+        for line in lines {
+            if let regex = try? NSRegularExpression(pattern: regexPattern),
+               let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+               let range = Range(match.range(at: 1), in: line) {
+                let name = line[range].trimmingCharacters(in: .whitespacesAndNewlines)
+                softwareNames.append(name)
+            }
+        }
+        
+        return softwareNames
+    }
+    
+    func uploadAddedSkills() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
+        // Prepare the URLRequest
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Include accessToken for Authorization if needed
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        // Prepare the JSON body
+        let json: [String: Any] = ["skills": addedSkillsArray]
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: json, options: [])
+        } catch {
+            print("Failed to encode softwares to JSON: \(error)")
+            return
+        }
+        
+        // Perform the URLSession task
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Error in URLSession data task: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("Successfully uploaded skills")
+            } else {
+                print("Failed to upload softwares with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+            }
+            
+            // You might want to handle the response data if needed
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    print("Response JSON: \(json)")
+                }
+            } catch {
+                print("Failed to parse response data: \(error)")
+            }
+        }.resume()
+    }
+}
+
+
+class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
+
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        let attributes = super.layoutAttributesForElements(in: rect)
+
+        var leftMargin = sectionInset.left
+        var maxY: CGFloat = -1.0
+        attributes?.forEach { layoutAttribute in
+            if layoutAttribute.frame.origin.y >= maxY {
+                leftMargin = sectionInset.left // Reset left margin for new row
+            }
+
+            if layoutAttribute.frame.origin.x == sectionInset.left {
+                leftMargin = sectionInset.left // Stick to left side for the first item
+            } else {
+                layoutAttribute.frame.origin.x = leftMargin // Adjust following items
+            }
+
+            leftMargin += layoutAttribute.frame.width + minimumInteritemSpacing
+            maxY = max(layoutAttribute.frame.maxY , maxY)
+        }
+
+        return attributes
     }
 }

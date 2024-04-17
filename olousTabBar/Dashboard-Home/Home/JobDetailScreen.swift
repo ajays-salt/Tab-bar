@@ -129,7 +129,12 @@ class JobDetailScreen: UIViewController {
     }
     
     func assignValues() {
-        jobTitle.text = selectedJob.title
+        if selectedJob == nil {
+            jobTitle.text = ""
+        }
+        else {
+            jobTitle.text = selectedJob.title
+        }
         companyName.text = selectedJob.companyName
         jobLocationLabel.text = "\(selectedJob.location.city), \(selectedJob.location.state)"
         

@@ -68,15 +68,16 @@ class ProjectCell: UICollectionViewCell {
         }
         
         NSLayoutConstraint.activate([
-            projectName.topAnchor.constraint(equalTo: topAnchor, constant: 12),
+            projectName.topAnchor.constraint(equalTo: topAnchor, constant: 6),
             projectName.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            projectName.heightAnchor.constraint(equalToConstant: 20),
+//            projectName.heightAnchor.constraint(equalToConstant: 20),
+            projectName.widthAnchor.constraint(lessThanOrEqualToConstant: 300),
             
-            projectRole.topAnchor.constraint(equalTo: projectName.topAnchor),
-            projectRole.leadingAnchor.constraint(equalTo: projectName.trailingAnchor, constant: 6),
-            projectRole.widthAnchor.constraint(equalToConstant: 150),
-            
-            projectDescription.topAnchor.constraint(equalTo: projectName.bottomAnchor, constant: 6),
+            projectRole.topAnchor.constraint(equalTo: projectName.bottomAnchor, constant: 6),
+            projectRole.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            projectRole.widthAnchor.constraint(lessThanOrEqualToConstant: 280),
+        
+            projectDescription.topAnchor.constraint(equalTo: projectRole.bottomAnchor, constant: 6),
             projectDescription.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             projectDescription.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
 //            projectDescription.heightAnchor.constraint(equalToConstant: 40),
@@ -84,7 +85,7 @@ class ProjectCell: UICollectionViewCell {
             projectResponsibility.topAnchor.constraint(equalTo: projectDescription.bottomAnchor, constant: 4),
             projectResponsibility.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             projectResponsibility.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            projectResponsibility.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
+//            projectResponsibility.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
             
             deleteButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),

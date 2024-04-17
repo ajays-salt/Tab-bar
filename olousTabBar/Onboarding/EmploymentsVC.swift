@@ -82,8 +82,28 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+        print("Employment VC")
+        fetchAndParseExperience()
 
         setupViews()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+//        loader.center = view.center
+        loader.style = UIActivityIndicatorView.Style.medium
+        loader.hidesWhenStopped = true
+        
+        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        view.addSubview(loader)
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
+            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+        ])
     }
     
     func setupViews() {
@@ -617,7 +637,6 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         let secondInt = Int(pass!)!
         let combined = Double(firstInt) + Double(secondInt) / 10
         
-        let exp = Experience1(titleLabel: jobText!, companyNameLabel: cText!, noOfYearsLabel: combined, jobTypeLabel: jobtype!)
         let emp = Employment(companyName: cText!, yearsOfExperience: "\(combined)", employmentDesignation: jobText!, employmentPeriod: "", employmentType: jobtype!)
         dataArray.append(emp)
         
@@ -699,12 +718,11 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapBackButton() {
-        print(#function)
         navigationController?.popViewController(animated: true)
     }
     
     @objc func didTapNextButton() {
-        print(#function)
+        fetchTotalExperienceAndUploadData()
         let vc = SoftwaresVC()
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -776,9 +794,9 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
         let exp = dataArray[indexPath.row]
         
         cell.titleLabel.text = exp.employmentDesignation
-        cell.companyNameLabel.text = exp.companyName
-        cell.noOfYearsLabel.text = exp.yearsOfExperience
-        cell.jobTypeLabel.text = exp.employmentType
+        cell.companyNameLabel.text = "l  \(exp.companyName)"
+        cell.noOfYearsLabel.text = "\(exp.yearsOfExperience),"
+        cell.jobTypeLabel.text = exp.employmentPeriod
 //        exp.employmentPeriod
         
         cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
@@ -805,7 +823,7 @@ struct Experience1 {
 
 
 extension EmploymentsVC {
-    func fetchAndParseEducation() {
+    func fetchAndParseExperience() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/experience") else {
             print("Invalid URL")
             return
@@ -876,4 +894,121 @@ extension EmploymentsVC {
             }
         }.resume()
     }
+    
+    func fetchTotalExperienceAndUploadData() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/totalExperience") else {
+            print("Invalid URL for fetching total experience")
+            return
+        }
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let data = data, error == nil else {
+                print("Failed to fetch total experience: \(error?.localizedDescription ?? "No error description")")
+                return
+            }
+
+            // Parse and extract the number from the total experience string
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Raw JSON string of total experience data: \(jsonString)")
+                let regex = try! NSRegularExpression(pattern: "\\d+(\\.\\d+)?")
+                let results = regex.matches(in: jsonString, options: [], range: NSRange(jsonString.startIndex..., in: jsonString))
+                if let match = results.first {
+                    let range = Range(match.range, in: jsonString)!
+                    let numberString = String(jsonString[range])
+                    print("Extracted Total Experience Number: \(numberString)")
+                    self?.uploadEmploymentData(totalExperience: numberString)
+                } else {
+                    print("No numbers found in total experience string")
+                }
+            }
+        }.resume()
+    }
+
+
+    func uploadEmploymentData(totalExperience: String) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL for updating resume")
+            return
+        }
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        guard let experienceArray = dataArray as? [Employment], !experienceArray.isEmpty else {
+            print("Employment data array is empty or not properly cast.")
+            return
+        }
+
+        guard let jsonData = encodeEmploymentArray(experienceArray: experienceArray, totalExperience: totalExperience) else {
+            print("Failed to encode employment data")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.httpBody = jsonData
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            if httpResponse.statusCode == 200 {
+                print("Data successfully uploaded")
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Server response: \(responseString)")
+                }
+            } else {
+                print("Failed to upload data, status code: \(httpResponse.statusCode)")
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Response details: \(responseString)")
+                }
+            }
+        }.resume()
+    }
+
+    
+    
+
+    func encodeEmploymentArray(experienceArray: [Employment], totalExperience: String) -> Data? {
+        guard let firstDesignation = experienceArray.first?.employmentDesignation else {
+            print("No employment designation available in the first item of the array.")
+            return nil
+        }
+
+        let employmentData = EmploymentData(
+            experience: experienceArray,
+            designation: firstDesignation,
+            totalExperience: totalExperience
+        )
+
+        do {
+            let jsonData = try JSONEncoder().encode(employmentData)
+            return jsonData
+        } catch {
+            print("Error encoding employment data to JSON: \(error)")
+            return nil
+        }
+    }
+
+
+
+}
+
+struct EmploymentData: Codable {
+    let experience: [Employment]
+    let designation: String
+    let totalExperience: String
 }

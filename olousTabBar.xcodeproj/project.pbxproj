@@ -46,6 +46,8 @@
 		FACDFA862BC3F33600E35ED1 /* JobModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACDFA852BC3F33600E35ED1 /* JobModel.swift */; };
 		FAD04C1F2BBA6EAB000E08E2 /* QualificationsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD04C1E2BBA6EAB000E08E2 /* QualificationsVC.swift */; };
 		FAD04C212BBA711F000E08E2 /* ProjectsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD04C202BBA711F000E08E2 /* ProjectsVC.swift */; };
+		FAD560B92BCF867900A7FCBD /* PreferencesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD560B82BCF867900A7FCBD /* PreferencesVC.swift */; };
+		FAD560BB2BCFAE0D00A7FCBD /* LanguageEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD560BA2BCFAE0D00A7FCBD /* LanguageEntryView.swift */; };
 		FAE0A1EE2BB3D51500F07B29 /* BasicDetails1.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE0A1ED2BB3D51500F07B29 /* BasicDetails1.swift */; };
 		FAF4B59F2BBE8651008E3645 /* LanguageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF4B59E2BBE8651008E3645 /* LanguageCell.swift */; };
 		FAF4B5A12BBEA728008E3645 /* Skill-Software Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF4B5A02BBEA728008E3645 /* Skill-Software Cell.swift */; };
@@ -93,6 +95,8 @@
 		FACDFA852BC3F33600E35ED1 /* JobModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobModel.swift; sourceTree = "<group>"; };
 		FAD04C1E2BBA6EAB000E08E2 /* QualificationsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualificationsVC.swift; sourceTree = "<group>"; };
 		FAD04C202BBA711F000E08E2 /* ProjectsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsVC.swift; sourceTree = "<group>"; };
+		FAD560B82BCF867900A7FCBD /* PreferencesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesVC.swift; sourceTree = "<group>"; };
+		FAD560BA2BCFAE0D00A7FCBD /* LanguageEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageEntryView.swift; sourceTree = "<group>"; };
 		FAE0A1ED2BB3D51500F07B29 /* BasicDetails1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDetails1.swift; sourceTree = "<group>"; };
 		FAF4B59E2BBE8651008E3645 /* LanguageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageCell.swift; sourceTree = "<group>"; };
 		FAF4B5A02BBEA728008E3645 /* Skill-Software Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Skill-Software Cell.swift"; sourceTree = "<group>"; };
@@ -252,9 +256,11 @@
 				FAC972402BBD2C620026C32D /* SoftwaresVC.swift */,
 				FAD04C202BBA711F000E08E2 /* ProjectsVC.swift */,
 				FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */,
+				FAD560B82BCF867900A7FCBD /* PreferencesVC.swift */,
 				FAA2C5402BB404380006E7A6 /* BasicDetails2.swift */,
-				FAC972422BBD55380026C32D /* AddLanguageView.swift */,
+				FAD560BA2BCFAE0D00A7FCBD /* LanguageEntryView.swift */,
 				FAC009302BB5469600AD0D36 /* EmploymentVC.swift */,
+				FAC972422BBD55380026C32D /* AddLanguageView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -363,6 +369,8 @@
 				FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */,
 				FAD04C1F2BBA6EAB000E08E2 /* QualificationsVC.swift in Sources */,
 				FA9AB56A2BBFBDC600D013BF /* EmploymentsVC.swift in Sources */,
+				FAD560B92BCF867900A7FCBD /* PreferencesVC.swift in Sources */,
+				FAD560BB2BCFAE0D00A7FCBD /* LanguageEntryView.swift in Sources */,
 				FAE0A1EE2BB3D51500F07B29 /* BasicDetails1.swift in Sources */,
 				FAB7B9852BAD424B00B5A9FA /* FilterOptionsCell.swift in Sources */,
 				D0C2F0142B962B2900D9C6F9 /* CompaniesCell.swift in Sources */,
