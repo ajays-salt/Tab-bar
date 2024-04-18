@@ -73,8 +73,8 @@ struct UserProfileUpdate: Codable {
     let currentlyEmployed: String
     let permanentAddress: Address
     let currentAddress: Address
-    let currentCtc: Int
-    let expectedCtc: Int
+    let currentCtc: Double
+    let expectedCtc: Double
     let language: [Language]
     let portfolio: String
 }

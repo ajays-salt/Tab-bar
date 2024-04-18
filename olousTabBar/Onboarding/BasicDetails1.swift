@@ -37,7 +37,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     
     func setupViews() {
         setupHeaderView()
-        setupTextFields()
+//        setupTextFields()
         setupResumeUploadView()
         setupNextButton()
     }
@@ -75,7 +75,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "1/7"
+        profileCircleLabel.text = "1/8"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -90,7 +90,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 1 / 7
+        let percentage: CGFloat = 1 / 8
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
 
@@ -301,7 +301,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         
         
         NSLayoutConstraint.activate([
-            uploadResumeLabel.topAnchor.constraint(equalTo: mobileNumberTextField.bottomAnchor, constant: 20),
+            uploadResumeLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
             uploadResumeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             resumeContainer.topAnchor.constraint(equalTo: uploadResumeLabel.bottomAnchor, constant: 8),
@@ -361,19 +361,16 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-        
-//        guard let name = fullNameTextField.text, !name.isEmpty,
-//              isResumeUploaded == true,
-//              let mobile = mobileNumberTextField.text, !mobile.isEmpty, mobile.isValidMobileNumber() else {
+//        if isResumeUploaded == false {
 //            // Handle validation failure
-//                let alertController = UIAlertController(title: "Alert!", message: "Fill all the details", preferredStyle: .alert)
+//                let alertController = UIAlertController(title: "Alert!", message: "Please upload Resume", preferredStyle: .alert)
 //                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
 //                alertController.addAction(cancelAction)
 //                self.present(alertController, animated: true, completion: nil)
 //            return
 //        }
         
-        let vc = PreferencesVC()
+        let vc = QualificationsVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     

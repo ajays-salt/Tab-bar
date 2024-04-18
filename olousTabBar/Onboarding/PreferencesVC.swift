@@ -91,7 +91,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         
         textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 4.8"
+        textField.placeholder = "E.g. 431504"
         textField.keyboardType = .numberPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -123,7 +123,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         
         textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 4.8"
+        textField.placeholder = "E.g. 411057"
         textField.keyboardType = .numberPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -780,6 +780,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     let languagePicker = UIPickerView()
     let fluencyPicker = UIPickerView()
+    
     let languageTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Select Language"
@@ -792,6 +793,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         textField.borderStyle = .roundedRect
         return textField
     }()
+    
     var languageArray: [Language] = []
     let languages = ["English", "Spanish", "French", "German"]
     let fluencyLevels = ["Beginner", "Intermediate", "Advanced", "Native"]
@@ -808,6 +810,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     }()
     var languageCV : UICollectionView!
     var languageCVHeightConstraint: NSLayoutConstraint!
+    
     
     func setupUI4() {
         let langLabel = UILabel()
@@ -955,8 +958,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     }
     
     
-    
-    
     @objc func noticeOptionButtonTapped(_ sender: UIButton) {
         selectedNoticeOptionsButton?.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
         selectedNoticeOptionsButton?.setTitleColor(.black, for: .normal)
@@ -1063,7 +1064,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     @objc func didTapNextButton() {
         uploadUserProfile()
-        let vc = BasicDetails2()
+        let vc = HeadlineAndSummary()
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -1151,8 +1152,8 @@ extension PreferencesVC {
         }
         
         guard let portfolio = portfolioTextField.text, !portfolio.isEmpty,
-              let currentCtcText = currentCtcTextField.text, !currentCtcText.isEmpty, let currentCtc = Int(currentCtcText),
-              let expectedCtcText = expectedCtcTextField.text, !expectedCtcText.isEmpty, let expectedCtc = Int(expectedCtcText),
+              let currentCtcText = currentCtcTextField.text, !currentCtcText.isEmpty, let currentCtc = Double(currentCtcText),
+              let expectedCtcText = expectedCtcTextField.text, !expectedCtcText.isEmpty, let expectedCtc = Double(expectedCtcText),
               let permanentAddress = permanentTextField.text, !permanentAddress.isEmpty,
               let permanentPin = permanentPinTextField.text, !permanentPin.isEmpty,
               let currentAddress = currentTextField.text, !currentAddress.isEmpty,
@@ -1166,6 +1167,7 @@ extension PreferencesVC {
             showAlert()
             return
         }
+        
         
         let userProfileUpdate = UserProfileUpdate(
             hobbies: "",

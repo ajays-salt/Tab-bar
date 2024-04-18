@@ -122,7 +122,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "4/7"
+        profileCircleLabel.text = "4/8"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -137,7 +137,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 4 / 7
+        let percentage: CGFloat = 4 / 8
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -592,7 +592,7 @@ extension SoftwaresVC {
 
     // Fetch and process softwares from API
     func fetchAndProcessSoftwares() {
-        guard let url = URL(string: "https://9828-2405-201-a420-20-8cb7-88c4-12c9-a25e.ngrok-free.app/api/v1/user/candidate/softwares") else {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/softwares") else {
             print("Invalid URL")
             return
         }

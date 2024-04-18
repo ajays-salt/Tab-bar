@@ -128,7 +128,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "2/7"
+        profileCircleLabel.text = "2/8"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -143,7 +143,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 2 / 7
+        let percentage: CGFloat = 2 / 8
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
