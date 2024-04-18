@@ -9,8 +9,12 @@ import UIKit
 
 class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    var jobTitle: String?
+    var jobLocation: String?
+    
     var jobs: [Job] = []
-    let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+    var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+//    let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs?jobTitle=ios"
     
     var topSection : UIView!
     var filterScrollView : UIScrollView!
@@ -46,6 +50,9 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
 
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+        
+        print("Job Title : \(jobTitle!)")
+        urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs?jobTitle=\(jobTitle!)"
         
         // Call the fetchData function to fetch data and store it in an array
         fetchData { result in

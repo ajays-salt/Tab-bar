@@ -142,7 +142,7 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         separatorLine.bottomAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: -49).isActive = true
         
         
-        jobsTextField.placeholder = "Enter Job Title"
+        jobsTextField.placeholder = "Enter Job Title (Required)"
         jobsTextField.translatesAutoresizingMaskIntoConstraints = false
         jobSearchInnerSection.addSubview(jobsTextField)
         
@@ -165,7 +165,7 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
             locationIcon.heightAnchor.constraint(equalToConstant: 26)
         ])
         
-        locationTextField.placeholder = "Enter Location"
+        locationTextField.placeholder = "Enter Location (Optional)"
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
         jobSearchInnerSection.addSubview(locationTextField)
         
@@ -251,7 +251,15 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
     }
     
     @objc func didTapSearchJobs() {
+        guard let jobTitle = jobsTextField.text, !jobTitle.isEmpty else {
+            let alert = UIAlertController(title: "Missing Information", message: "Fill all the details", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
         let jobResultVC = JobSearchResult()
+        jobResultVC.jobTitle = jobTitle
+        jobResultVC.jobLocation = locationTextField.text
         navigationController?.pushViewController(jobResultVC, animated: true)
     }
     

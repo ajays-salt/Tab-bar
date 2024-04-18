@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class HomeController: UIViewController {
    
     
 // ************************************** Variables ***************************************
@@ -42,6 +42,29 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // subViews in horizontal scroll
     let firstView = UIView()
+    let profileCircleLabel : UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.textColor = UIColor(hex: "#0079C4")
+        label.font = .boldSystemFont(ofSize: 40)
+        return label
+    }()
+    let percentLabel : UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.text = "75%"
+        label.textColor = UIColor(hex: "#219653")
+        label.font = .boldSystemFont(ofSize: 16)
+        return label
+    }()
+    let userNameLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Hi, Ajay Sarkate"
+        label.font = .boldSystemFont(ofSize: 18)
+        label.textColor = UIColor(hex: "#101828")
+        return label
+    }()
+    
     let secondView = UIView()
     let thirdView = UIView()
     
@@ -75,6 +98,16 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+        
+        fetchUserProfile()
+        
+        setupViews()
+        
+        navigationController?.navigationBar.isHidden = true
+    }
+    
+    func setupViews() {
+        
         setupHeaderView()
         setupOlousLogo()
         setupBellIcon()
@@ -96,8 +129,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         setupFirstView()
         setupSecondView()
         setupThirdView()
-        
-        navigationController?.navigationBar.isHidden = true
     }
     
     
@@ -343,15 +374,6 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
             circleContainerView.heightAnchor.constraint(equalToConstant: 100)
         ])
         
-        let profileCircleLabel : UILabel = {
-            let label = UILabel()
-            label.textAlignment = .center
-            label.textColor = UIColor(hex: "#0079C4")
-            label.font = .boldSystemFont(ofSize: 40)
-            return label
-        }()
-        profileCircleLabel.text = "AS"
-        
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
         NSLayoutConstraint.activate([
@@ -360,14 +382,7 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         ])
         
         
-        let percentLabel : UILabel = {
-            let label = UILabel()
-            label.textAlignment = .center
-            label.text = "75%"
-            label.textColor = UIColor(hex: "#219653")
-            label.font = .boldSystemFont(ofSize: 16)
-            return label
-        }()
+        
         
         let percentView = UIView()
         percentView.backgroundColor = UIColor(hex: "#E2FFEE")
@@ -395,7 +410,11 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 0.75
+        let text = percentLabel.text
+        let percentString = text!.split(separator: "%").first
+        let percentNumber = Int(percentString!)
+        
+        let percentage: CGFloat = CGFloat(percentNumber!) / 100.0
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
 
@@ -438,13 +457,8 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         // ************************************ right side info of circleView **********************************************
         
-        let userNameLabel : UILabel = {
-            let label = UILabel()
-            label.text = "Hi, Ajay Sarkate"
-            label.font = .boldSystemFont(ofSize: 18)
-            label.textColor = UIColor(hex: "#101828")
-            return label
-        }()
+        
+        
         
         let pendingLabel : UILabel = {
             let label = UILabel()
@@ -695,10 +709,12 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         setupRecommendedJobsCollectionVC()
     }
+    
     @objc func didTapViewAllJobs() {
         tabBarController?.selectedIndex = 1
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
+    
     func setupRecommendedJobsCollectionVC() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -803,6 +819,29 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     
+    
+   
+}
+
+extension UIColor {
+    convenience init(hex: String) {
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+        
+        var rgb: UInt64 = 0
+        
+        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+        
+        let red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+        let green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+        let blue = CGFloat(rgb & 0x0000FF) / 255.0
+        
+        self.init(red: red, green: green, blue: blue, alpha: 1.0)
+    }
+}
+
+extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == companiesCollectionVC {
             return 10
@@ -843,24 +882,93 @@ class HomeController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
     }
     
-   
 }
 
 
+extension HomeController {
+    
+    func fetchUserProfile() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+            print("Invalid URL")
+            return
+        }
 
-extension UIColor {
-    convenience init(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-        
-        var rgb: UInt64 = 0
-        
-        Scanner(string: hexSanitized).scanHexInt64(&rgb)
-        
-        let red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
-        let green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
-        let blue = CGFloat(rgb & 0x0000FF) / 255.0
-        
-        self.init(red: red, green: green, blue: blue, alpha: 1.0)
+        // Prepare the request
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        // Retrieve the accessToken and set the Authorization header
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            do {
+                let user = try JSONDecoder().decode(User.self, from: data)
+                print("User fetched: \(user)")
+                
+                let percent = self.calculateProfileCompletion(for: user)
+                let initialsOfName = self.extractInitials(from: user.name)
+                let userName = user.name!
+                
+                DispatchQueue.main.async {
+                    self.percentLabel.text = "\(percent)%"
+                    self.profileCircleLabel.text = initialsOfName
+                    self.userNameLabel.text = "Hi, \(userName)"
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+
+        task.resume()
     }
+    
+    private func extractInitials(from name: String?) -> String {
+        guard let name = name, !name.isEmpty else { return "" }
+        let parts = name.split(separator: " ").map(String.init)
+        let initials = parts.compactMap { $0.first }.prefix(2)
+        return initials.map(String.init).joined().uppercased()
+    }
+    
+    func calculateProfileCompletion(for user: User) -> Int {
+        var totalCount = 0
+        var filledCount = 0
+
+        // Reflecting over User properties
+        let mirror = Mirror(reflecting: user)
+
+        for child in mirror.children {
+            totalCount += 1
+            if let value = child.value as? String, !value.isEmpty {
+                filledCount += 1
+            } else if let array = child.value as? [Any], !array.isEmpty {
+                filledCount += 1
+            } else if let array = child.value as? [Language], !array.isEmpty {
+                filledCount += 1
+            } else if let address = child.value as? Address, address.address != nil && !address.address.isEmpty, address.pinCode != nil && !address.pinCode.isEmpty {
+                filledCount += 1
+            } else if let boolValue = child.value as? Bool {
+                if boolValue {
+                    filledCount += 1
+                }
+            } else if let intValue = child.value as? Int, intValue != 0 {
+                filledCount += 1
+            }
+        }
+
+        let completionPercentage = (filledCount * 100) / totalCount
+        return completionPercentage
+    }
+
+
 }

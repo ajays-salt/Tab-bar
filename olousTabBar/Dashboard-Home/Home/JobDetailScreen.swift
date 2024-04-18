@@ -179,7 +179,7 @@ class JobDetailScreen: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
-        let extraSpaceHeight: CGFloat = 100
+        let extraSpaceHeight: CGFloat = 400
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)

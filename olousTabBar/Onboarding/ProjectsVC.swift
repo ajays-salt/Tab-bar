@@ -644,20 +644,6 @@ extension ProjectsVC {
     struct ProjectsResponse: Codable {
         let softwares: String
     }
-
-    struct Project: Codable {
-        let projectName: String
-        let role: String
-        let responsibility: String
-        let description: String
-        
-        enum CodingKeys: String, CodingKey {
-            case projectName = "Project Name"
-            case role = "Role"
-            case responsibility = "Responsibility"
-            case description = "Description"
-        }
-    }
     
     func fetchProjects() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/projects") else {

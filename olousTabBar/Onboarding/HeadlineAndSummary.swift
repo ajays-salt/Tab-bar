@@ -520,7 +520,6 @@ extension HeadlineAndSummary {
                             return modifiedLine
                         }
                         
-                        // Joining the lines back into a single string with space
                         let cleanedSummary = processedLines.joined(separator: " ")
                         
                         var s = cleanedSummary
@@ -528,7 +527,31 @@ extension HeadlineAndSummary {
                         self.summaryTextView.text = s
                         
                         // Output to check
-                        print(cleanedSummary.contains("\n-"))
+                        let components = summary.split(separator: ".").map { line -> String in
+                            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                            return trimmedLine.hasPrefix("- ") ? String(trimmedLine.dropFirst(2)) : trimmedLine
+                        }
+                        var cleanedArray: [String] = []
+                        
+                        for string in components {
+                            // Find the index of the first space
+                            if let index = string.firstIndex(of: " ") {
+                                // Create a substring from the first space to the end of the string
+                                let cleanedString = String(string[index...].dropFirst())
+                                cleanedArray.append(cleanedString)
+                            } else {
+                                // If there is no space, append the original string
+                                cleanedArray.append(string)
+                            }
+                        }
+                        
+                        let modifiedStrings = cleanedArray.map { $0 + "." }
+                        
+                        // Join all the modified strings into a single string, separating them by a space
+                        var finalString = modifiedStrings.joined(separator: " ")
+                        finalString = String(finalString.dropLast().dropLast())
+                        
+                        self.summaryTextView.text = finalString
                     }
                 }
             } else {
