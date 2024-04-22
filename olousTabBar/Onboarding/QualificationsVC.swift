@@ -52,9 +52,17 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     
     var selectedEmploymentTypeOption : UIButton?
     
-    var saveButton : UIButton!
+    var saveEducationButton : UIButton!
     
     var bottomView : UIView!
+    
+    var editView : UIView!
+    var editEducationTF : UITextField!
+    var editCollegeTF : UITextField!
+    var editPassYearTF : UITextField!
+    var editMarksTF : UITextField!
+    var saveButton: UIButton!
+    var cancelButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -94,6 +102,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         setupAddEmployment()
         
         setupBottomView()
+        setupEditViewComponents()
     }
     
     func setupHeaderView() {
@@ -345,7 +354,8 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         marksTextField = UITextField()
         marksTextField.translatesAutoresizingMaskIntoConstraints = false
         marksTextField.borderStyle = .roundedRect
-        marksTextField.placeholder = "9.5 cgpa Or 95 percentile"
+        marksTextField.placeholder = "9.5 cgpa Or 95 %"
+        marksTextField.keyboardType = .decimalPad
         marksTextField.delegate = self // Set delegate for this text field
         scrollView.addSubview(marksTextField)
         
@@ -435,16 +445,16 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             }
         }
         
-        saveButton = UIButton()
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
-        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
-        saveButton.backgroundColor = UIColor(hex: "#0079C4")
-        saveButton.layer.cornerRadius = 8
-        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        saveEducationButton = UIButton()
+        saveEducationButton.setTitle("Save", for: .normal)
+        saveEducationButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveEducationButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveEducationButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveEducationButton.layer.cornerRadius = 8
+        saveEducationButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(saveButton)
+        saveEducationButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(saveEducationButton)
         
         let width = (view.frame.width - 52) / 2
         
@@ -503,10 +513,10 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             jobStackView.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 10),
             jobStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            saveButton.topAnchor.constraint(equalTo: jobStackView.bottomAnchor, constant: 20),
-            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            saveButton.widthAnchor.constraint(equalToConstant: 80),
-            saveButton.heightAnchor.constraint(equalToConstant: 40),
+            saveEducationButton.topAnchor.constraint(equalTo: jobStackView.bottomAnchor, constant: 20),
+            saveEducationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            saveEducationButton.widthAnchor.constraint(equalToConstant: 80),
+            saveEducationButton.heightAnchor.constraint(equalToConstant: 40),
         ])
         
         
@@ -674,6 +684,147 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         view.endEditing(true)
     }
     
+    
+    func setupEditViewComponents() {
+        // Initialize and configure editView
+        editView = UIView()
+        editView.backgroundColor = .white
+        editView.layer.cornerRadius = 12
+        editView.layer.shadowOpacity = 0.25
+        editView.layer.shadowRadius = 5
+        editView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        editView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(editView)
+        
+        // Set initial off-screen position
+        NSLayoutConstraint.activate([
+            editView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            editView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            editView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            editView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
+        ])
+
+        // Setup text fields and labels
+        let labelsTitles = ["Education", "College", "Passing Year", "Marks Obtained"]
+        let textFields = [UITextField(), UITextField(), UITextField(), UITextField()]
+        var lastBottomAnchor = editView.topAnchor
+        
+        for (index, title) in labelsTitles.enumerated() {
+            let label = UILabel()
+            label.text = title
+            label.font = .systemFont(ofSize: 16, weight: .semibold)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            editView.addSubview(label)
+            
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 20),
+                label.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 20),
+                label.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -20)
+            ])
+            
+            let textField = textFields[index]
+            textField.borderStyle = .roundedRect
+            textField.placeholder = "Enter \(title)"
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            editView.addSubview(textField)
+            
+            NSLayoutConstraint.activate([
+                textField.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
+                textField.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+                textField.trailingAnchor.constraint(equalTo: label.trailingAnchor)
+            ])
+            
+            lastBottomAnchor = textField.bottomAnchor
+        }
+        
+        editEducationTF = textFields[0]
+        editEducationTF.delegate = self
+        editCollegeTF = textFields[1]
+        editCollegeTF.delegate = self
+        editPassYearTF = textFields[2]
+        editPassYearTF.keyboardType = .numberPad
+        editMarksTF = textFields[3]
+        editMarksTF.keyboardType = .decimalPad
+        
+        // Setup buttons
+        saveButton = UIButton(type: .system)
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveButton.layer.cornerRadius = 8
+        saveButton.addTarget(self, action: #selector(saveChanges), for: .touchUpInside)
+        
+        
+        
+        cancelButton = UIButton(type: .system)
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.titleLabel?.font = .systemFont(ofSize: 20)
+        cancelButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        cancelButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        cancelButton.layer.borderWidth = 1
+        cancelButton.layer.cornerRadius = 8
+        cancelButton.addTarget(self, action: #selector(cancelEdit), for: .touchUpInside)
+        
+        
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        editView.addSubview(saveButton)
+        editView.addSubview(cancelButton)
+        
+        NSLayoutConstraint.activate([
+            saveButton.bottomAnchor.constraint(equalTo: editView.bottomAnchor, constant: -60),
+            saveButton.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -20),
+            saveButton.widthAnchor.constraint(equalToConstant: 80),
+            saveButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            cancelButton.bottomAnchor.constraint(equalTo: saveButton.bottomAnchor),
+            cancelButton.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 20),
+            cancelButton.widthAnchor.constraint(equalToConstant: 80),
+            cancelButton.heightAnchor.constraint(equalToConstant: 40),
+        ])
+    }
+    
+    @objc func saveChanges() {
+        guard let selectedIndexPath = employmentsCV.indexPathsForSelectedItems?.first else { return }
+        
+        // Ensure all fields are non-empty
+        guard let educationName = editEducationTF.text, !educationName.isEmpty,
+              let yearOfPassing = editPassYearTF.text, !yearOfPassing.isEmpty,
+              let boardOrUniversity = editCollegeTF.text, !boardOrUniversity.isEmpty,
+              let marks = editMarksTF.text, !marks.isEmpty else {
+            showAlert(withTitle: "Missing Information", message: "Please fill all the fields before saving.")
+            return
+        }
+        
+        // Create the updated education object, assuming marksObtained is not editable or is handled differently
+        let updatedEducation = Education(educationName: educationName,
+                                         yearOfPassing: yearOfPassing,
+                                         boardOrUniversity: boardOrUniversity,
+                                         marksObtained: marks)  // Modify according to your data model if necessary
+        
+        // Update the data array and reload the specific item
+        dataArray[selectedIndexPath.row] = updatedEducation
+        employmentsCV.reloadItems(at: [selectedIndexPath])
+        dismissEditView()
+    }
+
+    @objc func cancelEdit() {
+        dismissEditView()
+    }
+    
+    func dismissEditView() {
+        UIView.animate(withDuration: 0.3) {
+            self.editView.transform = .identity
+        }
+    }
+    private func showAlert(withTitle title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
+    
 }
 
 extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource {
@@ -713,10 +864,18 @@ extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionVie
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "edu", for: indexPath) as! EducationCell
         
         let edu = dataArray[indexPath.row]
+        print(edu)
         
         cell.educationLabel.text = edu.educationName
-        cell.collegeLabel.text = "l  \(edu.boardOrUniversity ?? "")"
-        cell.passYearLabel.text = "\(edu.yearOfPassing ?? ""),"
+        cell.collegeLabel.text = "l  \(edu.boardOrUniversity ?? "nil")"
+        cell.passYearLabel.text = "\(edu.yearOfPassing ?? "nil"),"
+        let m = edu.marksObtained ?? ""
+        if m.hasSuffix("%") {
+            cell.courseTypeLabel.text = m
+        }
+        else {
+            cell.courseTypeLabel.text = "\(m)%"
+        }
         
         cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
         
@@ -729,6 +888,18 @@ extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionVie
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width - 32, height: 80)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let edu = dataArray[indexPath.row]
+        editEducationTF.text = edu.educationName
+        editCollegeTF.text = edu.boardOrUniversity
+        editPassYearTF.text = edu.yearOfPassing
+        editMarksTF.text = edu.marksObtained
+        
+        UIView.animate(withDuration: 0.3) {
+            self.editView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 118)  // Move up by 300 points
+        }
     }
 }
 

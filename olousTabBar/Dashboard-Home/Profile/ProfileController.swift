@@ -141,6 +141,8 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         setupOtherUI2()
         setupSeparatorLine2()
         setupOtherUI3()
+        
+        setupLogOut()
     }
     
     func setupProfileEditButton() {
@@ -367,10 +369,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapEditPreference() {
-        UserDefaults.standard.removeObject(forKey: "accessToken")
-        let vc = RegistrationVC()
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+        
     }
     
     func setupSeparatorLine1() {
@@ -626,6 +625,34 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         ])
         
         return educationView
+    }
+    
+    
+    func setupLogOut() {
+        let logOutButton = UIButton()
+        logOutButton.setTitle("Log Out", for: .normal)
+        logOutButton.titleLabel?.font = .systemFont(ofSize: 20)
+        logOutButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        logOutButton.backgroundColor = UIColor(hex: "#0079C4")
+        logOutButton.layer.cornerRadius = 8
+        
+        logOutButton.addTarget(self, action: #selector(didTapLogOut), for: .touchUpInside)
+        
+        logOutButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(logOutButton)
+        
+        NSLayoutConstraint.activate([
+            logOutButton.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 1000),
+            logOutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            logOutButton.heightAnchor.constraint(equalToConstant: 50),
+            logOutButton.widthAnchor.constraint(equalToConstant: 100),
+        ])
+    }
+    @objc func didTapLogOut() {
+        UserDefaults.standard.removeObject(forKey: "accessToken")
+        let vc = RegistrationVC()
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     
     

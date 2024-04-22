@@ -11,6 +11,7 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
     
     var jobTitle: String?
     var jobLocation: String?
+    var jobLocationFilterArray : [String] = []
     
     var jobs: [Job] = []
     var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
@@ -51,8 +52,6 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        print("Job Title : \(jobTitle!)")
-        urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs?jobTitle=\(jobTitle!)"
         
         // Call the fetchData function to fetch data and store it in an array
         fetchData { result in
@@ -409,7 +408,6 @@ class JobSearchResult: UIViewController, UICollectionViewDelegate, UICollectionV
 
 extension JobSearchResult : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(selectedFilterArray.count)
         return selectedFilterArray.count
     }
     
@@ -444,7 +442,20 @@ extension JobSearchResult { // extension for networking use
 
     // Define a function to fetch data from the API
     func fetchData(completion: @escaping (Result<[Job], Error>) -> Void) {
-        guard let url = URL(string: urlString) else {
+        
+        guard let jobSearchTitle = jobTitle else {return}
+//        guard let jobSearchLocation = jobLocation else {return}
+        jobLocationFilterArray.append(jobLocation ?? "")
+        
+        
+        var urlStr = "\(urlString)?jobTitle=\(jobSearchTitle)"
+        if(jobLocationFilterArray[0].isEmpty == false) {
+            urlStr = "\(urlString)?jobTitle=\(jobSearchTitle)&city=\(jobLocationFilterArray)"
+        }
+//        var urlStr = "\(urlString)?jobTitle=\(jobSearchTitle)"
+        print(urlStr)
+        
+        guard let url = URL(string: urlStr) else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
             return
         }

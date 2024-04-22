@@ -918,7 +918,7 @@ extension HomeController {
                 
                 let percent = self.calculateProfileCompletion(for: user)
                 let initialsOfName = self.extractInitials(from: user.name)
-                let userName = user.name!
+                let userName = user.name ?? ""
                 
                 DispatchQueue.main.async {
                     self.percentLabel.text = "\(percent)%"

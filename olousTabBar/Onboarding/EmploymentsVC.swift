@@ -74,9 +74,17 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     
     var selectedEmploymentTypeOption : UIButton?
     
-    var saveButton : UIButton!
+    var saveEmploymentButton : UIButton!
     
     var bottomView : UIView!
+    
+    var editView : UIView!
+    var editExpTitleTF : UITextField!
+    var editExpCompanyTF : UITextField!
+    var editYearsOfExpTF : UITextField!
+    var editExpPeriodTF : UITextField!
+    var saveButton: UIButton!
+    var cancelButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,6 +123,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         setupAddEmployment()
         
         setupBottomView()
+        setupEditViewComponents()
     }
     
     func setupHeaderView() {
@@ -252,7 +261,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 50
+        let extraSpaceHeight: CGFloat = 250
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -477,16 +486,16 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
             }
         }
         
-        saveButton = UIButton()
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
-        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
-        saveButton.backgroundColor = UIColor(hex: "#0079C4")
-        saveButton.layer.cornerRadius = 8
-        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        saveEmploymentButton = UIButton()
+        saveEmploymentButton.setTitle("Save", for: .normal)
+        saveEmploymentButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveEmploymentButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveEmploymentButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveEmploymentButton.layer.cornerRadius = 8
+        saveEmploymentButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(saveButton)
+        saveEmploymentButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(saveEmploymentButton)
         
         let width = (view.frame.width - 52) / 2
         
@@ -556,10 +565,10 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
             jobStackView.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 10),
             jobStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            saveButton.topAnchor.constraint(equalTo: jobStackView.bottomAnchor, constant: 20),
-            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            saveButton.widthAnchor.constraint(equalToConstant: 80),
-            saveButton.heightAnchor.constraint(equalToConstant: 40),
+            saveEmploymentButton.topAnchor.constraint(equalTo: jobStackView.bottomAnchor, constant: 20),
+            saveEmploymentButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            saveEmploymentButton.widthAnchor.constraint(equalToConstant: 80),
+            saveEmploymentButton.heightAnchor.constraint(equalToConstant: 40),
         ])
         
         
@@ -738,6 +747,146 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         view.endEditing(true)
     }
     
+    func setupEditViewComponents() {
+        // Initialize and configure editView
+        editView = UIView()
+        editView.backgroundColor = .white
+        editView.layer.cornerRadius = 12
+        editView.layer.shadowOpacity = 0.25
+        editView.layer.shadowRadius = 5
+        editView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        editView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(editView)
+        
+        // Set initial off-screen position
+        NSLayoutConstraint.activate([
+            editView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            editView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            editView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            editView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
+        ])
+
+        // Setup text fields and labels
+        let labelsTitles = ["Designation", "Company", "Years of Experience", "Employment Period"]
+        let textFields = [UITextField(), UITextField(), UITextField(), UITextField()]
+        var lastBottomAnchor = editView.topAnchor
+        
+        for (index, title) in labelsTitles.enumerated() {
+            let label = UILabel()
+            label.text = title
+            label.font = .systemFont(ofSize: 16, weight: .semibold)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            editView.addSubview(label)
+            
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 20),
+                label.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 20),
+                label.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -20)
+            ])
+            
+            let textField = textFields[index]
+            textField.borderStyle = .roundedRect
+            textField.placeholder = "Enter \(title)"
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            editView.addSubview(textField)
+            
+            NSLayoutConstraint.activate([
+                textField.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
+                textField.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+                textField.trailingAnchor.constraint(equalTo: label.trailingAnchor)
+            ])
+            
+            lastBottomAnchor = textField.bottomAnchor
+        }
+        
+        editExpTitleTF = textFields[0]
+        editExpTitleTF.delegate = self
+        editExpCompanyTF = textFields[1]
+        editExpCompanyTF.delegate = self
+        editYearsOfExpTF = textFields[2]
+        editYearsOfExpTF.delegate = self
+        editExpPeriodTF = textFields[3]
+        editExpPeriodTF.delegate = self
+        
+        // Setup buttons
+        saveButton = UIButton(type: .system)
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveButton.layer.cornerRadius = 8
+        saveButton.addTarget(self, action: #selector(saveChanges), for: .touchUpInside)
+        
+        
+        
+        cancelButton = UIButton(type: .system)
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.titleLabel?.font = .systemFont(ofSize: 20)
+        cancelButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        cancelButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        cancelButton.layer.borderWidth = 1
+        cancelButton.layer.cornerRadius = 8
+        cancelButton.addTarget(self, action: #selector(cancelEdit), for: .touchUpInside)
+        
+        
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        editView.addSubview(saveButton)
+        editView.addSubview(cancelButton)
+        
+        NSLayoutConstraint.activate([
+            saveButton.bottomAnchor.constraint(equalTo: editView.bottomAnchor, constant: -60),
+            saveButton.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -20),
+            saveButton.widthAnchor.constraint(equalToConstant: 80),
+            saveButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            cancelButton.bottomAnchor.constraint(equalTo: saveButton.bottomAnchor),
+            cancelButton.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 20),
+            cancelButton.widthAnchor.constraint(equalToConstant: 80),
+            cancelButton.heightAnchor.constraint(equalToConstant: 40),
+        ])
+    }
+    
+    @objc func saveChanges() {
+        guard let selectedIndexPath = employmentsCV.indexPathsForSelectedItems?.first else { return }
+        
+        // Ensure all fields are non-empty
+        guard let companyName = editExpCompanyTF.text, !companyName.isEmpty,
+              let yearsOfExperience = editYearsOfExpTF.text, !yearsOfExperience.isEmpty,
+              let employmentDesignation = editExpTitleTF.text, !employmentDesignation.isEmpty,
+              let employmentPeriod = editExpPeriodTF.text, !employmentPeriod.isEmpty else {
+            showAlert(withTitle: "Missing Information", message: "Please fill all the fields")
+            return
+        }
+        
+        // Create the updated employment object
+        let updatedExp = Employment(companyName: companyName, yearsOfExperience: yearsOfExperience,
+                                    employmentDesignation: employmentDesignation, employmentPeriod: employmentPeriod,
+                                    employmentType: "") // Assuming employmentType is optional or handled elsewhere
+        
+        // Update the data array and reload the specific item
+        dataArray[selectedIndexPath.row] = updatedExp
+        employmentsCV.reloadItems(at: [selectedIndexPath])
+        dismissEditView()
+    }
+
+    @objc func cancelEdit() {
+        dismissEditView()
+    }
+    
+    func dismissEditView() {
+        UIView.animate(withDuration: 0.3) {
+            self.editView.transform = .identity
+        }
+    }
+    
+    private func showAlert(withTitle title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
+    
 }
 
 extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource {
@@ -810,6 +959,18 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width - 32, height: 80)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let exp = dataArray[indexPath.row]
+        editExpTitleTF.text = exp.employmentDesignation
+        editExpCompanyTF.text = exp.companyName
+        editYearsOfExpTF.text = exp.yearsOfExperience
+        editExpPeriodTF.text = exp.employmentPeriod
+        
+        UIView.animate(withDuration: 0.3) {
+            self.editView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 118)  // Move up by 300 points
+        }
     }
 }
 

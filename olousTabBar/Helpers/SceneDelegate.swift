@@ -23,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //
         if let _ = UserDefaults.standard.string(forKey: "accessToken") {
             // Access token is present, navigate to the home screen
+            
             let viewController = ViewController()
             viewController.modalPresentationStyle = .overFullScreen
             

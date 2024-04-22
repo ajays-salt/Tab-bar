@@ -11,6 +11,7 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
     
     var isSelected : String = "Recommended"
     var savedJobs = [IndexPath]()
+    var jobs: [Job] = []
     
     enum CollectionState {
         case recommended
@@ -318,8 +319,18 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
         jobsCountLabel.text = "\(savedJobs.count) saved jobs"
     }
     
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        let jobDetailVC = JobDetailScreen()
+//        navigationController?.pushViewController(jobDetailVC, animated: true)
+//    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("Recommended is not done yet")
+        return
+        
+        let selectedJob = jobs[indexPath.row]
         let jobDetailVC = JobDetailScreen()
+        jobDetailVC.selectedJob = selectedJob
         navigationController?.pushViewController(jobDetailVC, animated: true)
     }
 

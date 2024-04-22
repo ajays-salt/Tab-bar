@@ -259,7 +259,8 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         }
         let jobResultVC = JobSearchResult()
         jobResultVC.jobTitle = jobTitle
-        jobResultVC.jobLocation = locationTextField.text
+        jobResultVC.jobLocation = locationTextField.text!
+        print(locationTextField.text)
         navigationController?.pushViewController(jobResultVC, animated: true)
     }
     

@@ -304,7 +304,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         addedSkillsViewHeightConstraint = addedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         addedSkillsViewHeightConstraint.isActive = true
         
-        reloadAddedSkills()
+//        reloadAddedSkills()
     }
     
     func reloadAddedSkills() {
@@ -351,7 +351,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         suggestedSkillsViewHeightConstraint.isActive = true
         
-        reloadSuggestedSkills()
+//        reloadSuggestedSkills()
     }
     
     func reloadSuggestedSkills() {

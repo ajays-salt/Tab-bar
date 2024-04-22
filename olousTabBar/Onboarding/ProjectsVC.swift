@@ -13,6 +13,8 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     var circleContainerView : UIView!
     
     var loader: UIActivityIndicatorView!
+    var loader2: UIActivityIndicatorView!
+    var loader3: UIActivityIndicatorView!
     
     var titleLabel : UILabel = {
         let label = UILabel()
@@ -59,11 +61,19 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         return textView
     }()
     
-    var saveButton : UIButton!
-    
+    var saveProjectButton : UIButton!
     
     var bottomView : UIView!
-
+    
+    
+    var editView: UIView!
+    var editNameTF: UITextField!
+    var editRoleTF: UITextField!
+    var editDescTF: UITextView!
+    var editRespTF: UITextView!
+    var saveButton: UIButton!
+    var cancelButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
@@ -91,6 +101,28 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         ])
     }
     
+    private func setupLoader2() {
+        loader2 = UIActivityIndicatorView(style: .large)
+        loader2.center = view.center
+        loader2.translatesAutoresizingMaskIntoConstraints = false
+        editView.addSubview(loader2)
+        
+        NSLayoutConstraint.activate([
+            loader2.centerXAnchor.constraint(equalTo: editDescTF.centerXAnchor),
+            loader2.centerYAnchor.constraint(equalTo: editDescTF.centerYAnchor)
+        ])
+        
+        loader3 = UIActivityIndicatorView(style: .large)
+        loader3.center = view.center
+        loader3.translatesAutoresizingMaskIntoConstraints = false
+        editView.addSubview(loader3)
+        
+        NSLayoutConstraint.activate([
+            loader3.centerXAnchor.constraint(equalTo: editRespTF.centerXAnchor),
+            loader3.centerYAnchor.constraint(equalTo: editRespTF.centerYAnchor)
+        ])
+    }
+    
     func setupViews() {
         setupHeaderView()
         setupTitle()
@@ -100,6 +132,9 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         setupAddProject()
         
         setupBottomView()
+        
+        setupEditViewComponents()
+        setupLoader2()
     }
     
     func setupHeaderView() {
@@ -298,6 +333,9 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             if contentSize.height < 1200 {
                 extraSpaceHeight = 600
             }
+            if contentSize.height > 1500 {
+                extraSpaceHeight = 1000
+            }
             
             // Add extra space at the bottom
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -410,16 +448,16 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         
         scrollView.addSubview(responsibilityTextView)
         
-        saveButton = UIButton()
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
-        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
-        saveButton.backgroundColor = UIColor(hex: "#0079C4")
-        saveButton.layer.cornerRadius = 8
-        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        saveProjectButton = UIButton()
+        saveProjectButton.setTitle("Save", for: .normal)
+        saveProjectButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveProjectButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveProjectButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveProjectButton.layer.cornerRadius = 8
+        saveProjectButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(saveButton)
+        saveProjectButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(saveProjectButton)
         
         
         NSLayoutConstraint.activate([
@@ -439,10 +477,10 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             responsibilityTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             responsibilityTextView.heightAnchor.constraint(equalToConstant: 100),
             
-            saveButton.topAnchor.constraint(equalTo: responsibilityTextView.bottomAnchor, constant: 20),
-            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            saveButton.widthAnchor.constraint(equalToConstant: 80),
-            saveButton.heightAnchor.constraint(equalToConstant: 40),
+            saveProjectButton.topAnchor.constraint(equalTo: responsibilityTextView.bottomAnchor, constant: 20),
+            saveProjectButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            saveProjectButton.widthAnchor.constraint(equalToConstant: 80),
+            saveProjectButton.heightAnchor.constraint(equalToConstant: 40),
         ])
     }
     
@@ -571,6 +609,311 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
+    
+    func setupEditViewComponents() {
+        // Initialize and configure editView
+        editView = UIView()
+        editView.backgroundColor = .white
+        editView.layer.cornerRadius = 12
+        editView.layer.shadowOpacity = 0.25
+        editView.layer.shadowRadius = 5
+        editView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        editView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(editView)
+
+        // Set initial off-screen position
+        NSLayoutConstraint.activate([
+            editView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            editView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            editView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            editView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
+        ])
+
+        // Setup text fields and text views along with labels
+        let labelsTitles = ["Project Name", "Role", "Description", "Responsibility"]
+        let controls = [UITextField(), UITextField(), UITextView(), UITextView()]
+        var lastBottomAnchor = editView.topAnchor
+        
+        for (index, title) in labelsTitles.enumerated() {
+            let label = UILabel()
+            label.text = title
+            label.font = .systemFont(ofSize: 16, weight: .semibold)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            editView.addSubview(label)
+            
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 20),
+                label.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 16)
+            ])
+            
+            let control = controls[index]
+            control.translatesAutoresizingMaskIntoConstraints = false
+            editView.addSubview(control)
+            
+            if let textField = control as? UITextField {
+                textField.borderStyle = .roundedRect
+                textField.placeholder = "Enter \(title)"
+                NSLayoutConstraint.activate([
+                    textField.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
+                    textField.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 16),
+                    textField.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -16)
+                ])
+                lastBottomAnchor = textField.bottomAnchor
+            } else if let textView = control as? UITextView {
+                textView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+                textView.layer.borderWidth = 1.0
+                textView.layer.cornerRadius = 5
+                textView.font = .systemFont(ofSize: 14)
+                textView.isScrollEnabled = true  // Enable scrolling for larger content
+                NSLayoutConstraint.activate([
+                    textView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+                    textView.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 16),
+                    textView.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -16),
+                    textView.heightAnchor.constraint(equalToConstant: 120)  // Fixed height for UITextView
+                ])
+                lastBottomAnchor = textView.bottomAnchor
+                
+                let generateButton = createGenerateButton()
+                if index == 2 {
+                    generateButton.addTarget(self, action: #selector(generateDescription), for: .touchUpInside)
+                } else if index == 3 {
+                    generateButton.addTarget(self, action: #selector(generateResponsibility), for: .touchUpInside)
+                }
+                
+                editView.addSubview(generateButton)
+                NSLayoutConstraint.activate([
+                    generateButton.topAnchor.constraint(equalTo: label.topAnchor, constant: -3),
+                    generateButton.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -16),
+                    generateButton.heightAnchor.constraint(equalToConstant: 36),
+                    generateButton.widthAnchor.constraint(equalToConstant: 180),
+                ])
+            }
+            
+            if index == 0 {
+                editNameTF = control as? UITextField
+            } else if index == 1 {
+                editRoleTF = control as? UITextField
+            } else if index == 2 {
+                editDescTF = control as? UITextView
+            } else if index == 3 {
+                editRespTF = control as? UITextView
+            }
+        }
+
+        setupSaveAndCancelButtons()  // A separate method for setting up buttons
+    }
+
+    func setupSaveAndCancelButtons() {
+        // Assume saveButton and cancelButton are already initialized
+        saveButton = UIButton(type: .system)
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveButton.layer.cornerRadius = 8
+        saveButton.addTarget(self, action: #selector(saveChanges), for: .touchUpInside)
+        
+        
+        
+        cancelButton = UIButton(type: .system)
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.titleLabel?.font = .systemFont(ofSize: 20)
+        cancelButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        cancelButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        cancelButton.layer.borderWidth = 1
+        cancelButton.layer.cornerRadius = 8
+        cancelButton.addTarget(self, action: #selector(cancelEdit), for: .touchUpInside)
+        
+        // Layout
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        editView.addSubview(saveButton)
+        editView.addSubview(cancelButton)
+        
+        NSLayoutConstraint.activate([
+            saveButton.bottomAnchor.constraint(equalTo: editView.bottomAnchor, constant: -60),
+            saveButton.trailingAnchor.constraint(equalTo: editView.trailingAnchor, constant: -20),
+            saveButton.widthAnchor.constraint(equalToConstant: 80),
+            saveButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            cancelButton.bottomAnchor.constraint(equalTo: saveButton.bottomAnchor),
+            cancelButton.leadingAnchor.constraint(equalTo: editView.leadingAnchor, constant: 20),
+            cancelButton.widthAnchor.constraint(equalToConstant: 80),
+            cancelButton.heightAnchor.constraint(equalToConstant: 40),
+        ])
+    }
+    
+    func createGenerateButton() -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(" Generate content", for: .normal)
+        button.setImage(UIImage(named: "Vector"), for: .normal)
+        button.tintColor = UIColor(hex: "#0079C4")
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.layer.cornerRadius = 10
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor(hex: "#0079C4").cgColor
+        button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }
+
+
+    @objc func generateDescription() {
+        if let text = editDescTF.text {
+            fetchContentAndUpdateTextView(forURL: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/project-description",
+                                          withText: editNameTF.text ?? "", updateTextView: editDescTF)
+        }
+    }
+
+    @objc func generateResponsibility() {
+        if let text = editRespTF.text {
+            fetchContentAndUpdateTextView(forURL: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/project-responsibility",
+                                          withText: editNameTF.text ?? "", updateTextView: editRespTF)
+        }
+    }
+    
+    func fetchContentAndUpdateTextView(forURL urlString: String, withText text: String, updateTextView textView: UITextView) {
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+        if textView == editDescTF {
+            DispatchQueue.main.async {
+                self.loader2.startAnimating()  // Start the loader before the request
+            }
+        }
+        if textView == editRespTF {
+            DispatchQueue.main.async {
+                self.loader3.startAnimating()  // Start the loader before the request
+            }
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = ["inputText": text]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+
+        // Include accessToken for Authorization if needed
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if textView == self.editDescTF {
+                DispatchQueue.main.async {
+                    self.loader2.stopAnimating()  // Start the loader before the request
+                }
+            }
+            if textView == self.editRespTF {
+                DispatchQueue.main.async {
+                    self.loader3.stopAnimating()  // Start the loader before the request
+                }
+            }
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            if let responseString = String(data: data, encoding: .utf8) {
+                if textView == self.editDescTF {
+                    DispatchQueue.main.async {
+                        var s = responseString
+                        if s.hasPrefix("\"") {
+                            s = String(s.dropFirst().dropLast())
+                        }
+                        textView.text = s  // Update the UITextView on the main thread
+                    }
+                }
+                if textView == self.editRespTF {
+                    DispatchQueue.main.async {
+                        let lines = responseString.split(separator: "\n", omittingEmptySubsequences: false)
+                        
+                        // Mapping each line to remove the leading "- " if it exists
+                        let processedLines = lines.map { line -> String in
+                            var modifiedLine = String(line)
+                            // Check if the line starts with "- " and remove it
+                            if modifiedLine.hasPrefix("- ") {
+                                modifiedLine = String(modifiedLine.dropFirst(2))
+                            }
+                            return modifiedLine
+                        }
+                        
+                        let cleanedSummary = processedLines.joined(separator: " ")
+                        
+                        var s = cleanedSummary
+                        s = String(s.dropFirst().dropLast())
+                        textView.text = s
+                        
+                        // Output to check
+                        let components = responseString.split(separator: ".").map { line -> String in
+                            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                            return trimmedLine.hasPrefix("- ") ? String(trimmedLine.dropFirst(2)) : trimmedLine
+                        }
+                        var cleanedArray: [String] = []
+                        
+                        for string in components {
+                            // Find the index of the first space
+                            if let index = string.firstIndex(of: " ") {
+                                // Create a substring from the first space to the end of the string
+                                let cleanedString = String(string[index...].dropFirst())
+                                cleanedArray.append(cleanedString)
+                            } else {
+                                // If there is no space, append the original string
+                                cleanedArray.append(string)
+                            }
+                        }
+                        
+                        let modifiedStrings = cleanedArray.map { $0 + "." }
+                        
+                        // Join all the modified strings into a single string, separating them by a space
+                        var finalString = modifiedStrings.joined(separator: " ")
+                        finalString = String(finalString.dropLast().dropLast())
+                        
+                        textView.text = finalString  // Update the UITextView on the main thread
+                    }
+                }
+            }
+        }.resume()
+    }
+
+    
+    @objc func saveChanges() {
+        guard let selectedIndexPath = employmentsCV.indexPathsForSelectedItems?.first else { return }
+        
+        // Ensure all fields are non-empty
+        guard let name = editNameTF.text, !name.isEmpty,
+              let role = editRoleTF.text, !role.isEmpty,
+              let desc = editDescTF.text, !desc.isEmpty,
+              let resp = editRespTF.text, !resp.isEmpty else {
+            showAlert(withTitle: "Missing Information", message: "Please fill all the fields")
+            return
+        }
+        
+        let updatedProject = Project(projectName: name, role: role, responsibility: resp, description: desc)
+        
+        // Update the data array and reload the specific item
+        dataArray[selectedIndexPath.row] = updatedProject
+        employmentsCV.reloadItems(at: [selectedIndexPath])
+        dismissEditView()
+    }
+
+    @objc func cancelEdit() {
+        dismissEditView()
+    }
+    
+    @objc func dismissEditView() {
+        UIView.animate(withDuration: 0.3) {
+            self.editView.transform = .identity
+        }
+    }
+    
+    private func showAlert(withTitle title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
 
 }
 
@@ -620,7 +963,17 @@ extension ProjectsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataS
         return CGSize(width: view.frame.width - 32, height: totalHeight + 30)
     }
 
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let project = dataArray[indexPath.row]
+        editNameTF.text = project.projectName
+        editRoleTF.text = project.role
+        editDescTF.text = project.description
+        editRespTF.text = project.responsibility
+        
+        UIView.animate(withDuration: 0.3) {
+            self.editView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 118)  // Move up by 300 points
+        }
+    }
 }
 
 extension String {

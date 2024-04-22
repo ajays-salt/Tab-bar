@@ -107,7 +107,7 @@ struct Language: Codable {
 }
 
 struct User: Codable {
-    var email: String
+    var email: String?
     var name: String?
     var password: String?
     var role: String?

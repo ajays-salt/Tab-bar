@@ -349,7 +349,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         suggestedSkillsViewHeightConstraint.isActive = true
         
         
-        reloadSuggestedSkills()
+//        reloadSuggestedSkills()
     }
     
     func reloadSuggestedSkills() {
