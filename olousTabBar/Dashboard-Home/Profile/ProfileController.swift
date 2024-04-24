@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileController: UIViewController, UITextFieldDelegate {
+class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
     var employments = [EmploymentTemp]()
     var educations = [EducationTemp]()
@@ -104,6 +104,38 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     
     var educationBottomAnchor: NSLayoutYAxisAnchor!
     
+    
+    
+    
+    
+//   ******************************  New changes in this controller **************************************************************
+    
+    var employmentCV : UICollectionView!
+    var empDataArray : [Employment] = []
+    var employmentCVHeightConstraint: NSLayoutConstraint!
+    
+    var empEditView : UIView!
+    var editExpTitleTF : UITextField!
+    var editExpCompanyTF : UITextField!
+    var editYearsOfExpTF : UITextField!
+    var editExpPeriodTF : UITextField!
+    var empSaveButton: UIButton!
+    var empCancelButton: UIButton!
+    
+    
+    var educationCV : UICollectionView!
+    var eduDataArray : [Education] = []
+    var educationCVHeightConstraint: NSLayoutConstraint!
+    
+    var eduEditView : UIView!
+    var editEducationTF : UITextField!
+    var editCollegeTF : UITextField!
+    var editPassYearTF : UITextField!
+    var editMarksTF : UITextField!
+    var eduSaveButton: UIButton!
+    var eduCancelButton: UIButton!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
@@ -111,11 +143,9 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        employments = [
-            EmploymentTemp(companyName: "ABC Company", startYear: 2018, endYear: 2022, jobType: "Full-time"),
-            EmploymentTemp(companyName: "XYZ Inc.", startYear: 2020, endYear: 2021, jobType: "Part-time"),
-            EmploymentTemp(companyName: "Salt Tech", startYear: 2020, endYear: 2021, jobType: "Full-time")
-        ]
+        fetchAndParseExperience()
+        fetchAndParseEducation()
+        fetchUserProfile()
         
         educations = [
             EducationTemp(collegeName: "Dr D Y Patil University, Pune", startYear: 2020, endYear: 2023, courseType: "Full-Time")
@@ -124,7 +154,6 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         companyNameTextField.delegate = self
         
         setupViews()
-        
     }
     
     func setupViews() {
@@ -136,11 +165,17 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         setupUserNameLabel()
         setupUserJobTitleLabel()
         setupLocationLabel()
-        setupOtherUI()
+        setupPreferences()
         setupSeparatorLine1()
-        setupOtherUI2()
+        
+        
+        setupEmploymentsView()
+        setupEmpEditView()
+        
         setupSeparatorLine2()
-        setupOtherUI3()
+        
+        setupEducationView()
+        setupEducationEditView()
         
         setupLogOut()
     }
@@ -164,6 +199,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     }
     
     func setupScrollView() {
+        scrollView.delegate = self
         scrollView.alwaysBounceVertical = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
@@ -175,7 +211,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 100
+        let extraSpaceHeight: CGFloat = 200
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -273,7 +309,7 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         ])
     }
     
-    func setupOtherUI() {
+    func setupPreferences() {
         let preferenceLabel : UILabel = {
             let label = UILabel()
             label.text = "Your Carrer Preferences"
@@ -385,10 +421,11 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         ])
     }
     
-    func setupOtherUI2() {
+    
+    func setupEmploymentsView() {
         let employmentLabel : UILabel = {
             let label = UILabel()
-            label.text = "Employment"
+            label.text = "Employments"
             label.textColor = UIColor(hex: "#101828")
             label.font = .boldSystemFont(ofSize: 20)
             return label
@@ -398,6 +435,22 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         NSLayoutConstraint.activate([
             employmentLabel.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor, constant: 16),
             employmentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+        ])
+        
+        let expandButton : UIButton = {
+            let btn = UIButton()
+            btn.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+            btn.titleLabel?.font = .boldSystemFont(ofSize: 30)
+            return btn
+        }()
+        
+        expandButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(expandButton)
+        NSLayoutConstraint.activate([
+            expandButton.topAnchor.constraint(equalTo: employmentLabel.topAnchor, constant: -10),
+            expandButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            expandButton.widthAnchor.constraint(equalToConstant: 30),
         ])
         
         let addButton : UIButton = {
@@ -412,94 +465,199 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         scrollView.addSubview(addButton)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor, constant: 10),
+            addButton.topAnchor.constraint(equalTo: employmentLabel.bottomAnchor, constant: -5),
             addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
         
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        
+        employmentCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        employmentCV.register(EmploymentCell.self, forCellWithReuseIdentifier: "exp")
+        employmentCV.delegate = self
+        employmentCV.dataSource = self
+        
+        employmentCV.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(employmentCV)
+        NSLayoutConstraint.activate([
+            employmentCV.topAnchor.constraint(equalTo: employmentLabel.bottomAnchor, constant: 30),
+            employmentCV.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            employmentCV.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
+        
+        employmentCVHeightConstraint = employmentCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        employmentCVHeightConstraint.isActive = true
         
         
-        employmentsBottomAnchor = employmentLabel.bottomAnchor
-        var i = 0;
-        while i < employments.count {
-            let employment = employments[i]
-            let employmentView = createEmploymentView(employment: employment)
-            employmentView.translatesAutoresizingMaskIntoConstraints = false
-            scrollView.addSubview(employmentView)
-            if i == 0 {
-                NSLayoutConstraint.activate([
-                    employmentView.topAnchor.constraint(equalTo: employmentsBottomAnchor, constant: 20),
-                    employmentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                    employmentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                    employmentView.heightAnchor.constraint(equalToConstant: 50)
-                ])
-            }
-            else {
-                NSLayoutConstraint.activate([
-                    employmentView.topAnchor.constraint(equalTo: employmentsBottomAnchor, constant: 6),
-                    employmentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                    employmentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                    employmentView.heightAnchor.constraint(equalToConstant: 50)
-                ])
-            }
-            employmentsBottomAnchor = employmentView.bottomAnchor
-            i += 1
+//        reloadEmploymentsCollectionView()
+    }
+    
+    func reloadEmploymentsCollectionView() {
+        employmentCV.reloadData()
+            
+        // Calculate the content size
+        employmentCV.layoutIfNeeded()
+        let contentSize = employmentCV.collectionViewLayout.collectionViewContentSize
+        employmentCVHeightConstraint.constant = contentSize.height
+        
+        updateScrollViewContentSize()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    @objc func deleteEmpCell(_ sender : UIButton) {
+        print(#function)
+        guard let cell = sender.superview as? EmploymentCell, // Adjust the number of superviews according to your cell's hierarchy
+            let indexPath = employmentCV.indexPath(for: cell)
+        else {
+            return
+        }
+        
+        empDataArray.remove(at: indexPath.row)
+        reloadEmploymentsCollectionView()
+    }
+    
+    func setupEmpEditView() {
+        // Initialize and configure editView
+        empEditView = UIView()
+        empEditView.backgroundColor = .white
+        empEditView.layer.cornerRadius = 12
+        empEditView.layer.shadowOpacity = 0.25
+        empEditView.layer.shadowRadius = 5
+        empEditView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        empEditView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(empEditView)
+        
+        // Set initial off-screen position
+        NSLayoutConstraint.activate([
+            empEditView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            empEditView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            empEditView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            empEditView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
+        ])
+
+        // Setup text fields and labels
+        let labelsTitles = ["Designation", "Company", "Years of Experience", "Employment Period"]
+        let textFields = [UITextField(), UITextField(), UITextField(), UITextField()]
+        var lastBottomAnchor = empEditView.topAnchor
+        
+        for (index, title) in labelsTitles.enumerated() {
+            let label = UILabel()
+            label.text = title
+            label.font = .systemFont(ofSize: 16, weight: .semibold)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            empEditView.addSubview(label)
+            
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 20),
+                label.leadingAnchor.constraint(equalTo: empEditView.leadingAnchor, constant: 20),
+                label.trailingAnchor.constraint(equalTo: empEditView.trailingAnchor, constant: -20)
+            ])
+            
+            let textField = textFields[index]
+            textField.borderStyle = .roundedRect
+            textField.placeholder = "Enter \(title)"
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            empEditView.addSubview(textField)
+            
+            NSLayoutConstraint.activate([
+                textField.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
+                textField.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+                textField.trailingAnchor.constraint(equalTo: label.trailingAnchor)
+            ])
+            
+            lastBottomAnchor = textField.bottomAnchor
+        }
+        
+        editExpTitleTF = textFields[0]
+        editExpTitleTF.delegate = self
+        editExpCompanyTF = textFields[1]
+        editExpCompanyTF.delegate = self
+        editYearsOfExpTF = textFields[2]
+        editYearsOfExpTF.delegate = self
+        editExpPeriodTF = textFields[3]
+        editExpPeriodTF.delegate = self
+        
+        // Setup buttons
+        empSaveButton = UIButton(type: .system)
+        empSaveButton.setTitle("Save", for: .normal)
+        empSaveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        empSaveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        empSaveButton.backgroundColor = UIColor(hex: "#0079C4")
+        empSaveButton.layer.cornerRadius = 8
+        empSaveButton.addTarget(self, action: #selector(saveEmpChanges), for: .touchUpInside)
+        
+        
+        
+        empCancelButton = UIButton(type: .system)
+        empCancelButton.setTitle("Cancel", for: .normal)
+        empCancelButton.titleLabel?.font = .systemFont(ofSize: 20)
+        empCancelButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        empCancelButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        empCancelButton.layer.borderWidth = 1
+        empCancelButton.layer.cornerRadius = 8
+        empCancelButton.addTarget(self, action: #selector(cancelEmpEdit), for: .touchUpInside)
+        
+        
+        empSaveButton.translatesAutoresizingMaskIntoConstraints = false
+        empCancelButton.translatesAutoresizingMaskIntoConstraints = false
+        empEditView.addSubview(empSaveButton)
+        empEditView.addSubview(empCancelButton)
+        
+        NSLayoutConstraint.activate([
+//            saveButton.bottomAnchor.constraint(equalTo: editView.bottomAnchor, constant: -60),
+            empSaveButton.topAnchor.constraint(equalTo: editExpPeriodTF.bottomAnchor, constant: 20),
+            empSaveButton.trailingAnchor.constraint(equalTo: empEditView.trailingAnchor, constant: -20),
+            empSaveButton.widthAnchor.constraint(equalToConstant: 80),
+            empSaveButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            empCancelButton.bottomAnchor.constraint(equalTo: empSaveButton.bottomAnchor),
+            empCancelButton.leadingAnchor.constraint(equalTo: empEditView.leadingAnchor, constant: 20),
+            empCancelButton.widthAnchor.constraint(equalToConstant: 80),
+            empCancelButton.heightAnchor.constraint(equalToConstant: 40),
+        ])
+    }
+    @objc func saveEmpChanges() {
+        guard let selectedIndexPath = employmentCV.indexPathsForSelectedItems?.first else { return }
+        
+        // Ensure all fields are non-empty
+        guard let companyName = editExpCompanyTF.text, !companyName.isEmpty,
+              let yearsOfExperience = editYearsOfExpTF.text, !yearsOfExperience.isEmpty,
+              let employmentDesignation = editExpTitleTF.text, !employmentDesignation.isEmpty,
+              let employmentPeriod = editExpPeriodTF.text, !employmentPeriod.isEmpty else {
+            showAlert(withTitle: "Missing Information", message: "Please fill all the fields")
+            return
+        }
+        
+        // Create the updated employment object
+        let updatedExp = Employment(companyName: companyName, yearsOfExperience: yearsOfExperience,
+                                    employmentDesignation: employmentDesignation, employmentPeriod: employmentPeriod,
+                                    employmentType: "") // Assuming employmentType is optional or handled elsewhere
+        
+        // Update the data array and reload the specific item
+        empDataArray[selectedIndexPath.row] = updatedExp
+        employmentCV.reloadItems(at: [selectedIndexPath])
+        dismissEmpEditView()
+    }
+    @objc func cancelEmpEdit() {
+        dismissEmpEditView()
+    }
+    func dismissEmpEditView() {
+        UIView.animate(withDuration: 0.3) {
+            self.empEditView.transform = .identity
         }
     }
     
+    
     @objc func didTapAddEmployment() {
-        let vc = AddEmploymentVC()
-        navigationController?.pushViewController(vc, animated: true)
+//        employmentCV.isHidden = !employmentCV.isHidden
+//        let vc = AddEmploymentVC()
+//        navigationController?.pushViewController(vc, animated: true)
     }
 
-    func createEmploymentView(employment: EmploymentTemp) -> UIView {
-        let employmentView = UIView()
-        
-        // Add companyName label
-        let companyNameLabel: UILabel = {
-            let label = UILabel()
-            label.text = employment.companyName
-            label.font = .systemFont(ofSize: 16)
-            return label
-        }()
-        companyNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        employmentView.addSubview(companyNameLabel)
-        NSLayoutConstraint.activate([
-            companyNameLabel.topAnchor.constraint(equalTo: employmentView.topAnchor),
-            companyNameLabel.leadingAnchor.constraint(equalTo: employmentView.leadingAnchor)
-        ])
-        
-        // Add startYear to endYear label
-        let yearsLabel: UILabel = {
-            let label = UILabel()
-            label.text = "\(employment.startYear) to \(employment.endYear),"
-            label.font = .systemFont(ofSize: 14)
-            label.textColor = UIColor(hex: "#667085")
-            return label
-        }()
-        yearsLabel.translatesAutoresizingMaskIntoConstraints = false
-        employmentView.addSubview(yearsLabel)
-        NSLayoutConstraint.activate([
-            yearsLabel.topAnchor.constraint(equalTo: companyNameLabel.bottomAnchor, constant: 6),
-            yearsLabel.leadingAnchor.constraint(equalTo: employmentView.leadingAnchor)
-        ])
-        
-        // Add jobType label
-        let jobTypeLabel: UILabel = {
-            let label = UILabel()
-            label.text = employment.jobType
-            label.font = .systemFont(ofSize: 14)
-            label.textColor = UIColor(hex: "#667085")
-            return label
-        }()
-        jobTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        employmentView.addSubview(jobTypeLabel)
-        NSLayoutConstraint.activate([
-            jobTypeLabel.topAnchor.constraint(equalTo: yearsLabel.topAnchor),
-            jobTypeLabel.leadingAnchor.constraint(equalTo: yearsLabel.trailingAnchor, constant: 16),
-        ])
-        
-        return employmentView
-    }
+    
     
     func setupSeparatorLine2() {
         separatorLine2.backgroundColor = UIColor(hex: "#EAECF0")
@@ -507,14 +665,15 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         scrollView.addSubview(separatorLine2)
         
         NSLayoutConstraint.activate([
-            separatorLine2.topAnchor.constraint(equalTo: employmentsBottomAnchor, constant: 16),
+            separatorLine2.topAnchor.constraint(equalTo: employmentCV.bottomAnchor, constant: 20),
             separatorLine2.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine2.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine2.heightAnchor.constraint(equalToConstant: 1)
         ])
     }
     
-    func setupOtherUI3() {
+    
+    func setupEducationView() {
         let educationLabel : UILabel = {
             let label = UILabel()
             label.text = "Education"
@@ -546,86 +705,205 @@ class ProfileController: UIViewController, UITextFieldDelegate {
             addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
         
-        educationBottomAnchor = educationLabel.bottomAnchor
-        var i = 0;
-        while i < educations.count {
-            let education = educations[i]
-            let educationView = createEducationView(education: education)
-            educationView.translatesAutoresizingMaskIntoConstraints = false
-            scrollView.addSubview(educationView)
-            if i == 0 {
-                NSLayoutConstraint.activate([
-                    educationView.topAnchor.constraint(equalTo: educationBottomAnchor, constant: 20),
-                    educationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                    educationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                    educationView.heightAnchor.constraint(equalToConstant: 50)
-                ])
-            }
-            else {
-                NSLayoutConstraint.activate([
-                    educationView.topAnchor.constraint(equalTo: educationBottomAnchor , constant: 6),
-                    educationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                    educationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                    educationView.heightAnchor.constraint(equalToConstant: 50)
-                ])
-            }
-            educationBottomAnchor = educationView.bottomAnchor
-            i += 1
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        
+        educationCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        educationCV.register(EducationCell.self, forCellWithReuseIdentifier: "edu")
+        educationCV.delegate = self
+        educationCV.dataSource = self
+        
+        educationCV.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(educationCV)
+        NSLayoutConstraint.activate([
+            educationCV.topAnchor.constraint(equalTo: educationLabel.bottomAnchor, constant: 30),
+            educationCV.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            educationCV.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
+        
+        educationCVHeightConstraint = educationCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        educationCVHeightConstraint.isActive = true
+        
+//        reloadCollectionView()
+    }
+    func reloadEducationCollectionView() {
+        educationCV.reloadData()
+        educationCV.layoutIfNeeded()
+        
+        let contentSize = educationCV.collectionViewLayout.collectionViewContentSize
+        educationCVHeightConstraint.constant = contentSize.height
+        
+        updateScrollViewContentSize()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
         }
     }
+    
+    func setupEducationEditView() {
+        // Initialize and configure editView
+        eduEditView = UIView()
+        eduEditView.backgroundColor = .white
+        eduEditView.layer.cornerRadius = 12
+        eduEditView.layer.shadowOpacity = 0.25
+        eduEditView.layer.shadowRadius = 5
+        eduEditView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        eduEditView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(eduEditView)
+        
+        // Set initial off-screen position
+        NSLayoutConstraint.activate([
+            eduEditView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            eduEditView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            eduEditView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            eduEditView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
+        ])
+
+        // Setup text fields and labels
+        let labelsTitles = ["Education", "College", "Passing Year", "Marks Obtained"]
+        let textFields = [UITextField(), UITextField(), UITextField(), UITextField()]
+        var lastBottomAnchor = eduEditView.topAnchor
+        
+        for (index, title) in labelsTitles.enumerated() {
+            let label = UILabel()
+            label.text = title
+            label.font = .systemFont(ofSize: 16, weight: .semibold)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            eduEditView.addSubview(label)
+            
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(equalTo: lastBottomAnchor, constant: 20),
+                label.leadingAnchor.constraint(equalTo: eduEditView.leadingAnchor, constant: 20),
+                label.trailingAnchor.constraint(equalTo: eduEditView.trailingAnchor, constant: -20)
+            ])
+            
+            let textField = textFields[index]
+            textField.borderStyle = .roundedRect
+            textField.placeholder = "Enter \(title)"
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            eduEditView.addSubview(textField)
+            
+            NSLayoutConstraint.activate([
+                textField.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
+                textField.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+                textField.trailingAnchor.constraint(equalTo: label.trailingAnchor)
+            ])
+            
+            lastBottomAnchor = textField.bottomAnchor
+        }
+        
+        editEducationTF = textFields[0]
+        editEducationTF.delegate = self
+        editCollegeTF = textFields[1]
+        editCollegeTF.delegate = self
+        editPassYearTF = textFields[2]
+        editPassYearTF.keyboardType = .numberPad
+        editMarksTF = textFields[3]
+        editMarksTF.keyboardType = .decimalPad
+        
+        // Setup buttons
+        eduSaveButton = UIButton(type: .system)
+        eduSaveButton.setTitle("Save", for: .normal)
+        eduSaveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        eduSaveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        eduSaveButton.backgroundColor = UIColor(hex: "#0079C4")
+        eduSaveButton.layer.cornerRadius = 8
+        eduSaveButton.addTarget(self, action: #selector(saveEduChanges), for: .touchUpInside)
+        
+        
+        
+        eduCancelButton = UIButton(type: .system)
+        eduCancelButton.setTitle("Cancel", for: .normal)
+        eduCancelButton.titleLabel?.font = .systemFont(ofSize: 20)
+        eduCancelButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        eduCancelButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        eduCancelButton.layer.borderWidth = 1
+        eduCancelButton.layer.cornerRadius = 8
+        eduCancelButton.addTarget(self, action: #selector(cancelEduEdit), for: .touchUpInside)
+        
+        
+        eduSaveButton.translatesAutoresizingMaskIntoConstraints = false
+        eduCancelButton.translatesAutoresizingMaskIntoConstraints = false
+        eduEditView.addSubview(eduSaveButton)
+        eduEditView.addSubview(eduCancelButton)
+        
+        NSLayoutConstraint.activate([
+            eduSaveButton.bottomAnchor.constraint(equalTo: eduEditView.bottomAnchor, constant: -60),
+            eduSaveButton.trailingAnchor.constraint(equalTo: eduEditView.trailingAnchor, constant: -20),
+            eduSaveButton.widthAnchor.constraint(equalToConstant: 80),
+            eduSaveButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            eduCancelButton.bottomAnchor.constraint(equalTo: eduSaveButton.bottomAnchor),
+            eduCancelButton.leadingAnchor.constraint(equalTo: eduEditView.leadingAnchor, constant: 20),
+            eduCancelButton.widthAnchor.constraint(equalToConstant: 80),
+            eduCancelButton.heightAnchor.constraint(equalToConstant: 40),
+        ])
+    }
+    @objc func saveEduChanges() {
+        guard let selectedIndexPath = educationCV.indexPathsForSelectedItems?.first else { return }
+        
+        // Ensure all fields are non-empty
+        guard let educationName = editEducationTF.text, !educationName.isEmpty,
+              let yearOfPassing = editPassYearTF.text, !yearOfPassing.isEmpty,
+              let boardOrUniversity = editCollegeTF.text, !boardOrUniversity.isEmpty,
+              let marks = editMarksTF.text, !marks.isEmpty else {
+            showAlert(withTitle: "Missing Information", message: "Please fill all the fields before saving.")
+            return
+        }
+        
+        // Create the updated education object, assuming marksObtained is not editable or is handled differently
+        let updatedEducation = Education(educationName: educationName,
+                                         yearOfPassing: yearOfPassing,
+                                         boardOrUniversity: boardOrUniversity,
+                                         marksObtained: marks)  // Modify according to your data model if necessary
+        
+        // Update the data array and reload the specific item
+        eduDataArray[selectedIndexPath.row] = updatedEducation
+        educationCV.reloadItems(at: [selectedIndexPath])
+        dismissEduEditView()
+    }
+    @objc func cancelEduEdit() {
+        dismissEduEditView()
+    }
+    func dismissEduEditView() {
+        UIView.animate(withDuration: 0.3) {
+            self.eduEditView.transform = .identity
+        }
+    }
+    @objc func deleteEduCell(_ sender : UIButton) {
+        guard let cell = sender.superview as? EducationCell, // Adjust the number of superviews according to your cell's hierarchy
+            let indexPath = educationCV.indexPath(for: cell)
+        else {
+            return
+        }
+        
+        eduDataArray.remove(at: indexPath.row)
+        reloadEducationCollectionView()
+    }
+    
     @objc func didTapAddEducation() {
         let vc = AddEducationVC()
         navigationController?.pushViewController(vc, animated: true)
     }
-    func createEducationView(education: EducationTemp) -> UIView {
-        let educationView = UIView()
+    
+    
+    
+    // ******************* Common Methods ***********************************
+    func updateScrollViewContentSize() {
+        let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant
+        // Add other collection view heights if there are more
+        let extraSpaceHeight: CGFloat = 500 // Change this if you need more space at the bottom
         
-        // Add companyName label
-        let companyNameLabel: UILabel = {
-            let label = UILabel()
-            label.text = education.collegeName
-            label.font = .systemFont(ofSize: 16)
-            return label
-        }()
-        companyNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        educationView.addSubview(companyNameLabel)
-        NSLayoutConstraint.activate([
-            companyNameLabel.topAnchor.constraint(equalTo: educationView.topAnchor),
-            companyNameLabel.leadingAnchor.constraint(equalTo: educationView.leadingAnchor)
-        ])
-        
-        // Add startYear to endYear label
-        let yearsLabel: UILabel = {
-            let label = UILabel()
-            label.text = "\(education.startYear) to \(education.endYear),"
-            label.font = .systemFont(ofSize: 14)
-            label.textColor = UIColor(hex: "#667085")
-            return label
-        }()
-        yearsLabel.translatesAutoresizingMaskIntoConstraints = false
-        educationView.addSubview(yearsLabel)
-        NSLayoutConstraint.activate([
-            yearsLabel.topAnchor.constraint(equalTo: companyNameLabel.bottomAnchor, constant: 6),
-            yearsLabel.leadingAnchor.constraint(equalTo: educationView.leadingAnchor)
-        ])
-        
-        // Add jobType label
-        let jobTypeLabel: UILabel = {
-            let label = UILabel()
-            label.text = education.courseType
-            label.font = .systemFont(ofSize: 14)
-            label.textColor = UIColor(hex: "#667085")
-            return label
-        }()
-        jobTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        educationView.addSubview(jobTypeLabel)
-        NSLayoutConstraint.activate([
-            jobTypeLabel.topAnchor.constraint(equalTo: yearsLabel.topAnchor),
-            jobTypeLabel.leadingAnchor.constraint(equalTo: yearsLabel.trailingAnchor, constant: 16),
-        ])
-        
-        return educationView
+        let totalContentHeight = combinedContentHeight + extraSpaceHeight
+        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight)
     }
+    private func showAlert(withTitle title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
+    
     
     
     func setupLogOut() {
@@ -639,21 +917,36 @@ class ProfileController: UIViewController, UITextFieldDelegate {
         logOutButton.addTarget(self, action: #selector(didTapLogOut), for: .touchUpInside)
         
         logOutButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(logOutButton)
+        view.addSubview(logOutButton)
         
         NSLayoutConstraint.activate([
-            logOutButton.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 1000),
-            logOutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            logOutButton.heightAnchor.constraint(equalToConstant: 50),
-            logOutButton.widthAnchor.constraint(equalToConstant: 100),
+            logOutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            logOutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            logOutButton.heightAnchor.constraint(equalToConstant: 60),
+            logOutButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
         ])
     }
     @objc func didTapLogOut() {
-        UserDefaults.standard.removeObject(forKey: "accessToken")
-        let vc = RegistrationVC()
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+        let alertController = UIAlertController(title: nil, message: "Are you sure you want to log out?", preferredStyle: .alert)
+
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            // Perform the logout operation
+            UserDefaults.standard.removeObject(forKey: "accessToken")
+            UserDefaults.standard.synchronize() // To ensure the accessToken is removed
+            
+            let vc = RegistrationVC()
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
+        }
+        
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+
+        present(alertController, animated: true)
     }
+
     
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -664,6 +957,15 @@ class ProfileController: UIViewController, UITextFieldDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y > 10 {
+            tabBarController?.tabBar.isHidden = true
+        }
+        else {
+            tabBarController?.tabBar.isHidden = false
+        }
     }
 }
 
@@ -679,3 +981,290 @@ extension UIImage {
 
 
 
+extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        switch collectionView {
+            case employmentCV:
+                return empDataArray.count
+            case educationCV:
+                return eduDataArray.count
+            default:
+                return 0
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if collectionView == employmentCV {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "exp", for: indexPath) as! EmploymentCell
+            let exp = empDataArray[indexPath.row]
+            
+            cell.titleLabel.text = exp.employmentDesignation
+            cell.companyNameLabel.text = "l  \(exp.companyName)"
+            cell.noOfYearsLabel.text = "\(exp.yearsOfExperience),"
+            cell.jobTypeLabel.text = exp.employmentPeriod
+            
+            cell.deleteButton.addTarget(self, action: #selector(deleteEmpCell(_:)), for: .touchUpInside)
+            
+            cell.layer.borderWidth = 1
+            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+            cell.layer.cornerRadius = 12
+            
+            return cell
+        }
+        else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "edu", for: indexPath) as! EducationCell
+            
+            let edu = eduDataArray[indexPath.row]
+            print(edu)
+            
+            cell.educationLabel.text = edu.educationName
+            cell.collegeLabel.text = "l  \(edu.boardOrUniversity ?? "nil")"
+            cell.passYearLabel.text = "\(edu.yearOfPassing ?? "nil"),"
+            let m = edu.marksObtained ?? ""
+            if m.hasSuffix("%") {
+                cell.courseTypeLabel.text = m
+            }
+            else {
+                cell.courseTypeLabel.text = "\(m)%"
+            }
+            
+            cell.deleteButton.addTarget(self, action: #selector(deleteEduCell(_:)), for: .touchUpInside)
+            
+            cell.layer.borderWidth = 1
+            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+            cell.layer.cornerRadius = 12
+        
+            return cell
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width - 32, height: 80)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == employmentCV {
+            let exp = empDataArray[indexPath.row]
+            editExpTitleTF.text = exp.employmentDesignation
+            editExpCompanyTF.text = exp.companyName
+            editYearsOfExpTF.text = exp.yearsOfExperience
+            editExpPeriodTF.text = exp.employmentPeriod
+            
+            UIView.animate(withDuration: 0.3) {
+                self.empEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+            }
+        }
+        if collectionView == educationCV {
+            let edu = eduDataArray[indexPath.row]
+            editEducationTF.text = edu.educationName
+            editCollegeTF.text = edu.boardOrUniversity
+            editPassYearTF.text = edu.yearOfPassing
+            editMarksTF.text = edu.marksObtained
+            
+            UIView.animate(withDuration: 0.3) {
+                self.eduEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+            }
+        }
+    }
+    
+}
+
+
+extension ProfileController { // Extension for APIs
+    func fetchAndParseExperience() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/experience") else {
+            print("Invalid URL")
+            return
+        }
+        
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        DispatchQueue.main.async {
+//            self.scrollView.alpha = 0
+//            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "No error description")")
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let softwaresResponse = try decoder.decode(SoftwaresResponse.self, from: data)
+                let cleanedString = softwaresResponse.softwares
+                    .replacingOccurrences(of: "\\n", with: "")
+                    .replacingOccurrences(of: "\\\"", with: "\"")
+                    .replacingOccurrences(of: "\\", with: "") // Additional cleaning for any leftover backslashes
+                
+                // Regex to find the JSON array
+                let regex = try NSRegularExpression(pattern: "\\[.*?\\]", options: .dotMatchesLineSeparators)
+                if let match = regex.firstMatch(in: cleanedString, options: [], range: NSRange(cleanedString.startIndex..., in: cleanedString)) {
+                    let range = Range(match.range, in: cleanedString)!
+                    let jsonArrayString = String(cleanedString[range])
+                    
+                    if let jsonData = jsonArrayString.data(using: .utf8),
+                       let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [Any] {
+                        
+//                        print(jsonObject)
+                        
+                        do {
+                            let decoder = JSONDecoder()
+                            self.empDataArray = try decoder.decode([Employment].self, from: jsonData)
+                            print("Decoded data: \(self.empDataArray)")
+                            DispatchQueue.main.async {
+                                self.reloadEmploymentsCollectionView()
+                            }
+                        } catch {
+                            print("Failed to decode JSON: \(error)")
+                        }
+                        
+                    }
+                } else {
+                    print("No JSON array found")
+                }
+            } catch {
+                print("Failed to decode or clean JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+//                self.loader.stopAnimating()
+//                self.scrollView.alpha = 1
+                print("loader stopped")
+            }
+        }.resume()
+    }
+    
+    func fetchAndParseEducation() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/qualifications") else {
+            print("Invalid URL")
+            return
+        }
+        
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        DispatchQueue.main.async {
+//            self.scrollView.alpha = 0
+//            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "No error description")")
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let softwaresResponse = try decoder.decode(SoftwaresResponse.self, from: data)
+                let cleanedString = softwaresResponse.softwares
+                    .replacingOccurrences(of: "\\n", with: "")
+                    .replacingOccurrences(of: "\\\"", with: "\"")
+                    .replacingOccurrences(of: "\\", with: "") // Additional cleaning for any leftover backslashes
+                
+                // Regex to find the JSON array
+                let regex = try NSRegularExpression(pattern: "\\[.*?\\]", options: .dotMatchesLineSeparators)
+                if let match = regex.firstMatch(in: cleanedString, options: [], range: NSRange(cleanedString.startIndex..., in: cleanedString)) {
+                    let range = Range(match.range, in: cleanedString)!
+                    let jsonArrayString = String(cleanedString[range])
+                    
+                    if let jsonData = jsonArrayString.data(using: .utf8),
+                       let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [Any] {
+                        
+//                        print(jsonObject)
+                        
+                        do {
+                            let decoder = JSONDecoder()
+                            self.eduDataArray = try decoder.decode([Education].self, from: jsonData)
+                            print("Decoded data: \(self.eduDataArray)")
+                            DispatchQueue.main.async {
+                                self.reloadEducationCollectionView()
+                            }
+                        } catch {
+                            print("Failed to decode JSON: \(error)")
+                        }
+                        
+                    }
+                } else {
+                    print("No JSON array found")
+                }
+            } catch {
+                print("Failed to decode or clean JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+//                self.loader.stopAnimating()
+//                self.scrollView.alpha = 1
+                print("loader stopped")
+            }
+        }.resume()
+    }
+    
+    func fetchUserProfile() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+            print("Invalid URL")
+            return
+        }
+
+        // Prepare the request
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        // Retrieve the accessToken and set the Authorization header
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            do {
+                let user = try JSONDecoder().decode(User.self, from: data)
+                print("User fetched: \(user)")
+                
+                let initialsOfName = self.extractInitials(from: user.name)
+                let userName = user.name ?? ""
+                
+                DispatchQueue.main.async {
+                    self.profileCircleLabel.text = initialsOfName
+                    self.userNameLabel.text = "\(userName)"
+                    self.jobTitleLabel.text = user.designation
+                    self.locationLabel.text = user.city ?? "cityNil"
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+
+        task.resume()
+    }
+    
+    private func extractInitials(from name: String?) -> String {
+        guard let name = name, !name.isEmpty else { return "" }
+        let parts = name.split(separator: " ").map(String.init)
+        let initials = parts.compactMap { $0.first }.prefix(2)
+        return initials.map(String.init).joined().uppercased()
+    }
+}

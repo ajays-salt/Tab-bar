@@ -167,9 +167,9 @@
 			children = (
 				FAC3A1502B919F2500E17AFD /* HomeController.swift */,
 				FAB40D292B95ABC600B50B7F /* JobSearchPage.swift */,
-				FAC251B72B9EB87D0076DE75 /* JobSearchResult.swift */,
-				FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */,
 				FAB333302BD7745D00D05685 /* JobSearchResult2.swift */,
+				FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */,
+				FAC251B72B9EB87D0076DE75 /* JobSearchResult.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";

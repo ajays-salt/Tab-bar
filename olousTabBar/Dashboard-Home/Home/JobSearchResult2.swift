@@ -12,9 +12,10 @@ class JobSearchResult2: UIViewController {
     
     var jobTitle: String?
     var jobLocation: String?
-//    var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
-    var baseURL = "https://365e-2401-4900-36b3-eb0f-d039-ded9-e957-1462.ngrok-free.app/api/v1/job/jobs"
+    var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
     var finalURL = ""
+    
+    var jobLocationArray: [String] = []
     
     // Filter data
     var filter = Filter()
@@ -46,27 +47,57 @@ class JobSearchResult2: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .white // Set the background color for the view
         
-        var jobTitleArray: [String] = ["Node"]
-        baseURL = "\(baseURL)?jobTitle=\(jobTitle!)"
+        
+        
+        urlSettings()
+    }
+    
+    
+    func urlSettings() {
+        
+        if let  jobLocation2 = jobLocation, jobLocation2 != "" {
+            jobLocationArray.append(jobLocation2)
+        }
+        
+        
+        var components = URLComponents(string: baseURL)!
+        var queryItems: [URLQueryItem] = []
+
+        if let jobTitle = jobTitle {
+            queryItems.append(URLQueryItem(name: "jobTitle", value: jobTitle))
+        }
+
+        if !jobLocationArray.isEmpty {
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: jobLocationArray, options: [])
+                if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    queryItems.append(URLQueryItem(name: "city", value: jsonString))  // Only encode at this stage
+                }
+            } catch {
+                print("Error serializing city array: \(error)")
+            }
+        }
+
+        components.queryItems = queryItems
+        finalURL = components.url?.absoluteString ?? baseURL
+        
         
         
         fetchData { result in
             switch result {
             case .success(let fetchedJobs):
                 self.jobs = fetchedJobs
-                print("Fetched \(self.jobs.count) jobs.")
-                // Here you can perform further operations with the fetched data
+                print("fetched : ", fetchedJobs)
+                DispatchQueue.main.async {
+                    self.setupViews()
+                }
             case .failure(let error):
                 print("Error fetching data: \(error)")
             }
-            
-            DispatchQueue.main.async {
-                self.setupViews()
-            }
         }
         
-        
     }
+    
     
     func setupViews() {
         setupFilters()
@@ -193,7 +224,7 @@ class JobSearchResult2: UIViewController {
         for (category, options) in selectedOptionsDict where !options.isEmpty {
             let formattedCategory = category.lowercased()  // Assuming category matches the expected query parameter key
             switch formattedCategory {
-            case "location":  // Special formatting for locations as array
+            case "city":  // Special formatting for locations as array
                 let value = options.map { "\"\($0)\"" }.joined(separator: ",")
                 queryItems.append("\(formattedCategory)=[\(value)]")
             default:  // For single selection parameters
@@ -510,7 +541,7 @@ extension JobSearchResult2 { // extension for API
     
     func fetchData(completion: @escaping (Result<[Job], Error>) -> Void) {
         
-        var urlStr = baseURL
+        var urlStr = finalURL
         print(urlStr)
         
         guard let url = URL(string: urlStr) else {

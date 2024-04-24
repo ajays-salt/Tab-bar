@@ -25,11 +25,6 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     var scrollView : UIScrollView!
     
     var employmentsCV : UICollectionView!
-//    var dataArray: [Experience] = [
-//        Experience(titleLabel: "iOS Developer", companyNameLabel: "Salt Technologies", noOfYearsLabel: 1, jobTypeLabel: "Full time"),
-//        Experience(titleLabel: "Android Developer", companyNameLabel: "Tech Co.", noOfYearsLabel: 2, jobTypeLabel: "Part time"),
-//        Experience(titleLabel: "Web Developer", companyNameLabel: "Web Corp", noOfYearsLabel: 3, jobTypeLabel: "Full time")
-//    ]
     var dataArray : [Employment] = []
     var employmentsCVHeightConstraint: NSLayoutConstraint!
     
