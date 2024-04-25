@@ -10,6 +10,7 @@ import UIKit
 class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     var headerView : UIView!
+    var headerHeightConstraint: NSLayoutConstraint?
     var circleContainerView : UIView!
     
     var scrollView : UIScrollView!
@@ -145,6 +146,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     
     var bottomView : UIView!
+    var bottomHeightConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -188,9 +190,9 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 80)
         ])
-        
+        headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: 80)
+        headerHeightConstraint?.isActive = true
         
         circleContainerView = UIView(frame: CGRect(x: 60, y: 60, width: 60, height: 60))
         circleContainerView.layer.cornerRadius = 30

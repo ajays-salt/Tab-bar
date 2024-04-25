@@ -668,7 +668,6 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     }
     
     
-    
     func setupBottomView() {
         bottomView = UIView()
         bottomView.translatesAutoresizingMaskIntoConstraints = false
@@ -721,26 +720,6 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         ])
     }
     
-    @objc func didTapBackButton() {
-        navigationController?.popViewController(animated: true)
-    }
-    
-    @objc func didTapNextButton() {
-        fetchTotalExperienceAndUploadData()
-        let vc = SoftwaresVC()
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // Dismiss the keyboard when the return key is tapped
-        textField.resignFirstResponder()
-        return true
-    }
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Dismiss the keyboard when the user taps outside of the text field
-        view.endEditing(true)
-    }
     
     func setupEditViewComponents() {
         // Initialize and configure editView
@@ -876,10 +855,32 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         }
     }
     
+    
     private func showAlert(withTitle title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         self.present(alert, animated: true)
+    }
+    
+    
+    
+    @objc func didTapBackButton() {
+        navigationController?.popViewController(animated: true)
+    }
+    @objc func didTapNextButton() {
+        fetchTotalExperienceAndUploadData()
+        let vc = SoftwaresVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
     }
     
 }

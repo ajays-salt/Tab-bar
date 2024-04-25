@@ -143,6 +143,9 @@ struct User: Codable {
     var whatsappUpdate: Bool?
 }
 
+struct ProjectsResponse: Codable {
+    let softwares: String
+}
 
 struct Project: Codable {
     let projectName: String

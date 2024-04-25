@@ -27,11 +27,6 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     var scrollView : UIScrollView!
     
     var employmentsCV : UICollectionView!
-//    var dataArray : [Project1] = [
-//        Project1(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps that are of high quality and bug-free. It should be able to handle iPad UI as well and it should have push notifications along with firebase connection and RESTful APIs and backend services to let user connect with backend", description: "Travel journal app uild iPhone apps that are of high quality and bug-free. It should be able to handle iPad UI as well and it should have push notifications"),
-//        Project1(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps", description: "Travel journal app"),
-//        Project1(name: "Visits Journal", role: "iOS Developer", responsibility: "Build iPhone apps", description: "Travel journal app"),
-//    ]
     var dataArray : [Project] = []
     var employmentsCVHeightConstraint: NSLayoutConstraint!
     
@@ -358,7 +353,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         
         let addNewProjectLabel : UILabel = {
             let label = UILabel()
-            label.text = "Add New Employment"
+            label.text = "Add New Project"
             label.font = .boldSystemFont(ofSize: 18)
             label.textColor = UIColor(hex: "#344054")
             label.translatesAutoresizingMaskIntoConstraints = false
@@ -994,9 +989,7 @@ struct Project1 {
 
 
 extension ProjectsVC {
-    struct ProjectsResponse: Codable {
-        let softwares: String
-    }
+    
     
     func fetchProjects() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/projects") else {
