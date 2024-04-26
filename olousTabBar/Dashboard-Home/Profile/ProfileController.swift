@@ -12,20 +12,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var employments = [EmploymentTemp]()
     var educations = [EducationTemp]()
     
-    
-    let profileEditButton : UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "pencil"), for: .normal)
-        button.adjustsImageSizeForAccessibilityContentSizeCategory = true
-        button.tintColor = UIColor(hex: "#667085")
-        button.backgroundColor = .systemBackground
-        button.layer.cornerRadius = 20
-        button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        button.layer.borderWidth = 1
-        return button
-    }()
-    let scrollView = UIScrollView()
-    
     var headerView = UIView()
     
     let profileCircle = UIView()
@@ -60,6 +46,20 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         return label
     }()
     
+    let profileEditButton : UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.adjustsImageSizeForAccessibilityContentSizeCategory = true
+        button.tintColor = UIColor(hex: "#667085")
+        button.backgroundColor = .systemBackground
+        button.layer.cornerRadius = 20
+        button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        button.layer.borderWidth = 1
+        return button
+    }()
+    
+    let scrollView = UIScrollView()
+    
     let preferenceEditButton : UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "pencil"), for: .normal)
@@ -73,40 +73,12 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         return button
     }()
     
-    let jobTypeLabel : UILabel = {
-        let label = UILabel()
-        label.text = "Job"
-        label.textColor = UIColor(hex: "#101828")
-        label.font = .boldSystemFont(ofSize: 16)
-        return label
-    }()
-    let noticePeriodLabel : UILabel = {
-        let label = UILabel()
-        label.text = "30 Days"
-        label.textColor = UIColor(hex: "#101828")
-        label.font = .boldSystemFont(ofSize: 16)
-        return label
-    }()
-    let preferredLocationLabel : UILabel = {
-        let label = UILabel()
-        label.text = "Pune,Bangalore,Hyderabad"
-        label.textColor = UIColor(hex: "#101828")
-        label.font = .boldSystemFont(ofSize: 16)
-        return label
-    }()
     
     let separatorLine1 = UIView()
-    
-    let companyNameTextField = UITextField()
-    var employmentsBottomAnchor: NSLayoutYAxisAnchor!
-    
     let separatorLine2 = UIView()
-    
-    var educationBottomAnchor: NSLayoutYAxisAnchor!
-    
     let separatorLine3 = UIView()
-    
     let separatorLine4 = UIView()
+    let separatorLine5 = UIView()
     
     
 //   ******************************  New changes in this controller **************************************************************
@@ -153,6 +125,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var projectRespLoader: UIActivityIndicatorView!
     
     
+    let preferencesVC = PreferencesVC()
+    let headlineVC = HeadlineAndSummary()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
@@ -160,15 +136,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        fetchAndParseExperience()
-        fetchAndParseEducation()
-        fetchProjects()
         fetchUserProfile()
-        
-        
-        
-        companyNameTextField.delegate = self
-        
+                
         setupViews()
     }
     
@@ -181,7 +150,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         setupUserNameLabel()
         setupUserJobTitleLabel()
         setupLocationLabel()
-        setupPreferences()
         
         setupSeparatorLine1()
         
@@ -201,6 +169,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         setupSeparatorLine4()
         setupPreferencesVC()
+        setupHeadlineAndSummary()
         
         setupLogOut()
     }
@@ -236,7 +205,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 1500
+        let extraSpaceHeight: CGFloat = 1800
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -334,104 +303,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         ])
     }
     
-    func setupPreferences() {
-        let preferenceLabel : UILabel = {
-            let label = UILabel()
-            label.text = "Your Carrer Preferences"
-            label.textColor = UIColor(hex: "#101828")
-            label.font = .boldSystemFont(ofSize: 20)
-            return label
-        }()
-        preferenceLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(preferenceLabel)
-        
-        NSLayoutConstraint.activate([
-            preferenceLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 40),
-            preferenceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-        ])
-        
-        preferenceEditButton.addTarget(self, action: #selector(didTapEditPreference), for: .touchUpInside)
-        preferenceEditButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(preferenceEditButton)
-        NSLayoutConstraint.activate([
-            preferenceEditButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 40),
-            preferenceEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            preferenceEditButton.widthAnchor.constraint(equalToConstant: 20),
-            preferenceEditButton.heightAnchor.constraint(equalToConstant: 20)
-        ])
-        
-        
-        let preferredJobType : UILabel = {
-            let label = UILabel()
-            label.text = "Your carrer preferences"
-            label.textColor = UIColor(hex: "#667085")
-            label.font = .systemFont(ofSize: 16)
-            return label
-        }()
-        preferredJobType.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(preferredJobType)
-        NSLayoutConstraint.activate([
-            preferredJobType.topAnchor.constraint(equalTo: preferenceLabel.bottomAnchor, constant: 16),
-            preferredJobType.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18)
-        ])
-        
-        jobTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(jobTypeLabel)
-        NSLayoutConstraint.activate([
-            jobTypeLabel.topAnchor.constraint(equalTo: preferredJobType.bottomAnchor, constant: 6),
-            jobTypeLabel.leadingAnchor.constraint(equalTo: preferredJobType.leadingAnchor)
-        ])
-        
-        
-        
-        let noticePeriod : UILabel = {
-            let label = UILabel()
-            label.text = "Notice Period"
-            label.textColor = UIColor(hex: "#667085")
-            label.font = .systemFont(ofSize: 16)
-            return label
-        }()
-        noticePeriod.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(noticePeriod)
-        NSLayoutConstraint.activate([
-            noticePeriod.topAnchor.constraint(equalTo: preferenceLabel.bottomAnchor, constant: 16),
-            noticePeriod.leadingAnchor.constraint(equalTo: preferredJobType.trailingAnchor, constant: 32)
-        ])
-        
-        noticePeriodLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(noticePeriodLabel)
-        NSLayoutConstraint.activate([
-            noticePeriodLabel.topAnchor.constraint(equalTo: noticePeriod.bottomAnchor, constant: 6),
-            noticePeriodLabel.leadingAnchor.constraint(equalTo: noticePeriod.leadingAnchor)
-        ])
-        
-        
-        let preferredLocation : UILabel = {
-            let label = UILabel()
-            label.text = "Preferred Location"
-            label.textColor = UIColor(hex: "#667085")
-            label.font = .systemFont(ofSize: 16)
-            return label
-        }()
-        preferredLocation.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(preferredLocation)
-        NSLayoutConstraint.activate([
-            preferredLocation.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 16),
-            preferredLocation.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
-        ])
-        
-        preferredLocationLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(preferredLocationLabel)
-        NSLayoutConstraint.activate([
-            preferredLocationLabel.topAnchor.constraint(equalTo: preferredLocation.bottomAnchor, constant: 6),
-            preferredLocationLabel.leadingAnchor.constraint(equalTo: preferredLocation.leadingAnchor),
-            preferredLocationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-        ])
-    }
-    
-    @objc func didTapEditPreference() {
-        
-    }
     
     func setupSeparatorLine1() {
         separatorLine1.backgroundColor = UIColor(hex: "#EAECF0")
@@ -439,7 +310,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         scrollView.addSubview(separatorLine1)
         
         NSLayoutConstraint.activate([
-            separatorLine1.topAnchor.constraint(equalTo: preferredLocationLabel.bottomAnchor, constant: 16),
+            separatorLine1.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
             separatorLine1.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine1.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine1.heightAnchor.constraint(equalToConstant: 1)
@@ -977,7 +848,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         projectCVHeightConstraint = projectCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         projectCVHeightConstraint.isActive = true
     }
-    func reloadCollectionView() {
+    func reloadProjectCollectionView() {
         projectCV.reloadData()
         projectCV.layoutIfNeeded()
         
@@ -998,7 +869,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }
         
         projectDataArray.remove(at: indexPath.row)
-        reloadCollectionView()
+        reloadProjectCollectionView()
     }
     @objc func didTapAddProject() {
         
@@ -1348,21 +1219,27 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         scrollView.bringSubviewToFront(prefer)
     }
     
+    // separator line 5 inside this function
     func setupPreferencesVC() {
-        let vc = PreferencesVC()
         
-        let tempView = vc.view!
+        let tempView = preferencesVC.view!
         view.backgroundColor = .systemBackground
         
-        vc.headerHeightConstraint?.constant = 0
-        vc.headerHeightConstraint?.isActive = true
-        vc.headerView.isHidden = true
-        vc.bottomView.isHidden = true
+        preferencesVC.headerHeightConstraint?.constant = 0
+        preferencesVC.headerHeightConstraint?.isActive = true
+        preferencesVC.headerView.isHidden = true
+        
+        preferencesVC.bottomHeightConstraint?.constant = 0
+        preferencesVC.bottomHeightConstraint?.isActive = true
+        preferencesVC.bottomView.isHidden = true
+        
+        let contentHeight = view.bounds.height - 100
+        preferencesVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
         tempView.layoutIfNeeded()
         
         scrollView.addSubview(tempView)
-        addChild(vc)
-        vc.didMove(toParent: self)
+        addChild(preferencesVC)
+        preferencesVC.didMove(toParent: self)
         
         overrideUserInterfaceStyle = .light
         
@@ -1371,8 +1248,66 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             tempView.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 40),
             tempView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tempView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            tempView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
-            tempView.heightAnchor.constraint(equalToConstant: 1500)
+            tempView.heightAnchor.constraint(equalToConstant: 1400)
+        ])
+        
+        separatorLine5.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine5.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(separatorLine5)
+        
+        NSLayoutConstraint.activate([
+            separatorLine5.topAnchor.constraint(equalTo: tempView.bottomAnchor, constant: -120),
+            separatorLine5.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine5.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine5.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    func setupHeadlineAndSummary() {
+        
+        let prefer = UILabel()
+        prefer.text = "Headline and Summary"
+        prefer.font = .boldSystemFont(ofSize: 20)
+        
+        prefer.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(prefer)
+        
+        NSLayoutConstraint.activate([
+            prefer.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 20),
+            prefer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+        ])
+        scrollView.bringSubviewToFront(prefer)
+        
+        
+        
+        let tempView = headlineVC.view!
+        view.backgroundColor = .systemBackground
+        
+        headlineVC.headerHeightConstraint?.constant = 0
+        headlineVC.headerHeightConstraint?.isActive = true
+        headlineVC.headerView.isHidden = true
+        
+        headlineVC.bottomHeightConstraint?.constant = 0
+        headlineVC.bottomHeightConstraint?.isActive = true
+        headlineVC.bottomView.isHidden = true
+        tempView.layoutIfNeeded()
+        
+        let contentHeight = view.bounds.height - 300
+        headlineVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        tempView.layoutIfNeeded()
+        
+        scrollView.addSubview(tempView)
+        addChild(headlineVC)
+        headlineVC.didMove(toParent: self)
+        
+        overrideUserInterfaceStyle = .light
+        
+        tempView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 20),
+            tempView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tempView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tempView.heightAnchor.constraint(equalToConstant: 700)
         ])
     }
     
@@ -1382,7 +1317,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     func updateScrollViewContentSize() {
         let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
         // Add other collection view heights if there are more
-        let extraSpaceHeight: CGFloat = 500 // Change this if you need more space at the bottom
+        let extraSpaceHeight: CGFloat = 1000 // Change this if you need more space at the bottom
         
         let totalContentHeight = combinedContentHeight + extraSpaceHeight
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight)
@@ -1614,203 +1549,6 @@ extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionVi
 
 
 extension ProfileController { // Extension for APIs
-    func fetchAndParseExperience() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/experience") else {
-            print("Invalid URL")
-            return
-        }
-        
-        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
-            print("Access Token not found")
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
-        DispatchQueue.main.async {
-//            self.scrollView.alpha = 0
-//            self.loader.startAnimating()
-            print("Loader should be visible now")
-        }
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Network request failed: \(error?.localizedDescription ?? "No error description")")
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let softwaresResponse = try decoder.decode(SoftwaresResponse.self, from: data)
-                let cleanedString = softwaresResponse.softwares
-                    .replacingOccurrences(of: "\\n", with: "")
-                    .replacingOccurrences(of: "\\\"", with: "\"")
-                    .replacingOccurrences(of: "\\", with: "") // Additional cleaning for any leftover backslashes
-                
-                // Regex to find the JSON array
-                let regex = try NSRegularExpression(pattern: "\\[.*?\\]", options: .dotMatchesLineSeparators)
-                if let match = regex.firstMatch(in: cleanedString, options: [], range: NSRange(cleanedString.startIndex..., in: cleanedString)) {
-                    let range = Range(match.range, in: cleanedString)!
-                    let jsonArrayString = String(cleanedString[range])
-                    
-                    if let jsonData = jsonArrayString.data(using: .utf8),
-                       let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [Any] {
-                        
-//                        print(jsonObject)
-                        
-                        do {
-                            let decoder = JSONDecoder()
-                            self.empDataArray = try decoder.decode([Employment].self, from: jsonData)
-                            print("Decoded data: \(self.empDataArray)")
-                            DispatchQueue.main.async {
-                                self.reloadEmploymentsCollectionView()
-                            }
-                        } catch {
-                            print("Failed to decode JSON: \(error)")
-                        }
-                        
-                    }
-                } else {
-                    print("No JSON array found")
-                }
-            } catch {
-                print("Failed to decode or clean JSON: \(error)")
-            }
-            DispatchQueue.main.async {
-//                self.loader.stopAnimating()
-//                self.scrollView.alpha = 1
-                print("loader stopped")
-            }
-        }.resume()
-    }
-    
-    func fetchAndParseEducation() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/qualifications") else {
-            print("Invalid URL")
-            return
-        }
-        
-        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
-            print("Access Token not found")
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
-        DispatchQueue.main.async {
-//            self.scrollView.alpha = 0
-//            self.loader.startAnimating()
-            print("Loader should be visible now")
-        }
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Network request failed: \(error?.localizedDescription ?? "No error description")")
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let softwaresResponse = try decoder.decode(SoftwaresResponse.self, from: data)
-                let cleanedString = softwaresResponse.softwares
-                    .replacingOccurrences(of: "\\n", with: "")
-                    .replacingOccurrences(of: "\\\"", with: "\"")
-                    .replacingOccurrences(of: "\\", with: "") // Additional cleaning for any leftover backslashes
-                
-                // Regex to find the JSON array
-                let regex = try NSRegularExpression(pattern: "\\[.*?\\]", options: .dotMatchesLineSeparators)
-                if let match = regex.firstMatch(in: cleanedString, options: [], range: NSRange(cleanedString.startIndex..., in: cleanedString)) {
-                    let range = Range(match.range, in: cleanedString)!
-                    let jsonArrayString = String(cleanedString[range])
-                    
-                    if let jsonData = jsonArrayString.data(using: .utf8),
-                       let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [Any] {
-                        
-//                        print(jsonObject)
-                        
-                        do {
-                            let decoder = JSONDecoder()
-                            self.eduDataArray = try decoder.decode([Education].self, from: jsonData)
-                            print("Decoded data: \(self.eduDataArray)")
-                            DispatchQueue.main.async {
-                                self.reloadEducationCollectionView()
-                            }
-                        } catch {
-                            print("Failed to decode JSON: \(error)")
-                        }
-                        
-                    }
-                } else {
-                    print("No JSON array found")
-                }
-            } catch {
-                print("Failed to decode or clean JSON: \(error)")
-            }
-            DispatchQueue.main.async {
-//                self.loader.stopAnimating()
-//                self.scrollView.alpha = 1
-                print("loader stopped")
-            }
-        }.resume()
-    }
-    
-    func fetchProjects() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/projects") else {
-            print("Invalid URL")
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        
-        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
-        DispatchQueue.main.async {
-//            self.loader.startAnimating()
-//            self.scrollView.alpha = 0
-            print("Loader should be visible now")
-        }
-        
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self, let data = data, error == nil else {
-                return
-            }
-            
-            do {
-                let outerResponse = try JSONDecoder().decode(ProjectsResponse.self, from: data)
-                let projectsString = outerResponse.softwares
-                
-                // Extract the JSON part directly
-                if let jsonStartIndex = projectsString.range(of: "\\[", options: .regularExpression)?.lowerBound {
-                    let jsonPart = String(projectsString[jsonStartIndex...])
-                    if let projectsData = jsonPart.data(using: .utf8) {
-                        let projects = try JSONDecoder().decode([Project].self, from: projectsData)
-                        DispatchQueue.main.async {
-                            print("Fetched Projects: \(projects)")
-                            self.projectDataArray = projects
-                            self.reloadCollectionView()
-                        }
-                    }
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    print("Failed to decode JSON: \(error)")
-                    self.fetchProjects()
-                }
-            }
-            
-            DispatchQueue.main.async {
-//                self.loader.stopAnimating()
-//                self.scrollView.alpha = 1
-                print("Loader stopped")
-            }
-        }.resume()
-    }
     
     func fetchUserProfile() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
@@ -1848,7 +1586,30 @@ extension ProfileController { // Extension for APIs
                     self.profileCircleLabel.text = initialsOfName
                     self.userNameLabel.text = "\(userName)"
                     self.jobTitleLabel.text = user.designation
-                    self.locationLabel.text = user.city ?? "cityNil"
+                    self.locationLabel.text = user.permanentAddress?.address ?? "cityNil"
+                    
+                    self.empDataArray = user.experience!
+                    self.reloadEmploymentsCollectionView()
+                    
+                    self.eduDataArray = user.education!
+                    self.reloadEducationCollectionView()
+                    
+                    self.projectDataArray = user.projects!
+                    self.reloadProjectCollectionView()
+                    
+                    self.preferencesVC.portfolioTextField.text = user.portfolio
+                    self.preferencesVC.currentCtcTextField.text = user.currentCtc
+                    self.preferencesVC.expectedCtcTextField.text = user.expectedCtc
+                    let noticePeriod = user.noticePeriod
+                    self.preferencesVC.permanentTextField.text = user.permanentAddress?.address
+                    self.preferencesVC.permanentPinTextField.text = user.permanentAddress?.pinCode
+                    self.preferencesVC.currentTextField.text = user.currentAddress?.address
+                    self.preferencesVC.currentPinTextField.text = user.currentAddress?.pinCode
+                    self.preferencesVC.languageArray = user.language!
+                    
+                    self.headlineVC.resumeTextView.text = user.headline
+                    self.headlineVC.summaryTextView.text = user.summary
+                    
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")

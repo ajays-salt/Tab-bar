@@ -212,8 +212,8 @@
 				FAC3A1472B9191C700E17AFD /* Info.plist */,
 				FA7C4EC42BA4510D00900BF8 /* Helpers */,
 				FA7C4EC12BA4500100900BF8 /* Model */,
-				FAE0A1EC2BB3D40900F07B29 /* Onboarding */,
 				FACCE4D32BB283BB00DAD5D2 /* LogIn-Registration Screens */,
+				FAE0A1EC2BB3D40900F07B29 /* Onboarding */,
 				FAC3A14D2B91925300E17AFD /* Dashboard-Home */,
 			);
 			path = olousTabBar;

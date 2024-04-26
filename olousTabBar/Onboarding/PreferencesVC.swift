@@ -71,6 +71,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         return textField
     }()
     
+    var noticePeriodOptions = ["Immediate", "15 days", "1 Month", "2 Months", "3 Months", "More than 3 Months", ]
+    
     var selectedNoticeOptionsButton : UIButton?
     var selectedGenderButton : UIButton?
     var selectedRelocateButton : UIButton?
@@ -404,8 +406,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             return label
         }()
         
-        let noticePeriodOptions = ["Immediate", "15 days", "1 Month", "2 Months", "3 Months", "More than 3 Months", ]
-        
+                
         let noticeOptionsScrollView = UIScrollView()
         noticeOptionsScrollView.showsHorizontalScrollIndicator = false
         noticeOptionsScrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -1046,7 +1047,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             bottomView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
             bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomView.heightAnchor.constraint(equalToConstant: 100),
             
             backButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 15),
             backButton.leadingAnchor.constraint(equalTo: bottomView.leadingAnchor, constant: 16),
@@ -1058,6 +1058,9 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             nextButton.heightAnchor.constraint(equalToConstant: 50),
             nextButton.widthAnchor.constraint(equalToConstant: 100),
         ])
+        
+        bottomHeightConstraint = bottomView.heightAnchor.constraint(equalToConstant: 100)
+        bottomHeightConstraint?.isActive = true
     }
     
     @objc func didTapBackButton() {

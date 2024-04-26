@@ -10,6 +10,7 @@ import UIKit
 class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     
     var headerView : UIView!
+    var headerHeightConstraint: NSLayoutConstraint?
     var circleContainerView : UIView!
     
     var scrollView : UIScrollView!
@@ -28,7 +29,6 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor(hex: "#0079C4").cgColor
         
-        button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -59,6 +59,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
     
     
     var bottomView : UIView!
+    var bottomHeightConstraint: NSLayoutConstraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,8 +113,9 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 80)
         ])
+        headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: 80)
+        headerHeightConstraint?.isActive = true
         
         
         circleContainerView = UIView(frame: CGRect(x: 60, y: 60, width: 60, height: 60))
@@ -368,7 +370,6 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             bottomView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0),
             bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomView.heightAnchor.constraint(equalToConstant: 100),
             
             backButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 20),
             backButton.leadingAnchor.constraint(equalTo: bottomView.leadingAnchor, constant: 16),
@@ -380,6 +381,9 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             nextButton.heightAnchor.constraint(equalToConstant: 50),
             nextButton.widthAnchor.constraint(equalToConstant: 100),
         ])
+        
+        bottomHeightConstraint = bottomView.heightAnchor.constraint(equalToConstant: 100)
+        bottomHeightConstraint?.isActive = true
     }
     
     @objc func didTapBackButton() {
