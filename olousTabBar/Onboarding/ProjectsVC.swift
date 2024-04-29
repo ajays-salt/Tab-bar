@@ -937,24 +937,25 @@ extension ProjectsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let project = dataArray[indexPath.row]
-        
+
         let padding: CGFloat = 6 // Adjust padding as necessary
         let labelWidth = collectionView.bounds.width - (padding * 2)
-        
+
         let descriptionFont = UIFont.systemFont(ofSize: 14)
         let responsibilityFont = UIFont.systemFont(ofSize: 14)
         let fixedHeightFont = UIFont.systemFont(ofSize: 18) // Assuming the single-line labels use this
-        
-        // Calculate heights for the dynamic height labels
-        let descriptionHeight = project.description.heightWithConstrainedWidth(width: labelWidth, font: descriptionFont)
-        let responsibilityHeight = project.responsibility.heightWithConstrainedWidth(width: labelWidth, font: responsibilityFont)
-        
+
+        // Calculate maximum heights for the labels with limited lines
+        let maxLines: CGFloat = 3
+        let descriptionHeight = min(descriptionFont.lineHeight * maxLines, project.description.heightWithConstrainedWidth(width: labelWidth, font: descriptionFont))
+        let responsibilityHeight = min(responsibilityFont.lineHeight * maxLines, project.responsibility.heightWithConstrainedWidth(width: labelWidth, font: responsibilityFont))
+
         // Add heights for the fixed single-line labels
         let fixedHeight = fixedHeightFont.lineHeight // Since they are single line, we can use line height directly
 
         // Calculate total height
         let totalHeight = descriptionHeight + responsibilityHeight + (fixedHeight * 2) + (padding * 3) // Adjust number of paddings as needed
-        
+
         return CGSize(width: view.frame.width - 32, height: totalHeight + 30)
     }
 

@@ -29,7 +29,7 @@ class ProjectCell: UICollectionViewCell {
         label.text = "Salt Technologies"
         label.textColor = UIColor(hex: "#101828")
         label.font = UIFont.systemFont(ofSize: 14)
-        label.numberOfLines = 0
+        label.numberOfLines = 3
         return label
     }()
     
@@ -38,7 +38,7 @@ class ProjectCell: UICollectionViewCell {
         label.text = "Salt Technologies"
         label.textColor = UIColor(hex: "#101828")
         label.font = UIFont.systemFont(ofSize: 14)
-        label.numberOfLines = 0
+        label.numberOfLines = 3
         return label
     }()
     

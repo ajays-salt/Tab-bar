@@ -71,7 +71,13 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         return textField
     }()
     
+    // changes to fit this VC in User Profile VC
+    var noticeOptionsScrollView = UIScrollView()
     var noticePeriodOptions = ["Immediate", "15 days", "1 Month", "2 Months", "3 Months", "More than 3 Months", ]
+    var genderStackView = UIStackView()
+    var relocateStackView = UIStackView()
+    var employedStackView = UIStackView()
+    var workTypeScrollView = UIScrollView()
     
     var selectedNoticeOptionsButton : UIButton?
     var selectedGenderButton : UIButton?
@@ -146,6 +152,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         return textField
     }()
     
+    var addLanguageContainer = UIView()
     
     var bottomView : UIView!
     var bottomHeightConstraint: NSLayoutConstraint?
@@ -407,7 +414,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         }()
         
                 
-        let noticeOptionsScrollView = UIScrollView()
+        
         noticeOptionsScrollView.showsHorizontalScrollIndicator = false
         noticeOptionsScrollView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -457,7 +464,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             return label
         }()
         
-        let genderStackView = UIStackView()
+        
         genderStackView.axis = .horizontal
         genderStackView.spacing = 12
         genderStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -504,7 +511,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             return label
         }()
         
-        let relocateStackView = UIStackView()
+        
         relocateStackView.axis = .horizontal
         relocateStackView.spacing = 12
         relocateStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -551,7 +558,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             return label
         }()
         
-        let employedStackView = UIStackView()
+        
         employedStackView.axis = .horizontal
         employedStackView.spacing = 12
         employedStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -599,7 +606,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         
         let workTypeOptions = ["Office", "Home", "Office + Site", "On-Site"]
         
-        let workTypeScrollView = UIScrollView()
+        
         workTypeScrollView.showsHorizontalScrollIndicator = false
         workTypeScrollView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -848,23 +855,23 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         
         
         
-        let container = UIView()
-        container.layer.borderWidth = 1
-        container.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        container.layer.cornerRadius = 12
-        container.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(container)
+        
+        addLanguageContainer.layer.borderWidth = 1
+        addLanguageContainer.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        addLanguageContainer.layer.cornerRadius = 12
+        addLanguageContainer.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(addLanguageContainer)
         
         let addLangLabel = UILabel()
         addLangLabel.text = "Add Language"
         addLangLabel.font = .boldSystemFont(ofSize: 18)
         addLangLabel.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(addLangLabel)
+        addLanguageContainer.addSubview(addLangLabel)
         
-        container.addSubview(languageTextField)
-        container.addSubview(fluencyTextField)
+        addLanguageContainer.addSubview(languageTextField)
+        addLanguageContainer.addSubview(fluencyTextField)
         
-        languageTextField.inputView = languagePicker
+//        languageTextField.inputView = languagePicker
         fluencyTextField.inputView = fluencyPicker
         languagePicker.delegate = self
         languagePicker.dataSource = self
@@ -875,16 +882,16 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         fluencyTextField.translatesAutoresizingMaskIntoConstraints = false
         
         addLanguageButton.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(addLanguageButton)
+        addLanguageContainer.addSubview(addLanguageButton)
         
         NSLayoutConstraint.activate([
-            container.topAnchor.constraint(equalTo: languageCV.bottomAnchor, constant: 20),
-            container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            container.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            container.heightAnchor.constraint(equalToConstant: 120),
+            addLanguageContainer.topAnchor.constraint(equalTo: languageCV.bottomAnchor, constant: 20),
+            addLanguageContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            addLanguageContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addLanguageContainer.heightAnchor.constraint(equalToConstant: 120),
             
-            addLangLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 10),
-            addLangLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
+            addLangLabel.topAnchor.constraint(equalTo: addLanguageContainer.topAnchor, constant: 10),
+            addLangLabel.leadingAnchor.constraint(equalTo: addLanguageContainer.leadingAnchor, constant: 10),
             
             languageTextField.topAnchor.constraint(equalTo: addLangLabel.bottomAnchor, constant: 10),
             languageTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26),
@@ -1185,9 +1192,10 @@ extension PreferencesVC {
             currentAddress: Address(address: currentAddress, pinCode: currentPin),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
-            language: [
-                Language(language: "English", proficiencyLevel: "Expert", read: true, write: true, speak: true)
-            ],
+//            language: [
+//                Language(language: "English", proficiencyLevel: "Expert", read: true, write: true, speak: true)
+//            ],
+            language: languageArray,
             portfolio: portfolio
         )
         

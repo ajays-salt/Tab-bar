@@ -971,12 +971,7 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
 }
 
 
-struct Experience1 {
-    let titleLabel: String
-    let companyNameLabel: String
-    let noOfYearsLabel: Double
-    let jobTypeLabel: String
-}
+
 
 
 extension EmploymentsVC {
