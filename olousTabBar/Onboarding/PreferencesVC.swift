@@ -935,7 +935,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         }
         
         // Create a new LanguageInfo object and append it to the array
-        let newEntry = Language(language: language, proficiencyLevel: fluency, read: true, write: true, speak: true)
+        let newEntry = Language(language: language, fluencyLevel: fluencyTextField.text!, read: true, write: true, speak: true)
         languageArray.append(newEntry)
         
         // Reload the collection view to display the new entry
@@ -1109,7 +1109,7 @@ extension PreferencesVC : UIPickerViewDelegate, UIPickerViewDataSource, UICollec
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "language", for: indexPath) as! LanguageCell
         cell.deleteButton.addTarget(self, action: #selector(deleteLanguageEntry), for: .touchUpInside)
         cell.languageLabel.text = languageArray[indexPath.row].language
-        cell.fluencyLabel.text = languageArray[indexPath.row].proficiencyLevel
+        cell.fluencyLabel.text = languageArray[indexPath.row].fluencyLevel
         cell.deleteButton.addTarget(self, action: #selector(deleteLanguageEntry), for: .touchUpInside)
         
         return cell

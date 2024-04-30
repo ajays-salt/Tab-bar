@@ -92,14 +92,14 @@ struct Employment: Codable {
 
 struct Language: Codable {
     let language: String
-    let proficiencyLevel: String?
+    let fluencyLevel: String?
     let read: Bool
     let write: Bool
     let speak: Bool
     
     enum CodingKeys: String, CodingKey {
         case language
-        case proficiencyLevel = "proficiencyLevel"
+        case fluencyLevel = "fluencyLevel"
         case read
         case write
         case speak

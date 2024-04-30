@@ -322,22 +322,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             employmentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         ])
         
-//        let expandButton : UIButton = {
-//            let btn = UIButton()
-//            btn.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-//            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-//            btn.titleLabel?.font = .boldSystemFont(ofSize: 30)
-//            return btn
-//        }()
-//        
-//        expandButton.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(expandButton)
-//        NSLayoutConstraint.activate([
-//            expandButton.topAnchor.constraint(equalTo: employmentLabel.topAnchor, constant: -10),
-//            expandButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-//            expandButton.widthAnchor.constraint(equalToConstant: 30),
-//        ])
-        
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Add", for: .normal)
@@ -392,15 +376,27 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }
     }
     @objc func deleteEmpCell(_ sender : UIButton) {
-        print(#function)
         guard let cell = sender.superview as? EmploymentCell, // Adjust the number of superviews according to your cell's hierarchy
             let indexPath = employmentCV.indexPath(for: cell)
         else {
             return
         }
         
-        empDataArray.remove(at: indexPath.row)
-        reloadEmploymentsCollectionView()
+        // Call the confirmation alert
+        askUserConfirmation(title: "Delete Employment", message: "Are you sure you want to delete this item?") {
+            // This closure is executed if the user confirms
+            self.empDataArray.remove(at: indexPath.row)
+            
+            // Perform batch updates for animation
+            self.employmentCV.performBatchUpdates({
+                self.employmentCV.deleteItems(at: [indexPath])
+            }, completion: { _ in
+                self.reloadEmploymentsCollectionView()
+            })
+            
+            // Assume uploadEmploymentArray() syncs data with a server or updates the local storage
+            self.uploadEmploymentArray()
+        }
     }
     
     func setupEmpEditView() {
@@ -533,7 +529,77 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             reloadEmploymentsCollectionView()
         }
         
+        uploadEmploymentArray()
         cancelEmpEdit()
+    }
+    
+    var totalExperience : Int!
+    
+    func uploadEmploymentArray() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL for updating resume")
+            return
+        }
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        guard let experienceArray = empDataArray as? [Employment], !experienceArray.isEmpty else {
+            print("Employment data array is empty or not properly cast.")
+            return
+        }
+
+        guard let jsonData = encodeEmploymentArray(experienceArray: experienceArray, totalExperience: totalExperience) else {
+            print("Failed to encode employment data")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.httpBody = jsonData
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            if httpResponse.statusCode == 200 {
+                print("Data successfully uploaded")
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Server response: \(responseString)")
+                }
+            } else {
+                print("Failed to upload data, status code: \(httpResponse.statusCode)")
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Response details: \(responseString)")
+                }
+            }
+        }.resume()
+    }
+    
+    func encodeEmploymentArray(experienceArray: [Employment], totalExperience: Int) -> Data? {
+        guard let firstDesignation = experienceArray.first?.employmentDesignation else {
+            print("No employment designation available in the first item of the array.")
+            return nil
+        }
+
+        let employmentData = EmploymentData(
+            experience: experienceArray,
+            designation: firstDesignation,
+            totalExperience: "\(totalExperience)"
+        )
+
+        do {
+            let jsonData = try JSONEncoder().encode(employmentData)
+            return jsonData
+        } catch {
+            print("Error encoding employment data to JSON: \(error)")
+            return nil
+        }
     }
 
     @objc func cancelEmpEdit() {
@@ -766,7 +832,60 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             reloadEducationCollectionView()
         }
         
+        uploadEducationArray()
         cancelEduEdit()
+    }
+    
+    func uploadEducationArray() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access Token not found")
+            return
+        }
+        
+        
+        
+        let educationDictionary = ["education": eduDataArray]
+        var jsonData: Data? = nil
+        do {
+            jsonData = try JSONEncoder().encode(educationDictionary)
+        } catch {
+            print("Error encoding dataArray to JSON: \(error)")
+        }
+        
+//        guard let jsonData = encodeEducationArray() else {
+//            print("Failed to encode education data")
+//            return
+//        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization") // Replace `accessToken` with your actual token
+        request.httpBody = jsonData
+        
+
+        let session = URLSession.shared
+        session.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if httpResponse.statusCode == 200 {
+                print("Data successfully uploaded")
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Server response: \(responseString)")
+                }
+            } else {
+                print("Failed to upload data, status code: \(httpResponse.statusCode)")
+                print(data , error)
+            }
+            
+        }.resume()
     }
 
     @objc func cancelEduEdit() {
@@ -786,9 +905,23 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
-        eduDataArray.remove(at: indexPath.row)
-        reloadEducationCollectionView()
+        // Call the confirmation alert
+        askUserConfirmation(title: "Delete Education", message: "Are you sure you want to delete this item?") {
+            // This closure is executed if the user confirms
+            self.eduDataArray.remove(at: indexPath.row)
+            
+            // Perform batch updates for animation
+            self.educationCV.performBatchUpdates({
+                self.educationCV.deleteItems(at: [indexPath])
+            }, completion: { _ in
+                self.reloadEducationCollectionView()
+            })
+            
+            // Assume uploadEducationArray() syncs data with a server or updates the local storage
+            self.uploadEducationArray()
+        }
     }
+    
     @objc func didTapAddEducation() {
         UIView.animate(withDuration: 0.3) {
             self.eduEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
@@ -874,16 +1007,27 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.view.layoutIfNeeded()
         }
     }
-    @objc func deleteCell(_ sender : UIButton) {
+    
+    @objc func deleteProjectCell(_ sender : UIButton) {
         guard let cell = sender.superview as? ProjectCell, // Adjust the number of superviews according to your cell's hierarchy
             let indexPath = projectCV.indexPath(for: cell)
         else {
             return
         }
         
-        projectDataArray.remove(at: indexPath.row)
-        reloadProjectCollectionView()
+        askUserConfirmation(title: "Delete Item", message: "Are you sure you want to delete this item?") {
+            // This closure is executed if the user confirms
+            self.projectDataArray.remove(at: indexPath.row)
+            self.projectCV.performBatchUpdates({
+                self.projectCV.deleteItems(at: [indexPath])
+            }, completion: { _ in
+                self.reloadProjectCollectionView()
+            })
+            self.uploadProjectDataArray()
+        }
     }
+    
+    
     @objc func didTapAddProject() {
         UIView.animate(withDuration: 0.3) {
             self.projectEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
@@ -1204,7 +1348,53 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             reloadProjectCollectionView()
         }
         
+        uploadProjectDataArray()
         cancelProjectEdit()
+    }
+    
+    func uploadProjectDataArray() {
+        // upload to server
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        do {
+            let projectsData = ["projects": projectDataArray]
+            let jsonData = try JSONEncoder().encode(projectsData)
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode projects to JSON: \(error)")
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Failed to upload projects, status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                return
+            }
+            
+            if httpResponse.statusCode == 200 {
+                print("Projects successfully uploaded.")
+            } else {
+                print("Failed to upload projects, status code: \(httpResponse.statusCode)")
+            }
+            
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Server response: \(responseString)")
+            }
+            if let error = error {
+                print("Error uploading projects: \(error.localizedDescription)")
+            }
+            
+        }.resume()
     }
 
     @objc func cancelProjectEdit() {
@@ -1291,7 +1481,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         NSLayoutConstraint.activate([
             projectLabel.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
             projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 10),
+            addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
             addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
         
@@ -1548,6 +1738,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     @objc func savePreferencesChanges() {
         
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
         guard let portfolio = preferencesVC.portfolioTextField.text, !portfolio.isEmpty,
               let currentCtcText = preferencesVC.currentCtcTextField.text, !currentCtcText.isEmpty, let currentCtc = Double(currentCtcText),
               let expectedCtcText = preferencesVC.expectedCtcTextField.text, !expectedCtcText.isEmpty, let expectedCtc = Double(expectedCtcText),
@@ -1565,6 +1760,59 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
+        let userProfileUpdate = UserProfileUpdate(
+            hobbies: "",
+            preferredWorkType: preferredWorkType,
+            willingToRelocate: willingToRelocate,
+            gender: gender,
+            noticePeriod: noticePeriod,
+            currentlyEmployed: currentlyEmployed,
+            permanentAddress: Address(address: permanentAddress, pinCode: permanentPin),
+            currentAddress: Address(address: currentAddress, pinCode: currentPin),
+            currentCtc: currentCtc,
+            expectedCtc: expectedCtc,
+//            language: [
+//                Language(language: "English", proficiencyLevel: "Expert", read: true, write: true, speak: true)
+//            ],
+//            language: languageArray,
+            language: preferencesVC.languageArray,
+            portfolio: portfolio
+        )
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        
+        do {
+            let jsonData = try JSONEncoder().encode(userProfileUpdate)
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode user profile to JSON: \(error)")
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                print("Failed to upload user profile, status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                return
+            }
+            print(response)
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Server response: \(responseString)")
+            }
+            if let error = error {
+                print("Error uploading user profile: \(error.localizedDescription)")
+            } else {
+                print("User profile successfully uploaded.")
+                self.fetchUserProfile()
+            }
+        }.resume()
+        
+        
         UIView.animate(withDuration: 0.36) {
             self.editPreferencesView.transform = .identity
         }
@@ -1576,6 +1824,17 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }
     }
     
+    
+    var headlineEditButton : UIButton = {
+        let btn = UIButton()
+        btn.setTitle("Edit", for: .normal)
+        btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+        btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        return btn
+    }()
+    
+    var headlineSaveButton : UIButton!
+    
     func setupHeadlineAndSummary() {
         
         let prefer = UILabel()
@@ -1585,9 +1844,17 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         prefer.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(prefer)
         
+        
+        headlineEditButton.addTarget(self, action: #selector(didTapEditHeadline), for: .touchUpInside)
+        
+        scrollView.addSubview(headlineEditButton)
+        headlineEditButton.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
             prefer.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 20),
-            prefer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+            prefer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            headlineEditButton.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 16),
+            headlineEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
         scrollView.bringSubviewToFront(prefer)
         
@@ -1603,25 +1870,138 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headlineVC.bottomHeightConstraint?.constant = 0
         headlineVC.bottomHeightConstraint?.isActive = true
         headlineVC.bottomView.isHidden = true
+        
+        headlineVC.generateResume.isHidden = true
+        headlineVC.generateSummary.isHidden = true
+        headlineVC.resumeTextView.isEditable = false
+        headlineVC.summaryTextView.isEditable = false
+        
         tempView.layoutIfNeeded()
         
         let contentHeight = view.bounds.height - 300
         headlineVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
         tempView.layoutIfNeeded()
         
+        tempView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(tempView)
         addChild(headlineVC)
         headlineVC.didMove(toParent: self)
         
         overrideUserInterfaceStyle = .light
         
-        tempView.translatesAutoresizingMaskIntoConstraints = false
+        
+        headlineSaveButton = UIButton(type: .system)
+        headlineSaveButton.setTitle("Save", for: .normal)
+        headlineSaveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        headlineSaveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        headlineSaveButton.backgroundColor = UIColor(hex: "#0079C4")
+        headlineSaveButton.layer.cornerRadius = 8
+        headlineSaveButton.addTarget(self, action: #selector(saveHeadlineChanges), for: .touchUpInside)
+        headlineSaveButton.isHidden = true
+        
+        headlineSaveButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(headlineSaveButton)
+        
+        
+        
         NSLayoutConstraint.activate([
-            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 20),
+            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 10),
             tempView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tempView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tempView.heightAnchor.constraint(equalToConstant: 700)
+            tempView.heightAnchor.constraint(equalToConstant: 700),
+            
+            headlineSaveButton.bottomAnchor.constraint(equalTo: tempView.bottomAnchor, constant: -100),
+            headlineSaveButton.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
+            headlineSaveButton.widthAnchor.constraint(equalToConstant: 80),
+            headlineSaveButton.heightAnchor.constraint(equalToConstant: 40),
         ])
+    }
+    
+    @objc func didTapEditHeadline() {
+        if headlineEditButton.titleLabel?.text == "Edit" {
+            headlineEditButton.setTitle("Cancel", for: .normal)
+            headlineSaveButton.isHidden = false
+            headlineVC.generateResume.isHidden = false
+            headlineVC.generateSummary.isHidden = false
+            
+            headlineVC.resumeTextView.isEditable = true
+            headlineVC.summaryTextView.isEditable = true
+        }
+        else {
+            headlineEditButton.setTitle("Edit", for: .normal)
+            headlineSaveButton.isHidden = true
+            headlineVC.generateResume.isHidden = true
+            headlineVC.generateSummary.isHidden = true
+            
+            headlineVC.resumeTextView.isEditable = false
+            headlineVC.summaryTextView.isEditable = false
+            
+            fetchUserProfile()
+        }
+    }
+    
+    @objc func saveHeadlineChanges() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
+
+        guard let headline = headlineVC.resumeTextView.text, !headline.isEmpty,
+              let summary = headlineVC.summaryTextView.text, !summary.isEmpty
+        else {
+            
+            let alert = UIAlertController(title: "Missing Information", message: "Fill all the details", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+
+        let resumeData = ResumeData(headline: headline, summary: summary)
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let jsonData = try JSONEncoder().encode(resumeData)
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode resume data: \(error)")
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if httpResponse.statusCode == 200 {
+                print("Data successfully uploaded")
+                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Server response: \(responseString)")
+                }
+            } else {
+                print("Failed to upload data, status code: \(httpResponse.statusCode)")
+            }
+            
+            if let error = error {
+                print("Error uploading data: \(error.localizedDescription)")
+                self.fetchUserProfile()
+            }
+        }.resume()
+        
+        headlineEditButton.setTitle("Edit", for: .normal)
+        headlineSaveButton.isHidden = true
+        headlineVC.generateResume.isHidden = true
+        headlineVC.generateSummary.isHidden = true
+        
+        headlineVC.resumeTextView.isEditable = false
+        headlineVC.summaryTextView.isEditable = false
     }
     
     
@@ -1640,8 +2020,25 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         self.present(alert, animated: true)
     }
+    func askUserConfirmation(title: String, message: String, confirmedAction: @escaping () -> Void) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        // 'Yes' action
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            confirmedAction()  // Perform the action passed in the closure
+        }
+        
+        // 'No' action
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+
+        present(alertController, animated: true)
+    }
     
     
+    // ***********************************************************************************************************************
     
     func setupLogOut() {
         let logOutButton = UIButton()
@@ -1784,7 +2181,7 @@ extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionVi
             cell.projectDescription.text = project.description
             cell.projectResponsibility.text = project.responsibility
             
-            cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
+            cell.deleteButton.addTarget(self, action: #selector(deleteProjectCell(_:)), for: .touchUpInside)
             
             cell.layer.borderWidth = 1
             cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
@@ -1900,7 +2297,9 @@ extension ProfileController { // Extension for APIs
                     self.profileCircleLabel.text = initialsOfName
                     self.userNameLabel.text = "\(userName)"
                     self.jobTitleLabel.text = user.designation
-                    self.locationLabel.text = user.permanentAddress?.address ?? "cityNil"
+                    self.locationLabel.text = user.currentAddress?.address ?? "cityNil"
+                    self.profileImageView.image = UIImage(named: user.profilePic ?? "")
+                    print("profilePic " , user.profilePic)
                     
                     self.empDataArray = user.experience!
                     self.reloadEmploymentsCollectionView()
@@ -1910,6 +2309,9 @@ extension ProfileController { // Extension for APIs
                     
                     self.projectDataArray = user.projects!
                     self.reloadProjectCollectionView()
+                    
+                    self.totalExperience = user.totalExperience
+                    print("Total Exp " , self.totalExperience)
                     
                     self.preferencesVC.portfolioTextField.text = user.portfolio
                     self.preferencesVC.currentCtcTextField.text = user.currentCtc
