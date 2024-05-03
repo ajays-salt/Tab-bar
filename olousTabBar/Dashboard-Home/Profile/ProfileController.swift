@@ -9,6 +9,7 @@ import UIKit
 
 class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
+    
     var employments = [EmploymentTemp]()
     var educations = [EducationTemp]()
     
