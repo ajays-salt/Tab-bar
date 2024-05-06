@@ -312,7 +312,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func forgotPasswordTapped() {
-        let vc = ForgotPassword1()
+        let vc = ForgotPassword3()
         navigationController?.pushViewController(vc, animated: true)
     }
     

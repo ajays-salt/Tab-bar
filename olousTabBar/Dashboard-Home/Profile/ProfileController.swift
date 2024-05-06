@@ -132,10 +132,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        fetchUserProfile()
+//        fetchUserProfile()
                 
         setupViews()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchUserProfile()
+    }
+    
     
     func setupViews() {
         setupScrollView()
@@ -242,7 +248,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         
         profileCircleLabel.text = initials
-//        profileCircleLabel.isHidden = true
+        profileCircleLabel.isHidden = true
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         profileCircle.addSubview(profileCircleLabel)
         NSLayoutConstraint.activate([
@@ -252,11 +258,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         
         
-        profileImageView = UIImageView(image: UIImage(systemName: "pencil"))
-        profileImageView.isHidden = true
+        profileImageView = UIImageView()
+//        profileImageView.isHidden = true
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.clipsToBounds = true
-        profileImageView.layer.cornerRadius = profileCircle.frame.width / 2
+        profileImageView.layer.cornerRadius = 60
         
         // Add the selected image view to the profile circle
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -269,14 +275,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             profileImageView.bottomAnchor.constraint(equalTo: profileCircle.bottomAnchor)
         ])
         
-        userNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(userNameLabel)
-        
-        jobTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(jobTitleLabel)
-        
-        locationLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(locationLabel)
+        [userNameLabel, jobTitleLabel, locationLabel].forEach { v in
+            v.translatesAutoresizingMaskIntoConstraints = false
+            headerView.addSubview(v)
+        }
         
         NSLayoutConstraint.activate([
             userNameLabel.topAnchor.constraint(equalTo: profileCircle.topAnchor, constant: 16),
@@ -289,6 +291,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 6),
             locationLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
+            locationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
     }
     
@@ -2298,8 +2301,8 @@ extension ProfileController { // Extension for APIs
                     self.userNameLabel.text = "\(userName)"
                     self.jobTitleLabel.text = user.designation
                     self.locationLabel.text = user.currentAddress?.address ?? "cityNil"
-                    self.profileImageView.image = UIImage(named: user.profilePic ?? "")
-                    print("profilePic " , user.profilePic)
+                    
+                    self.fetchProfilePicture(size: "m", userID: user._id)
                     
                     self.empDataArray = user.experience!
                     self.reloadEmploymentsCollectionView()
@@ -2311,7 +2314,6 @@ extension ProfileController { // Extension for APIs
                     self.reloadProjectCollectionView()
                     
                     self.totalExperience = user.totalExperience
-                    print("Total Exp " , self.totalExperience)
                     
                     self.preferencesVC.portfolioTextField.text = user.portfolio
                     self.preferencesVC.currentCtcTextField.text = user.currentCtc
@@ -2345,6 +2347,38 @@ extension ProfileController { // Extension for APIs
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")
+            }
+        }
+
+        task.resume()
+    }
+    
+    func fetchProfilePicture(size: String, userID: String) {
+        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile/\(size)/\(userID)"
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")", forHTTPHeaderField: "Authorization")
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            DispatchQueue.main.async {
+                if let image = UIImage(data: data) {
+                    // Use the image in your app, e.g., assign it to an UIImageView
+                    self.profileImageView.image = image
+                    print("Image Fetched Successfully")
+                } else {
+                    print("Failed to decode image")
+                }
             }
         }
 

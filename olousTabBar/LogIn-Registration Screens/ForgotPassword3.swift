@@ -1,13 +1,13 @@
 //
-//  ForgotPassword1.swift
+//  ForgotPassword3.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 26/03/24.
+//  Created by Salt Technologies on 06/05/24.
 //
 
 import UIKit
 
-class ForgotPassword1: UIViewController {
+class ForgotPassword3: UIViewController {
     
     var headerView : UIView!
     
@@ -28,14 +28,22 @@ class ForgotPassword1: UIViewController {
         return textField
     }()
     
-    let sendOtpButton: UIButton = {
+    
+    let passwordTextField = UITextField()
+    let confirmPasswordTextField = UITextField()
+    
+    let passwordToggleVisibilityButton = UIButton(type: .custom)
+    let confirmPasswordToggleVisibilityButton = UIButton(type: .custom)
+    
+    
+    let resetButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Send OTP", for: .normal)
+        button.setTitle("Reset Password", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 24)
         button.backgroundColor = UIColor(hex: "#0079C4")
         button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(sendOtpButtonTapped), for: .touchUpInside)
+//        button.addTarget(self, action: #selector(sendOtpButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -78,6 +86,7 @@ class ForgotPassword1: UIViewController {
     
     func setupViews() {
         setupHeaderView()
+        setupPasswordFields()
         setupUI()
         setupBackButton()
     }
@@ -135,7 +144,7 @@ class ForgotPassword1: UIViewController {
         
         let headLabel : UILabel = {
             let label = UILabel()
-            label.text = "Forgot Password?"
+            label.text = "Set New Password"
             label.font = .boldSystemFont(ofSize: 28)
             label.textColor = UIColor(hex: "#101828")
             return label
@@ -151,9 +160,11 @@ class ForgotPassword1: UIViewController {
         
         let secondLabel : UILabel = {
             let label = UILabel()
-            label.text = "No worries. You can reset it!"
+            label.text = "Your new password must be different than previously used passwords!"
             label.font = .systemFont(ofSize: 18)
             label.textColor = UIColor(hex: "#475467")
+            label.numberOfLines = 0
+            label.textAlignment = .center
             return label
         }()
         
@@ -161,95 +172,72 @@ class ForgotPassword1: UIViewController {
         headerView.addSubview(secondLabel)
         NSLayoutConstraint.activate([
             secondLabel.topAnchor.constraint(equalTo: headLabel.bottomAnchor, constant: 10),
-            secondLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            secondLabel.heightAnchor.constraint(equalToConstant: 24)
+            secondLabel.widthAnchor.constraint(lessThanOrEqualTo: headerView.widthAnchor, constant: -32),
+            secondLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor)
         ])
     }
     
 
+    func setupPasswordFields() {
+        setupTextField(textField: passwordTextField, placeholder: "Password", toggleButton: passwordToggleVisibilityButton)
+        setupTextField(textField: confirmPasswordTextField, placeholder: "Confirm password", toggleButton: confirmPasswordToggleVisibilityButton)
+        
+        layoutPasswordField(textField: passwordTextField, toggleButton: passwordToggleVisibilityButton, yPos: 40)
+        layoutPasswordField(textField: confirmPasswordTextField, toggleButton: confirmPasswordToggleVisibilityButton, yPos: 100)
+    }
+    
+    private func setupTextField(textField: UITextField, placeholder: String, toggleButton: UIButton) {
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.isSecureTextEntry = true
+        textField.placeholder = placeholder
+        textField.borderStyle = .roundedRect
+        
+        toggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        toggleButton.setImage(UIImage(systemName: "eye"), for: .selected)
+        toggleButton.tintColor = UIColor(hex: "#667085")
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility(_:)), for: .touchUpInside)
+        
+        view.addSubview(textField)
+        textField.rightView = toggleButton
+        textField.rightViewMode = .always
+        toggleButton.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
+    }
+    
+    private func layoutPasswordField(textField: UITextField, toggleButton: UIButton, yPos: CGFloat) {
+        NSLayoutConstraint.activate([
+            textField.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: yPos),
+            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            textField.heightAnchor.constraint(equalToConstant: 44)
+        ])
+    }
+    
+    @objc func togglePasswordVisibility(_ sender: UIButton) {
+        sender.isSelected.toggle()
+        if let textField = sender.superview as? UITextField {
+            textField.isSecureTextEntry = !sender.isSelected
+        }
+    }
+    
     func setupUI() {
-        view.addSubview(emailLabel)
-        view.addSubview(emailTextField)
-        view.addSubview(sendOtpButton)
+        view.addSubview(resetButton)
         
         NSLayoutConstraint.activate([
             
-            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
-            emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            
-            emailTextField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 8),
-            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            emailTextField.heightAnchor.constraint(equalToConstant: 40),
-            
-            sendOtpButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 40),
-            sendOtpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            sendOtpButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            sendOtpButton.heightAnchor.constraint(equalToConstant: 50),
+            resetButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 180),
+            resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            resetButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
+            resetButton.heightAnchor.constraint(equalToConstant: 50),
         ])
     }
     
-    @objc func sendOtpButtonTapped() {
-        guard let email = emailTextField.text, !email.isEmpty else {
-            showAlert(withTitle: "Input Error", message: "Email cannot be empty.")
-            return
-        }
-
-        if !isValidEmail(email) {
-            showAlert(withTitle: "Input Error", message: "Please enter a valid email address.")
-            return
-        }
-
-        let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/send-reset-password-otp")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = ["email": email]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Failed to send OTP: \(error?.localizedDescription ?? "No error description")")
-                return
-            }
-            print("Data : " , data)
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                print("OTP sent successfully")
-                
-                DispatchQueue.main.async {
-                    let vc = ForgotPassword2()
-                    vc.emailLabel.text = email
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            } else {
-                print("Failed to send OTP with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
-            }
-        }.resume()
-        
-//        let vc = ForgotPassword2()
-//        self.navigationController?.pushViewController(vc, animated: true)
-    }
-
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegex)
-        return emailPred.evaluate(with: email)
-    }
-
-    private func showAlert(withTitle title: String, message: String) {
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-
+    
     
     func setupBackButton() {
         backToLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backToLogin)
         NSLayoutConstraint.activate([
-            backToLogin.topAnchor.constraint(equalTo: sendOtpButton.bottomAnchor, constant: 50),
+            backToLogin.topAnchor.constraint(equalTo: resetButton.bottomAnchor, constant: 50),
             backToLogin.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
@@ -257,4 +245,5 @@ class ForgotPassword1: UIViewController {
     @objc func didTapBackToLogin() {
         navigationController?.popViewController(animated: true)
     }
+
 }
