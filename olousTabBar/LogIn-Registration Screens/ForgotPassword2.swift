@@ -44,7 +44,7 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         attributedString.append(NSAttributedString(string: " "))
         
         // Add "back to login" text
-        let backToLoginString = NSAttributedString(string: "Back to Login")
+        let backToLoginString = NSAttributedString(string: "Go Back")
         attributedString.append(backToLoginString)
         
         // Set attributed title for button
@@ -266,6 +266,8 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
                 print("OTP verified successfully")
                 DispatchQueue.main.async {
                     let vc = ForgotPassword3()
+                    vc.otp = otp
+                    vc.email = email
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             } else {

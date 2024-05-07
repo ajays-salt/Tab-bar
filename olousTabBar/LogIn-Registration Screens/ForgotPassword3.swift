@@ -7,26 +7,11 @@
 
 import UIKit
 
-class ForgotPassword3: UIViewController {
+class ForgotPassword3: UIViewController, UITextFieldDelegate {
     
     var headerView : UIView!
     
     var keyLogoView : UIView!
-    
-    let emailLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Email :"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    let emailTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter your email"
-        textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
     
     
     let passwordTextField = UITextField()
@@ -36,6 +21,19 @@ class ForgotPassword3: UIViewController {
     let confirmPasswordToggleVisibilityButton = UIButton(type: .custom)
     
     
+    var otp : String = ""
+    var email : String = ""
+    
+    var activityIndicator: UIActivityIndicatorView?
+
+    func setupActivityIndicator() {
+        activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator?.center = self.view.center
+        activityIndicator?.hidesWhenStopped = true
+        view.addSubview(activityIndicator!)
+    }
+    
+    
     let resetButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Reset Password", for: .normal)
@@ -43,7 +41,7 @@ class ForgotPassword3: UIViewController {
         button.titleLabel?.font = .boldSystemFont(ofSize: 24)
         button.backgroundColor = UIColor(hex: "#0079C4")
         button.layer.cornerRadius = 8
-//        button.addTarget(self, action: #selector(sendOtpButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -64,7 +62,7 @@ class ForgotPassword3: UIViewController {
         attributedString.append(NSAttributedString(string: " "))
         
         // Add "back to login" text
-        let backToLoginString = NSAttributedString(string: "Back to Login")
+        let backToLoginString = NSAttributedString(string: "Go Back")
         attributedString.append(backToLoginString)
         
         // Set attributed title for button
@@ -87,7 +85,8 @@ class ForgotPassword3: UIViewController {
     func setupViews() {
         setupHeaderView()
         setupPasswordFields()
-        setupUI()
+        setupResetButton()
+        setupActivityIndicator()
         setupBackButton()
     }
     
@@ -192,6 +191,8 @@ class ForgotPassword3: UIViewController {
         textField.placeholder = placeholder
         textField.borderStyle = .roundedRect
         
+        textField.delegate = self
+        
         toggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
         toggleButton.setImage(UIImage(systemName: "eye"), for: .selected)
         toggleButton.tintColor = UIColor(hex: "#667085")
@@ -219,7 +220,7 @@ class ForgotPassword3: UIViewController {
         }
     }
     
-    func setupUI() {
+    func setupResetButton() {
         view.addSubview(resetButton)
         
         NSLayoutConstraint.activate([
@@ -231,6 +232,87 @@ class ForgotPassword3: UIViewController {
         ])
     }
     
+    @objc func resetButtonTapped() {
+        guard let password = passwordTextField.text, !password.isEmpty,
+              let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
+            showAlert(withTitle: "Error", message: "Both fields must be filled.")
+            return
+        }
+        
+        if password != confirmPassword {
+            showAlert(withTitle: "Error", message: "Passwords do not match.")
+            return
+        }
+        
+        performPasswordReset()
+    }
+    
+    func performPasswordReset() {
+        guard let newPassword = passwordTextField.text,
+              !newPassword.isEmpty, !otp.isEmpty, !email.isEmpty else {
+            showAlert(withTitle: "Missing Information", message: "All fields must be filled.")
+            return
+        }
+        
+        let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/reset-password")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let json: [String: Any] = [
+            "otp": otp,
+            "password": newPassword,
+            "confirmPassword" : newPassword,
+            "email": email
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: json) else {
+            print("Failed to encode JSON")
+            return
+        }
+        
+        request.httpBody = jsonData
+        
+        DispatchQueue.main.async {
+            self.activityIndicator?.startAnimating()
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            
+            DispatchQueue.main.async {
+                self.activityIndicator?.stopAnimating()
+            }
+            
+            guard let data = data, error == nil else {
+                print("Error in URLSession data task: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("Password reset successfully")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // Delay for 1 second
+                    let vc = ForgotPassword4()
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.showAlert(withTitle: "Reset Failed", message: "Failed to reset password. Please try again.")
+                }
+            }
+        }.resume()
+    }
+
+    private func navigateToLoginScreen() {
+        // Implementation to navigate to the login screen
+        navigationController?.popToRootViewController(animated: true)
+    }
+
+    
+    private func showAlert(withTitle title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
     
     
     func setupBackButton() {
@@ -246,4 +328,17 @@ class ForgotPassword3: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
+    }
+    
 }

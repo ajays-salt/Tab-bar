@@ -12,7 +12,8 @@ class JobSearchResult2: UIViewController {
     
     var jobTitle: String?
     var jobLocation: String?
-    var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+//    var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+    var baseURL = "https://5fd4-2405-201-a41f-d872-51a2-9f17-9c9b-d71f.ngrok-free.app/api/v1/job/jobs"
     var finalURL = ""
     
     var jobLocationArray: [String] = []
@@ -48,7 +49,7 @@ class JobSearchResult2: UIViewController {
         self.view.backgroundColor = .white // Set the background color for the view
         
         
-        
+        baseURL = "\(baseURL)?jobTitle=\(jobTitle!)"
         urlSettings()
     }
     
@@ -66,16 +67,11 @@ class JobSearchResult2: UIViewController {
         if let jobTitle = jobTitle {
             queryItems.append(URLQueryItem(name: "jobTitle", value: jobTitle))
         }
-
+        
+//        jobLocationArray.append("Pimpri-Chinchwad")
+        
         if !jobLocationArray.isEmpty {
-            do {
-                let jsonData = try JSONSerialization.data(withJSONObject: jobLocationArray, options: [])
-                if let jsonString = String(data: jsonData, encoding: .utf8) {
-                    queryItems.append(URLQueryItem(name: "city", value: jsonString))  // Only encode at this stage
-                }
-            } catch {
-                print("Error serializing city array: \(error)")
-            }
+            queryItems.append(URLQueryItem(name: "City", value: "\(jobLocationArray)"))
         }
 
         components.queryItems = queryItems
@@ -87,7 +83,7 @@ class JobSearchResult2: UIViewController {
             switch result {
             case .success(let fetchedJobs):
                 self.jobs = fetchedJobs
-                print("fetched : ", fetchedJobs)
+                print("jobs fetched successfully")
                 DispatchQueue.main.async {
                     self.setupViews()
                 }
@@ -95,7 +91,6 @@ class JobSearchResult2: UIViewController {
                 print("Error fetching data: \(error)")
             }
         }
-        
     }
     
     
@@ -236,8 +231,22 @@ class JobSearchResult2: UIViewController {
         }
         
         // Combine the base URL with the query items if any
-        finalURL = queryItems.isEmpty ? baseURL : "\(baseURL)?\(queryItems.joined(separator: "&"))"
+//        finalURL = queryItems.isEmpty ? baseURL : "\(baseURL)?\(queryItems.joined(separator: "&"))"
+        finalURL = queryItems.isEmpty ? baseURL : "\(baseURL)&\(queryItems.joined(separator: "&"))"
+        print("Final URL with filters ", finalURL)
         
+        fetchData { result in
+            switch result {
+            case .success(let fetchedJobs):
+                self.jobs = fetchedJobs
+                print("jobs fetched successfully")
+                DispatchQueue.main.async {
+                    self.setupViews()
+                }
+            case .failure(let error):
+                print("Error fetching data: \(error)")
+            }
+        }
         print("Final URL: \(finalURL)")
         
         optionsTableView.isHidden = true  // Hide the table view

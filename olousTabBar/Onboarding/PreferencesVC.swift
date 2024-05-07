@@ -1192,9 +1192,6 @@ extension PreferencesVC {
             currentAddress: Address(address: currentAddress, pinCode: currentPin),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
-//            language: [
-//                Language(language: "English", proficiencyLevel: "Expert", read: true, write: true, speak: true)
-//            ],
             language: languageArray,
             portfolio: portfolio
         )

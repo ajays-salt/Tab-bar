@@ -69,11 +69,12 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         textField.placeholder = "Create a password"
         textField.borderStyle = .roundedRect
-//        textField.isSecureTextEntry = true
+        textField.isSecureTextEntry = true
 //        textField.addTarget(self, action: #selector(passwordChanged), for: .editingChanged)
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
+    let toggleButton = UIButton(type: .custom)
     
     let numberLabel: UILabel = {
         let label = UILabel()
@@ -91,7 +92,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         textField.placeholder = "Enter Mobile Number"
         textField.borderStyle = .roundedRect
-        textField.keyboardType = .numbersAndPunctuation
+        textField.keyboardType = .numberPad
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -207,6 +208,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     func setupViews() {
         setupHeaderView()
         setupUI()
+        setupToggleButton()
         setupLogin()
     }
     
@@ -351,6 +353,24 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         ])
     }
     
+    func setupToggleButton() {
+        toggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        toggleButton.setImage(UIImage(systemName: "eye"), for: .selected)
+        toggleButton.tintColor = UIColor(hex: "#667085")
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility(_:)), for: .touchUpInside)
+        
+        passwordTextField.rightView = toggleButton
+        passwordTextField.rightViewMode = .always
+        toggleButton.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
+    }
+    
+    @objc func togglePasswordVisibility(_ sender: UIButton) {
+        sender.isSelected.toggle()
+        if let textField = sender.superview as? UITextField {
+            textField.isSecureTextEntry = !sender.isSelected
+        }
+    }
+    
     @objc private func passwordChanged() {
         if let password = passwordTextField.text {
             let hasMinimumLength = password.count >= 8
@@ -367,17 +387,22 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func getStartedButtonTapped() {
-        // Your registration logic here
-        
+    
         guard let name = nameTextField.text, !name.isEmpty,
-              let email = emailTextField.text, !email.isEmpty, email.isValidEmail(),
+              let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty,
-              let mobile = numberTextField.text, !mobile.isEmpty, mobile.isValidMobileNumber() else {
-            // Handle validation failure
-                let alertController = UIAlertController(title: "Alert!", message: "Fill all the details", preferredStyle: .alert)
-                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-                alertController.addAction(cancelAction)
-                self.present(alertController, animated: true, completion: nil)
+              let mobile = numberTextField.text, !mobile.isEmpty else {
+            
+            showAlert(withTitle: "Alert!", message: "Fill all the details")
+            return
+        }
+
+        guard email.isValidEmail() else {
+            showAlert(withTitle: "Alert!", message: "Invalid Email")
+            return
+        }
+        guard mobile.isValidMobileNumber() else {
+            showAlert(withTitle: "Alert!", message: "Invalid Mobile Number")
             return
         }
         
@@ -461,6 +486,13 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
             }
         }
         task.resume()
+    }
+    
+    func showAlert(withTitle title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     func setupLogin() {

@@ -66,6 +66,18 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         return button
     }()
     
+    let googleButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "googleLogo"), for: .normal)
+        button.layer.cornerRadius = 20
+        button.layer.borderWidth = 1
+        
+        button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
+        return button
+    }()
+    
     let signUpLabel : UILabel = {
         let label = UILabel()
         let attributedString = NSMutableAttributedString(string: "Don't have an account? ")
@@ -81,6 +93,9 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
+    let toggleButton = UIButton(type: .custom)
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,7 +114,8 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     func setupViews() {
         setupHeaderView()
         setupUI()
-//        setupLogin()
+        setupToggleButton()
+        setupGoogleSignIn()
     }
     
     func setupHeaderView() {
@@ -140,7 +156,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         headLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(headLabel)
         NSLayoutConstraint.activate([
-            headLabel.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 40),
+            headLabel.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 20),
             headLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
             headLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
@@ -171,11 +187,14 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         view.addSubview(passwordTextField)
         view.addSubview(forgotPasswordLabel)
         view.addSubview(loginButton)
+        
+        view.addSubview(googleButton)
+        
         view.addSubview(signUpLabel)
         
         NSLayoutConstraint.activate([
             
-            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
             emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
             emailTextField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 8),
@@ -200,10 +219,33 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             loginButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             loginButton.heightAnchor.constraint(equalToConstant: 50),
             
-            signUpLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 50),
+            googleButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
+            googleButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            googleButton.heightAnchor.constraint(equalToConstant: 80),
+            googleButton.widthAnchor.constraint(equalToConstant: 80),
+            
+            signUpLabel.topAnchor.constraint(equalTo: googleButton.bottomAnchor, constant: 20),
             signUpLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
         ])
+    }
+    
+    func setupToggleButton() {
+        toggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        toggleButton.setImage(UIImage(systemName: "eye"), for: .selected)
+        toggleButton.tintColor = UIColor(hex: "#667085")
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility(_:)), for: .touchUpInside)
+        
+        passwordTextField.rightView = toggleButton
+        passwordTextField.rightViewMode = .always
+        toggleButton.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
+    }
+    
+    @objc func togglePasswordVisibility(_ sender: UIButton) {
+        sender.isSelected.toggle()
+        if let textField = sender.superview as? UITextField {
+            textField.isSecureTextEntry = !sender.isSelected
+        }
     }
     
     @objc private func loginButtonTapped() {
@@ -305,6 +347,46 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         task.resume()
     }
     
+    func setupGoogleSignIn() {
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor(hex: "fafafa") // or any appropriate background color
+        containerView.layer.cornerRadius = 31 // Half of height and width to make it circular
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(containerView)
+        
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 23.5),
+            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            containerView.heightAnchor.constraint(equalToConstant: 62),
+            containerView.widthAnchor.constraint(equalToConstant: 62),
+        ])
+        
+        // ImageView for the Google logo
+        let imageView = UIImageView(image: UIImage(named: "googleLogo"))
+        imageView.isUserInteractionEnabled = true
+        imageView.contentMode = .scaleAspectFill  // Maintain the aspect ratio
+        imageView.layer.cornerRadius = 50
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
+            imageView.widthAnchor.constraint(equalToConstant: 100),  // Adjust size as needed
+            imageView.heightAnchor.constraint(equalToConstant: 100), // Adjust size as needed
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 4),
+        ])
+        
+        // Tap Gesture Recognizer
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleGoogleSignInTap))
+        imageView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func handleGoogleSignInTap() {
+        print("Google Sign-In tapped")
+    }
+    
+    
+    
     @objc func signUpTapped() {
         let vc = RegistrationVC()
         vc.modalPresentationStyle = .fullScreen
@@ -312,7 +394,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func forgotPasswordTapped() {
-        let vc = ForgotPassword3()
+        let vc = ForgotPassword1()
         navigationController?.pushViewController(vc, animated: true)
     }
     

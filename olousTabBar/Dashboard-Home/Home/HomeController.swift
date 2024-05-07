@@ -794,7 +794,8 @@ class HomeController: UIViewController {
         setupCompaniesCollectionVC()
     }
     @objc func didTapViewAllCompanies() {
-        print(#function)
+        tabBarController?.selectedIndex = 2
+        UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
     func setupCompaniesCollectionVC() {
         let layout = UICollectionViewFlowLayout()
@@ -878,6 +879,10 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == recommendedJobsCollectionVC {
             tabBarController?.selectedIndex = 1
+            UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
+        }
+        else {
+            tabBarController?.selectedIndex = 2
             UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
         }
     }
