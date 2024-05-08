@@ -24,7 +24,8 @@ class TabBarController: UITabBarController {
         myJobsController.tabBarItem = UITabBarItem(title: "My Jobs", image: UIImage(systemName: "briefcase.fill"), tag: 1)
         
         let companyController = CompanyController()
-        companyController.view.backgroundColor = .systemBackground
+        let companyNavigationController = UINavigationController(rootViewController: companyController)
+//        companyController.view.backgroundColor = .systemBackground
         companyController.tabBarItem = UITabBarItem(title: "Companies", image: UIImage(systemName: "globe"), tag: 2)
         
         let profileController = ProfileController()
@@ -33,7 +34,7 @@ class TabBarController: UITabBarController {
         profileController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"), tag: 3)
         
         // Set view controllers for the tab bar controller
-        self.viewControllers = [homeNavigationController, myJobsNavigationController, companyController, profileNavigationController]
+        self.viewControllers = [homeNavigationController, myJobsNavigationController, companyNavigationController, profileNavigationController]
         
           
         tabBar.frame = CGRect(x: tabBar.frame.origin.x,

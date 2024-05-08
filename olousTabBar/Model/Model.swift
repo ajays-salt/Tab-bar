@@ -161,3 +161,61 @@ struct Project: Codable {
         case description = "Description"
     }
 }
+
+
+struct CompanyResponse: Codable {
+    let currentPage: Int
+    let totalPages: Int
+    let companies: [Company]
+}
+
+struct Company: Codable {
+    let id: String
+    let createdBy: String
+    let description: String
+    let location: String?
+    let email: String
+    let field: String
+    let jobCount: Int
+    let logo: String
+    let name: String
+    let sector: [String]
+    let size: String
+    let website: String
+    let who: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case createdBy, description, location, email, field, jobCount, logo, name, sector, size, website, who
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        createdBy = try container.decode(String.self, forKey: .createdBy)
+        description = try container.decode(String.self, forKey: .description)
+        
+        location = try container.decodeIfPresent(String.self, forKey: .location)
+        
+        email = try container.decode(String.self, forKey: .email)
+        field = try container.decode(String.self, forKey: .field)
+        jobCount = try container.decode(Int.self, forKey: .jobCount)
+        logo = try container.decode(String.self, forKey: .logo)
+        name = try container.decode(String.self, forKey: .name)
+        sector = try container.decode([String].self, forKey: .sector)
+        website = try container.decode(String.self, forKey: .website)
+        who = try container.decode(String.self, forKey: .who)
+        
+        // Decode size which might be Int or String
+        if let sizeValue = try? container.decode(Int.self, forKey: .size) {
+            size = String(sizeValue)
+        } else if let sizeValue = try? container.decode(String.self, forKey: .size) {
+            size = sizeValue
+        } else {
+            throw DecodingError.typeMismatch(
+                String.self,
+                DecodingError.Context(codingPath: [CodingKeys.size],
+                                      debugDescription: "Expected to decode String or Int for size field"))
+        }
+    }
+}

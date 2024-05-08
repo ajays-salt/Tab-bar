@@ -12,8 +12,8 @@ class JobSearchResult2: UIViewController {
     
     var jobTitle: String?
     var jobLocation: String?
-//    var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
-    var baseURL = "https://5fd4-2405-201-a41f-d872-51a2-9f17-9c9b-d71f.ngrok-free.app/api/v1/job/jobs"
+    var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+//    var baseURL = "https://5fd4-2405-201-a41f-d872-51a2-9f17-9c9b-d71f.ngrok-free.app/api/v1/job/jobs"
     var finalURL = ""
     
     var jobLocationArray: [String] = []

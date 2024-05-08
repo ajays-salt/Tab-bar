@@ -16,7 +16,7 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
     var emailLabel = UILabel()
     
     var otpTextFields: [UITextField] = []
-    let sendOtpButton: UIButton = {
+    let verifyOtpButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Verify OTP", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -214,13 +214,13 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
     }
     
     func setupVerifyOtp() {
-        view.addSubview(sendOtpButton)
+        view.addSubview(verifyOtpButton)
         
         NSLayoutConstraint.activate([
-            sendOtpButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 130),
-            sendOtpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            sendOtpButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            sendOtpButton.heightAnchor.constraint(equalToConstant: 50),
+            verifyOtpButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 130),
+            verifyOtpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            verifyOtpButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
+            verifyOtpButton.heightAnchor.constraint(equalToConstant: 50),
         ])
     }
     
