@@ -176,7 +176,7 @@ struct Company: Codable {
     let location: String?
     let email: String
     let field: String
-    let jobCount: Int
+    let jobCount: Int?
     let logo: String
     let name: String
     let sector: [String]

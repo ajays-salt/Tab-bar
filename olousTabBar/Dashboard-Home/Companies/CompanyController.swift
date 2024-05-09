@@ -175,22 +175,18 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
     }
     
     @objc func didTapSearchCompany() {
-        guard let companyName = companyNameTextField.text, !companyName.isEmpty else {
-            let alert = UIAlertController(title: "Missing Information", message: "Please enter company name", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-        // Construct the URL dynamically with the company name as a query parameter
-        let companyNameEncoded = companyName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        searchURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company?name=\(companyName)"
+//        guard let companyName = companyNameTextField.text, !companyName.isEmpty else {
+//            let alert = UIAlertController(title: "Missing Information", message: "Please enter company name", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "OK", style: .default))
+//            present(alert, animated: true)
+//            return
+//        }
         
         // Reset the company array and start fetching from the first page
         companiesArray = []
         currentPage = 1
         fetchCompany(page: currentPage)
     }
-    
     
     
     func setupCompaniesCollectionView() {
@@ -241,6 +237,7 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
             self.fetchCompany(page: self.currentPage)
         }
     }
+    
 }
 
 extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -275,6 +272,13 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return .init(width: view.frame.width - 32, height: 182)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let company = companiesArray[indexPath.row]
+        let vc = CompanyDetailVC()
+        vc.company = company
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     

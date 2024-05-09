@@ -24,8 +24,8 @@ struct Job: Codable {
     let createdAt: String
     let updatedAt: String
     let workPlace: String?
-    let companyName: String
-    let companyLogo: String
+    let companyName: String //
+    let companyLogo: String //
 
     private enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -88,5 +88,68 @@ struct JobResponse: Codable {
     let totalPages: Int
     let currentPage: Int
     let totalJobs: Int
+}
+
+
+
+struct CompanyJobResponse2: Codable {
+    let jobs: [Job2]
+    let company: Company2
+}
+
+struct Company2: Codable {
+    let id: String
+    let version: Int
+    let createdBy: String
+    let description: String
+    let email: String
+    let field: String
+    let jobsPosted: [Job2]
+    let logo: String
+    let name: String
+    let sector: [String]
+    let size: Int
+    let updatedAt: String
+    let website: String
+    let who: String
+
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case version = "__v"
+        case createdBy, description, email, field, jobsPosted, logo, name, sector, size, updatedAt, website, who
+    }
+}
+
+struct Job2: Codable {
+    let id: String
+    let version: Int
+    let company: String
+    let createdAt: String
+    let jobType: String
+    let location: Location
+    let maxExperience, minExperience: Int
+    let noOfPeople: Int
+    let projectExperience, requirements, responsibilities, sectors, softwares: [Attribute]
+    let salaryRangeFrom, salaryRangeTo: Int
+    let sessionId: String
+    let status: String
+    let title: String
+    let updatedAt: String
+    let workPlace: String
+    let yearsOfExperience: String
+
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case version = "__v"
+        case company, createdAt, jobType, location, maxExperience, minExperience, noOfPeople, projectExperience, requirements, responsibilities, sectors, softwares, salaryRangeFrom, salaryRangeTo, sessionId, status, title, updatedAt, workPlace, yearsOfExperience
+    }
+}
+
+
+
+struct Attribute: Codable {
+    let mustHave: Int
+    let selected: Int
+    let title: String
 }
 

@@ -29,7 +29,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         
         textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 4.8"
+        textField.placeholder = "E.g. 4"
         textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +52,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         
         textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 6.5"
+        textField.placeholder = "E.g. 7.5"
         textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
