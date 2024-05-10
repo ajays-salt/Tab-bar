@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Job: Codable {
+struct Jobs: Codable {
     let id: String
     let title: String
     let location: Location
@@ -48,6 +48,101 @@ struct Job: Codable {
         case companyLogo
     }
 }
+
+
+struct Job: Codable {
+    let id: String
+    let version: Int?
+    let title: String
+    let location: Location
+    let company: String
+    let status: String
+    let educationalQualification: [Qualification]
+    let experience: [Experience]?
+    let softwares: [Software]
+    let sectors: [Sector]
+    let projectExperience: [ProjectExperience]
+    let responsibilities: [Responsibility]
+    let requirements: [Requirement]
+    let yearsOfExperience: String
+    let createdAt: String
+    let updatedAt: String
+    let workPlace: String?
+    let companyName: String?
+    let companyLogo: String?
+    let jobType: String?
+    let maxExperience: Int?
+    let minExperience: Int?
+    let noOfPeople: Int?
+    let salaryRangeFrom: Double?
+    let salaryRangeTo: Double?
+    let sessionId: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case version = "__v"
+        case title
+        case location
+        case company
+        case status
+        case educationalQualification
+        case experience
+        case softwares
+        case sectors
+        case projectExperience
+        case responsibilities
+        case requirements
+        case yearsOfExperience
+        case createdAt
+        case updatedAt
+        case workPlace
+        case companyName
+        case companyLogo
+        case jobType
+        case maxExperience
+        case minExperience
+        case noOfPeople
+        case salaryRangeFrom
+        case salaryRangeTo
+        case sessionId
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        version = try container.decodeIfPresent(Int.self, forKey: .version)
+        title = try container.decode(String.self, forKey: .title)
+        location = try container.decode(Location.self, forKey: .location)
+        company = try container.decode(String.self, forKey: .company)
+        status = try container.decode(String.self, forKey: .status)
+        educationalQualification = try container.decode([Qualification].self, forKey: .educationalQualification)
+        experience = try container.decodeIfPresent([Experience].self, forKey: .experience)
+        softwares = try container.decode([Software].self, forKey: .softwares)
+        sectors = try container.decode([Sector].self, forKey: .sectors)
+        projectExperience = try container.decode([ProjectExperience].self, forKey: .projectExperience)
+        responsibilities = try container.decode([Responsibility].self, forKey: .responsibilities)
+        requirements = try container.decode([Requirement].self, forKey: .requirements)
+        yearsOfExperience = try container.decode(String.self, forKey: .yearsOfExperience)
+        createdAt = try container.decode(String.self, forKey: .createdAt)
+        updatedAt = try container.decode(String.self, forKey: .updatedAt)
+        workPlace = try container.decodeIfPresent(String.self, forKey: .workPlace)
+        companyName = try container.decodeIfPresent(String.self, forKey: .companyName)
+        companyLogo = try container.decodeIfPresent(String.self, forKey: .companyLogo)
+        jobType = try container.decodeIfPresent(String.self, forKey: .jobType)
+        maxExperience = try container.decodeIfPresent(Int.self, forKey: .maxExperience)
+        minExperience = try container.decodeIfPresent(Int.self, forKey: .minExperience)
+        noOfPeople = try container.decodeIfPresent(Int.self, forKey: .noOfPeople)
+        salaryRangeFrom = try container.decodeIfPresent(Double.self, forKey: .salaryRangeFrom)
+        salaryRangeTo = try container.decodeIfPresent(Double.self, forKey: .salaryRangeTo)
+        sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
+    }
+}
+
+
+
+
+
+
 
 struct Location: Codable {
     let city: String
@@ -92,57 +187,9 @@ struct JobResponse: Codable {
 
 
 
-struct CompanyJobResponse2: Codable {
-    let jobs: [Job2]
-    let company: Company2
-}
-
-struct Company2: Codable {
-    let id: String
-    let version: Int
-    let createdBy: String
-    let description: String
-    let email: String
-    let field: String
-    let jobsPosted: [Job2]
-    let logo: String
-    let name: String
-    let sector: [String]
-    let size: Int
-    let updatedAt: String
-    let website: String
-    let who: String
-
-    enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case version = "__v"
-        case createdBy, description, email, field, jobsPosted, logo, name, sector, size, updatedAt, website, who
-    }
-}
-
-struct Job2: Codable {
-    let id: String
-    let version: Int
-    let company: String
-    let createdAt: String
-    let jobType: String
-    let location: Location
-    let maxExperience, minExperience: Int
-    let noOfPeople: Int
-    let projectExperience, requirements, responsibilities, sectors, softwares: [Attribute]
-    let salaryRangeFrom, salaryRangeTo: Int
-    let sessionId: String
-    let status: String
-    let title: String
-    let updatedAt: String
-    let workPlace: String
-    let yearsOfExperience: String
-
-    enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case version = "__v"
-        case company, createdAt, jobType, location, maxExperience, minExperience, noOfPeople, projectExperience, requirements, responsibilities, sectors, softwares, salaryRangeFrom, salaryRangeTo, sessionId, status, title, updatedAt, workPlace, yearsOfExperience
-    }
+struct CompanyJobResponse: Codable {
+    let jobs: [Job]
+    let company: Company
 }
 
 

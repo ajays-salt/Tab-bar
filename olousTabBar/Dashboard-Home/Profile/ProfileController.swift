@@ -536,7 +536,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         cancelEmpEdit()
     }
     
-    var totalExperience : Int!
+    var totalExperience : Double!
     
     func uploadEmploymentArray() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
@@ -584,7 +584,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }.resume()
     }
     
-    func encodeEmploymentArray(experienceArray: [Employment], totalExperience: Int) -> Data? {
+    func encodeEmploymentArray(experienceArray: [Employment], totalExperience: Double) -> Data? {
         guard let firstDesignation = experienceArray.first?.employmentDesignation else {
             print("No employment designation available in the first item of the array.")
             return nil

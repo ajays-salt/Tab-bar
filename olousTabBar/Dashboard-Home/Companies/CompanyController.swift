@@ -248,7 +248,12 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CompaniesCell", for: indexPath) as! CompaniesCell
         let company = companiesArray[indexPath.row]
+        
         cell.companyName.text = company.name
+        if let firstCharacter = company.name.first, !firstCharacter.isUppercase {
+            cell.companyName.text = company.name.prefix(1).uppercased() + company.name.dropFirst()
+        }
+        
         cell.jobLocationLabel.text = company.location ?? "No Location"
         
         // Fetch company logo

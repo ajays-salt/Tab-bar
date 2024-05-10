@@ -72,7 +72,7 @@ class JobDetailScreen: UIViewController {
     let moreJobInfo = UIView()
     let sectorLabel : UILabel = {
         let label = UILabel()
-        label.text = "Residential, Commercial, Construction"
+        label.text = ""
         label.font = .systemFont(ofSize: 16)
         label.textColor = UIColor(hex: "#344054")
         label.numberOfLines = 0
@@ -146,10 +146,26 @@ class JobDetailScreen: UIViewController {
             let title = String(requirement.title.dropFirst(0))
             jobRequirementItems.append(title)
         }
+        
+        let sectorTitles = selectedJob.sectors.map { $0.title }
+        let sectorString = sectorTitles.joined(separator: ", ")
+        sectorLabel.text = sectorString
+        
+        jobTypeLabel.text = selectedJob.jobType ?? "Nil"
+        
+        let location = selectedJob.location
+        locationLabel.text = "\(location.city), \(location.state), \(location.country)"
+        
+        vacancyLabel.text = "\(selectedJob.noOfPeople ?? 0)"
+        
+        let qualificationTitle = selectedJob.educationalQualification.map { $0.title }
+        let qString = qualificationTitle.joined(separator: ", ")
+        qualificationsLabel.text = qString
+        
+        
     }
     
     @objc func shareButtonTapped() {
-        // Handle share button tap
         print("Share button tapped")
     }
     
@@ -484,16 +500,14 @@ class JobDetailScreen: UIViewController {
         sector.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(sector)
         
-        NSLayoutConstraint.activate([
-            sector.topAnchor.constraint(equalTo: moreJobInfo.topAnchor, constant: 16),
-            sector.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            sector.heightAnchor.constraint(equalToConstant: 18)
-        ])
-        
         sectorLabel.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(sectorLabel)
         
         NSLayoutConstraint.activate([
+            sector.topAnchor.constraint(equalTo: moreJobInfo.topAnchor, constant: 16),
+            sector.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            sector.heightAnchor.constraint(equalToConstant: 18),
+            
             sectorLabel.topAnchor.constraint(equalTo: sector.topAnchor),
             sectorLabel.leadingAnchor.constraint(equalTo: sector.trailingAnchor, constant: 10),
             sectorLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
@@ -507,16 +521,21 @@ class JobDetailScreen: UIViewController {
         jobType.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(jobType)
         
-        NSLayoutConstraint.activate([
-            jobType.topAnchor.constraint(equalTo: sector.bottomAnchor, constant: 16),
-            jobType.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            jobType.heightAnchor.constraint(equalToConstant: 18)
-        ])
+        let jobTypeTopAnchorConstraint: NSLayoutConstraint
+        if sectorLabel.text?.isEmpty ?? true {
+            jobTypeTopAnchorConstraint = jobType.topAnchor.constraint(equalTo: sector.bottomAnchor, constant: 10)
+        } else {
+            jobTypeTopAnchorConstraint = jobType.topAnchor.constraint(equalTo: sectorLabel.bottomAnchor, constant: 10)
+        }
         
         jobTypeLabel.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(jobTypeLabel)
         
         NSLayoutConstraint.activate([
+            jobTypeTopAnchorConstraint,
+            jobType.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            jobType.heightAnchor.constraint(equalToConstant: 18),
+            
             jobTypeLabel.topAnchor.constraint(equalTo: jobType.topAnchor),
             jobTypeLabel.leadingAnchor.constraint(equalTo: jobType.trailingAnchor,constant: 10),
             jobTypeLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
@@ -530,16 +549,14 @@ class JobDetailScreen: UIViewController {
         location.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(location)
         
-        NSLayoutConstraint.activate([
-            location.topAnchor.constraint(equalTo: jobType.bottomAnchor, constant: 16),
-            location.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            location.heightAnchor.constraint(equalToConstant: 18)
-        ])
-        
         locationLabel.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(locationLabel)
         
         NSLayoutConstraint.activate([
+            location.topAnchor.constraint(equalTo: jobType.bottomAnchor, constant: 16),
+            location.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            location.heightAnchor.constraint(equalToConstant: 18),
+            
             locationLabel.topAnchor.constraint(equalTo: location.topAnchor),
             locationLabel.leadingAnchor.constraint(equalTo: location.trailingAnchor, constant: 10),
             locationLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
@@ -553,16 +570,14 @@ class JobDetailScreen: UIViewController {
         vacancy.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(vacancy)
         
-        NSLayoutConstraint.activate([
-            vacancy.topAnchor.constraint(equalTo: location.bottomAnchor, constant: 16),
-            vacancy.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            vacancy.heightAnchor.constraint(equalToConstant: 18)
-        ])
-        
         vacancyLabel.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(vacancyLabel)
         
         NSLayoutConstraint.activate([
+            vacancy.topAnchor.constraint(equalTo: location.bottomAnchor, constant: 16),
+            vacancy.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            vacancy.heightAnchor.constraint(equalToConstant: 18),
+            
             vacancyLabel.topAnchor.constraint(equalTo: vacancy.topAnchor),
             vacancyLabel.leadingAnchor.constraint(equalTo: vacancy.trailingAnchor, constant: 10),
             vacancyLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)

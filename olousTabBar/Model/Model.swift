@@ -134,7 +134,7 @@ struct User: Codable {
     var headline: String?
     var portfolio: String?
     var summary: String?
-    var totalExperience: Int?
+    var totalExperience: Double?
     var hasCompletedOnboarding: Bool?
     var permanentAddress: Address?
     var currentAddress: Address?
@@ -199,7 +199,9 @@ struct Company: Codable {
         
         email = try container.decode(String.self, forKey: .email)
         field = try container.decode(String.self, forKey: .field)
-        jobCount = try container.decode(Int.self, forKey: .jobCount)
+        
+        jobCount = try container.decodeIfPresent(Int.self, forKey: .jobCount)
+        
         logo = try container.decode(String.self, forKey: .logo)
         name = try container.decode(String.self, forKey: .name)
         sector = try container.decode([String].self, forKey: .sector)

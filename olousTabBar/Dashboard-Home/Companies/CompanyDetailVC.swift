@@ -114,11 +114,24 @@ class CompanyDetailVC: UIViewController {
         }
         
         
-        nameLabel.text = company.name
+        if let firstCharacter = company.name.first, !firstCharacter.isUppercase {
+            nameLabel.text = company.name.prefix(1).uppercased() + company.name.dropFirst()
+        } else {
+            nameLabel.text = company.name
+        }
         nameLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
-        nameLabel.textAlignment = .center
+        nameLabel.numberOfLines = 0
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
+        
+        let visitWebsiteButton = UIButton(type: .system)
+        visitWebsiteButton.setTitle("Visit Website", for: .normal)
+        visitWebsiteButton.setTitleColor(.white, for: .normal)
+        visitWebsiteButton.backgroundColor = UIColor(hex: "#0079C4")
+        visitWebsiteButton.layer.cornerRadius = 12
+        visitWebsiteButton.addTarget(self, action: #selector(visitWebsite), for: .touchUpInside)
+        visitWebsiteButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(visitWebsiteButton)
         
         NSLayoutConstraint.activate([
             logoImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
@@ -128,12 +141,28 @@ class CompanyDetailVC: UIViewController {
             
             nameLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 12),
             nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            visitWebsiteButton.topAnchor.constraint(equalTo: backgroundImageView.bottomAnchor, constant: 10),
+            visitWebsiteButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            visitWebsiteButton.widthAnchor.constraint(equalToConstant: 120),
+            visitWebsiteButton.heightAnchor.constraint(equalToConstant: 40),
         ])
+        
     }
+    
+    @objc func visitWebsite() {
+        guard let url = URL(string: company.website) else {
+            print("Invalid URL")
+            return
+        }
+        UIApplication.shared.open(url)
+    }
+    
     
     private func setupTypeAndLocationLabel() {
         
-        companyTypeAndLocation.text = "\(company.field) • \(company.location ?? "No Location")"
+        companyTypeAndLocation.text = "\(company.who) • \(company.location ?? "No Location")"
         companyTypeAndLocation.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         companyTypeAndLocation.textAlignment = .center
         companyTypeAndLocation.textColor = .systemGray2
@@ -226,7 +255,7 @@ class CompanyDetailVC: UIViewController {
     }
     
     private func setupAboutView() {
-        aboutView.backgroundColor = .systemGray6
+        aboutView.backgroundColor = UIColor(hex: "#FAFAFA")
         aboutView.contentSize = CGSize(width: view.bounds.width, height: 1000)
         aboutView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(aboutView)
@@ -237,10 +266,55 @@ class CompanyDetailVC: UIViewController {
             aboutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             aboutView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
-
-        // Add detailed information about the company here
-        // For example, use labels, images, etc.
+        
+        var lastBottomAnchor = aboutView.topAnchor
+        
+        let sections = [
+            ("Company Description", company.description),
+            ("Website", company.website),
+            ("Sectors", company.sector.joined(separator: ",")),
+            ("Category", company.who),
+            ("Field", company.field),
+            ("Company Size", "\(company.size)")
+        ]
+        
+        for section in sections {
+            lastBottomAnchor = addSection(title: section.0, content: section.1, toView: aboutView, topAnchor: lastBottomAnchor)
+        }
+        
+        // This is critical to make the UIScrollView scrollable
+        aboutView.bottomAnchor.constraint(equalTo: lastBottomAnchor, constant: 20).isActive = true
     }
+    
+    private func addSection(title: String, content: String, toView parentView: UIView, topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        titleLabel.text = title
+        parentView.addSubview(titleLabel)
+
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+
+        let contentLabel = UILabel()
+        contentLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentLabel.font = UIFont.systemFont(ofSize: 14)
+        contentLabel.numberOfLines = 0
+        contentLabel.text = content
+        parentView.addSubview(contentLabel)
+
+        NSLayoutConstraint.activate([
+            contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            contentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            contentLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+
+        return contentLabel.bottomAnchor
+    }
+    
 
     private func setupJobsCollectionView() {
         let layout = UICollectionViewFlowLayout()
@@ -347,7 +421,7 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + job.companyLogo
+        let companyLogoURLString = baseURLString + company.logo
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -457,7 +531,7 @@ extension CompanyDetailVC {
                }
             
             do {
-                let jobResponse = try JSONDecoder().decode(JobResponse.self, from: data)
+                let jobResponse = try JSONDecoder().decode(CompanyJobResponse.self, from: data)
                 completion(.success(jobResponse.jobs))
             } catch {
                 completion(.failure(error))
