@@ -553,7 +553,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
 
-        guard let jsonData = encodeEmploymentArray(experienceArray: experienceArray, totalExperience: totalExperience) else {
+        guard let jsonData = encodeEmploymentArray(experienceArray: experienceArray, totalExperience: totalExperience ?? 0) else {
             print("Failed to encode employment data")
             return
         }
@@ -1763,21 +1763,30 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
-        let userProfileUpdate = UserProfileUpdate(
+//        let userProfileUpdate = UserProfileUpdate(
+//            hobbies: "",
+//            preferredWorkType: preferredWorkType,
+//            willingToRelocate: willingToRelocate,
+//            gender: gender,
+//            noticePeriod: noticePeriod,
+//            currentlyEmployed: currentlyEmployed,
+//            permanentAddress: Address(address: permanentAddress, pinCode: permanentPin),
+//            currentAddress: Address(address: currentAddress, pinCode: currentPin),
+//            currentCtc: currentCtc,
+//            expectedCtc: expectedCtc,
+//            language: preferencesVC.languageArray,
+//            portfolio: portfolio
+//        )
+        
+        let userProfileUpdate = UserProfileUpdate2(
             hobbies: "",
             preferredWorkType: preferredWorkType,
             willingToRelocate: willingToRelocate,
             gender: gender,
             noticePeriod: noticePeriod,
             currentlyEmployed: currentlyEmployed,
-            permanentAddress: Address(address: permanentAddress, pinCode: permanentPin),
-            currentAddress: Address(address: currentAddress, pinCode: currentPin),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
-//            language: [
-//                Language(language: "English", proficiencyLevel: "Expert", read: true, write: true, speak: true)
-//            ],
-//            language: languageArray,
             language: preferencesVC.languageArray,
             portfolio: portfolio
         )
@@ -1801,9 +1810,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 print("Failed to upload user profile, status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                print(response)
                 return
             }
-            print(response)
+            
             if let data = data, let responseString = String(data: data, encoding: .utf8) {
                 print("Server response: \(responseString)")
             }

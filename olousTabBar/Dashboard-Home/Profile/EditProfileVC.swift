@@ -11,14 +11,6 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
     
     var scrollView : UIScrollView!
     
-    let locationsArray = ["Paris", "New York", "Pimpri", "Lonar", "Berlin", "Partur", "Pune"]
-    var filteredLocations = [String]()
-    let suggestionTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.isHidden = true
-        return tableView
-    }()
-    
     let profileCircle = UIView()
     let profileCircleLabel : UILabel = {
         let label = UILabel()
@@ -66,8 +58,6 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
         locationTextField.delegate = self
         pinCodeTF.delegate = self
         
-        suggestionTableView.delegate = self
-        suggestionTableView.dataSource = self
         
         setupViews()
         
@@ -100,7 +90,6 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
         setupFullName()
         setupDesignation()
         setupLocation()
-        setupSuggestions()
         setupSaveButton()
     }
     
@@ -335,17 +324,6 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
         ])
     }
     
-    func setupSuggestions() {
-        suggestionTableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(suggestionTableView)
-        NSLayoutConstraint.activate([
-            suggestionTableView.topAnchor.constraint(equalTo: locationTextField.bottomAnchor, constant: 10),
-            suggestionTableView.leadingAnchor.constraint(equalTo: locationTextField.leadingAnchor),
-            suggestionTableView.trailingAnchor.constraint(equalTo: locationTextField.trailingAnchor),
-            suggestionTableView.heightAnchor.constraint(equalToConstant: 100)
-        ])
-    }
-    
     func setupSaveButton() {
         let saveButton = UIButton(type: .system)
         saveButton.translatesAutoresizingMaskIntoConstraints = false
@@ -380,10 +358,10 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
         let json: [String: Any] = [
             "name": name,
             "designation": designation,
-            "currentAddress": [
-                "address": currentAddress.address,
-                "pinCode": currentAddress.pinCode
-            ]
+//            "currentAddress": [
+//                "address": currentAddress.address,
+//                "pinCode": currentAddress.pinCode
+//            ]
         ]
         
         uploadProfilePicture()
@@ -486,25 +464,6 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
     
     
     
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard textField == locationTextField else { return true }
-        let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
-        filterLocations(with: searchText)
-        return true
-    }
-    
-    // Step 5: Filter locations based on search text
-    func filterLocations(with searchText: String) {
-        filteredLocations = locationsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
-        suggestionTableView.isHidden = filteredLocations.isEmpty
-        if(filteredLocations.count == locationsArray.count) {
-            filteredLocations.removeAll()
-            suggestionTableView.isHidden = true
-        }
-        suggestionTableView.reloadData()
-    }
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
         textField.resignFirstResponder()
@@ -530,27 +489,6 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
     }
 }
 
-
-extension EditProfileVC: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredLocations.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        cell.textLabel?.text = filteredLocations[indexPath.row]
-        cell.backgroundColor = .systemGray6
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedLocation = filteredLocations[indexPath.row]
-        locationTextField.text = selectedLocation
-        
-        // Dismiss the suggestion table view
-        suggestionTableView.isHidden = true
-    }
-}
 
 extension EditProfileVC {
     

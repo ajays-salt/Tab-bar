@@ -48,7 +48,7 @@ class CompanyDetailVC: UIViewController {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        print(company)
+        print("Company " ,company)
         setupViews()
         
         fetchData { result in

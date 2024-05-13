@@ -16,6 +16,7 @@
 		FAA2C5412BB404380006E7A6 /* HeadlineAndSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA2C5402BB404380006E7A6 /* HeadlineAndSummary.swift */; };
 		FAA8EBD22BBBCA2100F11455 /* SkillsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */; };
 		FAAD4EB42B96EB280020EDA7 /* JobsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */; };
+		FAAD6F8A2BF215620005AC93 /* LoginOtpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAD6F892BF215620005AC93 /* LoginOtpVC.swift */; };
 		FAAF181D2BC9053B0087699B /* EducationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAF181C2BC9053B0087699B /* EducationCell.swift */; };
 		FAB333312BD7745D00D05685 /* JobSearchResult2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB333302BD7745D00D05685 /* JobSearchResult2.swift */; };
 		FAB40D262B95912200B50B7F /* locationLogo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FAB40D252B95912200B50B7F /* locationLogo.jpg */; };
@@ -61,6 +62,7 @@
 		FAA2C5402BB404380006E7A6 /* HeadlineAndSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlineAndSummary.swift; sourceTree = "<group>"; };
 		FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsVC.swift; sourceTree = "<group>"; };
 		FAAD4EB32B96EB280020EDA7 /* JobsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobsCell.swift; sourceTree = "<group>"; };
+		FAAD6F892BF215620005AC93 /* LoginOtpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginOtpVC.swift; sourceTree = "<group>"; };
 		FAAF181C2BC9053B0087699B /* EducationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EducationCell.swift; sourceTree = "<group>"; };
 		FAB333302BD7745D00D05685 /* JobSearchResult2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchResult2.swift; sourceTree = "<group>"; };
 		FAB40D252B95912200B50B7F /* locationLogo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = locationLogo.jpg; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 			children = (
 				FACCE4D42BB285C500DAD5D2 /* RegistrationVC.swift */,
 				FACCE4D62BB2CAA700DAD5D2 /* LoginVC.swift */,
+				FAAD6F892BF215620005AC93 /* LoginOtpVC.swift */,
 				FACCE4D82BB2D80B00DAD5D2 /* ForgotPassword1.swift */,
 				FACCE4DB2BB2F3C600DAD5D2 /* ForgotPassword2.swift */,
 				FABBA10D2BE8ECA800B2F933 /* ForgotPassword3.swift */,
@@ -376,6 +379,7 @@
 				FAB333312BD7745D00D05685 /* JobSearchResult2.swift in Sources */,
 				FACDFA862BC3F33600E35ED1 /* JobModel.swift in Sources */,
 				FAC3A13C2B9191C600E17AFD /* SceneDelegate.swift in Sources */,
+				FAAD6F8A2BF215620005AC93 /* LoginOtpVC.swift in Sources */,
 				FAC3A1512B919F2500E17AFD /* HomeController.swift in Sources */,
 				FA7C4EC02BA4259600900BF8 /* EditProfileVC.swift in Sources */,
 				FAF4B59F2BBE8651008E3645 /* LanguageCell.swift in Sources */,

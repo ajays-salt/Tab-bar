@@ -53,6 +53,19 @@ struct UserProfileUpdate: Codable {
     let portfolio: String
 }
 
+struct UserProfileUpdate2: Codable {
+    let hobbies: String
+    let preferredWorkType: String
+    let willingToRelocate: String
+    let gender: String
+    let noticePeriod: String
+    let currentlyEmployed: String
+    let currentCtc: Double
+    let expectedCtc: Double
+    let language: [Language]
+    let portfolio: String
+}
+
 
 
 struct Address: Codable {

@@ -71,8 +71,8 @@ struct Job: Codable {
     let companyName: String?
     let companyLogo: String?
     let jobType: String?
-    let maxExperience: Int?
-    let minExperience: Int?
+    let maxExperience: String?
+    let minExperience: String?
     let noOfPeople: Int?
     let salaryRangeFrom: Double?
     let salaryRangeTo: Double?
@@ -129,8 +129,8 @@ struct Job: Codable {
         companyName = try container.decodeIfPresent(String.self, forKey: .companyName)
         companyLogo = try container.decodeIfPresent(String.self, forKey: .companyLogo)
         jobType = try container.decodeIfPresent(String.self, forKey: .jobType)
-        maxExperience = try container.decodeIfPresent(Int.self, forKey: .maxExperience)
-        minExperience = try container.decodeIfPresent(Int.self, forKey: .minExperience)
+        maxExperience = try container.decodeIfPresent(String.self, forKey: .maxExperience)
+        minExperience = try container.decodeIfPresent(String.self, forKey: .minExperience)
         noOfPeople = try container.decodeIfPresent(Int.self, forKey: .noOfPeople)
         salaryRangeFrom = try container.decodeIfPresent(Double.self, forKey: .salaryRangeFrom)
         salaryRangeTo = try container.decodeIfPresent(Double.self, forKey: .salaryRangeTo)

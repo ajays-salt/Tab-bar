@@ -272,7 +272,6 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             return
         }
         
-        // Create the request URL
         let loginURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/login")!
         
         // Create the request
@@ -281,48 +280,44 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
         
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            // Check for errors
             if let error = error {
                 print("Registration request error: \(error)")
                 return
             }
             
-            // Check for response data
             guard let data = data else {
                 print("No data received")
                 return
             }
             
-            // Attempt to decode the response as a string
             if let resp = String(data: data, encoding: .utf8) {
-//                print(resp)
                 
-                // Attempt to parse the JSON response
                 if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    // Check if the registration was successful
                     print(json)
                     if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
                         
-                        // Save the access token to UserDefaults or any other secure storage mechanism
-                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
+//                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
                         
-                        // Navigate to the BasicDetails1 view controller
-                        DispatchQueue.main.async {
-                            let vc = BasicDetails1()
-                            let navVC = UINavigationController(rootViewController: vc)
-                            navVC.modalPresentationStyle = .fullScreen
-                            navVC.navigationBar.isHidden = true
-                            self.present(navVC, animated: true)
+//                        DispatchQueue.main.async {
+                            
+//                            let vc = BasicDetails1()
+//                            let navVC = UINavigationController(rootViewController: vc)
+//                            navVC.modalPresentationStyle = .fullScreen
+//                            navVC.navigationBar.isHidden = true
+//                            self.present(navVC, animated: true)
                             
 //                            let viewController = ViewController()
 //                            viewController.modalPresentationStyle = .overFullScreen
 //                            viewController.overrideUserInterfaceStyle = .light
 //                            self.present(viewController, animated: true)
-                        }
+//                        }
                     } else if let msg = json["msg"] as? String, msg == "Invalid credentials" {
-                        // Handle the case where the user already exists
                         DispatchQueue.main.async {
                             let alertController = UIAlertController(title: "Alert!", message: "Invalid Login Credentials", preferredStyle: .alert)
                             
@@ -333,9 +328,14 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                             self.present(alertController, animated: true, completion: nil)
                         }
                         
-                    } else {
-                        print("Unexpected response from server")
-                        // Handle other unexpected responses from the server
+                    } else if let msg = json["msg"] as? String, msg == "otp sent" {
+                        print("Otp sent response")
+                        
+                        DispatchQueue.main.async {
+                            let vc = LoginOtpVC()
+                            vc.email = email
+                            self.navigationController?.pushViewController(vc, animated: true)
+                        }
                     }
                 } else {
                     print("Failed to parse JSON response")
@@ -345,6 +345,11 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             }
         }
         task.resume()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            spinner.stopAnimating()
+            spinner.removeFromSuperview()
+        }
     }
     
     func setupGoogleSignIn() {

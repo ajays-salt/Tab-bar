@@ -96,17 +96,42 @@ class JobDetailScreen: UIViewController {
     }()
     let vacancyLabel : UILabel = {
         let label = UILabel()
-        label.text = "3"
+        label.text = "Nil"
         label.font = .systemFont(ofSize: 16)
         label.textColor = UIColor(hex: "#344054")
         label.numberOfLines = 0
         return label
     }()
-   
+    let salaryLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Salary not disclosed"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
+    let workmodeLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Nil"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
+    
     let separatorLine4 = UIView()
+    
     let qualificationsLabel : UILabel = {
         let label = UILabel()
-        label.text = "Bachelor in Civil Engineering"
+        label.text = "Nil"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
+    let softwaresLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Nil"
         label.font = .systemFont(ofSize: 16)
         label.textColor = UIColor(hex: "#344054")
         label.numberOfLines = 0
@@ -119,6 +144,8 @@ class JobDetailScreen: UIViewController {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
+        setupScrollView()
+        checkIfJobIsApplied()
         assignValues()
         setupViews()
 
@@ -129,12 +156,8 @@ class JobDetailScreen: UIViewController {
     }
     
     func assignValues() {
-        if selectedJob == nil {
-            jobTitle.text = ""
-        }
-        else {
-            jobTitle.text = selectedJob.title
-        }
+        jobTitle.text = selectedJob.title
+        
         companyName.text = selectedJob.companyName
         jobLocationLabel.text = "\(selectedJob.location.city), \(selectedJob.location.state)"
         
@@ -155,14 +178,33 @@ class JobDetailScreen: UIViewController {
         
         let location = selectedJob.location
         locationLabel.text = "\(location.city), \(location.state), \(location.country)"
+        if locationLabel.text == "" {
+            locationLabel.text = "Nil"
+        }
         
-        vacancyLabel.text = "\(selectedJob.noOfPeople ?? 0)"
+        if selectedJob.noOfPeople != nil {
+            vacancyLabel.text = "\(selectedJob.noOfPeople!)"
+        }
+        
+        if selectedJob.salaryRangeFrom != nil && selectedJob.salaryRangeTo != nil {
+            salaryLabel.text = "\(selectedJob.salaryRangeFrom!) - \(selectedJob.salaryRangeTo!) LPA"
+        }
+        
+        if selectedJob.workPlace != nil {
+            workmodeLabel.text = selectedJob.workPlace
+        }
         
         let qualificationTitle = selectedJob.educationalQualification.map { $0.title }
         let qString = qualificationTitle.joined(separator: ", ")
         qualificationsLabel.text = qString
         
+        let softwareItems = selectedJob.softwares.map { $0.title }
+        let softwares = softwareItems.joined(separator: ", ")
+        softwaresLabel.text = softwares
         
+        DispatchQueue.main.async {
+            self.updateScrollViewHeight()
+        }
     }
     
     @objc func shareButtonTapped() {
@@ -170,7 +212,6 @@ class JobDetailScreen: UIViewController {
     }
     
     func setupViews() {
-        setupScrollView()
         setupHeaderView()
         setupSeparatorLine1()
         setupResponsibilityView()
@@ -195,7 +236,7 @@ class JobDetailScreen: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
-        let extraSpaceHeight: CGFloat = 400
+        let extraSpaceHeight: CGFloat = 100
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -204,6 +245,22 @@ class JobDetailScreen: UIViewController {
         let contentHeight = view.bounds.height + extraSpaceHeight
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
+    func updateScrollViewHeight() {
+        // Calculate total height of all subviews
+        var totalHeight: CGFloat = 0
+        for subview in scrollView.subviews {
+            for s in subview.subviews {
+                totalHeight += s.frame.height
+            }
+        }
+
+        // Add extra space if needed
+        totalHeight += 100
+
+        // Update content size of scrollView
+        scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: totalHeight)
+    }
+
     func setupHeaderView() {
         headerView = UIView()
         headerView.translatesAutoresizingMaskIntoConstraints = false
@@ -275,7 +332,9 @@ class JobDetailScreen: UIViewController {
         let symbolString = NSAttributedString(attachment: symbolAttachment)
         attributedString.append(symbolString)
         attributedString.append(NSAttributedString(string: " "))
-        let textString = NSAttributedString(string: "\(selectedJob.yearsOfExperience == "" ? "0" : selectedJob.yearsOfExperience) years")
+        
+        let exp = "\(selectedJob.yearsOfExperience == "" ? "Nil" : selectedJob.yearsOfExperience) years"
+        let textString = NSAttributedString(string: exp)
         attributedString.append(textString)
         
         jobExperienceLabel.attributedText = attributedString
@@ -321,6 +380,7 @@ class JobDetailScreen: UIViewController {
         applyButton.layer.cornerRadius = 12
         applyButton.clipsToBounds = true
         applyButton.titleLabel?.textAlignment = .center
+        applyButton.addTarget(self, action: #selector(didTapApplyJobs), for: .touchUpInside)
         
         applyButton.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(applyButton)
@@ -332,6 +392,142 @@ class JobDetailScreen: UIViewController {
             applyButton.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
+    
+    func checkIfJobIsApplied() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/user-status") else {
+            print("Invalid URL")
+            return
+        }
+
+        let jobId = selectedJob.id // Assuming selectedJob is accessible in this method
+
+        let requestData = ["jobId": jobId]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: requestData, options: [])
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to serialize request data: \(error)")
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Response from server: \(responseString)")
+            }
+
+            if httpResponse.statusCode == 200 {
+                if let data = data,
+                   let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let msg = json["msg"] as? String, msg == "not applied" {
+                    print("Job is not applied")
+                    // Update UI or perform any other action
+                } else {
+                    print("Job is already applied")
+                    DispatchQueue.main.async {
+                        self.applyButton.setTitle("Applied", for: .normal)
+                        self.applyButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
+                        self.applyButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+                        self.applyButton.backgroundColor = UIColor(hex: "#0079C4")
+                        self.applyButton.alpha = 0.7
+                        self.applyButton.isUserInteractionEnabled = false
+                    }
+                }
+            } else if httpResponse.statusCode == 404 {
+                print("Job is not applied")
+                // Update UI or perform any other action
+            } else {
+                print("Failed to check job status, status code: \(httpResponse.statusCode)")
+            }
+
+            if let error = error {
+                print("Error checking job status: \(error.localizedDescription)")
+            }
+        }.resume()
+
+    }
+
+    
+    @objc func didTapApplyJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/application") else {
+            print("Invalid URL")
+            return
+        }
+
+        let jobId = selectedJob.id // Assuming selectedJob is accessible in this method
+
+        let requestData = ["jobId": jobId]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: requestData, options: [])
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to serialize request data: \(error)")
+            return
+        }
+        
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        scrollView.alpha = 0.4
+        view.addSubview(spinner)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Response from server: \(responseString)")
+            }
+            
+            if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
+                print("Job application successful")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    
+                    self.applyButton.setTitle("Applied", for: .normal)
+                    self.applyButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
+                    self.applyButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+                    self.applyButton.backgroundColor = UIColor(hex: "#0079C4")
+                    self.applyButton.alpha = 0.7
+                    self.applyButton.isUserInteractionEnabled = false
+                }
+            } else {
+                print("Failed to apply for job, status code: \(httpResponse.statusCode)")
+            }
+            
+            if let error = error {
+                print("Error applying for job: \(error.localizedDescription)")
+            }
+        }.resume()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            spinner.stopAnimating()
+            spinner.removeFromSuperview()
+            self.scrollView.alpha = 1
+        }
+    }
+
     
     func setupSeparatorLine1() {
         separatorLine1.backgroundColor = UIColor(hex: "#EAECF0")
@@ -574,13 +770,55 @@ class JobDetailScreen: UIViewController {
         moreJobInfo.addSubview(vacancyLabel)
         
         NSLayoutConstraint.activate([
-            vacancy.topAnchor.constraint(equalTo: location.bottomAnchor, constant: 16),
+            vacancy.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 16),
             vacancy.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
             vacancy.heightAnchor.constraint(equalToConstant: 18),
             
             vacancyLabel.topAnchor.constraint(equalTo: vacancy.topAnchor),
             vacancyLabel.leadingAnchor.constraint(equalTo: vacancy.trailingAnchor, constant: 10),
             vacancyLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
+        ])
+        
+        let salary = UILabel()
+        salary.text = "Salary :"
+        salary.font = .boldSystemFont(ofSize: 16)
+        salary.tintColor = UIColor(hex: "#101828")
+        
+        salary.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(salary)
+        
+        salaryLabel.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(salaryLabel)
+        
+        NSLayoutConstraint.activate([
+            salary.topAnchor.constraint(equalTo: vacancyLabel.bottomAnchor, constant: 16),
+            salary.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            salary.heightAnchor.constraint(equalToConstant: 18),
+            
+            salaryLabel.topAnchor.constraint(equalTo: salary.topAnchor),
+            salaryLabel.leadingAnchor.constraint(equalTo: salary.trailingAnchor, constant: 10),
+            salaryLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
+        ])
+        
+        let workmode = UILabel()
+        workmode.text = "Workmode :"
+        workmode.font = .boldSystemFont(ofSize: 16)
+        workmode.tintColor = UIColor(hex: "#101828")
+        
+        workmode.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(workmode)
+        
+        workmodeLabel.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(workmodeLabel)
+        
+        NSLayoutConstraint.activate([
+            workmode.topAnchor.constraint(equalTo: salaryLabel.bottomAnchor, constant: 16),
+            workmode.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            workmode.heightAnchor.constraint(equalToConstant: 18),
+            
+            workmodeLabel.topAnchor.constraint(equalTo: workmode.topAnchor),
+            workmodeLabel.leadingAnchor.constraint(equalTo: workmode.trailingAnchor, constant: 10),
+            workmodeLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
         ])
     }
     
@@ -590,7 +828,7 @@ class JobDetailScreen: UIViewController {
         moreJobInfo.addSubview(separatorLine4)
         
         NSLayoutConstraint.activate([
-            separatorLine4.topAnchor.constraint(equalTo: vacancyLabel.bottomAnchor, constant: 16),
+            separatorLine4.topAnchor.constraint(equalTo: workmodeLabel.bottomAnchor, constant: 16),
             separatorLine4.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine4.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine4.heightAnchor.constraint(equalToConstant: 1)
@@ -606,19 +844,38 @@ class JobDetailScreen: UIViewController {
         qualifications.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(qualifications)
         
-        NSLayoutConstraint.activate([
-            qualifications.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
-            qualifications.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            qualifications.heightAnchor.constraint(equalToConstant: 18)
-        ])
-        
         qualificationsLabel.translatesAutoresizingMaskIntoConstraints = false
         moreJobInfo.addSubview(qualificationsLabel)
         
         NSLayoutConstraint.activate([
+            qualifications.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
+            qualifications.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            qualifications.heightAnchor.constraint(equalToConstant: 18),
+            
             qualificationsLabel.topAnchor.constraint(equalTo: qualifications.bottomAnchor, constant: 6),
             qualificationsLabel.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
             qualificationsLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
+        ])
+        
+        let softwares = UILabel()
+        softwares.text = "Softwares :"
+        softwares.font = .boldSystemFont(ofSize: 16)
+        softwares.tintColor = UIColor(hex: "#101828")
+        
+        softwares.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(softwares)
+        
+        softwaresLabel.translatesAutoresizingMaskIntoConstraints = false
+        moreJobInfo.addSubview(softwaresLabel)
+        
+        NSLayoutConstraint.activate([
+            softwares.topAnchor.constraint(equalTo: qualificationsLabel.bottomAnchor, constant: 16),
+            softwares.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            softwares.heightAnchor.constraint(equalToConstant: 18),
+            
+            softwaresLabel.topAnchor.constraint(equalTo: softwares.bottomAnchor, constant: 6),
+            softwaresLabel.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            softwaresLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
         ])
     }
     
