@@ -387,25 +387,15 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func getStartedButtonTapped() {
-    
         guard let name = nameTextField.text, !name.isEmpty,
-              let email = emailTextField.text, !email.isEmpty,
+              let email = emailTextField.text, !email.isEmpty, email.isValidEmail(),
               let password = passwordTextField.text, !password.isEmpty,
-              let mobile = numberTextField.text, !mobile.isEmpty else {
+              let mobile = numberTextField.text, !mobile.isEmpty, mobile.isValidMobileNumber() else {
             
-            showAlert(withTitle: "Alert!", message: "Fill all the details")
+            showAlert(title: "Alert!", message: "Fill all the details")
             return
         }
 
-        guard email.isValidEmail() else {
-            showAlert(withTitle: "Alert!", message: "Invalid Email")
-            return
-        }
-        guard mobile.isValidMobileNumber() else {
-            showAlert(withTitle: "Alert!", message: "Invalid Mobile Number")
-            return
-        }
-        
         let registrationData: [String: String] = [
             "email": email,
             "mobile": mobile,
@@ -418,7 +408,6 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
             return
         }
         
-        // Create the request URL
         let registrationURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/register")!
         
         // Create the request
@@ -427,73 +416,90 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
         
-        // Perform the request
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            // Check for errors
+            defer {
+                DispatchQueue.main.async {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                }
+            }
+            
             if let error = error {
                 print("Registration request error: \(error)")
                 return
             }
             
-            // Check for response data
             guard let data = data else {
                 print("No data received")
                 return
             }
             
-            // Attempt to decode the response as a string
-            if let resp = String(data: data, encoding: .utf8) {
-                print(resp)
-                
-                // Attempt to parse the JSON response
-                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    // Check if the registration was successful
-                    if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = user["accessToken"] as? String {
-                        
-                        // Save the access token to UserDefaults or any other secure storage mechanism
-                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
-                        
-                        // Navigate to the BasicDetails1 Onboarding screen
-                        DispatchQueue.main.async {
-                            let vc = BasicDetails1()
-                            let navVC = UINavigationController(rootViewController: vc)
-                            navVC.modalPresentationStyle = .fullScreen
-                            navVC.navigationBar.isHidden = true
-                            self.present(navVC, animated: true)
-                        }
-                    } else if let msg = json["msg"] as? String, msg == "user already exists try login" {
-                        print("User already exists. Try login instead.")
-                        // Handle the case where the user already exists
-                        DispatchQueue.main.async {
-                            let alertController = UIAlertController(title: "Alert!", message: "User already exists", preferredStyle: .alert)
-                            
-                            let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-                            
-                            alertController.addAction(cancelAction)
-                            
-                            self.present(alertController, animated: true, completion: nil)
-                        }
-                        
-                    } else {
-                        print("Unexpected response from server")
-                        // Handle other unexpected responses from the server
-                    }
-                } else {
-                    print("Failed to parse JSON response")
+            if let rawResponse = String(data: data, encoding: .utf8) {
+                print("Raw response from server: \(rawResponse)")
+            }
+            
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                print(jsonResponse)
+                DispatchQueue.main.async {
+                    self.handleRegistrationResponse(jsonResponse, email: email)
                 }
             } else {
-                print("Failed to decode response as string")
+                print("Failed to parse JSON response")
             }
         }
         task.resume()
     }
-    
-    func showAlert(withTitle title: String, message: String) {
+
+    private func handleRegistrationResponse(_ json: [String: Any], email: String) {
+        if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = user["accessToken"] as? String {
+            UserDefaults.standard.set(accessToken, forKey: "accessToken")
+            print("First if statement where accessToken is saved")
+//            navigateToBasicDetails()
+        } else if let msg = json["msg"] as? String, msg == "user already exists try login" {
+            showAlert(title: "Alert!", message: "User already exists")
+        } else if let msg = json["msg"] as? String, msg == "otp sent" {
+//            print("Otp sent")
+//            navigateToRegisterOtpVC(email: email)
+        } else {
+            print("Unexpected response from server")
+            print("Otp sent")
+            navigateToRegisterOtpVC(email: email)
+        }
+    }
+
+    private func showAlert(title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
-        self.present(alertController, animated: true, completion: nil)
+        present(alertController, animated: true, completion: nil)
     }
+
+    private func navigateToBasicDetails() {
+        let vc = BasicDetails1()
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
+    }
+
+    private func navigateToRegisterOtpVC(email: String) {
+        let vc = RegisterOtpVC()
+        vc.email = email
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    
+//    func showAlert(withTitle title: String, message: String) {
+//        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+//        alertController.addAction(cancelAction)
+//        self.present(alertController, animated: true, completion: nil)
+//    }
     
     func setupLogin() {
         logInLabel.translatesAutoresizingMaskIntoConstraints = false

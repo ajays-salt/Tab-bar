@@ -354,7 +354,7 @@ class EditProfileVC: UIViewController, UITextFieldDelegate, UIImagePickerControl
             return
         }
         
-        let currentAddress = Address(address: address, pinCode: pinCode)
+        let currentAddress = Address(address: address, pincode: pinCode, state: "", city: "")
         let json: [String: Any] = [
             "name": name,
             "designation": designation,
@@ -525,7 +525,7 @@ extension EditProfileVC {
                     self.nameTextField.text = user.name
                     self.designationTextField.text = user.designation
                     self.locationTextField.text = user.currentAddress?.address
-                    self.pinCodeTF.text = user.currentAddress?.pinCode
+                    self.pinCodeTF.text = user.currentAddress?.pincode
                     
                     self.fetchProfilePicture(size: "m", userID: user._id)
                 }

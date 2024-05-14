@@ -916,7 +916,9 @@ extension HomeController {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
                 print("User fetched: \(user)")
@@ -960,7 +962,7 @@ extension HomeController {
                 filledCount += 1
             } else if let array = child.value as? [Language], !array.isEmpty {
                 filledCount += 1
-            } else if let address = child.value as? Address, address.address != nil && !address.address.isEmpty, address.pinCode != nil && !address.pinCode.isEmpty {
+            } else if let address = child.value as? Address, address.address != nil && !address.address.isEmpty, address.pincode != nil && !address.pincode.isEmpty {
                 filledCount += 1
             } else if let boolValue = child.value as? Bool {
                 if boolValue {

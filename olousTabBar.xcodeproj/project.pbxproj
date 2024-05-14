@@ -23,6 +23,8 @@
 		FAB40D2A2B95ABC600B50B7F /* JobSearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB40D292B95ABC600B50B7F /* JobSearchScreen.swift */; };
 		FAB45ACF2BEC84C700D9C283 /* CompanyDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB45ACE2BEC84C700D9C283 /* CompanyDetailVC.swift */; };
 		FAB7B9852BAD424B00B5A9FA /* FilterOptionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB7B9842BAD424B00B5A9FA /* FilterOptionsCell.swift */; };
+		FAB8E6FF2BF340180020ED39 /* RegisterOtpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB8E6FE2BF340180020ED39 /* RegisterOtpVC.swift */; };
+		FAB8E7012BF387A70020ED39 /* PersonalInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB8E7002BF387A70020ED39 /* PersonalInfoVC.swift */; };
 		FABBA10E2BE8ECA800B2F933 /* ForgotPassword3.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABBA10D2BE8ECA800B2F933 /* ForgotPassword3.swift */; };
 		FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */; };
 		FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1392B9191C500E17AFD /* AppDelegate.swift */; };
@@ -69,6 +71,8 @@
 		FAB40D292B95ABC600B50B7F /* JobSearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobSearchScreen.swift; sourceTree = "<group>"; };
 		FAB45ACE2BEC84C700D9C283 /* CompanyDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyDetailVC.swift; sourceTree = "<group>"; };
 		FAB7B9842BAD424B00B5A9FA /* FilterOptionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterOptionsCell.swift; sourceTree = "<group>"; };
+		FAB8E6FE2BF340180020ED39 /* RegisterOtpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterOtpVC.swift; sourceTree = "<group>"; };
+		FAB8E7002BF387A70020ED39 /* PersonalInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalInfoVC.swift; sourceTree = "<group>"; };
 		FABBA10D2BE8ECA800B2F933 /* ForgotPassword3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword3.swift; sourceTree = "<group>"; };
 		FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobDetailScreen.swift; sourceTree = "<group>"; };
 		FAC3A1362B9191C500E17AFD /* olousTabBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = olousTabBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -197,6 +201,7 @@
 				FAC3A1372B9191C500E17AFD /* Products */,
 			);
 			sourceTree = "<group>";
+			wrapsLines = 0;
 		};
 		FAC3A1372B9191C500E17AFD /* Products */ = {
 			isa = PBXGroup;
@@ -236,6 +241,7 @@
 			isa = PBXGroup;
 			children = (
 				FACCE4D42BB285C500DAD5D2 /* RegistrationVC.swift */,
+				FAB8E6FE2BF340180020ED39 /* RegisterOtpVC.swift */,
 				FACCE4D62BB2CAA700DAD5D2 /* LoginVC.swift */,
 				FAAD6F892BF215620005AC93 /* LoginOtpVC.swift */,
 				FACCE4D82BB2D80B00DAD5D2 /* ForgotPassword1.swift */,
@@ -256,6 +262,7 @@
 				FAC972402BBD2C620026C32D /* SoftwaresVC.swift */,
 				FAD04C202BBA711F000E08E2 /* ProjectsVC.swift */,
 				FAA8EBD12BBBCA2100F11455 /* SkillsVC.swift */,
+				FAB8E7002BF387A70020ED39 /* PersonalInfoVC.swift */,
 				FAD560B82BCF867900A7FCBD /* PreferencesVC.swift */,
 				FAA2C5402BB404380006E7A6 /* HeadlineAndSummary.swift */,
 			);
@@ -354,6 +361,7 @@
 				FABBA10E2BE8ECA800B2F933 /* ForgotPassword3.swift in Sources */,
 				FAC3A14F2B91927200E17AFD /* TabBarController.swift in Sources */,
 				FA9AB5682BBFB99E00D013BF /* EmploymentCell.swift in Sources */,
+				FAB8E6FF2BF340180020ED39 /* RegisterOtpVC.swift in Sources */,
 				FAB40D2A2B95ABC600B50B7F /* JobSearchScreen.swift in Sources */,
 				FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */,
 				FAAF181D2BC9053B0087699B /* EducationCell.swift in Sources */,
@@ -362,6 +370,7 @@
 				FAC3A13E2B9191C600E17AFD /* ViewController.swift in Sources */,
 				FAF4B5A12BBEA728008E3645 /* Skill-Software Cell.swift in Sources */,
 				FAA2C5412BB404380006E7A6 /* HeadlineAndSummary.swift in Sources */,
+				FAB8E7012BF387A70020ED39 /* PersonalInfoVC.swift in Sources */,
 				FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */,
 				FAD04C1F2BBA6EAB000E08E2 /* QualificationsVC.swift in Sources */,
 				FAB45ACF2BEC84C700D9C283 /* CompanyDetailVC.swift in Sources */,
@@ -543,6 +552,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -570,6 +580,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

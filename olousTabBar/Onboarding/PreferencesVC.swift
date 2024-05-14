@@ -17,10 +17,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     let portfolioTextField : UITextField = {
         let textField = UITextField()
-        
         textField.borderStyle = .roundedRect
         textField.placeholder = "Portfolio link(Github, Drive etc)"
-//        textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -222,7 +220,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "7/8"
+        profileCircleLabel.text = "8/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -237,7 +235,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 7 / 8
+        let percentage: CGFloat = 8 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -1180,6 +1178,7 @@ extension PreferencesVC {
             return
         }
         
+       
         
         let userProfileUpdate = UserProfileUpdate(
             hobbies: "",
@@ -1188,8 +1187,8 @@ extension PreferencesVC {
             gender: gender,
             noticePeriod: noticePeriod,
             currentlyEmployed: currentlyEmployed,
-            permanentAddress: Address(address: permanentAddress, pinCode: permanentPin),
-            currentAddress: Address(address: currentAddress, pinCode: currentPin),
+            permanentAddress: permanentAddress,
+            currentAddress: Address(address: currentAddress, pincode: currentPin, state: "", city: ""),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
             language: languageArray,

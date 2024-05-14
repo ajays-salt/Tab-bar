@@ -75,7 +75,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "1/8"
+        profileCircleLabel.text = "1/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -90,7 +90,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 1 / 8
+        let percentage: CGFloat = 1 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
 
@@ -132,7 +132,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         
         
         let titleLabel = UILabel()
-        titleLabel.text = "Basic Details"
+        titleLabel.text = "Upload Resume"
         titleLabel.font = .boldSystemFont(ofSize: 24)
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -361,14 +361,14 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     }
     
     @objc func didTapNextButton() {
-//        if isResumeUploaded == false {
-//            // Handle validation failure
-//                let alertController = UIAlertController(title: "Alert!", message: "Please upload Resume", preferredStyle: .alert)
-//                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-//                alertController.addAction(cancelAction)
-//                self.present(alertController, animated: true, completion: nil)
-//            return
-//        }
+        if isResumeUploaded == false {
+            // Handle validation failure
+                let alertController = UIAlertController(title: "Alert!", message: "Please upload Resume", preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                self.present(alertController, animated: true, completion: nil)
+            return
+        }
         
         let vc = QualificationsVC()
         navigationController?.pushViewController(vc, animated: true)
@@ -377,25 +377,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     
     
     @objc func uploadButtonTapped() {
-        requestPermissionForFileUpload()
-    }
-    
-    func requestPermissionForFileUpload() {
-        let alertController = UIAlertController(title: "Permission Request", message: "Your app needs permission to upload files.", preferredStyle: .alert)
-        
-        // Add action to request permission
-        let grantPermissionAction = UIAlertAction(title: "Grant Permission", style: .default) { (_) in
-            // Request permission to access files
-            self.presentDocumentPicker()
-        }
-        alertController.addAction(grantPermissionAction)
-        
-        // Add cancel action
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction)
-        
-        // Present the alert controller
-        present(alertController, animated: true, completion: nil)
+        presentDocumentPicker()
     }
     
     func presentDocumentPicker() {
@@ -442,6 +424,11 @@ extension BasicDetails1: UIDocumentPickerDelegate {
     }
     
     func uploadFileToServer(fileURL: URL) {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        
         let serverURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/onBoarding")!
         var request = URLRequest(url: serverURL)
         request.httpMethod = "POST"
@@ -479,13 +466,15 @@ extension BasicDetails1: UIDocumentPickerDelegate {
 
         // Create URLSessionUploadTask using the corrected method
         URLSession.shared.uploadTask(with: request, from: body) { (data, response, error) in
-            // Check for errors
+            DispatchQueue.main.async {
+                spinner.stopAnimating()
+                spinner.removeFromSuperview()
+            }
+            
             if let error = error {
                 print("Error: \(error)")
                 return
             }
-
-            // Check for response status code
             guard let httpResponse = response as? HTTPURLResponse,
                   !(400...599).contains(httpResponse.statusCode) else {
                 print("Server Error")
@@ -493,24 +482,13 @@ extension BasicDetails1: UIDocumentPickerDelegate {
             }
             print(httpResponse)
 
-            // Handle response data if needed
             if let data = data {
-                // Parse response data if needed
                 print("Response: \(String(data: data, encoding: .utf8) ?? "")")
             }
 
-            // File uploaded successfully
             print("File uploaded successfully")
             self.isResumeUploaded = true
         }.resume()
     }
-    
-//    do {
-//        try URLSession.shared.upload(for: request, from: data) { (data, response, error) in
-//            // Handle response here
-//        }
-//    } catch {
-//        print("Error: \(error)")
-//    }
 
 }

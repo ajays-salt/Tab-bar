@@ -50,6 +50,7 @@ struct Jobs: Codable {
 }
 
 
+// being used
 struct Job: Codable {
     let id: String
     let version: Int?

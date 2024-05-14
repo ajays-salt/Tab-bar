@@ -61,9 +61,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+        loader = UIActivityIndicatorView(style: .large)
 //        loader.center = view.center
-        loader.style = UIActivityIndicatorView.Style.medium
         loader.hidesWhenStopped = true
         
         loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
@@ -119,7 +118,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "6/8"
+        profileCircleLabel.text = "6/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -134,7 +133,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 6 / 8
+        let percentage: CGFloat = 6 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -212,7 +211,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 50
+        let extraSpaceHeight: CGFloat = 150
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -458,7 +457,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     
     @objc func didTapNextButton() {
         uploadAddedSkills()
-        let vc = PreferencesVC()
+        let vc = PersonalInfoVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -592,7 +591,7 @@ extension SkillsVC {
 
     // Fetch and process softwares from API
     func fetchAndProcessSoftwares() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/softwares") else {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/soft") else {
             print("Invalid URL")
             return
         }
@@ -632,6 +631,10 @@ extension SkillsVC {
                 DispatchQueue.main.async {
                     self.reloadAddedSkills()
                     self.reloadSuggestedSkills()
+                    if self.suggestedSkillsArray.count > 50 {
+                        let contentHeight = self.view.bounds.height + 600
+                        self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: contentHeight)
+                    }
                 }
                 
             } catch {
@@ -686,6 +689,12 @@ extension SkillsVC {
     }
     
     func uploadAddedSkills() {
+        DispatchQueue.main.async {
+            self.scrollView.alpha = 0
+            self.loader.startAnimating()
+            print("Loader should be visible now")
+        }
+        
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
@@ -729,6 +738,11 @@ extension SkillsVC {
                 }
             } catch {
                 print("Failed to parse response data: \(error)")
+            }
+            DispatchQueue.main.async {
+                self.loader.stopAnimating()
+                self.scrollView.alpha = 1
+                print("loader stopped")
             }
         }.resume()
     }

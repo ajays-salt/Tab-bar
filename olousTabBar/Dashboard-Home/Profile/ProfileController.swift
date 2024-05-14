@@ -9,8 +9,6 @@ import UIKit
 
 class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
-    var employments = [EmploymentTemp]()
-    var educations = [EducationTemp]()
     
     var headerView = UIView()
     
@@ -1763,33 +1761,22 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
-//        let userProfileUpdate = UserProfileUpdate(
-//            hobbies: "",
-//            preferredWorkType: preferredWorkType,
-//            willingToRelocate: willingToRelocate,
-//            gender: gender,
-//            noticePeriod: noticePeriod,
-//            currentlyEmployed: currentlyEmployed,
-//            permanentAddress: Address(address: permanentAddress, pinCode: permanentPin),
-//            currentAddress: Address(address: currentAddress, pinCode: currentPin),
-//            currentCtc: currentCtc,
-//            expectedCtc: expectedCtc,
-//            language: preferencesVC.languageArray,
-//            portfolio: portfolio
-//        )
-        
-        let userProfileUpdate = UserProfileUpdate2(
+        let userProfileUpdate = UserProfileUpdate(
             hobbies: "",
             preferredWorkType: preferredWorkType,
             willingToRelocate: willingToRelocate,
             gender: gender,
             noticePeriod: noticePeriod,
             currentlyEmployed: currentlyEmployed,
+            permanentAddress: permanentAddress,
+            currentAddress: Address(address: currentAddress, pincode: currentPin, state: "", city: ""),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
             language: preferencesVC.languageArray,
             portfolio: portfolio
         )
+        
+        
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -2081,9 +2068,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             UserDefaults.standard.removeObject(forKey: "accessToken")
             UserDefaults.standard.synchronize() // To ensure the accessToken is removed
             
-            let vc = RegistrationVC()
-            vc.modalPresentationStyle = .fullScreen
-            self.present(vc, animated: true)
+            let vc = BasicDetails1()
+            let navVC = UINavigationController(rootViewController: vc)
+            navVC.modalPresentationStyle = .fullScreen
+            navVC.navigationBar.isHidden = true
+            self.present(navVC, animated: true)
         }
         
         let noAction = UIAlertAction(title: "No", style: .cancel)
@@ -2329,10 +2318,10 @@ extension ProfileController { // Extension for APIs
                     self.preferencesVC.currentCtcTextField.text = user.currentCtc
                     self.preferencesVC.expectedCtcTextField.text = user.expectedCtc
                     let noticePeriod = user.noticePeriod
-                    self.preferencesVC.permanentTextField.text = user.permanentAddress?.address
-                    self.preferencesVC.permanentPinTextField.text = user.permanentAddress?.pinCode
+                    self.preferencesVC.permanentTextField.text = user.permanentAddress
+                    self.preferencesVC.permanentPinTextField.text = user.permanentAddress
                     self.preferencesVC.currentTextField.text = user.currentAddress?.address
-                    self.preferencesVC.currentPinTextField.text = user.currentAddress?.pinCode
+                    self.preferencesVC.currentPinTextField.text = user.currentAddress?.pincode
                     self.preferencesVC.languageArray = user.language!
                     self.preferencesVC.reloadCollectionView()
                     
@@ -2350,10 +2339,10 @@ extension ProfileController { // Extension for APIs
                     self.currentlyEmployed.text = user.currentlyEmployed?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.worktypeLabel.text = user.preferredWorkType?.trimmingCharacters(in: .whitespacesAndNewlines)
                     
-                    self.permanentAddress.text = user.permanentAddress?.address
-                    self.permanentPin.text = user.permanentAddress?.pinCode
+                    self.permanentAddress.text = user.permanentAddress
+                    self.permanentPin.text = user.permanentAddress
                     self.currentAddress.text = user.currentAddress?.address
-                    self.currentPin.text = user.currentAddress?.pinCode
+                    self.currentPin.text = user.currentAddress?.pincode
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")

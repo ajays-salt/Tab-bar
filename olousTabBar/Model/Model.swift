@@ -7,36 +7,9 @@
 
 import Foundation
 
-struct EmploymentTemp {
-    let companyName: String
-    let startYear: Int
-    let endYear: Int
-    let jobType: String
-}
-//
-struct EducationTemp {
-    let collegeName: String
-    let startYear: Int
-    let endYear: Int
-    let courseType: String
-}
-
-
-
-
 struct SoftwaresResponse: Codable {
     let softwares: String
 }
-
-
-
-
-// Assuming there is an array of experience
-struct ExperienceList: Decodable {
-    let experience: [Employment]
-}
-
-
 
 struct UserProfileUpdate: Codable {
     let hobbies: String
@@ -45,7 +18,7 @@ struct UserProfileUpdate: Codable {
     let gender: String
     let noticePeriod: String
     let currentlyEmployed: String
-    let permanentAddress: Address
+    let permanentAddress: String
     let currentAddress: Address
     let currentCtc: Double
     let expectedCtc: Double
@@ -53,24 +26,11 @@ struct UserProfileUpdate: Codable {
     let portfolio: String
 }
 
-struct UserProfileUpdate2: Codable {
-    let hobbies: String
-    let preferredWorkType: String
-    let willingToRelocate: String
-    let gender: String
-    let noticePeriod: String
-    let currentlyEmployed: String
-    let currentCtc: Double
-    let expectedCtc: Double
-    let language: [Language]
-    let portfolio: String
-}
-
-
-
 struct Address: Codable {
     let address: String
-    let pinCode: String
+    let pincode: String
+    let state: String?
+    let city: String?
 }
 
 struct Education: Codable {
@@ -106,9 +66,9 @@ struct Employment: Codable {
 struct Language: Codable {
     let language: String
     let fluencyLevel: String?
-    let read: Bool
-    let write: Bool
-    let speak: Bool
+    let read: Bool?
+    let write: Bool?
+    let speak: Bool?
     
     enum CodingKeys: String, CodingKey {
         case language
@@ -120,7 +80,7 @@ struct Language: Codable {
 }
 
 struct User: Codable {
-    var _id : String
+    var _id: String
     var email: String?
     var name: String?
     var password: String?
@@ -130,10 +90,10 @@ struct User: Codable {
     var designation: String?
     var profilePic: String?
     var resume: String?
-    var education: [Education]? // Consider defining specific struct if structure is known
-    var experience: [Employment]? // Consider defining specific struct if structure is known
+    var education: [Education]?
+    var experience: [Employment]?
     var softwares: [String]?
-    var projects: [Project]? // Consider defining specific struct if structure is known
+    var projects: [Project]?
     var skills: [String]?
     var additionalCertificates: [String]?
     var currentCtc: String?
@@ -149,12 +109,22 @@ struct User: Codable {
     var summary: String?
     var totalExperience: Double?
     var hasCompletedOnboarding: Bool?
-    var permanentAddress: Address?
+    var permanentAddress: String?
     var currentAddress: Address?
     var language: [Language]?
     var emailVerified: Bool?
     var mobile: String?
     var whatsappUpdate: Bool?
+    var seenDashboard: Bool?
+    var panNo: String?
+    var dateOfBirth: String?
+    var nationality: String?
+    var passportNo: String?
+    var uidNumber: String?
+
+    enum CodingKeys: String, CodingKey {
+        case _id, email, name, password, role, city, state, designation, profilePic, resume, education, experience, softwares, projects, skills, additionalCertificates, currentCtc, expectedCtc, noticePeriod, gender, willingToRelocate, currentlyEmployed, preferredWorkType, hobbies, headline, portfolio, summary, totalExperience, hasCompletedOnboarding, permanentAddress, currentAddress, language, emailVerified, mobile, whatsappUpdate, seenDashboard, panNo = "Pan no", dateOfBirth, nationality, passportNo, uidNumber
+    }
 }
 
 struct ProjectsResponse: Codable {

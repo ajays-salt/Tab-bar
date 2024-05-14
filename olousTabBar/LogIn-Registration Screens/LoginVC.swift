@@ -56,7 +56,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     
     let loginButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Log In", for: .normal)
+        button.setTitle("Get OTP", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 24)
         button.backgroundColor = UIColor(hex: "#0079C4")
@@ -248,27 +248,20 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         }
     }
     
+    
     @objc private func loginButtonTapped() {
-        
         guard let email = emailTextField.text, !email.isEmpty, email.isValidEmail(),
               let password = passwordTextField.text, !password.isEmpty else {
             
-                // Handle validation failure
-                let alertController = UIAlertController(title: "Alert!", message: "Fill all the details", preferredStyle: .alert)
-                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-                alertController.addAction(cancelAction)
-                self.present(alertController, animated: true, completion: nil)
-            
+            // Handle validation failure
+            showAlert(title: "Alert!", message: "Fill all the details")
             return
         }
         
-        let loginData: [String: String] = [
-            "email": email,
-            "password": password
-        ]
+        let loginData: [String: String] = ["email": email, "password": password]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: loginData) else {
-            print("Failed to serialize registration data")
+            print("Failed to serialize login data")
             return
         }
         
@@ -286,8 +279,15 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         view.addSubview(spinner)
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            defer {
+                DispatchQueue.main.async {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                }
+            }
+            
             if let error = error {
-                print("Registration request error: \(error)")
+                print("Login request error: \(error)")
                 return
             }
             
@@ -296,61 +296,54 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                 return
             }
             
-            if let resp = String(data: data, encoding: .utf8) {
-                
-                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    print(json)
-                    if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
-                        
-//                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
-                        
-//                        DispatchQueue.main.async {
-                            
-//                            let vc = BasicDetails1()
-//                            let navVC = UINavigationController(rootViewController: vc)
-//                            navVC.modalPresentationStyle = .fullScreen
-//                            navVC.navigationBar.isHidden = true
-//                            self.present(navVC, animated: true)
-                            
-//                            let viewController = ViewController()
-//                            viewController.modalPresentationStyle = .overFullScreen
-//                            viewController.overrideUserInterfaceStyle = .light
-//                            self.present(viewController, animated: true)
-//                        }
-                    } else if let msg = json["msg"] as? String, msg == "Invalid credentials" {
-                        DispatchQueue.main.async {
-                            let alertController = UIAlertController(title: "Alert!", message: "Invalid Login Credentials", preferredStyle: .alert)
-                            
-                            let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-                            
-                            alertController.addAction(cancelAction)
-                            
-                            self.present(alertController, animated: true, completion: nil)
-                        }
-                        
-                    } else if let msg = json["msg"] as? String, msg == "otp sent" {
-                        print("Otp sent response")
-                        
-                        DispatchQueue.main.async {
-                            let vc = LoginOtpVC()
-                            vc.email = email
-                            self.navigationController?.pushViewController(vc, animated: true)
-                        }
-                    }
-                } else {
-                    print("Failed to parse JSON response")
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                print(jsonResponse)
+                DispatchQueue.main.async {
+                    self.handleLoginResponse(jsonResponse, email: email)
                 }
             } else {
-                print("Failed to decode response as string")
+                print("Failed to parse JSON response")
             }
         }
         task.resume()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            spinner.stopAnimating()
-            spinner.removeFromSuperview()
+    }
+
+    private func handleLoginResponse(_ json: [String: Any], email: String) {
+        if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
+            UserDefaults.standard.set(accessToken, forKey: "accessToken")
+//            navigateToBasicDetails()
+        } else if let msg = json["msg"] as? String, msg == "user does not exist" {
+            showAlert(title: "Alert!", message: "User does not Exist")
+        } else if let msg = json["msg"] as? String, msg == "Invalid credentials" {
+            showAlert(title: "Alert!", message: "Invalid Login Credentials")
+        } else if let msg = json["msg"] as? String, msg == "otp sent" {
+            navigateToLoginOtpVC(email: email)
+        } else {
+            print("Unexpected response from server")
         }
     }
+
+    private func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+
+    private func navigateToBasicDetails() {
+        let vc = BasicDetails1()
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
+    }
+
+    private func navigateToLoginOtpVC(email: String) {
+        let vc = LoginOtpVC()
+        vc.email = email
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
     
     func setupGoogleSignIn() {
         let containerView = UIView()
@@ -381,7 +374,9 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 4),
         ])
         
-        // Tap Gesture Recognizer
+        containerView.isHidden = true
+        imageView.isHidden = true
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleGoogleSignInTap))
         imageView.addGestureRecognizer(tapGesture)
     }
