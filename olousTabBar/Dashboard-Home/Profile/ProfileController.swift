@@ -107,7 +107,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var projectDataArray : [Project] = []
     var projectCVHeightConstraint: NSLayoutConstraint!
     
-    var projectEditView: UIView!
+    var projectEditView: UIScrollView!
     var editProjectNameTF: UITextField!
     var editProjectRoleTF: UITextField!
     var editProjectDescTF: UITextView!
@@ -1037,7 +1037,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func setupProjectEditView() {
         // Initialize and configure editView
-        projectEditView = UIView()
+        projectEditView = UIScrollView()
+        projectEditView.contentSize = CGSize(width: view.bounds.width, height: view.frame.height + 100)
         projectEditView.backgroundColor = .white
         projectEditView.layer.cornerRadius = 12
         projectEditView.layer.shadowOpacity = 0.25
@@ -1081,8 +1082,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 textField.placeholder = "Enter \(title)"
                 NSLayoutConstraint.activate([
                     textField.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
-                    textField.leadingAnchor.constraint(equalTo: projectEditView.leadingAnchor, constant: 16),
-                    textField.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -16)
+                    textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                    textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
                 ])
                 lastBottomAnchor = textField.bottomAnchor
             } else if let textView = control as? UITextView {
@@ -1093,8 +1094,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 textView.isScrollEnabled = true  // Enable scrolling for larger content
                 NSLayoutConstraint.activate([
                     textView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
-                    textView.leadingAnchor.constraint(equalTo: projectEditView.leadingAnchor, constant: 16),
-                    textView.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -16),
+                    textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                    textView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
                     textView.heightAnchor.constraint(equalToConstant: 120)  // Fixed height for UITextView
                 ])
                 lastBottomAnchor = textView.bottomAnchor
@@ -1109,7 +1110,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 projectEditView.addSubview(generateButton)
                 NSLayoutConstraint.activate([
                     generateButton.topAnchor.constraint(equalTo: label.topAnchor, constant: -3),
-                    generateButton.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -16),
+                    generateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
                     generateButton.heightAnchor.constraint(equalToConstant: 36),
                     generateButton.widthAnchor.constraint(equalToConstant: 180),
                 ])
@@ -1117,12 +1118,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             if index == 0 {
                 editProjectNameTF = control as? UITextField
+                editProjectNameTF.delegate = self
             } else if index == 1 {
                 editProjectRoleTF = control as? UITextField
+                editProjectRoleTF.delegate = self
             } else if index == 2 {
                 editProjectDescTF = control as? UITextView
+                editProjectDescTF.addDoneButtonOnKeyboard()
             } else if index == 3 {
                 editProjectRespTF = control as? UITextView
+                editProjectRespTF.addDoneButtonOnKeyboard()
             }
         }
 
@@ -1156,13 +1161,13 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         projectEditView.addSubview(projectCancelButton)
         
         NSLayoutConstraint.activate([
-            projectSaveButton.bottomAnchor.constraint(equalTo: projectEditView.bottomAnchor, constant: -60),
-            projectSaveButton.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -20),
+            projectSaveButton.bottomAnchor.constraint(equalTo: editProjectRespTF.bottomAnchor, constant: 60),
+            projectSaveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             projectSaveButton.widthAnchor.constraint(equalToConstant: 80),
             projectSaveButton.heightAnchor.constraint(equalToConstant: 40),
             
             projectCancelButton.bottomAnchor.constraint(equalTo: projectSaveButton.bottomAnchor),
-            projectCancelButton.leadingAnchor.constraint(equalTo: projectEditView.leadingAnchor, constant: 20),
+            projectCancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             projectCancelButton.widthAnchor.constraint(equalToConstant: 80),
             projectCancelButton.heightAnchor.constraint(equalToConstant: 40),
         ])
@@ -1875,6 +1880,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headlineVC.generateSummary.isHidden = true
         headlineVC.resumeTextView.isEditable = false
         headlineVC.summaryTextView.isEditable = false
+        headlineVC.resumeTextView.inputAccessoryView = nil
+        headlineVC.summaryTextView.inputAccessoryView = nil
         
         tempView.layoutIfNeeded()
         
@@ -1926,6 +1933,9 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             headlineVC.resumeTextView.isEditable = true
             headlineVC.summaryTextView.isEditable = true
+            
+            headlineVC.resumeTextView.addDoneButtonOnKeyboard()
+            headlineVC.summaryTextView.addDoneButtonOnKeyboard()
         }
         else {
             headlineEditButton.setTitle("Edit", for: .normal)
@@ -1935,6 +1945,9 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             headlineVC.resumeTextView.isEditable = false
             headlineVC.summaryTextView.isEditable = false
+            
+            headlineVC.resumeTextView.inputAccessoryView = nil
+            headlineVC.summaryTextView.inputAccessoryView = nil
             
             fetchUserProfile()
         }
@@ -2002,6 +2015,9 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         headlineVC.resumeTextView.isEditable = false
         headlineVC.summaryTextView.isEditable = false
+        
+        headlineVC.resumeTextView.inputAccessoryView = nil
+        headlineVC.summaryTextView.inputAccessoryView = nil
     }
     
     

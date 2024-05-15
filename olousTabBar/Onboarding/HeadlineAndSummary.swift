@@ -258,10 +258,14 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
         resumeTextView.layer.borderWidth = 1.0 // Border width
         resumeTextView.layer.cornerRadius = 12.0
         resumeTextView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10) // Padding
+        
+        resumeTextView.addDoneButtonOnKeyboard()
+        
         resumeTextView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(resumeTextView)
         
         generateResume.addTarget(self, action: #selector(didTapGenerateResume), for: .touchUpInside)
+        
         generateResume.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(generateResume)
         
@@ -300,6 +304,9 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
         summaryTextView.layer.borderWidth = 1.0 // Border width
         summaryTextView.layer.cornerRadius = 12.0
         summaryTextView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10) // Padding
+        
+        summaryTextView.addDoneButtonOnKeyboard()
+        
         summaryTextView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(summaryTextView)
         
@@ -411,6 +418,23 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             let remainingCharacters = 300 - textView.text.count
             charactersLeftLabel.text = "\(remainingCharacters) characters left"
         }
+    }
+    
+    func createToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        toolbar.setItems([spaceButton, doneButton], animated: false)
+        
+        return toolbar
+    }
+    
+    @objc func doneButtonTapped() {
+        resumeTextView.resignFirstResponder()
+        summaryTextView.resignFirstResponder()
     }
     
     

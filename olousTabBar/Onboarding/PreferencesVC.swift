@@ -71,7 +71,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     // changes to fit this VC in User Profile VC
     var noticeOptionsScrollView = UIScrollView()
-    var noticePeriodOptions = ["Immediate", "15 days", "1 Month", "2 Months", "3 Months", "More than 3 Months", ]
+    var noticePeriodOptions = ["Immediate", "15 days", "1 Month", "2 Months", "3 Months" ]
     var genderStackView = UIStackView()
     var relocateStackView = UIStackView()
     var employedStackView = UIStackView()
@@ -150,7 +150,35 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         return textField
     }()
     
+    
     var addLanguageContainer = UIView()
+    
+    let languageTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Select Language"
+        textField.borderStyle = .roundedRect
+        return textField
+    }()
+    let fluencyTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Select Fluency Level"
+        textField.borderStyle = .roundedRect
+        return textField
+    }()
+    
+    var languageArray: [Language] = []
+    let fluencyLevels = ["Beginner", "Intermediate", "Advanced", "Native"]
+    let fluencyPicker = UIPickerView()
+    
+    lazy var addLanguageButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("+ Add Language", for: .normal)
+        button.addTarget(self, action: #selector(addLanguageEntry), for: .touchUpInside)
+        return button
+    }()
+    var languageCV : UICollectionView!
+    var languageCVHeightConstraint: NSLayoutConstraint!
+    
     
     var bottomView : UIView!
     var bottomHeightConstraint: NSLayoutConstraint?
@@ -784,42 +812,9 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     
     
-    // This will hold your language entries
-    
-    let languagePicker = UIPickerView()
-    let fluencyPicker = UIPickerView()
-    
-    let languageTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Select Language"
-        textField.borderStyle = .roundedRect
-        return textField
-    }()
-    let fluencyTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Select Fluency Level"
-        textField.borderStyle = .roundedRect
-        return textField
-    }()
-    
-    var languageArray: [Language] = []
-    let languages = ["English", "Spanish", "French", "German"]
-    let fluencyLevels = ["Beginner", "Intermediate", "Advanced", "Native"]
-    struct LanguageInfo {
-        var language: String
-        var fluency: String
-    }
-    
-    lazy var addLanguageButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("+ Add Language", for: .normal)
-        button.addTarget(self, action: #selector(addLanguageEntry), for: .touchUpInside)
-        return button
-    }()
-    var languageCV : UICollectionView!
-    var languageCVHeightConstraint: NSLayoutConstraint!
     
     
+    // for languages
     func setupUI4() {
         let langLabel = UILabel()
         langLabel.text = "Languages :"
@@ -869,10 +864,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         addLanguageContainer.addSubview(languageTextField)
         addLanguageContainer.addSubview(fluencyTextField)
         
-//        languageTextField.inputView = languagePicker
         fluencyTextField.inputView = fluencyPicker
-        languagePicker.delegate = self
-        languagePicker.dataSource = self
         fluencyPicker.delegate = self
         fluencyPicker.dataSource = self
         
@@ -1124,30 +1116,15 @@ extension PreferencesVC : UIPickerViewDelegate, UIPickerViewDataSource, UICollec
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView === languagePicker {
-            return languages.count
-        } else if pickerView === fluencyPicker {
-            return fluencyLevels.count
-        }
-        return 0
+        return fluencyLevels.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView === languagePicker {
-            return languages[row]
-        } else if pickerView === fluencyPicker {
-            return fluencyLevels[row]
-        }
-        return nil
+        return fluencyLevels[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView === languagePicker {
-            languageTextField.text = languages[row]
-        } else if pickerView === fluencyPicker {
-            fluencyTextField.text = fluencyLevels[row]
-        }
-        // Dismiss the picker view by resigning the text field as the first responder
+        fluencyTextField.text = fluencyLevels[row]
         self.view.endEditing(true)
     }
 
