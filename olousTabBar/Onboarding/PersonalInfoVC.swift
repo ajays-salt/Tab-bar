@@ -134,6 +134,35 @@ class PersonalInfoVC: UIViewController {
     }()
     
     
+    var addLanguageContainer = UIView()
+    
+    let languageTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Select Language"
+        textField.borderStyle = .roundedRect
+        return textField
+    }()
+    let fluencyTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Select Fluency Level"
+        textField.borderStyle = .roundedRect
+        return textField
+    }()
+    
+    var languageArray: [Language] = []
+    let fluencyLevels = ["Beginner", "Intermediate", "Advanced", "Native"]
+    let fluencyPicker = UIPickerView()
+    
+    lazy var addLanguageButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("+ Add Language", for: .normal)
+        button.addTarget(self, action: #selector(addLanguageEntry), for: .touchUpInside)
+        return button
+    }()
+    var languageCV : UICollectionView!
+    var languageCVHeightConstraint: NSLayoutConstraint!
+    
+    
     var bottomView : UIView!
     var bottomHeightConstraint: NSLayoutConstraint?
 
@@ -159,6 +188,8 @@ class PersonalInfoVC: UIViewController {
         setupUI()
         setupUI2()
         setupUI3()
+        
+        setupUI4()
         
         setupBottomView()
     }
@@ -542,7 +573,6 @@ class PersonalInfoVC: UIViewController {
 
         dobTF.becomeFirstResponder()
     }
-
     @objc func donePressed() {
         if let datePicker = dobTF.inputView as? UIDatePicker {
             let dateFormatter = DateFormatter()
@@ -565,7 +595,8 @@ class PersonalInfoVC: UIViewController {
         selectedGenderButton = sender
     }
     
-    // UI from gender options
+    
+    // from permanent address
     func setupUI2() {
         let permanentAddressLabel : UILabel = {
             let label = UILabel()
@@ -616,6 +647,7 @@ class PersonalInfoVC: UIViewController {
         stateTF.delegate = self
         statePickerView.delegate = self
         statePickerView.dataSource = self
+        statePickerView.tag = 2
         
         scrollView.addSubview(stateTF)
         
@@ -693,7 +725,7 @@ class PersonalInfoVC: UIViewController {
         view.endEditing(true)
     }
     
-    
+    // from UID number
     func setupUI3() {
         let uidLabel : UILabel = {
             let label = UILabel()
@@ -757,7 +789,163 @@ class PersonalInfoVC: UIViewController {
             panTF.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
     }
+    
+    // for languages
+    func setupUI4() {
+        let langLabel = UILabel()
+        langLabel.text = "Languages :"
+        langLabel.font = .boldSystemFont(ofSize: 20)
+        langLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(langLabel)
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        languageCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        
+        languageCV.register(LanguageCell.self, forCellWithReuseIdentifier: "language")
+        languageCV.dataSource = self
+        languageCV.delegate = self
+        
+        languageCV.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(languageCV)
+        
+        NSLayoutConstraint.activate([
+            langLabel.topAnchor.constraint(equalTo: panTF.bottomAnchor, constant: 20),
+            langLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            languageCV.topAnchor.constraint(equalTo: langLabel.bottomAnchor, constant: 10),
+            languageCV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            languageCV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        
+        languageCVHeightConstraint = languageCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        languageCVHeightConstraint.isActive = true
+        
+        
+        
+        
+        
+        addLanguageContainer.layer.borderWidth = 1
+        addLanguageContainer.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        addLanguageContainer.layer.cornerRadius = 12
+        addLanguageContainer.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(addLanguageContainer)
+        
+        let addLangLabel = UILabel()
+        addLangLabel.text = "Add Language"
+        addLangLabel.font = .boldSystemFont(ofSize: 18)
+        addLangLabel.translatesAutoresizingMaskIntoConstraints = false
+        addLanguageContainer.addSubview(addLangLabel)
+        
+        addLanguageContainer.addSubview(languageTextField)
+        addLanguageContainer.addSubview(fluencyTextField)
+        
+        fluencyTextField.inputView = fluencyPicker
+        fluencyPicker.delegate = self
+        fluencyPicker.dataSource = self
+        fluencyPicker.tag = 1
+        
+        languageTextField.translatesAutoresizingMaskIntoConstraints = false
+        fluencyTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        addLanguageButton.translatesAutoresizingMaskIntoConstraints = false
+        addLanguageContainer.addSubview(addLanguageButton)
+        
+        NSLayoutConstraint.activate([
+            addLanguageContainer.topAnchor.constraint(equalTo: languageCV.bottomAnchor, constant: 20),
+            addLanguageContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            addLanguageContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addLanguageContainer.heightAnchor.constraint(equalToConstant: 120),
+            
+            addLangLabel.topAnchor.constraint(equalTo: addLanguageContainer.topAnchor, constant: 10),
+            addLangLabel.leadingAnchor.constraint(equalTo: addLanguageContainer.leadingAnchor, constant: 10),
+            
+            languageTextField.topAnchor.constraint(equalTo: addLangLabel.bottomAnchor, constant: 10),
+            languageTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26),
+            languageTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45, constant: -10),
+            
+            fluencyTextField.topAnchor.constraint(equalTo: addLangLabel.bottomAnchor, constant: 10),
+            fluencyTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -26),
+            fluencyTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45, constant: -10),
+            
+            addLanguageButton.topAnchor.constraint(equalTo: fluencyTextField.bottomAnchor, constant: 8),
+            addLanguageButton.centerXAnchor.constraint(equalTo: fluencyTextField.centerXAnchor),
+        ])
+        
+    }
 
+    func reloadCollectionView() {
+        languageCV.reloadData()
+            
+        // Calculate the content size
+        languageCV.layoutIfNeeded()
+        let contentSize = languageCV.collectionViewLayout.collectionViewContentSize
+        
+        // Update the height constraint based on content size
+        languageCVHeightConstraint.constant = contentSize.height
+        print(contentSize)
+        if contentSize.height > 300 {
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height + 600)
+        }
+        
+        // Update constraints
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+            if contentSize.height > 250 && contentSize.height < 450 {
+                self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: self.view.bounds.height + 600)
+            }
+            if contentSize.height > 450 {
+                self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: self.view.bounds.height + 800)
+            }
+            if contentSize.height < 250 {
+                self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: self.view.bounds.height + 450)
+            }
+        }
+    }
+    
+    @objc func addLanguageEntry() {
+        
+        guard let language = languageTextField.text, !language.isEmpty,
+            let fluency = fluencyTextField.text, !fluency.isEmpty else {
+            // Show an alert if either field is empty
+            let alert = UIAlertController(title: "Missing Information", message: "Fill all the details", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        // Create a new LanguageInfo object and append it to the array
+        let newEntry = Language(language: language, fluencyLevel: fluencyTextField.text!, read: true, write: true, speak: true)
+        languageArray.append(newEntry)
+        
+        // Reload the collection view to display the new entry
+        reloadCollectionView()
+    }
+    
+    @objc func deleteLanguageEntry(_ sender: UIButton) {
+        // Find the collection view cell that is the parent view of the delete button
+        var superView = sender.superview
+        while let view = superView, !(view is UICollectionViewCell) {
+            superView = view.superview
+        }
+        
+        // Ensure we have a valid cell and can retrieve its index path
+        guard let cell = superView as? UICollectionViewCell,
+              let indexPath = languageCV.indexPath(for: cell) else {
+            return
+        }
+        
+        // Remove the item from the data source
+        languageArray.remove(at: indexPath.row)
+        
+        // Remove the cell from the collection view
+        languageCV.performBatchUpdates({
+            languageCV.deleteItems(at: [indexPath])
+        }, completion: { _ in
+            // Reload collection view to recalculate heights and other layout properties if needed
+            self.reloadCollectionView()
+        })
+    }
     
     
     
@@ -820,10 +1008,19 @@ class PersonalInfoVC: UIViewController {
     }
     
     @objc func didTapNextButton() {
-//        uploadUserProfile()
-        let vc = PreferencesVC()
-        navigationController?.pushViewController(vc, animated: true)
+        submitPersonalInfo()
     }
+    
+    
+    
+    
+    func showAlert(withTitle title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -838,21 +1035,259 @@ class PersonalInfoVC: UIViewController {
 }
 
 
-extension PersonalInfoVC : UIImagePickerControllerDelegate & UINavigationControllerDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+extension PersonalInfoVC : UIImagePickerControllerDelegate & UINavigationControllerDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return languageArray.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "language", for: indexPath) as! LanguageCell
+        cell.deleteButton.addTarget(self, action: #selector(deleteLanguageEntry), for: .touchUpInside)
+        cell.languageLabel.text = languageArray[indexPath.row].language
+        cell.fluencyLabel.text = languageArray[indexPath.row].fluencyLevel
+        cell.deleteButton.addTarget(self, action: #selector(deleteLanguageEntry), for: .touchUpInside)
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return .init(width: view.frame.width - 20, height: 50)
+    }
+    
+    
+    // picker methods
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return states.count
+        if pickerView.tag == 1 {
+            return fluencyLevels.count
+        } else if pickerView.tag == 2 {
+            return states.count
+        }
+        return 0
     }
     
     // UIPickerViewDelegate Methods
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return states[row]
+        if pickerView.tag == 1 {
+            return fluencyLevels[row]
+        } else if pickerView.tag == 2 {
+            return states[row]
+        }
+        return nil
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        stateTF.text = states[row]
+        if pickerView.tag == 1 {
+            fluencyTextField.text = fluencyLevels[row]
+            self.view.endEditing(true)
+        } else if pickerView.tag == 2 {
+            stateTF.text = states[row]
+            self.view.endEditing(true)
+        }
     }
+}
+
+
+extension PersonalInfoVC {
+    func submitPersonalInfo() {
+        // Validate the input fields
+        guard let image = profileImageView.image,
+              let imageData = image.jpegData(compressionQuality: 0.5)
+        else {
+            showAlert(withTitle: "Missing Information", message: "Please select a valid image before saving.")
+            return
+        }
+        guard let fullName = fullNameTF.text, !fullName.isEmpty,
+              let dob = dobTF.text, !dob.isEmpty,
+              let nationality = nationalityTF.text, !nationality.isEmpty,
+              let gender = selectedGenderButton?.titleLabel?.text, !gender.isEmpty,
+              let permanentAddress = permanentAddressTF.text, !permanentAddress.isEmpty,
+              let currentAddress = currentAddressTF.text, !currentAddress.isEmpty,
+              let city = cityTF.text, !city.isEmpty,
+              let state = stateTF.text, !state.isEmpty,
+              let pincode = pincodeTF.text, !pincode.isEmpty,
+              let uid = uidTF.text, !uid.isEmpty,
+              let passport = passportTF.text, !passport.isEmpty,
+              let pan = panTF.text, !pan.isEmpty else {
+            
+            showAlert(withTitle: "Alert!", message: "Please fill all the details")
+            return
+        }
+        
+        
+        let personalInfo = UserPersonalInfo(
+            name: fullName,
+            panNo: pan,
+            dateOfBirth: dob,
+            nationality: nationality,
+            passportNo: passport,
+            uidNumber: uid,
+            permanentAddress: permanentAddress,
+            gender: gender,
+            profilePicData: imageData
+        )
+        
+        uploadPersonalInfo(userInfo: personalInfo)
+        updateUserInfo()
+    }
+    
+    func uploadPersonalInfo(userInfo: UserPersonalInfo) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-profile-pic") else {
+            print("Invalid URL")
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        // Retrieve access token from UserDefaults
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access token not found in UserDefaults")
+            return
+        }
+        
+        // Correctly add the access token in the Authorization header
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        // Create multipart form data
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        var body = Data()
+        
+        // Helper function to append form data
+        func appendFormField(_ name: String, value: String, to data: inout Data) {
+            data.append("--\(boundary)\r\n".data(using: .utf8)!)
+            data.append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n".data(using: .utf8)!)
+            data.append("\(value)\r\n".data(using: .utf8)!)
+        }
+        
+        // Append fields
+        appendFormField("name", value: userInfo.name, to: &body)
+        appendFormField("Pan no", value: userInfo.panNo, to: &body)
+        appendFormField("dateOfBirth", value: userInfo.dateOfBirth, to: &body)
+        appendFormField("nationality", value: userInfo.nationality, to: &body)
+        appendFormField("passportNo", value: userInfo.passportNo, to: &body)
+        appendFormField("uidNumber", value: userInfo.uidNumber, to: &body)
+        appendFormField("permanentAddress", value: userInfo.permanentAddress, to: &body)
+        appendFormField("gender", value: userInfo.gender, to: &body)
+        
+        // Append profile picture data if available
+        if let profilePicData = userInfo.profilePicData {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"profilePic\"; filename=\"profilePic.jpg\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
+            body.append(profilePicData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+        
+        DispatchQueue.main.async {
+            
+        }
+        
+        let task = URLSession.shared.uploadTask(with: request, from: body) { (data, response, error) in
+            DispatchQueue.main.async {
+                
+            }
+            
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  !(400...599).contains(httpResponse.statusCode) else {
+                print("Server Error")
+                return
+            }
+            print(httpResponse)
+            
+            if let data = data {
+                print("Response: \(String(data: data, encoding: .utf8) ?? "")")
+            }
+            
+            print("File uploaded successfully")
+        }
+        task.resume()
+    }
+    
+    func updateUserInfo() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
+        guard let currentAddress = currentAddressTF.text, !currentAddress.isEmpty,
+              let state = stateTF.text, !state.isEmpty,
+              let city = cityTF.text, !city.isEmpty,
+              let pincode = pincodeTF.text, !pincode.isEmpty else {
+            
+            showAlert(withTitle: "Alert!", message: "Please fill all the address details")
+            return
+        }
+
+        let address = Address(address: currentAddress, state: state, city: city, pincode: pincode)
+        
+        let userInfoUpdate = UserLangugaeAndCurrAddress(language: languageArray, currentAddress: address)
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access token not found in UserDefaults")
+            return
+        }
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        do {
+            let jsonData = try JSONEncoder().encode(userInfoUpdate)
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode user info: \(error)")
+            return
+        }
+        
+        let loader = UIActivityIndicatorView(style: .large)
+        loader.center = view.center
+        loader.startAnimating()
+        view.addSubview(loader)
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+    
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  !(400...599).contains(httpResponse.statusCode) else {
+                print("Server Error")
+                return
+            }
+            
+            if let data = data {
+                print("Response: \(String(data: data, encoding: .utf8) ?? "")")
+            }
+            
+            print("User info updated successfully")
+            DispatchQueue.main.async {
+                loader.stopAnimating()
+                loader.removeFromSuperview()
+                let vc = PreferencesVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+        task.resume()
+    }
+
+}
+
+struct UserLangugaeAndCurrAddress : Codable {
+    let language: [Language]
+    let currentAddress: Address
 }

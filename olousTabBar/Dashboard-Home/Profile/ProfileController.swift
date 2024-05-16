@@ -179,10 +179,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headerView.addSubview(profileEditButton)
         
         NSLayoutConstraint.activate([
-            profileEditButton.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 24),
+            profileEditButton.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 6),
             profileEditButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            profileEditButton.widthAnchor.constraint(equalToConstant: 40),
-            profileEditButton.heightAnchor.constraint(equalToConstant: 40)
+            profileEditButton.widthAnchor.constraint(equalToConstant: 36),
+            profileEditButton.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
     
@@ -204,7 +204,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 1800
+        let extraSpaceHeight: CGFloat = 1200
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -1326,7 +1326,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }.resume()
     }
 
-    
     @objc func saveProjectChanges() {
         // Attempt to get the selected index path, if any
         let selectedIndexPath = projectCV.indexPathsForSelectedItems?.first
@@ -1462,15 +1461,15 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     // separator line 5 inside this function
     func setupPreferencesVC() {
-        let projectLabel : UILabel = {
+        let preferencesTitleLabel : UILabel = {
             let label = UILabel()
             label.text = "Preferences"
             label.textColor = UIColor(hex: "#101828")
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
-        projectLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(projectLabel)
+        preferencesTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(preferencesTitleLabel)
         
         let addButton : UIButton = {
             let btn = UIButton()
@@ -1485,8 +1484,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         addButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            projectLabel.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
-            projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            preferencesTitleLabel.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
+            preferencesTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
             addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
@@ -1516,68 +1515,30 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         var npLabel = createStaticLabel()
         npLabel.text = "Notice Period"
         scrollView.addSubview(npLabel)
-        
         noticePeriodLabel = createDynamicLabel()
         scrollView.addSubview(noticePeriodLabel)
         
-        var gLabel = createStaticLabel()
-        gLabel.text = "Gender"
-        scrollView.addSubview(gLabel)
-        
-        genderLabel = createDynamicLabel()
-        scrollView.addSubview(genderLabel)
         
         var wtrLabel = createStaticLabel()
         wtrLabel.text = "Willing to Relocate"
         scrollView.addSubview(wtrLabel)
-        
         willingToRelocate = createDynamicLabel()
         scrollView.addSubview(willingToRelocate)
         
         var ceLabel = createStaticLabel()
         ceLabel.text = "Currently Employed"
         scrollView.addSubview(ceLabel)
-        
         currentlyEmployed = createDynamicLabel()
         scrollView.addSubview(currentlyEmployed)
         
         var pwtLabel = createStaticLabel()
         pwtLabel.text = "Preferred Work Type"
         scrollView.addSubview(pwtLabel)
-        
         worktypeLabel = createDynamicLabel()
         scrollView.addSubview(worktypeLabel)
         
-        var paLabel = createStaticLabel()
-        paLabel.text = "Permanent Address"
-        scrollView.addSubview(paLabel)
-        
-        permanentAddress = createDynamicLabel()
-        scrollView.addSubview(permanentAddress)
-        
-        var ppLabel = createStaticLabel()
-        ppLabel.text = "Permanent Pin"
-        scrollView.addSubview(ppLabel)
-        
-        permanentPin = createDynamicLabel()
-        scrollView.addSubview(permanentPin)
-        
-        var caLabel = createStaticLabel()
-        caLabel.text = "Current Address"
-        scrollView.addSubview(caLabel)
-        
-        currentAddress = createDynamicLabel()
-        scrollView.addSubview(currentAddress)
-        
-        var cpLabel = createStaticLabel()
-        cpLabel.text = "Current Pin"
-        scrollView.addSubview(cpLabel)
-        
-        currentPin = createDynamicLabel()
-        scrollView.addSubview(currentPin)
-        
         NSLayoutConstraint.activate([
-            pfLabel.topAnchor.constraint(equalTo: projectLabel.bottomAnchor, constant: 20),
+            pfLabel.topAnchor.constraint(equalTo: preferencesTitleLabel.bottomAnchor, constant: 20),
             pfLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             portfolioLabel.topAnchor.constraint(equalTo: pfLabel.bottomAnchor, constant: 10),
@@ -1602,14 +1563,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             noticePeriodLabel.topAnchor.constraint(equalTo: npLabel.bottomAnchor, constant: 10),
             noticePeriodLabel.leadingAnchor.constraint(equalTo: npLabel.leadingAnchor, constant: 4),
             
-            gLabel.topAnchor.constraint(equalTo: noticePeriodLabel.bottomAnchor, constant: 20),
-            gLabel.leadingAnchor.constraint(equalTo:npLabel.leadingAnchor),
-            
-            genderLabel.topAnchor.constraint(equalTo: gLabel.bottomAnchor, constant: 10),
-            genderLabel.leadingAnchor.constraint(equalTo: gLabel.leadingAnchor, constant: 4),
-            
-            wtrLabel.topAnchor.constraint(equalTo: genderLabel.bottomAnchor, constant: 20),
-            wtrLabel.leadingAnchor.constraint(equalTo:gLabel.leadingAnchor),
+            wtrLabel.topAnchor.constraint(equalTo: noticePeriodLabel.bottomAnchor, constant: 20),
+            wtrLabel.leadingAnchor.constraint(equalTo:noticePeriodLabel.leadingAnchor),
             
             willingToRelocate.topAnchor.constraint(equalTo: wtrLabel.bottomAnchor, constant: 10),
             willingToRelocate.leadingAnchor.constraint(equalTo: wtrLabel.leadingAnchor, constant: 4),
@@ -1626,29 +1581,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             worktypeLabel.topAnchor.constraint(equalTo: pwtLabel.bottomAnchor, constant: 10),
             worktypeLabel.leadingAnchor.constraint(equalTo: pwtLabel.leadingAnchor, constant: 4),
             
-            paLabel.topAnchor.constraint(equalTo: pwtLabel.bottomAnchor, constant: 40),
-            paLabel.leadingAnchor.constraint(equalTo: pwtLabel.leadingAnchor),
             
-            permanentAddress.topAnchor.constraint(equalTo: paLabel.bottomAnchor, constant: 10),
-            permanentAddress.leadingAnchor.constraint(equalTo: paLabel.leadingAnchor, constant: 4),
-            
-            ppLabel.topAnchor.constraint(equalTo: permanentAddress.bottomAnchor, constant: 20),
-            ppLabel.leadingAnchor.constraint(equalTo: paLabel.leadingAnchor),
-            
-            permanentPin.topAnchor.constraint(equalTo: ppLabel.bottomAnchor, constant: 10),
-            permanentPin.leadingAnchor.constraint(equalTo: ppLabel.leadingAnchor, constant: 4),
-            
-            caLabel.topAnchor.constraint(equalTo: permanentPin.bottomAnchor, constant: 20),
-            caLabel.leadingAnchor.constraint(equalTo: ppLabel.leadingAnchor),
-            
-            currentAddress.topAnchor.constraint(equalTo: caLabel.bottomAnchor, constant: 10),
-            currentAddress.leadingAnchor.constraint(equalTo: caLabel.leadingAnchor, constant: 4),
-            
-            cpLabel.topAnchor.constraint(equalTo: currentAddress.bottomAnchor, constant: 20),
-            cpLabel.leadingAnchor.constraint(equalTo: caLabel.leadingAnchor),
-            
-            currentPin.topAnchor.constraint(equalTo: cpLabel.bottomAnchor, constant: 10),
-            currentPin.leadingAnchor.constraint(equalTo: cpLabel.leadingAnchor, constant: 4),
         ])
         
         
@@ -1656,7 +1589,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         separatorLine5.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(separatorLine5)
         NSLayoutConstraint.activate([
-            separatorLine5.topAnchor.constraint(equalTo: currentPin.bottomAnchor, constant: 40),
+            separatorLine5.topAnchor.constraint(equalTo: worktypeLabel.bottomAnchor, constant: 40),
             separatorLine5.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine5.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine5.heightAnchor.constraint(equalToConstant: 1)
@@ -1664,6 +1597,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     var editPreferencesView : UIView!
+    
     func setupEditPreferencesVC() {
         
         editPreferencesView = preferencesVC.view!
@@ -1677,7 +1611,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         preferencesVC.bottomHeightConstraint?.isActive = true
         preferencesVC.bottomView.isHidden = true
         
-        let contentHeight = view.bounds.height + 400
+        let contentHeight = view.bounds.height - 100
         preferencesVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
         editPreferencesView.layoutIfNeeded()
         
@@ -1735,13 +1669,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
     }
     
-    
     @objc func didTapEditPreferencesButton() {
         UIView.animate(withDuration: 0.36) {
             self.editPreferencesView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)
         }
     }
-    
     @objc func savePreferencesChanges() {
         
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
@@ -1749,15 +1681,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
-        guard let portfolio = preferencesVC.portfolioTextField.text, !portfolio.isEmpty,
+        guard let portfolio = preferencesVC.portfolioTextField.text,
               let currentCtcText = preferencesVC.currentCtcTextField.text, !currentCtcText.isEmpty, let currentCtc = Double(currentCtcText),
               let expectedCtcText = preferencesVC.expectedCtcTextField.text, !expectedCtcText.isEmpty, let expectedCtc = Double(expectedCtcText),
-              let permanentAddress = preferencesVC.permanentTextField.text, !permanentAddress.isEmpty,
-              let permanentPin = preferencesVC.permanentPinTextField.text, !permanentPin.isEmpty,
-              let currentAddress = preferencesVC.currentTextField.text, !currentAddress.isEmpty,
-              let currentPin = preferencesVC.currentPinTextField.text, !currentPin.isEmpty,
               let noticePeriod = preferencesVC.selectedNoticeOptionsButton?.titleLabel?.text,
-              let gender = preferencesVC.selectedGenderButton?.titleLabel?.text,
               let willingToRelocate = preferencesVC.selectedRelocateButton?.titleLabel?.text,
               let currentlyEmployed = preferencesVC.selectedEmployedButton?.titleLabel?.text,
               let preferredWorkType = preferencesVC.selectedWorkTypeButton?.titleLabel?.text
@@ -1766,22 +1693,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
-        let userProfileUpdate = UserProfileUpdate(
+        let userPreferencesUpdate = UserPreferencesUpdate(
             hobbies: "",
-            preferredWorkType: preferredWorkType,
+            preferredWorkType: preferredWorkType.trimmingCharacters(in: .whitespacesAndNewlines),
             willingToRelocate: willingToRelocate,
-            gender: gender,
             noticePeriod: noticePeriod,
             currentlyEmployed: currentlyEmployed,
-            permanentAddress: permanentAddress,
-            currentAddress: Address(address: currentAddress, pincode: currentPin, state: "", city: ""),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
-            language: preferencesVC.languageArray,
             portfolio: portfolio
         )
-        
-        
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -1790,9 +1711,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
-        
         do {
-            let jsonData = try JSONEncoder().encode(userProfileUpdate)
+            let jsonData = try JSONEncoder().encode(userPreferencesUpdate)
             request.httpBody = jsonData
         } catch {
             print("Failed to encode user profile to JSON: \(error)")
@@ -1822,7 +1742,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.editPreferencesView.transform = .identity
         }
     }
-    
     @objc func cancelPreferencesChanges() {
         UIView.animate(withDuration: 0.36) {
             self.editPreferencesView.transform = .identity
@@ -1830,6 +1749,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
+    // Headline and Summary :
     var headlineEditButton : UIButton = {
         let btn = UIButton()
         btn.setTitle("Edit", for: .normal)
@@ -2084,7 +2004,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             UserDefaults.standard.removeObject(forKey: "accessToken")
             UserDefaults.standard.synchronize() // To ensure the accessToken is removed
             
-            let vc = BasicDetails1()
+            let vc = LoginVC()
             let navVC = UINavigationController(rootViewController: vc)
             navVC.modalPresentationStyle = .fullScreen
             navVC.navigationBar.isHidden = true
@@ -2333,13 +2253,6 @@ extension ProfileController { // Extension for APIs
                     self.preferencesVC.portfolioTextField.text = user.portfolio
                     self.preferencesVC.currentCtcTextField.text = user.currentCtc
                     self.preferencesVC.expectedCtcTextField.text = user.expectedCtc
-                    let noticePeriod = user.noticePeriod
-                    self.preferencesVC.permanentTextField.text = user.permanentAddress
-                    self.preferencesVC.permanentPinTextField.text = user.permanentAddress
-                    self.preferencesVC.currentTextField.text = user.currentAddress?.address
-                    self.preferencesVC.currentPinTextField.text = user.currentAddress?.pincode
-                    self.preferencesVC.languageArray = user.language!
-                    self.preferencesVC.reloadCollectionView()
                     
                     self.headlineVC.resumeTextView.text = user.headline
                     self.headlineVC.summaryTextView.text = user.summary
@@ -2350,15 +2263,10 @@ extension ProfileController { // Extension for APIs
                     self.expectedCtcLabel.text = user.expectedCtc
             
                     self.noticePeriodLabel.text = user.noticePeriod?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.genderLabel.text = user.gender?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.willingToRelocate.text = user.willingToRelocate?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.currentlyEmployed.text = user.currentlyEmployed?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.worktypeLabel.text = user.preferredWorkType?.trimmingCharacters(in: .whitespacesAndNewlines)
                     
-                    self.permanentAddress.text = user.permanentAddress
-                    self.permanentPin.text = user.permanentAddress
-                    self.currentAddress.text = user.currentAddress?.address
-                    self.currentPin.text = user.currentAddress?.pincode
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")

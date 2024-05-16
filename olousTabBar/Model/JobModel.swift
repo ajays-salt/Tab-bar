@@ -75,8 +75,8 @@ struct Job: Codable {
     let maxExperience: String?
     let minExperience: String?
     let noOfPeople: Int?
-    let salaryRangeFrom: Double?
-    let salaryRangeTo: Double?
+    let salaryRangeFrom: String?
+    let salaryRangeTo: String?
     let sessionId: String?
 
     enum CodingKeys: String, CodingKey {
@@ -130,12 +130,49 @@ struct Job: Codable {
         companyName = try container.decodeIfPresent(String.self, forKey: .companyName)
         companyLogo = try container.decodeIfPresent(String.self, forKey: .companyLogo)
         jobType = try container.decodeIfPresent(String.self, forKey: .jobType)
-        maxExperience = try container.decodeIfPresent(String.self, forKey: .maxExperience)
-        minExperience = try container.decodeIfPresent(String.self, forKey: .minExperience)
+//        maxExperience = try container.decodeIfPresent(String.self, forKey: .maxExperience)
+//        minExperience = try container.decodeIfPresent(String.self, forKey: .minExperience)
         noOfPeople = try container.decodeIfPresent(Int.self, forKey: .noOfPeople)
-        salaryRangeFrom = try container.decodeIfPresent(Double.self, forKey: .salaryRangeFrom)
-        salaryRangeTo = try container.decodeIfPresent(Double.self, forKey: .salaryRangeTo)
+//        salaryRangeFrom = try container.decodeIfPresent(String.self, forKey: .salaryRangeFrom)
+//        salaryRangeTo = try container.decodeIfPresent(String.self, forKey: .salaryRangeTo)
         sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
+        
+        // Decode maxExperience which might be Int or String
+        if let maxExperienceValue = try? container.decode(Int.self, forKey: .maxExperience) {
+            maxExperience = String(maxExperienceValue)
+        } else if let maxExperienceValue = try? container.decode(String.self, forKey: .maxExperience) {
+            maxExperience = maxExperienceValue
+        } else {
+            maxExperience = nil
+        }
+        
+        // Decode minExperience which might be Int or String
+        if let minExperienceValue = try? container.decode(Int.self, forKey: .minExperience) {
+            minExperience = String(minExperienceValue)
+        } else if let minExperienceValue = try? container.decode(String.self, forKey: .minExperience) {
+            minExperience = minExperienceValue
+        } else {
+            minExperience = nil
+        }
+        
+        // Decode salaryRangeFrom which might be String or Double
+        if let salaryRangeFromValue = try? container.decode(Double.self, forKey: .salaryRangeFrom) {
+            salaryRangeFrom = String(salaryRangeFromValue)
+        } else if let salaryRangeFromValue = try? container.decode(String.self, forKey: .salaryRangeFrom) {
+            salaryRangeFrom = salaryRangeFromValue
+        } else {
+            salaryRangeFrom = nil
+        }
+        
+        // Decode salaryRangeTo which might be String or Double
+        if let salaryRangeToValue = try? container.decode(Double.self, forKey: .salaryRangeTo) {
+            salaryRangeTo = String(salaryRangeToValue)
+        } else if let salaryRangeToValue = try? container.decode(String.self, forKey: .salaryRangeTo) {
+            salaryRangeTo = salaryRangeToValue
+        } else {
+            salaryRangeTo = nil
+        }
+        
     }
 }
 

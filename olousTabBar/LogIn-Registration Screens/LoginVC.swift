@@ -389,8 +389,10 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     
     @objc func signUpTapped() {
         let vc = RegistrationVC()
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
     }
     
     @objc func forgotPasswordTapped() {

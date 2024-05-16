@@ -64,6 +64,7 @@ class HomeController: UIViewController {
         label.textColor = UIColor(hex: "#101828")
         return label
     }()
+    var profileImageView : UIImageView!
     
     let secondView = UIView()
     let thirdView = UIView()
@@ -375,12 +376,29 @@ class HomeController: UIViewController {
         ])
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
+        profileCircleLabel.isHidden = true
         circleContainerView.addSubview(profileCircleLabel)
         NSLayoutConstraint.activate([
             profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
             profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
         ])
         
+        profileImageView = UIImageView()
+//        profileImageView.isHidden = true
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.clipsToBounds = true
+        profileImageView.layer.cornerRadius = 50
+        
+        // Add the selected image view to the profile circle
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        circleContainerView.addSubview(profileImageView)
+        
+        NSLayoutConstraint.activate([
+            profileImageView.topAnchor.constraint(equalTo: circleContainerView.topAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: circleContainerView.leadingAnchor),
+            profileImageView.trailingAnchor.constraint(equalTo: circleContainerView.trailingAnchor),
+            profileImageView.bottomAnchor.constraint(equalTo: circleContainerView.bottomAnchor)
+        ])
         
         
         
@@ -931,6 +949,7 @@ extension HomeController {
                     self.percentLabel.text = "\(percent)%"
                     self.profileCircleLabel.text = initialsOfName
                     self.userNameLabel.text = "Hi, \(userName)"
+                    self.fetchProfilePicture(size: "m", userID: user._id)
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")
@@ -975,6 +994,38 @@ extension HomeController {
 
         let completionPercentage = (filledCount * 100) / totalCount
         return completionPercentage
+    }
+    
+    func fetchProfilePicture(size: String, userID: String) {
+        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile/\(size)/\(userID)"
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")", forHTTPHeaderField: "Authorization")
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            DispatchQueue.main.async {
+                if let image = UIImage(data: data) {
+                    // Use the image in your app, e.g., assign it to an UIImageView
+                    self.profileImageView.image = image
+                    print("Image Fetched Successfully")
+                } else {
+                    print("Failed to decode image")
+                }
+            }
+        }
+
+        task.resume()
     }
 
 

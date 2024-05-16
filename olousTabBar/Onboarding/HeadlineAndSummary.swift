@@ -282,7 +282,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             resumeTextView.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20),
             resumeTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             resumeTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            resumeTextView.heightAnchor.constraint(equalToConstant: 200),
+            resumeTextView.heightAnchor.constraint(equalToConstant: 160),
         ])
         
         
@@ -326,7 +326,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             summaryTextView.topAnchor.constraint(equalTo: summaryLabel.bottomAnchor, constant: 20),
             summaryTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             summaryTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            summaryTextView.heightAnchor.constraint(equalToConstant: 200),
+            summaryTextView.heightAnchor.constraint(equalToConstant: 160),
         ])
     }
     
@@ -399,11 +399,6 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
     
     @objc func didTapNextButton() {
         postResumeData()
-        
-        let viewController = ViewController()
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.overrideUserInterfaceStyle = .light
-        self.present(viewController, animated: true)
     }
     
     
@@ -623,6 +618,11 @@ extension HeadlineAndSummary {
             print("Failed to encode resume data: \(error)")
             return
         }
+        
+        let loader = UIActivityIndicatorView(style: .large)
+        loader.center = view.center
+        loader.startAnimating()
+        view.addSubview(loader)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -641,6 +641,15 @@ extension HeadlineAndSummary {
             
             if let error = error {
                 print("Error uploading data: \(error.localizedDescription)")
+            }
+            
+            DispatchQueue.main.async {
+                loader.stopAnimating()
+                loader.removeFromSuperview()
+                let viewController = ViewController()
+                viewController.modalPresentationStyle = .overFullScreen
+                viewController.overrideUserInterfaceStyle = .light
+                self.present(viewController, animated: true)
             }
         }.resume()
     }

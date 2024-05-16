@@ -44,12 +44,36 @@ struct UserProfileUpdate: Codable {
     let portfolio: String
 }
 
+struct UserPersonalInfo: Codable {
+    var name: String
+    var panNo: String // "Pan no" in the JavaScript code
+    var dateOfBirth: String
+    var nationality: String
+    var passportNo: String
+    var uidNumber: String
+    var permanentAddress: String
+    var gender: String
+    var profilePicData: Data? // For the resume/profilePic
+}
+
 struct Address: Codable {
     let address: String
-    let pincode: String
     let state: String?
     let city: String?
+    let pincode: String
 }
+
+struct UserPreferencesUpdate: Codable {
+    let hobbies: String
+    let preferredWorkType: String
+    let willingToRelocate: String
+    let noticePeriod: String
+    let currentlyEmployed: String
+    let currentCtc: Double
+    let expectedCtc: Double
+    let portfolio: String
+}
+
 
 struct Education: Codable {
     let educationName: String?
