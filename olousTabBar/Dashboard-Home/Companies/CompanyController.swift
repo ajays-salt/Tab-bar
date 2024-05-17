@@ -55,7 +55,7 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
     
     func setupCompaniesLabel() {
         companiesLabel = UILabel()
-        companiesLabel.text = "Companies"
+        companiesLabel.text = "COMPANIES"
         companiesLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         companiesLabel.textAlignment = .center
         companiesLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -68,16 +68,15 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
     }
     
     func setupCompanySearchSection() {
-        searchCompanySection.backgroundColor = .systemBackground
-        // #007AFF systemBlue
+        searchCompanySection.backgroundColor = UIColor(hex: "#1E293B")
         searchCompanySection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(searchCompanySection)
         
         NSLayoutConstraint.activate([
-            searchCompanySection.topAnchor.constraint(equalTo: companiesLabel.bottomAnchor, constant: 20),
+            searchCompanySection.topAnchor.constraint(equalTo: companiesLabel.bottomAnchor, constant: 10),
             searchCompanySection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             searchCompanySection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            searchCompanySection.heightAnchor.constraint(equalToConstant: 192)
+            searchCompanySection.heightAnchor.constraint(equalToConstant: 190)
         ])
     }
         

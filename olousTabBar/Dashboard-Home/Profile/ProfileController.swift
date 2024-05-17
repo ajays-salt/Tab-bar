@@ -73,6 +73,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     let separatorLine3 = UIView()
     let separatorLine4 = UIView()
     let separatorLine5 = UIView()
+    let separatorLine6 = UIView()
+    let separatorLine7 = UIView()
     
     
 //   ******************************  New changes in this controller **************************************************************
@@ -122,6 +124,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     let preferencesVC = PreferencesVC()
     let headlineVC = HeadlineAndSummary()
     
+    var softwaresArray : [String] = []
+    var skillsArray : [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -165,10 +169,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         setupLoaderForProjectEdit()
         
         setupSeparatorLine4()
-        setupPreferencesVC()
+        setupPreferencesView()
         setupEditPreferencesVC()
         
         setupHeadlineAndSummary()
+        
+        setupSeparatorLine6()
+        
+        setupSoftwares()
+        
+        setupSeparatorLine7()
+        
+        setupSkills()
         
         setupLogOut()
     }
@@ -204,7 +216,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 1200
+        let extraSpaceHeight: CGFloat = 1500
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -309,34 +321,47 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     
     func setupEmploymentsView() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
         let employmentLabel : UILabel = {
             let label = UILabel()
             label.text = "Employments"
-            label.textColor = UIColor(hex: "#101828")
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
         employmentLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(employmentLabel)
-        NSLayoutConstraint.activate([
-            employmentLabel.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor, constant: 16),
-            employmentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
-        ])
         
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Add", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapAddEmployment), for: .touchUpInside)
-        
-        scrollView.addSubview(addButton)
         addButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(addButton)
+        
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: employmentLabel.topAnchor, constant: 0),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            bgView.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 50),
+            
+            employmentLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            employmentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor, constant: 7),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 36),
         ])
         
         let layout = UICollectionViewFlowLayout()
@@ -613,13 +638,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }
     }
     
-    
     @objc func didTapAddEmployment() {
         UIView.animate(withDuration: 0.3) {
             self.empEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
         }
     }
-
     
     
     func setupSeparatorLine2() {
@@ -637,35 +660,47 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     
     func setupEducationView() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
         let educationLabel : UILabel = {
             let label = UILabel()
             label.text = "Education"
-            label.textColor = UIColor(hex: "#101828")
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
         educationLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(educationLabel)
-        NSLayoutConstraint.activate([
-            educationLabel.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 16),
-            educationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
-        ])
-        
         
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Add", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapAddEducation), for: .touchUpInside)
-        
         scrollView.addSubview(addButton)
         addButton.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 10),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            bgView.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 50),
+            
+            educationLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            educationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 7),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 36),
         ])
         
         let layout = UICollectionViewFlowLayout()
@@ -944,26 +979,28 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     func setupProjectView() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
         let projectLabel : UILabel = {
             let label = UILabel()
-            label.text = "Project"
-            label.textColor = UIColor(hex: "#101828")
+            label.text = "Projects"
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
         projectLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(projectLabel)
-        NSLayoutConstraint.activate([
-            projectLabel.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor, constant: 16),
-            projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
-        ])
-        
         
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Add", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapAddProject), for: .touchUpInside)
@@ -971,8 +1008,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         scrollView.addSubview(addButton)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor, constant: 10),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            bgView.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 50),
+            
+            projectLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor, constant: 7),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 36),
         ])
         
         
@@ -1447,24 +1494,25 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var currCtcLabel : UILabel!
     var expectedCtcLabel : UILabel!
     var noticePeriodLabel : UILabel!
-    var genderLabel : UILabel!
     var willingToRelocate : UILabel!
     var currentlyEmployed : UILabel!
     var worktypeLabel : UILabel!
-    var permanentAddress : UILabel!
-    var permanentPin : UILabel!
-    var currentAddress : UILabel!
-    var currentPin : UILabel!
     
     var preferencesSaveButton: UIButton!
     var preferencesCancelButton: UIButton!
     
     // separator line 5 inside this function
-    func setupPreferencesVC() {
+    func setupPreferencesView() {
+        
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
         let preferencesTitleLabel : UILabel = {
             let label = UILabel()
             label.text = "Preferences"
-            label.textColor = UIColor(hex: "#101828")
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
@@ -1476,6 +1524,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             btn.setTitle("Edit", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapEditPreferencesButton), for: .touchUpInside)
@@ -1484,10 +1534,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         addButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            preferencesTitleLabel.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
+            bgView.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 50),
+            
+            preferencesTitleLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
             preferencesTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 7),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 36),
         ])
         
         var pfLabel = createStaticLabel()
@@ -1538,7 +1596,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         scrollView.addSubview(worktypeLabel)
         
         NSLayoutConstraint.activate([
-            pfLabel.topAnchor.constraint(equalTo: preferencesTitleLabel.bottomAnchor, constant: 20),
+            pfLabel.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
             pfLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             portfolioLabel.topAnchor.constraint(equalTo: pfLabel.bottomAnchor, constant: 10),
@@ -1755,33 +1813,44 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         btn.setTitle("Edit", for: .normal)
         btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        btn.backgroundColor = .white
+        btn.layer.cornerRadius = 8
         return btn
     }()
     
     var headlineSaveButton : UIButton!
     
     func setupHeadlineAndSummary() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
         
         let prefer = UILabel()
         prefer.text = "Headline and Summary"
         prefer.font = .boldSystemFont(ofSize: 20)
-        
+        prefer.textColor = .white
         prefer.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(prefer)
         
-        
         headlineEditButton.addTarget(self, action: #selector(didTapEditHeadline), for: .touchUpInside)
-        
         scrollView.addSubview(headlineEditButton)
         headlineEditButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            prefer.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 20),
+            bgView.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 50),
+            
+            prefer.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 15),
             prefer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            headlineEditButton.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 16),
+                
+            headlineEditButton.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 7),
             headlineEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            headlineEditButton.widthAnchor.constraint(equalToConstant: 70),
+            headlineEditButton.heightAnchor.constraint(equalToConstant: 36),
         ])
-        scrollView.bringSubviewToFront(prefer)
         
         
         
@@ -1807,6 +1876,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         let contentHeight = view.bounds.height - 300
         headlineVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        headlineVC.scrollView.isScrollEnabled = false
         tempView.layoutIfNeeded()
         
         tempView.translatesAutoresizingMaskIntoConstraints = false
@@ -1832,12 +1902,12 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         
         NSLayoutConstraint.activate([
-            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 10),
+            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 20),
             tempView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tempView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tempView.heightAnchor.constraint(equalToConstant: 700),
             
-            headlineSaveButton.bottomAnchor.constraint(equalTo: tempView.bottomAnchor, constant: -100),
+            headlineSaveButton.bottomAnchor.constraint(equalTo: tempView.bottomAnchor, constant: -180),
             headlineSaveButton.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
             headlineSaveButton.widthAnchor.constraint(equalToConstant: 80),
             headlineSaveButton.heightAnchor.constraint(equalToConstant: 40),
@@ -1941,8 +2011,225 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
+    func setupSeparatorLine6() {
+        separatorLine6.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine6.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(separatorLine6)
+        NSLayoutConstraint.activate([
+            separatorLine6.topAnchor.constraint(equalTo: headlineSaveButton.bottomAnchor, constant: 20),
+            separatorLine6.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine6.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine6.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    // *************************** Softwares ******************************
+    
+    var softwaresContainerView = UIView()
+    
+    func setupSoftwares() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
+        let title = UILabel()
+        title.text = "Softwares"
+        title.font = .boldSystemFont(ofSize: 20)
+        title.textColor = .white
+        title.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(title)
+        
+        var softwareEditButton : UIButton = {
+            let btn = UIButton()
+            btn.setTitle("Edit", for: .normal)
+            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
+            return btn
+        }()
+//        softwareEditButton.addTarget(self, action: #selector(didTapEditHeadline), for: .touchUpInside)
+        scrollView.addSubview(softwareEditButton)
+        softwareEditButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        softwaresContainerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(softwaresContainerView)
+        NSLayoutConstraint.activate([
+            softwaresContainerView.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
+            softwaresContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            softwaresContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
+        
+        NSLayoutConstraint.activate([
+            bgView.topAnchor.constraint(equalTo: separatorLine6.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 50),
+            
+            title.topAnchor.constraint(equalTo: separatorLine6.bottomAnchor, constant: 15),
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                
+            softwareEditButton.topAnchor.constraint(equalTo: separatorLine6.bottomAnchor, constant: 7),
+            softwareEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            softwareEditButton.widthAnchor.constraint(equalToConstant: 70),
+            softwareEditButton.heightAnchor.constraint(equalToConstant: 36),
+        ])
+        
+    }
+    
+    func addLabelsInSoftwares() {
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        let spacing: CGFloat = 10
+        let maxWidth: CGFloat = view.bounds.width - 32  // Adjust for left and right padding
+        
+        for string in softwaresArray {
+            print("Element : " , string)
+            let label = PaddedLabel()
+            label.text = string
+            label.font = .boldSystemFont(ofSize: 16)
+            label.backgroundColor = .white
+            label.textColor = .black
+            label.layer.borderColor = UIColor.lightGray.cgColor
+            label.layer.borderWidth = 1
+            label.layer.cornerRadius = 8
+            label.clipsToBounds = true
+            
+            // Ensure the label fits the text with padding
+            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
+            
+            // Check if the label fits in the current line
+            if currentX + labelSize.width > maxWidth {
+                // Move to the next line
+                currentX = 0
+                currentY += labelSize.height + spacing
+            }
+            
+            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
+            softwaresContainerView.addSubview(label)
+            
+            // Update currentX to the next position
+            currentX += labelSize.width + spacing
+        }
+        
+        softwaresContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
+    }
+    
+    
+    func setupSeparatorLine7() {
+        separatorLine7.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine7.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(separatorLine7)
+        NSLayoutConstraint.activate([
+            separatorLine7.topAnchor.constraint(equalTo: softwaresContainerView.bottomAnchor, constant: 40),
+            separatorLine7.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine7.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine7.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    
+    
+    var skillsContainerView = UIView()
+    
+    func setupSkills() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
+        let title = UILabel()
+        title.text = "Skills"
+        title.font = .boldSystemFont(ofSize: 20)
+        title.textColor = .white
+        title.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(title)
+        
+        var skillsEditButton : UIButton = {
+            let btn = UIButton()
+            btn.setTitle("Edit", for: .normal)
+            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
+            return btn
+        }()
+//        skillsEditButton.addTarget(self, action: #selector(didTapEditHeadline), for: .touchUpInside)
+        scrollView.addSubview(skillsEditButton)
+        skillsEditButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        skillsContainerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(skillsContainerView)
+        NSLayoutConstraint.activate([
+            skillsContainerView.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
+            skillsContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            skillsContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
+        
+        NSLayoutConstraint.activate([
+            bgView.topAnchor.constraint(equalTo: separatorLine7.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 50),
+            
+            title.topAnchor.constraint(equalTo: separatorLine7.bottomAnchor, constant: 15),
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                
+            skillsEditButton.topAnchor.constraint(equalTo: separatorLine7.bottomAnchor, constant: 7),
+            skillsEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            skillsEditButton.widthAnchor.constraint(equalToConstant: 70),
+            skillsEditButton.heightAnchor.constraint(equalToConstant: 36),
+        ])
+        
+    }
+    
+    func addLabelsInSkills() {
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        let spacing: CGFloat = 10
+        let maxWidth: CGFloat = view.bounds.width - 32  // Adjust for left and right padding
+        
+        for string in skillsArray {
+            print("Element : " , string)
+            let label = PaddedLabel()
+            label.text = string
+            label.font = .boldSystemFont(ofSize: 16)
+            label.backgroundColor = .white
+            label.textColor = .black
+            label.layer.borderColor = UIColor.lightGray.cgColor
+            label.layer.borderWidth = 1
+            label.layer.cornerRadius = 8
+            label.clipsToBounds = true
+            
+            // Ensure the label fits the text with padding
+            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
+            
+            // Check if the label fits in the current line
+            if currentX + labelSize.width > maxWidth {
+                // Move to the next line
+                currentX = 0
+                currentY += labelSize.height + spacing
+            }
+            
+            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
+            skillsContainerView.addSubview(label)
+            
+            // Update currentX to the next position
+            currentX += labelSize.width + spacing
+        }
+        
+        skillsContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
+    }
+    
+    
+    
+    
+    
     
     // ******************* Common Methods ***********************************
+    
     func updateScrollViewContentSize() {
         let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
         // Add other collection view heights if there are more
@@ -1974,7 +2261,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
-    // ***********************************************************************************************************************
+    // ***********************************************************************************************************
     
     func setupLogOut() {
         let logOutButton = UIButton()
@@ -2267,6 +2554,15 @@ extension ProfileController { // Extension for APIs
                     self.currentlyEmployed.text = user.currentlyEmployed?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.worktypeLabel.text = user.preferredWorkType?.trimmingCharacters(in: .whitespacesAndNewlines)
                     
+                    for s in user.softwares! {
+                        self.softwaresArray.append(s)
+                    }
+                    
+                    self.softwaresArray = user.softwares!
+                    self.addLabelsInSoftwares()
+                    
+                    self.skillsArray = user.skills!
+                    self.addLabelsInSkills()
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")
@@ -2315,3 +2611,25 @@ extension ProfileController { // Extension for APIs
         return initials.map(String.init).joined().uppercased()
     }
 }
+
+
+class PaddedLabel: UILabel {
+    var edgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: edgeInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width + edgeInsets.left + edgeInsets.right,
+                      height: size.height + edgeInsets.top + edgeInsets.bottom)
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let sizeThatFits = super.sizeThatFits(size)
+        return CGSize(width: sizeThatFits.width + edgeInsets.left + edgeInsets.right,
+                      height: sizeThatFits.height + edgeInsets.top + edgeInsets.bottom)
+    }
+}
+

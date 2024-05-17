@@ -492,14 +492,6 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         vc.email = email
         navigationController?.pushViewController(vc, animated: true)
     }
-
-    
-//    func showAlert(withTitle title: String, message: String) {
-//        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//        let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-//        alertController.addAction(cancelAction)
-//        self.present(alertController, animated: true, completion: nil)
-//    }
     
     func setupLogin() {
         logInLabel.translatesAutoresizingMaskIntoConstraints = false

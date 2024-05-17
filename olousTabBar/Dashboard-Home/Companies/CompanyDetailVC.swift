@@ -49,21 +49,24 @@ class CompanyDetailVC: UIViewController {
         view.backgroundColor = .systemBackground
         
         print("Company " ,company)
+//        fetchData { result in
+//            switch result {
+//            case .success(let fetchedJobs):
+//                self.jobs = fetchedJobs
+//                print("jobs fetched successfully")
+////                DispatchQueue.main.async {
+////                    self.setupViews()
+////                }
+//            case .failure(let error):
+//                print("Error fetching data: \(error)")
+//            }
+//        }
         setupViews()
         
-        fetchData { result in
-            switch result {
-            case .success(let fetchedJobs):
-                self.jobs = fetchedJobs
-                print("jobs fetched successfully")
-//                DispatchQueue.main.async {
-//                    self.setupViews()
-//                }
-            case .failure(let error):
-                print("Error fetching data: \(error)")
-            }
-        }
+        
     }
+    
+    
     
     private func setupViews() {
         setupImagesAndName()
@@ -387,6 +390,19 @@ class CompanyDetailVC: UIViewController {
         
         tabBarController?.tabBar.isHidden = true
         navigationController?.navigationBar.isHidden = false
+        
+        fetchData { result in
+            switch result {
+            case .success(let fetchedJobs):
+                self.jobs = fetchedJobs
+                print("jobs fetched successfully")
+//                DispatchQueue.main.async {
+//                    self.setupViews()
+//                }
+            case .failure(let error):
+                print("Error fetching data: \(error)")
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

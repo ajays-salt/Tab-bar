@@ -193,7 +193,7 @@ class HomeController: UIViewController {
     }
 
     func setupJobSearchSection() {
-        jobSearchSection.backgroundColor = UIColor(hex: "#0079C4")
+        jobSearchSection.backgroundColor = UIColor(hex: "#1E293B")
         // #007AFF systemBlue
         jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(jobSearchSection)

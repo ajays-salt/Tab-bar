@@ -88,7 +88,7 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
     }
     
     func setupJobSearchSection() {
-        jobSearchSection.backgroundColor = .systemBackground
+        jobSearchSection.backgroundColor = UIColor(hex: "#1E293B")
         // #007AFF systemBlue
         jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(jobSearchSection)
