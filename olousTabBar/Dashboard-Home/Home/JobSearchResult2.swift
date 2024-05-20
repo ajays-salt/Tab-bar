@@ -254,8 +254,12 @@ class JobSearchResult2: UIViewController {
         applyButton.isHidden = true  // Hide the apply button
     }
     
+    var i = 0
     
     func addFilterButtons() {
+        if i != 0 {
+            return
+        }
         for category in filter.categories {
             
             let filterButton = CategoryButton(type: .system)
@@ -291,6 +295,7 @@ class JobSearchResult2: UIViewController {
             filterButton.translatesAutoresizingMaskIntoConstraints = false
             stackView.addArrangedSubview(filterButton)
         }
+        i = i + 1
     }
     
     @objc func filterButtonTapped(_ sender: UIButton) {
@@ -388,7 +393,7 @@ extension JobSearchResult2 : UICollectionViewDelegate, UICollectionViewDataSourc
         let s = getTimeAgoString(from: job.createdAt)
         cell.jobPostedTime.text = s
         
-        let expText = attributedStringForExperience(job.yearsOfExperience)
+        let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
         cell.jobExperienceLabel.attributedText = expText
         
         // Fetch company logo asynchronously

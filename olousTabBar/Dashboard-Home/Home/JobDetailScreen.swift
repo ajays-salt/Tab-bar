@@ -333,7 +333,7 @@ class JobDetailScreen: UIViewController {
         attributedString.append(symbolString)
         attributedString.append(NSAttributedString(string: " "))
         
-        let exp = "\(selectedJob.yearsOfExperience == "" ? "Nil" : selectedJob.yearsOfExperience) years"
+        let exp = "\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")"
         let textString = NSAttributedString(string: exp)
         attributedString.append(textString)
         
