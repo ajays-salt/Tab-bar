@@ -9,10 +9,6 @@ import UIKit
 
 class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
-    
-    var employments = [EmploymentTemp]()
-    var educations = [EducationTemp]()
-    
     var headerView = UIView()
     
     let profileCircle = UIView()
