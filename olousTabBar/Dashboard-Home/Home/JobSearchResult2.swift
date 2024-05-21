@@ -13,6 +13,7 @@ class JobSearchResult2: UIViewController {
     var jobTitle: String?
     var jobLocation: String?
     var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+//    var baseURL = "https://5fd4-2405-201-a41f-d872-51a2-9f17-9c9b-d71f.ngrok-free.app/api/v1/job/jobs"
     var finalURL = ""
     
     var jobLocationArray: [String] = []
@@ -48,7 +49,7 @@ class JobSearchResult2: UIViewController {
         self.view.backgroundColor = .white // Set the background color for the view
         
         
-        
+        baseURL = "\(baseURL)?jobTitle=\(jobTitle!)"
         urlSettings()
     }
     
@@ -66,16 +67,11 @@ class JobSearchResult2: UIViewController {
         if let jobTitle = jobTitle {
             queryItems.append(URLQueryItem(name: "jobTitle", value: jobTitle))
         }
-
+        
+//        jobLocationArray.append("Pimpri-Chinchwad")
+        
         if !jobLocationArray.isEmpty {
-            do {
-                let jsonData = try JSONSerialization.data(withJSONObject: jobLocationArray, options: [])
-                if let jsonString = String(data: jsonData, encoding: .utf8) {
-                    queryItems.append(URLQueryItem(name: "city", value: jsonString))  // Only encode at this stage
-                }
-            } catch {
-                print("Error serializing city array: \(error)")
-            }
+            queryItems.append(URLQueryItem(name: "City", value: "\(jobLocationArray)"))
         }
 
         components.queryItems = queryItems
@@ -87,7 +83,7 @@ class JobSearchResult2: UIViewController {
             switch result {
             case .success(let fetchedJobs):
                 self.jobs = fetchedJobs
-                print("fetched : ", fetchedJobs)
+                print("jobs fetched successfully")
                 DispatchQueue.main.async {
                     self.setupViews()
                 }
@@ -95,7 +91,6 @@ class JobSearchResult2: UIViewController {
                 print("Error fetching data: \(error)")
             }
         }
-        
     }
     
     
@@ -157,12 +152,13 @@ class JobSearchResult2: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
+        scrollView.backgroundColor = UIColor(hex: "#1E293B")
         view.addSubview(scrollView)
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            scrollView.heightAnchor.constraint(equalToConstant: 36) // Example height, adjust as needed
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -0),
+            scrollView.heightAnchor.constraint(equalToConstant: 46) // Example height, adjust as needed
         ])
     }
     
@@ -173,7 +169,7 @@ class JobSearchResult2: UIViewController {
         stackView.alignment = .center
         scrollView.addSubview(stackView)
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 7),
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -50)
@@ -236,16 +232,34 @@ class JobSearchResult2: UIViewController {
         }
         
         // Combine the base URL with the query items if any
-        finalURL = queryItems.isEmpty ? baseURL : "\(baseURL)?\(queryItems.joined(separator: "&"))"
+//        finalURL = queryItems.isEmpty ? baseURL : "\(baseURL)?\(queryItems.joined(separator: "&"))"
+        finalURL = queryItems.isEmpty ? baseURL : "\(baseURL)&\(queryItems.joined(separator: "&"))"
+        print("Final URL with filters ", finalURL)
         
+        fetchData { result in
+            switch result {
+            case .success(let fetchedJobs):
+                self.jobs = fetchedJobs
+                print("jobs fetched successfully")
+                DispatchQueue.main.async {
+                    self.setupViews()
+                }
+            case .failure(let error):
+                print("Error fetching data: \(error)")
+            }
+        }
         print("Final URL: \(finalURL)")
         
         optionsTableView.isHidden = true  // Hide the table view
         applyButton.isHidden = true  // Hide the apply button
     }
     
+    var i = 0
     
     func addFilterButtons() {
+        if i != 0 {
+            return
+        }
         for category in filter.categories {
             
             let filterButton = CategoryButton(type: .system)
@@ -281,6 +295,7 @@ class JobSearchResult2: UIViewController {
             filterButton.translatesAutoresizingMaskIntoConstraints = false
             stackView.addArrangedSubview(filterButton)
         }
+        i = i + 1
     }
     
     @objc func filterButtonTapped(_ sender: UIButton) {
@@ -378,12 +393,12 @@ extension JobSearchResult2 : UICollectionViewDelegate, UICollectionViewDataSourc
         let s = getTimeAgoString(from: job.createdAt)
         cell.jobPostedTime.text = s
         
-        let expText = attributedStringForExperience(job.yearsOfExperience)
+        let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
         cell.jobExperienceLabel.attributedText = expText
         
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + job.companyLogo
+        let companyLogoURLString = baseURLString + (job.companyLogo ?? "" )
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {

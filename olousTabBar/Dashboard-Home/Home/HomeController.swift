@@ -64,6 +64,7 @@ class HomeController: UIViewController {
         label.textColor = UIColor(hex: "#101828")
         return label
     }()
+    var profileImageView : UIImageView!
     
     let secondView = UIView()
     let thirdView = UIView()
@@ -192,7 +193,7 @@ class HomeController: UIViewController {
     }
 
     func setupJobSearchSection() {
-        jobSearchSection.backgroundColor = UIColor(hex: "#0079C4")
+        jobSearchSection.backgroundColor = UIColor(hex: "#1E293B")
         // #007AFF systemBlue
         jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(jobSearchSection)
@@ -375,12 +376,29 @@ class HomeController: UIViewController {
         ])
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
+        profileCircleLabel.isHidden = true
         circleContainerView.addSubview(profileCircleLabel)
         NSLayoutConstraint.activate([
             profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
             profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
         ])
         
+        profileImageView = UIImageView()
+//        profileImageView.isHidden = true
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.clipsToBounds = true
+        profileImageView.layer.cornerRadius = 50
+        
+        // Add the selected image view to the profile circle
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        circleContainerView.addSubview(profileImageView)
+        
+        NSLayoutConstraint.activate([
+            profileImageView.topAnchor.constraint(equalTo: circleContainerView.topAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: circleContainerView.leadingAnchor),
+            profileImageView.trailingAnchor.constraint(equalTo: circleContainerView.trailingAnchor),
+            profileImageView.bottomAnchor.constraint(equalTo: circleContainerView.bottomAnchor)
+        ])
         
         
         
@@ -794,7 +812,8 @@ class HomeController: UIViewController {
         setupCompaniesCollectionVC()
     }
     @objc func didTapViewAllCompanies() {
-        print(#function)
+        tabBarController?.selectedIndex = 2
+        UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
     func setupCompaniesCollectionVC() {
         let layout = UICollectionViewFlowLayout()
@@ -880,6 +899,10 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             tabBarController?.selectedIndex = 1
             UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
         }
+        else {
+            tabBarController?.selectedIndex = 2
+            UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
+        }
     }
     
 }
@@ -911,7 +934,9 @@ extension HomeController {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
                 print("User fetched: \(user)")
@@ -924,6 +949,7 @@ extension HomeController {
                     self.percentLabel.text = "\(percent)%"
                     self.profileCircleLabel.text = initialsOfName
                     self.userNameLabel.text = "Hi, \(userName)"
+                    self.fetchProfilePicture(size: "m", userID: user._id)
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")
@@ -955,7 +981,7 @@ extension HomeController {
                 filledCount += 1
             } else if let array = child.value as? [Language], !array.isEmpty {
                 filledCount += 1
-            } else if let address = child.value as? Address, address.address != nil && !address.address.isEmpty, address.pinCode != nil && !address.pinCode.isEmpty {
+            } else if let address = child.value as? Address, address.address != nil && !address.address.isEmpty, address.pincode != nil && !address.pincode.isEmpty {
                 filledCount += 1
             } else if let boolValue = child.value as? Bool {
                 if boolValue {
@@ -968,6 +994,38 @@ extension HomeController {
 
         let completionPercentage = (filledCount * 100) / totalCount
         return completionPercentage
+    }
+    
+    func fetchProfilePicture(size: String, userID: String) {
+        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile/\(size)/\(userID)"
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")", forHTTPHeaderField: "Authorization")
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            DispatchQueue.main.async {
+                if let image = UIImage(data: data) {
+                    // Use the image in your app, e.g., assign it to an UIImageView
+                    self.profileImageView.image = image
+                    print("Image Fetched Successfully")
+                } else {
+                    print("Failed to decode image")
+                }
+            }
+        }
+
+        task.resume()
     }
 
 

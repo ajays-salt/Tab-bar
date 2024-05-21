@@ -31,6 +31,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     
     var companyTextField : UITextField!
     var jobTitleTextField : UITextField!
+    var empPeriodTextField : UITextField!
     
     
     var startButton : UIButton!
@@ -41,7 +42,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         label.font = .systemFont(ofSize: 16)
         return label
     }()
-    var startArray = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "20+",]
+    var startArray = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "30+"]
     var startTableView : UITableView = {
         let tableView = UITableView()
         tableView.layer.borderWidth = 1
@@ -153,7 +154,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "3/8"
+        profileCircleLabel.text = "3/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -168,7 +169,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 3 / 8
+        let percentage: CGFloat = 3 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -438,6 +439,25 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         scrollView.addSubview(passTableView)
         
         
+        let empPeriodLabel = UILabel()
+        empPeriodLabel.translatesAutoresizingMaskIntoConstraints = false
+        let attributedText5 = NSMutableAttributedString(string: "Employment Period")
+        let asterisk5 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText5.append(asterisk5)
+        empPeriodLabel.attributedText = attributedText5
+        empPeriodLabel.font = .boldSystemFont(ofSize: 16)
+        empPeriodLabel.textColor = UIColor(hex: "#344054")
+        scrollView.addSubview(empPeriodLabel)
+        
+        // employment period TextField
+        empPeriodTextField = UITextField()
+        empPeriodTextField.translatesAutoresizingMaskIntoConstraints = false
+        empPeriodTextField.borderStyle = .roundedRect
+        empPeriodTextField.placeholder = "E.g. 05/2022 - 01/2024"
+        empPeriodTextField.delegate = self // Set delegate for this text field
+        scrollView.addSubview(empPeriodTextField)
+        
+        
         let jobTypeLabel : UILabel = {
             let label = UILabel()
             let attributedText1 = NSMutableAttributedString(string: "Employment type")
@@ -554,7 +574,15 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
             passTableView.widthAnchor.constraint(equalToConstant: width),
             passTableView.heightAnchor.constraint(equalToConstant: 100),
             
-            jobTypeLabel.topAnchor.constraint(equalTo: container.bottomAnchor, constant: 20),
+            empPeriodLabel.topAnchor.constraint(equalTo: container.bottomAnchor, constant: 20),
+            empPeriodLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            empPeriodTextField.topAnchor.constraint(equalTo: empPeriodLabel.bottomAnchor, constant: 10),
+            empPeriodTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            empPeriodTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            empPeriodTextField.heightAnchor.constraint(equalToConstant: 50),
+            
+            jobTypeLabel.topAnchor.constraint(equalTo: empPeriodTextField.bottomAnchor, constant: 20),
             jobTypeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             jobStackView.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 10),
@@ -614,13 +642,20 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     @objc func saveButtonTapped() {
         let cText = companyTextField.text
         let jobText = jobTitleTextField.text
-        let start = startYearPlaceholder.text
-        let pass = passYearPlaceholder.text
+        var start = startYearPlaceholder.text
+        if start == "Select years" {
+            start = ""
+        }
+        var pass = passYearPlaceholder.text
+        if pass == "Select months" {
+            pass = ""
+        }
+        let empPeriod = empPeriodTextField.text
         let jobtype = selectedEmploymentTypeOption?.titleLabel?.text
         
         var isEmpty = false
         
-        [cText, jobText, start, pass, jobtype].forEach { x in
+        [cText, jobText, start, pass, empPeriod, jobtype].forEach { x in
             if x == "" {
                 isEmpty = true
                 let alertController = UIAlertController(title: "Alert!", message: "Fill in all the details", preferredStyle: .alert)
@@ -641,14 +676,14 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         let secondInt = Int(pass!)!
         let combined = Double(firstInt) + Double(secondInt) / 10
         
-        let emp = Employment(companyName: cText!, yearsOfExperience: "\(combined)", employmentDesignation: jobText!, employmentPeriod: "", employmentType: jobtype!)
+        let emp = Employment(companyName: cText!, yearsOfExperience: "\(combined)", employmentDesignation: jobText!, employmentPeriod: empPeriod!, employmentType: jobtype!)
         dataArray.append(emp)
         
         companyTextField.text = ""
         jobTitleTextField.text = ""
         startYearPlaceholder.text = ""
         passYearPlaceholder.text = ""
-        
+        empPeriodTextField.text = ""
         
         reloadCollectionView()
         

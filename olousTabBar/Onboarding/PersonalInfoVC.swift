@@ -1,38 +1,24 @@
 //
-//  EditProfileVC.swift
+//  PersonalInfoVC.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 15/03/24.
+//  Created by Salt Technologies on 14/05/24.
 //
 
 import UIKit
 
-class EditProfileVC: UIViewController {
+class PersonalInfoVC: UIViewController {
+    
+    var headerView : UIView!
+    var headerHeightConstraint: NSLayoutConstraint?
+    var circleContainerView : UIView!
+    var profileImageView : UIImageView!
     
     var scrollView : UIScrollView!
     
-    let profileCircle = UIView()
-    let profileCircleLabel : UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.textColor = UIColor(hex: "#0079C4")
-        label.font = .boldSystemFont(ofSize: 48)
-        return label
-    }()
-    var profileImageView : UIImageView!
-    
-    let editImageButton : UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "pencil"), for: .normal)
-        button.adjustsImageSizeForAccessibilityContentSizeCategory = true
-        button.tintColor = UIColor(hex: "#667085")
-        button.backgroundColor = .systemBackground
-        button.layer.cornerRadius = 20
-        button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        button.layer.borderWidth = 1
-        return button
-    }()
-    
+    var profilePicContainer : UIView!
+    var uploadLogoView : UIView!
+    var clickToUploadLabel : UILabel!
     
     var fullNameTF : UITextField = {
         let tf = UITextField()
@@ -177,56 +163,148 @@ class EditProfileVC: UIViewController {
     var languageCVHeightConstraint: NSLayoutConstraint!
     
     
+    var bottomView : UIView!
+    var bottomHeightConstraint: NSLayoutConstraint?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
-
-        navigationItem.title = "Edit Profile"
-        navigationItem.hidesBackButton = true
         
-        let backButtonImage = UIImage(systemName: "xmark") // Change "xmark" to any system image you prefer
-        let backButton = UIBarButtonItem(image: backButtonImage, style: .plain, target: self, action: #selector(backButtonPressed))
-        navigationItem.leftBarButtonItem = backButton
         
-    
         setupViews()
         
-        fetchUserProfile()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(uploadButtonTapped))
+        clickToUploadLabel.addGestureRecognizer(tapGesture)
+        
+        
     }
-    
-    
-    
-    
-    
-    @objc func backButtonPressed() {
-        let alertController = UIAlertController(title: "Warning", message: "Do you want to proceed without editing Profile?", preferredStyle: .alert)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let proceedAction = UIAlertAction(title: "Proceed", style: .destructive) { _ in
-            self.navigationController?.popViewController(animated: true) // Pop to previous view controller
-        }
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(proceedAction)
-        
-        present(alertController, animated: true, completion: nil)
-    }
-    
     
     func setupViews() {
+        setupHeaderView()
         setupScrollView()
-        setupProfileCircleView()
-        setupEditImageButton()
         
+        setupResumeUploadView()
         setupUI()
         setupUI2()
         setupUI3()
         
         setupUI4()
         
-        setupSaveButton()
+        setupBottomView()
+    }
+    
+    func setupHeaderView() {
+        
+        headerView = UIView()
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerView)
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: 80)
+        headerHeightConstraint?.isActive = true
+        
+        circleContainerView = UIView(frame: CGRect(x: 60, y: 60, width: 60, height: 60))
+        circleContainerView.layer.cornerRadius = 30
+        
+        circleContainerView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(circleContainerView)
+        NSLayoutConstraint.activate([
+            circleContainerView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            circleContainerView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            circleContainerView.widthAnchor.constraint(equalToConstant: 60),
+            circleContainerView.heightAnchor.constraint(equalToConstant: 60)
+        ])
+        
+        let profileCircleLabel : UILabel = {
+            let label = UILabel()
+            label.textAlignment = .center
+            label.textColor = UIColor(hex: "#000000")
+            label.font = .boldSystemFont(ofSize: 24)
+            return label
+        }()
+        profileCircleLabel.text = "7/9"
+        
+        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
+        circleContainerView.addSubview(profileCircleLabel)
+        NSLayoutConstraint.activate([
+            profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
+            profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
+        ])
+        
+        
+        // Calculate the center and radius of the circle
+        let center = CGPoint(x: circleContainerView.bounds.midX, y: circleContainerView.bounds.midY)
+        let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
+        
+        // Calculate the end angle based on the percentage (0.75 for 75%)
+        let percentage: CGFloat = 7 / 9
+        let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
+        let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
+        
+        // Create a circular path for the green layer
+        let greenPath = UIBezierPath(arcCenter: center,
+                                     radius: radius,
+                                     startAngle: CGFloat.pi / 2,
+                                     endAngle: greenEndAngle,
+                                     clockwise: true)
+        
+        let greenBorderLayer : CAShapeLayer = {
+            let greenBorderLayer = CAShapeLayer()
+            greenBorderLayer.path = greenPath.cgPath
+            greenBorderLayer.lineWidth = 6 // Border width
+            greenBorderLayer.strokeColor = UIColor(hex: "#0079C4").cgColor // Border color
+            greenBorderLayer.fillColor = UIColor.clear.cgColor
+            return greenBorderLayer
+        }()
+        circleContainerView.layer.addSublayer(greenBorderLayer)
+        
+        
+        // regular border without green color
+        let normalPath = UIBezierPath(arcCenter: center,
+                                      radius: radius,
+                                      startAngle: greenEndAngle,
+                                      endAngle: normalEndAngle,
+                                      clockwise: true)
+        
+        // Create shape layer for the normal circle border
+        let normalBorderLayer : CAShapeLayer = {
+            let normalBorderLayer = CAShapeLayer()
+            normalBorderLayer.path = normalPath.cgPath
+            normalBorderLayer.lineWidth = 6 // Border width
+            normalBorderLayer.strokeColor = UIColor(hex: "#D9D9D9").cgColor // Border color
+            normalBorderLayer.fillColor = UIColor.clear.cgColor
+            return normalBorderLayer
+        }()
+        circleContainerView.layer.addSublayer(normalBorderLayer)
+        
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Personal Information"
+        titleLabel.font = .boldSystemFont(ofSize: 24)
+        
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            
+        ])
+        
+        let borderView = UIView()
+        borderView.backgroundColor = UIColor(hex: "#EAECF0")
+        
+        borderView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(borderView)
+        NSLayoutConstraint.activate([
+            borderView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -1),
+            borderView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            borderView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            borderView.heightAnchor.constraint(equalToConstant: 1)
+        ])
     }
     
     func setupScrollView() {
@@ -235,7 +313,7 @@ class EditProfileVC: UIViewController {
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
@@ -250,99 +328,114 @@ class EditProfileVC: UIViewController {
         let contentHeight = view.bounds.height + extraSpaceHeight
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
-    
-    
-    func setupProfileCircleView() {
-        profileCircle.backgroundColor = UIColor(hex: "#D7F0FF")
-        profileCircle.layer.cornerRadius = 60
+
+    func setupResumeUploadView() {
+        let uploadProfilePicLabel = UILabel()
+        uploadProfilePicLabel.translatesAutoresizingMaskIntoConstraints = false
+        let attributedText2 = NSMutableAttributedString(string: "Upload Profile Picture")
+        let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+        attributedText2.append(asterisk2)
+        uploadProfilePicLabel.attributedText = attributedText2
+        scrollView.addSubview(uploadProfilePicLabel)
         
-        profileCircle.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(profileCircle)
+        // Upload Button Container
+        profilePicContainer = UIView()
+        profilePicContainer.translatesAutoresizingMaskIntoConstraints = false
+        profilePicContainer.layer.cornerRadius = 8 // Rounded corners
+        profilePicContainer.layer.borderWidth = 1
+        profilePicContainer.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        scrollView.addSubview(profilePicContainer)
         
-        // Calculate initials
-        let vc = ProfileController()
-        let userNameLabel = vc.userNameLabel
-        let arr = userNameLabel.text!.components(separatedBy: " ")
-        let initials = "\(arr[0].first ?? "A")\(arr[1].first ?? "B")".uppercased()
+        uploadLogoView = UIView()
+        uploadLogoView.layer.borderWidth = 1
+        uploadLogoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        uploadLogoView.layer.cornerRadius = 55
+        uploadLogoView.translatesAutoresizingMaskIntoConstraints = false
+        profilePicContainer.addSubview(uploadLogoView)
         
-        profileCircleLabel.isHidden = true
-        profileCircleLabel.text = initials
-        
-        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
-        profileCircle.addSubview(profileCircleLabel)
-        
-        NSLayoutConstraint.activate([
-            profileCircle.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 10),
-            profileCircle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: (view.frame.width / 2 ) - 60),
-            profileCircle.widthAnchor.constraint(equalToConstant: 120),
-            profileCircle.heightAnchor.constraint(equalToConstant: 120),
-            
-            profileCircleLabel.centerXAnchor.constraint(equalTo: profileCircle.centerXAnchor),
-            profileCircleLabel.centerYAnchor.constraint(equalTo: profileCircle.centerYAnchor)
-        ])
         
         profileImageView = UIImageView()
-//        profileImageView.isHidden = true
-        profileImageView.contentMode = .scaleAspectFill
-        profileImageView.clipsToBounds = true
-        profileImageView.layer.cornerRadius = 60
-        
-        // Add the selected image view to the profile circle
+        profileImageView.image = UIImage(systemName: "person") // System upload icon
+        profileImageView.tintColor = UIColor(hex: "#344054")
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
-        profileCircle.addSubview(profileImageView)
+        uploadLogoView.addSubview(profileImageView)
+        
+        clickToUploadLabel = UILabel()
+        clickToUploadLabel.isUserInteractionEnabled = true
+        clickToUploadLabel.text = "Click to Upload"
+        clickToUploadLabel.textColor = UIColor(hex: "#0079C4")
+        clickToUploadLabel.font = .boldSystemFont(ofSize: 18)
+        clickToUploadLabel.translatesAutoresizingMaskIntoConstraints = false
+        profilePicContainer.addSubview(clickToUploadLabel)
+        
+        let dragLabel = UILabel()
+        dragLabel.text = "or drag and drop"
+        dragLabel.font = .boldSystemFont(ofSize: 18)
+        dragLabel.translatesAutoresizingMaskIntoConstraints = false
+        profilePicContainer.addSubview(dragLabel)
+        
+        let formatLabel = UILabel()
+        formatLabel.text = ".JPG , .PNG , .JPEG"
+        formatLabel.font = .systemFont(ofSize: 16)
+        formatLabel.textColor = UIColor(hex: "#475467")
+        formatLabel.translatesAutoresizingMaskIntoConstraints = false
+        profilePicContainer.addSubview(formatLabel)
         
         NSLayoutConstraint.activate([
-            profileImageView.topAnchor.constraint(equalTo: profileCircle.topAnchor),
-            profileImageView.leadingAnchor.constraint(equalTo: profileCircle.leadingAnchor),
-            profileImageView.trailingAnchor.constraint(equalTo: profileCircle.trailingAnchor),
-            profileImageView.bottomAnchor.constraint(equalTo: profileCircle.bottomAnchor)
+            uploadProfilePicLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
+            uploadProfilePicLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            profilePicContainer.topAnchor.constraint(equalTo: uploadProfilePicLabel.bottomAnchor, constant: 8),
+            profilePicContainer.leadingAnchor.constraint(equalTo: uploadProfilePicLabel.leadingAnchor),
+            profilePicContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            profilePicContainer.heightAnchor.constraint(equalToConstant: 220), // Adjust height as needed
+            
+            uploadLogoView.centerXAnchor.constraint(equalTo: profilePicContainer.centerXAnchor),
+            uploadLogoView.topAnchor.constraint(equalTo: profilePicContainer.topAnchor, constant: 20),
+            uploadLogoView.heightAnchor.constraint(equalToConstant: 110),
+            uploadLogoView.widthAnchor.constraint(equalToConstant: 110),
+            
+            profileImageView.centerXAnchor.constraint(equalTo: uploadLogoView.centerXAnchor),
+            profileImageView.centerYAnchor.constraint(equalTo: uploadLogoView.centerYAnchor),
+            profileImageView.heightAnchor.constraint(equalToConstant: 100),
+            profileImageView.widthAnchor.constraint(equalToConstant: 100),
+            
+            clickToUploadLabel.topAnchor.constraint(equalTo: uploadLogoView.bottomAnchor, constant: 20),
+            clickToUploadLabel.leadingAnchor.constraint(equalTo: profilePicContainer.leadingAnchor, constant: 50),
+            
+            dragLabel.topAnchor.constraint(equalTo: uploadLogoView.bottomAnchor, constant: 20),
+            dragLabel.leadingAnchor.constraint(equalTo: clickToUploadLabel.trailingAnchor, constant: 6),
+            
+            formatLabel.topAnchor.constraint(equalTo: clickToUploadLabel.bottomAnchor, constant: 10),
+            formatLabel.centerXAnchor.constraint(equalTo: profilePicContainer.centerXAnchor),
+            
         ])
+        
+        
     }
     
-    func setupEditImageButton() {
-        editImageButton.addTarget(self, action: #selector(didTapEditImageButton), for: .touchUpInside)
-        editImageButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(editImageButton)
-        NSLayoutConstraint.activate([
-            editImageButton.topAnchor.constraint(equalTo: profileCircle.topAnchor, constant: 80),
-            editImageButton.leadingAnchor.constraint(equalTo: profileCircle.leadingAnchor, constant: 80),
-            editImageButton.widthAnchor.constraint(equalToConstant: 40),
-            editImageButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
+    @objc func uploadButtonTapped() {
+        presentImagePicker()
     }
     
-    @objc func didTapEditImageButton() {
+    func presentImagePicker() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         imagePicker.sourceType = .photoLibrary
         present(imagePicker, animated: true, completion: nil)
     }
-    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let selectedImage = info[.originalImage] as? UIImage {
-            profileCircleLabel.isHidden = true // Hide the profile circle label
-            profileCircle.backgroundColor = UIColor.clear // Clear the background color
-            
-            profileImageView = UIImageView(image: selectedImage)
+            profileImageView.image = selectedImage
             profileImageView.contentMode = .scaleAspectFill
             profileImageView.clipsToBounds = true
-            profileImageView.layer.cornerRadius = profileCircle.frame.width / 2
-            
-            // Add the selected image view to the profile circle
-            profileCircle.addSubview(profileImageView)
-            profileImageView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                profileImageView.topAnchor.constraint(equalTo: profileCircle.topAnchor),
-                profileImageView.leadingAnchor.constraint(equalTo: profileCircle.leadingAnchor),
-                profileImageView.trailingAnchor.constraint(equalTo: profileCircle.trailingAnchor),
-                profileImageView.bottomAnchor.constraint(equalTo: profileCircle.bottomAnchor)
-            ])
+            profileImageView.layer.cornerRadius = 50
         }
         picker.dismiss(animated: true, completion: nil)
     }
     
-    
-    //******************************* newly added changes ***********************
+
+    // first three textfields
     func setupUI() {
         let fullNameLabel = UILabel()
         fullNameLabel.attributedText = createAttributedText(for: "Full Name")
@@ -379,7 +472,7 @@ class EditProfileVC: UIViewController {
         
         // Constraints
         NSLayoutConstraint.activate([
-            fullNameLabel.topAnchor.constraint(equalTo: profileCircle.bottomAnchor, constant: 20),
+            fullNameLabel.topAnchor.constraint(equalTo: profilePicContainer.bottomAnchor, constant: 20),
             fullNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             fullNameTF.topAnchor.constraint(equalTo: fullNameLabel.bottomAnchor, constant: 8),
@@ -856,54 +949,76 @@ class EditProfileVC: UIViewController {
     
     
     
-    
-    func setupSaveButton() {
-        let saveButton = UIButton(type: .system)
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.titleLabel?.font = .systemFont(ofSize: 24)
-        saveButton.layer.borderWidth = 1
-        saveButton.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-        saveButton.layer.cornerRadius = 10
-        saveButton.tintColor = .white
-        saveButton.backgroundColor = UIColor(hex: "#0079C4")
-        saveButton.addTarget(self, action: #selector(didTapSaveButton), for: .touchUpInside)
+    func setupBottomView() {
+        bottomView = UIView()
+        bottomView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bottomView)
         
-        view.addSubview(saveButton)
+        let nextButton = UIButton()
+        nextButton.setTitle("Next", for: .normal)
+        nextButton.titleLabel?.font = .systemFont(ofSize: 20)
+        nextButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        nextButton.backgroundColor = UIColor(hex: "#0079C4")
+        nextButton.layer.cornerRadius = 8
+        
+        nextButton.addTarget(self, action: #selector(didTapNextButton), for: .touchUpInside)
+        
+        nextButton.translatesAutoresizingMaskIntoConstraints = false
+        bottomView.addSubview(nextButton)
+        
+        let backButton = UIButton()
+        backButton.setTitle("Back", for: .normal)
+        backButton.titleLabel?.font = .systemFont(ofSize: 20)
+        backButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        backButton.backgroundColor = UIColor(hex: "#FFFFFF")
+        backButton.layer.cornerRadius = 8
+        backButton.layer.borderWidth = 1
+        backButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        
+        backButton.isUserInteractionEnabled = true
+        
+        backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        bottomView.addSubview(backButton)
+        
+        
         NSLayoutConstraint.activate([
-            saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
-            saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            saveButton.widthAnchor.constraint(equalToConstant: view.frame.width - 36),
-            saveButton.heightAnchor.constraint(equalToConstant: 60)
+            bottomView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            backButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 15),
+            backButton.leadingAnchor.constraint(equalTo: bottomView.leadingAnchor, constant: 16),
+            backButton.heightAnchor.constraint(equalToConstant: 50),
+            backButton.widthAnchor.constraint(equalToConstant: 100),
+            
+            nextButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 15),
+            nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            nextButton.heightAnchor.constraint(equalToConstant: 50),
+            nextButton.widthAnchor.constraint(equalToConstant: 100),
         ])
+        
+        bottomHeightConstraint = bottomView.heightAnchor.constraint(equalToConstant: 100)
+        bottomHeightConstraint?.isActive = true
     }
     
-    @objc func didTapSaveButton() {
+    @objc func didTapBackButton() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func didTapNextButton() {
         submitPersonalInfo()
     }
-
+    
+    
+    
+    
     func showAlert(withTitle title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default)
-        alertController.addAction(okAction)
-        present(alertController, animated: true)
-    }
-    
-    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
-        let size = image.size
-
-        let widthRatio  = targetSize.width / size.width
-        let heightRatio = targetSize.height / size.height
-        let ratio = min(widthRatio, heightRatio)
-        let newSize = CGSize(width: size.width * ratio, height: size.height * ratio)
-
-        let rect = CGRect(origin: .zero, size: newSize)
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return newImage
+        let cancelAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     
@@ -917,23 +1032,10 @@ class EditProfileVC: UIViewController {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        view.backgroundColor = .systemBackground
-        
-        tabBarController?.tabBar.isHidden = true
-        navigationController?.navigationBar.isHidden = false
-    }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        tabBarController?.tabBar.isHidden = false
-        navigationController?.navigationBar.isHidden = true
-    }
 }
 
-extension EditProfileVC : UIImagePickerControllerDelegate & UINavigationControllerDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+
+extension PersonalInfoVC : UIImagePickerControllerDelegate & UINavigationControllerDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return languageArray.count
     }
@@ -988,109 +1090,12 @@ extension EditProfileVC : UIImagePickerControllerDelegate & UINavigationControll
     }
 }
 
-extension EditProfileVC {
-    func fetchUserProfile() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
-            print("Invalid URL")
-            return
-        }
 
-        // Prepare the request
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-
-        // Retrieve the accessToken and set the Authorization header
-        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        } else {
-            print("Access Token not found")
-            return
-        }
-
-        // Execute the network request
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-
-            do {
-                let user = try JSONDecoder().decode(User.self, from: data)
-                print(user)
-                
-                DispatchQueue.main.async {
-                    self.fetchProfilePicture(size: "m", userID: user._id)
-                    
-                    self.fullNameTF.text = user.name
-                    self.dobTF.text = user.dateOfBirth
-                    self.nationalityTF.text = user.nationality
-                    var gender = user.gender?.trimmingCharacters(in: .whitespaces)
-                    for case let button as UIButton in self.genderStackView.arrangedSubviews {
-                        if button.titleLabel?.text?.trimmingCharacters(in: .whitespaces) == gender {
-                            self.genderOptionSelected(button)
-                            break
-                        }
-                    }
-                    
-                    self.permanentAddressTF.text = user.permanentAddress
-                    var currentAddress = user.currentAddress
-                    self.currentAddressTF.text = currentAddress?.address
-                    self.stateTF.text = currentAddress?.state
-                    self.cityTF.text = currentAddress?.city
-                    self.pincodeTF.text = currentAddress?.pincode
-                    
-                    self.uidTF.text = user.uidNumber
-                    self.passportTF.text = user.passportNo
-                    self.panTF.text = user.panNo
-                    
-                    self.languageArray = user.language ?? []
-                    self.reloadCollectionView()
-                }
-            } catch {
-                print("Failed to decode JSON: \(error)")
-            }
-        }
-
-        task.resume()
-    }
-    
-    func fetchProfilePicture(size: String, userID: String) {
-        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile/\(size)/\(userID)"
-        guard let url = URL(string: urlString) else {
-            print("Invalid URL")
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")", forHTTPHeaderField: "Authorization")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-
-            DispatchQueue.main.async {
-                if let image = UIImage(data: data) {
-                    self.profileImageView.image = image
-                } else {
-                    print("Failed to decode image")
-                }
-            }
-        }
-
-        task.resume()
-    }
-}
-
-
-extension EditProfileVC {
+extension PersonalInfoVC {
     func submitPersonalInfo() {
         // Validate the input fields
         guard let image = profileImageView.image,
-              let resizedImage = resizeImage(image: image, targetSize: CGSize(width: 800, height: 600)),
-              let imageData = resizedImage.jpegData(compressionQuality: 0.5)
+              let imageData = image.jpegData(compressionQuality: 0.5)
         else {
             showAlert(withTitle: "Missing Information", message: "Please select a valid image before saving.")
             return
@@ -1180,8 +1185,14 @@ extension EditProfileVC {
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         request.httpBody = body
         
+        DispatchQueue.main.async {
+            
+        }
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let task = URLSession.shared.uploadTask(with: request, from: body) { (data, response, error) in
+            DispatchQueue.main.async {
+                
+            }
             
             if let error = error {
                 print("Error: \(error)")
@@ -1264,12 +1275,19 @@ extension EditProfileVC {
             }
             
             print("User info updated successfully")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.async {
                 loader.stopAnimating()
                 loader.removeFromSuperview()
-                self.navigationController?.popViewController(animated: true)
+                let vc = PreferencesVC()
+                self.navigationController?.pushViewController(vc, animated: true)
             }
         }
         task.resume()
     }
+
+}
+
+struct UserLangugaeAndCurrAddress : Codable {
+    let language: [Language]
+    let currentAddress: Address
 }

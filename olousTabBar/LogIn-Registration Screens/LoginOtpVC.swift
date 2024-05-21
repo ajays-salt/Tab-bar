@@ -1,29 +1,28 @@
 //
-//  ForgotPassword2.swift
+//  LoginOtpVC.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 26/03/24.
+//  Created by Salt Technologies on 13/05/24.
 //
 
 import UIKit
 
-class ForgotPassword2: UIViewController, UITextFieldDelegate {
+class LoginOtpVC: UIViewController, UITextFieldDelegate {
     
     var headerView : UIView!
     
-    var keyLogoView : UIView!
-    
-    var emailLabel = UILabel()
-    
     var otpTextFields: [UITextField] = []
-    let verifyOtpButton: UIButton = {
+    
+    var email : String = ""
+    
+    let loginButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Verify OTP", for: .normal)
+        button.setTitle("Log In", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 24)
         button.backgroundColor = UIColor(hex: "#0079C4")
         button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(verifyOtpButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -44,7 +43,7 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         attributedString.append(NSAttributedString(string: " "))
         
         // Add "back to login" text
-        let backToLoginString = NSAttributedString(string: "Go Back")
+        let backToLoginString = NSAttributedString(string: "Back to Login")
         attributedString.append(backToLoginString)
         
         // Set attributed title for button
@@ -60,14 +59,14 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
-
+        
         setupViews()
     }
     
     func setupViews() {
         setupHeaderView()
         setupOTPFields()
-        setupVerifyOtp()
+        setupLoginButton()
         setupBackButton()
     }
     
@@ -78,9 +77,9 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         view.addSubview(headerView)
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            headerView.heightAnchor.constraint(equalToConstant: 220)
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 160)
         ])
         
         let olousLogo : UIImageView = {
@@ -98,33 +97,9 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
             olousLogo.heightAnchor.constraint(equalToConstant: 24)
         ])
         
-        keyLogoView = UIView()
-        keyLogoView.layer.borderWidth = 1
-        keyLogoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        keyLogoView.layer.cornerRadius = 12
-        
-        let imgView = UIImageView(image: UIImage(named: "mail-01"))
-        imgView.translatesAutoresizingMaskIntoConstraints = false
-        keyLogoView.addSubview(imgView)
-        
-        keyLogoView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(keyLogoView)
-        
-        NSLayoutConstraint.activate([
-            keyLogoView.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 30),
-            keyLogoView.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            keyLogoView.widthAnchor.constraint(equalToConstant: 50),
-            keyLogoView.heightAnchor.constraint(equalToConstant: 50),
-            
-            imgView.centerXAnchor.constraint(equalTo: keyLogoView.centerXAnchor),
-            imgView.centerYAnchor.constraint(equalTo: keyLogoView.centerYAnchor),
-            imgView.heightAnchor.constraint(equalToConstant: 30),
-            imgView.widthAnchor.constraint(equalToConstant: 30)
-        ])
-        
         let headLabel : UILabel = {
             let label = UILabel()
-            label.text = "Check your mail"
+            label.text = "Log in to your account"
             label.font = .boldSystemFont(ofSize: 28)
             label.textColor = UIColor(hex: "#101828")
             return label
@@ -133,14 +108,14 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         headLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(headLabel)
         NSLayoutConstraint.activate([
-            headLabel.topAnchor.constraint(equalTo: keyLogoView.bottomAnchor, constant: 20),
+            headLabel.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 20),
             headLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
             headLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         let secondLabel : UILabel = {
             let label = UILabel()
-            label.text = "We've sent a verification OTP to"
+            label.text = "Please enter OTP."
             label.font = .systemFont(ofSize: 18)
             label.textColor = UIColor(hex: "#475467")
             return label
@@ -148,26 +123,12 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         
         secondLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(secondLabel)
-        
-        
-//        emailLabel.text = "ajay.com"
-        emailLabel.font = .systemFont(ofSize: 18)
-        emailLabel.textColor = UIColor(hex: "#475467")
-        
-        emailLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(emailLabel)
-        
         NSLayoutConstraint.activate([
             secondLabel.topAnchor.constraint(equalTo: headLabel.bottomAnchor, constant: 10),
             secondLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            secondLabel.leadingAnchor.constraint(greaterThanOrEqualTo: headerView.leadingAnchor, constant: 16),
-            secondLabel.trailingAnchor.constraint(lessThanOrEqualTo: headerView.trailingAnchor, constant: -16),
-            
-            emailLabel.topAnchor.constraint(equalTo: secondLabel.bottomAnchor, constant: 6),
-            emailLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
+            secondLabel.heightAnchor.constraint(equalToConstant: 24)
         ])
     }
-    
     
     func setupOTPFields() {
         let stackView = UIStackView()
@@ -179,7 +140,7 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 45),
+            stackView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 15),
             stackView.widthAnchor.constraint(equalToConstant: 200),
             stackView.heightAnchor.constraint(equalToConstant: 50)
         ])
@@ -195,7 +156,6 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
             stackView.addArrangedSubview(textField)
         }
     }
-    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
         if range.length + range.location > currentText.count {
@@ -209,22 +169,29 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
                 nextTextField.becomeFirstResponder()
             }
             return false
+        } else if newLength == 0 {
+            textField.text = ""
+            if let previousTextField = otpTextFields.reversed().first(where: { $0 != textField && !($0.text?.isEmpty ?? true) }) {
+                previousTextField.becomeFirstResponder()
+            }
+            return false
         }
         return true
     }
-    
-    func setupVerifyOtp() {
-        view.addSubview(verifyOtpButton)
+
+    func setupLoginButton() {
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loginButton)
         
         NSLayoutConstraint.activate([
-            verifyOtpButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 130),
-            verifyOtpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            verifyOtpButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            verifyOtpButton.heightAnchor.constraint(equalToConstant: 50),
+            loginButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 135),
+            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loginButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
+            loginButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
-    @objc func verifyOtpButtonTapped() {
+    @objc func loginButtonTapped() {
         
         let otp = otpTextFields.compactMap { $0.text }.joined()
         
@@ -233,11 +200,11 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
             return
         }
         
-        verifyOtp(otp: otp, email: emailLabel.text ?? "nil")
+        verifyOtp(otp: otp, email: email ?? "nil")
     }
     
     func verifyOtp(otp: String, email: String) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/verify-reset-otp") else {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/verify-otp") else {
             print("Invalid URL")
             return
         }
@@ -254,19 +221,38 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         
         request.httpBody = jsonData
         
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print("Error in URLSession data task: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Response from server: \(responseString)")
+            }
             
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 print("OTP verified successfully")
-                DispatchQueue.main.async {
-                    let vc = ForgotPassword3()
-                    vc.otp = otp
-                    vc.email = email
-                    self.navigationController?.pushViewController(vc, animated: true)
+                
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    print(json)
+                    if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
+                        
+                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                    
+                    let viewController = ViewController()
+                    viewController.modalPresentationStyle = .overFullScreen
+                    viewController.overrideUserInterfaceStyle = .light
+                    self.present(viewController, animated: true)
                 }
             } else {
                 DispatchQueue.main.async {
@@ -283,22 +269,17 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
             self.present(alert, animated: true, completion: nil)
         }
     }
-
-
-    
     
     func setupBackButton() {
         backToLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backToLogin)
         NSLayoutConstraint.activate([
-            backToLogin.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 200),
+            backToLogin.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 20),
             backToLogin.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
     
     @objc func didTapBackToLogin() {
         navigationController?.popViewController(animated: true)
-//        navigationController?.popToRootViewController(animated: true)
     }
 }
-

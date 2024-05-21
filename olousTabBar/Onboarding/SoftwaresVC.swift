@@ -122,7 +122,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "4/8"
+        profileCircleLabel.text = "4/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -137,7 +137,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 4 / 8
+        let percentage: CGFloat = 4 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -249,7 +249,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         }()
         scrollView.addSubview(skillsLabel)
         
-        skillsTextField.placeholder = "Add skills"
+        skillsTextField.placeholder = "Add Softwares"
         skillsTextField.borderStyle = .roundedRect
         skillsTextField.layer.borderWidth = 1
         skillsTextField.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
@@ -686,6 +686,11 @@ extension SoftwaresVC {
     }
     
     func uploadAddedSkills() {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
@@ -711,6 +716,10 @@ extension SoftwaresVC {
         
         // Perform the URLSession task
         URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                spinner.stopAnimating()
+                spinner.removeFromSuperview()
+            }
             guard let data = data, error == nil else {
                 print("Error in URLSession data task: \(error?.localizedDescription ?? "Unknown error")")
                 return

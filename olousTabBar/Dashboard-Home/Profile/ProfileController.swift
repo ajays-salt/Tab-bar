@@ -71,11 +71,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }()
     
     
+    let separatorLine0 = UIView()
     let separatorLine1 = UIView()
     let separatorLine2 = UIView()
     let separatorLine3 = UIView()
     let separatorLine4 = UIView()
     let separatorLine5 = UIView()
+    let separatorLine6 = UIView()
+    let separatorLine7 = UIView()
     
     
 //   ******************************  New changes in this controller **************************************************************
@@ -110,7 +113,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var projectDataArray : [Project] = []
     var projectCVHeightConstraint: NSLayoutConstraint!
     
-    var projectEditView: UIView!
+    var projectEditView: UIScrollView!
     var editProjectNameTF: UITextField!
     var editProjectRoleTF: UITextField!
     var editProjectDescTF: UITextView!
@@ -125,6 +128,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     let preferencesVC = PreferencesVC()
     let headlineVC = HeadlineAndSummary()
     
+    var softwaresArray : [String] = []
+    var skillsArray : [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -133,10 +138,17 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        fetchUserProfile()
+//        fetchUserProfile()
                 
         setupViews()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print(#function)
+        fetchUserProfile()
+    }
+    
     
     func setupViews() {
         setupScrollView()
@@ -144,6 +156,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         setupProfileEditButton()
         
         setupProfileCircleView()
+        
+        setupSeparatorLine0()
+        
+        setupPersonalInfoView()
         
         setupSeparatorLine1()
         
@@ -162,10 +178,20 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         setupLoaderForProjectEdit()
         
         setupSeparatorLine4()
-        setupPreferencesVC()
+        setupPreferencesView()
         setupEditPreferencesVC()
         
+        setupSeparatorLine5()
+        
         setupHeadlineAndSummary()
+        
+        setupSeparatorLine6()
+        
+        setupSoftwares()
+        
+        setupSeparatorLine7()
+        
+        setupSkills()
         
         setupLogOut()
     }
@@ -176,10 +202,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headerView.addSubview(profileEditButton)
         
         NSLayoutConstraint.activate([
-            profileEditButton.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 24),
+            profileEditButton.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 6),
             profileEditButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            profileEditButton.widthAnchor.constraint(equalToConstant: 40),
-            profileEditButton.heightAnchor.constraint(equalToConstant: 40)
+            profileEditButton.widthAnchor.constraint(equalToConstant: 36),
+            profileEditButton.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
     
@@ -201,7 +227,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 1800
+        let extraSpaceHeight: CGFloat = 2200
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -243,7 +269,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         
         profileCircleLabel.text = initials
-//        profileCircleLabel.isHidden = true
+        profileCircleLabel.isHidden = true
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         profileCircle.addSubview(profileCircleLabel)
         NSLayoutConstraint.activate([
@@ -253,11 +279,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         
         
-        profileImageView = UIImageView(image: UIImage(systemName: "pencil"))
-        profileImageView.isHidden = true
+        profileImageView = UIImageView()
+//        profileImageView.isHidden = true
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.clipsToBounds = true
-        profileImageView.layer.cornerRadius = profileCircle.frame.width / 2
+        profileImageView.layer.cornerRadius = 60
         
         // Add the selected image view to the profile circle
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -270,14 +296,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             profileImageView.bottomAnchor.constraint(equalTo: profileCircle.bottomAnchor)
         ])
         
-        userNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(userNameLabel)
-        
-        jobTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(jobTitleLabel)
-        
-        locationLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(locationLabel)
+        [userNameLabel, jobTitleLabel, locationLabel].forEach { v in
+            v.translatesAutoresizingMaskIntoConstraints = false
+            headerView.addSubview(v)
+        }
         
         NSLayoutConstraint.activate([
             userNameLabel.topAnchor.constraint(equalTo: profileCircle.topAnchor, constant: 16),
@@ -290,6 +312,224 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 6),
             locationLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
+            locationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
+    }
+    
+    
+    func setupSeparatorLine0(){
+        separatorLine0.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine0.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(separatorLine0)
+        
+        NSLayoutConstraint.activate([
+            separatorLine0.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -10),
+            separatorLine0.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine0.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine0.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    var dobLabel : UILabel!
+    var nationalityLabel : UILabel!
+    var genderLabel : UILabel!
+    var permanentAddressLabel : UILabel!
+    var currentAddressLabel : UILabel!
+    var stateLabel : UILabel!
+    var cityLabel : UILabel!
+    var pincodeLabel : UILabel!
+    var uidLabel : UILabel!
+    var passportLabel : UILabel!
+    var pancardLabel : UILabel!
+    var languageLabel : UILabel!
+    
+    
+    func setupPersonalInfoView() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
+        let personalInfoLabel : UILabel = {
+            let label = UILabel()
+            label.text = "Personal Information"
+            label.textColor = .white
+            label.font = .boldSystemFont(ofSize: 20)
+            return label
+        }()
+        personalInfoLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(personalInfoLabel)
+        
+        let editButton : UIButton = {
+            let btn = UIButton()
+            btn.setTitle("Edit", for: .normal)
+            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
+            return btn
+        }()
+        editButton.addTarget(self, action: #selector(didTapProfileEditButton), for: .touchUpInside)
+        
+        scrollView.addSubview(editButton)
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            bgView.topAnchor.constraint(equalTo: separatorLine0.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            personalInfoLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            personalInfoLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            editButton.topAnchor.constraint(equalTo: separatorLine0.bottomAnchor, constant: 5),
+            editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            editButton.widthAnchor.constraint(equalToConstant: 70),
+            editButton.heightAnchor.constraint(equalToConstant: 30),
+        ])
+        
+        var dob = createStaticLabel()
+        dob.text = "Date of Birth"
+        scrollView.addSubview(dob)
+        dobLabel = createDynamicLabel()
+        scrollView.addSubview(dobLabel)
+        
+        var nationality = createStaticLabel()
+        nationality.text = "Nationality"
+        scrollView.addSubview(nationality)
+        nationalityLabel = createDynamicLabel()
+        scrollView.addSubview(nationalityLabel)
+        
+        var gender = createStaticLabel()
+        gender.text = "Gender"
+        scrollView.addSubview(gender)
+        genderLabel = createDynamicLabel()
+        scrollView.addSubview(genderLabel)
+        
+        var permanent = createStaticLabel()
+        permanent.text = "Permanent Address"
+        scrollView.addSubview(permanent)
+        permanentAddressLabel = createDynamicLabel()
+        permanentAddressLabel.numberOfLines = 0
+        scrollView.addSubview(permanentAddressLabel)
+        
+        var current = createStaticLabel()
+        current.text = "Current Address"
+        scrollView.addSubview(current)
+        currentAddressLabel = createDynamicLabel()
+        currentAddressLabel.numberOfLines = 0
+        scrollView.addSubview(currentAddressLabel)
+        
+        var state = createStaticLabel()
+        state.text = "State"
+        scrollView.addSubview(state)
+        stateLabel = createDynamicLabel()
+        stateLabel.numberOfLines = 0
+        scrollView.addSubview(stateLabel)
+        
+        var city = createStaticLabel()
+        city.text = "City"
+        scrollView.addSubview(city)
+        cityLabel = createDynamicLabel()
+        scrollView.addSubview(cityLabel)
+        
+        var pin = createStaticLabel()
+        pin.text = "Pin Code"
+        scrollView.addSubview(pin)
+        pincodeLabel = createDynamicLabel()
+        scrollView.addSubview(pincodeLabel)
+        
+        var uid = createStaticLabel()
+        uid.text = "UID Number"
+        scrollView.addSubview(uid)
+        uidLabel = createDynamicLabel()
+        scrollView.addSubview(uidLabel)
+        
+        var passport = createStaticLabel()
+        passport.text = "Passport Number"
+        scrollView.addSubview(passport)
+        passportLabel = createDynamicLabel()
+        scrollView.addSubview(passportLabel)
+        
+        var pan = createStaticLabel()
+        pan.text = "PanCard Number"
+        scrollView.addSubview(pan)
+        pancardLabel = createDynamicLabel()
+        scrollView.addSubview(pancardLabel)
+        
+        var lang = createStaticLabel()
+        lang.text = "Languages"
+        scrollView.addSubview(lang)
+        languageLabel = createDynamicLabel()
+        languageLabel.numberOfLines = 0
+        scrollView.addSubview(languageLabel)
+        
+        
+        NSLayoutConstraint.activate([
+            dob.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
+            dob.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            dob.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            dobLabel.topAnchor.constraint(equalTo: dob.bottomAnchor, constant: 10),
+            dobLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            nationality.topAnchor.constraint(equalTo: dobLabel.bottomAnchor, constant: 20),
+            nationality.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            nationalityLabel.topAnchor.constraint(equalTo: nationality.bottomAnchor, constant: 10),
+            nationalityLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            gender.topAnchor.constraint(equalTo: nationalityLabel.bottomAnchor, constant: 20),
+            gender.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            genderLabel.topAnchor.constraint(equalTo: gender.bottomAnchor, constant: 10),
+            genderLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            permanent.topAnchor.constraint(equalTo: genderLabel.bottomAnchor, constant: 20),
+            permanent.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            permanentAddressLabel.topAnchor.constraint(equalTo: permanent.bottomAnchor, constant: 10),
+            permanentAddressLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            permanentAddressLabel.trailingAnchor.constraint(equalTo: dob.trailingAnchor),
+            
+            current.topAnchor.constraint(equalTo: permanentAddressLabel.bottomAnchor, constant: 20),
+            current.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            currentAddressLabel.topAnchor.constraint(equalTo: current.bottomAnchor, constant: 10),
+            currentAddressLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            currentAddressLabel.trailingAnchor.constraint(equalTo: dob.trailingAnchor),
+            
+            state.topAnchor.constraint(equalTo: currentAddressLabel.bottomAnchor, constant: 20),
+            state.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            stateLabel.topAnchor.constraint(equalTo: state.bottomAnchor, constant: 10),
+            stateLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            city.topAnchor.constraint(equalTo: stateLabel.bottomAnchor, constant: 20),
+            city.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            cityLabel.topAnchor.constraint(equalTo: city.bottomAnchor, constant: 10),
+            cityLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            pin.topAnchor.constraint(equalTo: cityLabel.bottomAnchor, constant: 20),
+            pin.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            pincodeLabel.topAnchor.constraint(equalTo: pin.bottomAnchor, constant: 10),
+            pincodeLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            uid.topAnchor.constraint(equalTo: pincodeLabel.bottomAnchor, constant: 20),
+            uid.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            uidLabel.topAnchor.constraint(equalTo: uid.bottomAnchor, constant: 10),
+            uidLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            passport.topAnchor.constraint(equalTo: uidLabel.bottomAnchor, constant: 20),
+            passport.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            passportLabel.topAnchor.constraint(equalTo: passport.bottomAnchor, constant: 10),
+            passportLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            pan.topAnchor.constraint(equalTo: passportLabel.bottomAnchor, constant: 20),
+            pan.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            pancardLabel.topAnchor.constraint(equalTo: pan.bottomAnchor, constant: 10),
+            pancardLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            
+            lang.topAnchor.constraint(equalTo: pancardLabel.bottomAnchor, constant: 20),
+            lang.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            languageLabel.topAnchor.constraint(equalTo: lang.bottomAnchor, constant: 10),
+            languageLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
+            languageLabel.trailingAnchor.constraint(equalTo: dob.trailingAnchor)
         ])
     }
     
@@ -300,7 +540,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         scrollView.addSubview(separatorLine1)
         
         NSLayoutConstraint.activate([
-            separatorLine1.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
+            separatorLine1.topAnchor.constraint(equalTo: languageLabel.bottomAnchor, constant: 20),
             separatorLine1.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine1.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine1.heightAnchor.constraint(equalToConstant: 1)
@@ -309,34 +549,47 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     
     func setupEmploymentsView() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
         let employmentLabel : UILabel = {
             let label = UILabel()
             label.text = "Employments"
-            label.textColor = UIColor(hex: "#101828")
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
         employmentLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(employmentLabel)
-        NSLayoutConstraint.activate([
-            employmentLabel.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor, constant: 16),
-            employmentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
-        ])
         
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Add", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapAddEmployment), for: .touchUpInside)
-        
-        scrollView.addSubview(addButton)
         addButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(addButton)
+        
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: employmentLabel.topAnchor, constant: 0),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            bgView.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            employmentLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            employmentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor, constant: 5),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 30),
         ])
         
         let layout = UICollectionViewFlowLayout()
@@ -534,7 +787,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         cancelEmpEdit()
     }
     
-    var totalExperience : Int!
+    var totalExperience : Double!
     
     func uploadEmploymentArray() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
@@ -551,7 +804,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
 
-        guard let jsonData = encodeEmploymentArray(experienceArray: experienceArray, totalExperience: totalExperience) else {
+        guard let jsonData = encodeEmploymentArray(experienceArray: experienceArray, totalExperience: totalExperience ?? 0) else {
             print("Failed to encode employment data")
             return
         }
@@ -582,7 +835,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }.resume()
     }
     
-    func encodeEmploymentArray(experienceArray: [Employment], totalExperience: Int) -> Data? {
+    func encodeEmploymentArray(experienceArray: [Employment], totalExperience: Double) -> Data? {
         guard let firstDesignation = experienceArray.first?.employmentDesignation else {
             print("No employment designation available in the first item of the array.")
             return nil
@@ -613,13 +866,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }
     }
     
-    
     @objc func didTapAddEmployment() {
         UIView.animate(withDuration: 0.3) {
             self.empEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
         }
     }
-
     
     
     func setupSeparatorLine2() {
@@ -637,35 +888,47 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     
     func setupEducationView() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
         let educationLabel : UILabel = {
             let label = UILabel()
             label.text = "Education"
-            label.textColor = UIColor(hex: "#101828")
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
         educationLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(educationLabel)
-        NSLayoutConstraint.activate([
-            educationLabel.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 16),
-            educationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
-        ])
-        
         
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Add", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapAddEducation), for: .touchUpInside)
-        
         scrollView.addSubview(addButton)
         addButton.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 10),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            bgView.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            educationLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            educationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 5),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 30),
         ])
         
         let layout = UICollectionViewFlowLayout()
@@ -944,26 +1207,28 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     func setupProjectView() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
         let projectLabel : UILabel = {
             let label = UILabel()
-            label.text = "Project"
-            label.textColor = UIColor(hex: "#101828")
+            label.text = "Projects"
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
         projectLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(projectLabel)
-        NSLayoutConstraint.activate([
-            projectLabel.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor, constant: 16),
-            projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
-        ])
-        
         
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Add", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapAddProject), for: .touchUpInside)
@@ -971,8 +1236,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         scrollView.addSubview(addButton)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor, constant: 10),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            bgView.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            projectLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor, constant: 5),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 30),
         ])
         
         
@@ -1037,7 +1312,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func setupProjectEditView() {
         // Initialize and configure editView
-        projectEditView = UIView()
+        projectEditView = UIScrollView()
+        projectEditView.contentSize = CGSize(width: view.bounds.width, height: view.frame.height + 100)
         projectEditView.backgroundColor = .white
         projectEditView.layer.cornerRadius = 12
         projectEditView.layer.shadowOpacity = 0.25
@@ -1081,8 +1357,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 textField.placeholder = "Enter \(title)"
                 NSLayoutConstraint.activate([
                     textField.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
-                    textField.leadingAnchor.constraint(equalTo: projectEditView.leadingAnchor, constant: 16),
-                    textField.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -16)
+                    textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                    textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
                 ])
                 lastBottomAnchor = textField.bottomAnchor
             } else if let textView = control as? UITextView {
@@ -1093,8 +1369,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 textView.isScrollEnabled = true  // Enable scrolling for larger content
                 NSLayoutConstraint.activate([
                     textView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
-                    textView.leadingAnchor.constraint(equalTo: projectEditView.leadingAnchor, constant: 16),
-                    textView.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -16),
+                    textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                    textView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
                     textView.heightAnchor.constraint(equalToConstant: 120)  // Fixed height for UITextView
                 ])
                 lastBottomAnchor = textView.bottomAnchor
@@ -1109,7 +1385,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 projectEditView.addSubview(generateButton)
                 NSLayoutConstraint.activate([
                     generateButton.topAnchor.constraint(equalTo: label.topAnchor, constant: -3),
-                    generateButton.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -16),
+                    generateButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
                     generateButton.heightAnchor.constraint(equalToConstant: 36),
                     generateButton.widthAnchor.constraint(equalToConstant: 180),
                 ])
@@ -1117,12 +1393,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             if index == 0 {
                 editProjectNameTF = control as? UITextField
+                editProjectNameTF.delegate = self
             } else if index == 1 {
                 editProjectRoleTF = control as? UITextField
+                editProjectRoleTF.delegate = self
             } else if index == 2 {
                 editProjectDescTF = control as? UITextView
+                editProjectDescTF.addDoneButtonOnKeyboard()
             } else if index == 3 {
                 editProjectRespTF = control as? UITextView
+                editProjectRespTF.addDoneButtonOnKeyboard()
             }
         }
 
@@ -1156,13 +1436,13 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         projectEditView.addSubview(projectCancelButton)
         
         NSLayoutConstraint.activate([
-            projectSaveButton.bottomAnchor.constraint(equalTo: projectEditView.bottomAnchor, constant: -60),
-            projectSaveButton.trailingAnchor.constraint(equalTo: projectEditView.trailingAnchor, constant: -20),
+            projectSaveButton.bottomAnchor.constraint(equalTo: editProjectRespTF.bottomAnchor, constant: 60),
+            projectSaveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             projectSaveButton.widthAnchor.constraint(equalToConstant: 80),
             projectSaveButton.heightAnchor.constraint(equalToConstant: 40),
             
             projectCancelButton.bottomAnchor.constraint(equalTo: projectSaveButton.bottomAnchor),
-            projectCancelButton.leadingAnchor.constraint(equalTo: projectEditView.leadingAnchor, constant: 20),
+            projectCancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             projectCancelButton.widthAnchor.constraint(equalToConstant: 80),
             projectCancelButton.heightAnchor.constraint(equalToConstant: 40),
         ])
@@ -1321,7 +1601,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }.resume()
     }
 
-    
     @objc func saveProjectChanges() {
         // Attempt to get the selected index path, if any
         let selectedIndexPath = projectCV.indexPathsForSelectedItems?.first
@@ -1443,35 +1722,38 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var currCtcLabel : UILabel!
     var expectedCtcLabel : UILabel!
     var noticePeriodLabel : UILabel!
-    var genderLabel : UILabel!
     var willingToRelocate : UILabel!
     var currentlyEmployed : UILabel!
     var worktypeLabel : UILabel!
-    var permanentAddress : UILabel!
-    var permanentPin : UILabel!
-    var currentAddress : UILabel!
-    var currentPin : UILabel!
     
     var preferencesSaveButton: UIButton!
     var preferencesCancelButton: UIButton!
     
-    // separator line 5 inside this function
-    func setupPreferencesVC() {
-        let projectLabel : UILabel = {
+    
+    func setupPreferencesView() {
+        
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
+        let preferencesTitleLabel : UILabel = {
             let label = UILabel()
             label.text = "Preferences"
-            label.textColor = UIColor(hex: "#101828")
+            label.textColor = .white
             label.font = .boldSystemFont(ofSize: 20)
             return label
         }()
-        projectLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(projectLabel)
+        preferencesTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(preferencesTitleLabel)
         
         let addButton : UIButton = {
             let btn = UIButton()
             btn.setTitle("Edit", for: .normal)
             btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
             return btn
         }()
         addButton.addTarget(self, action: #selector(didTapEditPreferencesButton), for: .touchUpInside)
@@ -1480,10 +1762,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         addButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            projectLabel.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
-            projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            bgView.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            preferencesTitleLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            preferencesTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 5),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 70),
+            addButton.heightAnchor.constraint(equalToConstant: 30),
         ])
         
         var pfLabel = createStaticLabel()
@@ -1511,154 +1801,72 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         var npLabel = createStaticLabel()
         npLabel.text = "Notice Period"
         scrollView.addSubview(npLabel)
-        
         noticePeriodLabel = createDynamicLabel()
         scrollView.addSubview(noticePeriodLabel)
         
-        var gLabel = createStaticLabel()
-        gLabel.text = "Gender"
-        scrollView.addSubview(gLabel)
-        
-        genderLabel = createDynamicLabel()
-        scrollView.addSubview(genderLabel)
         
         var wtrLabel = createStaticLabel()
         wtrLabel.text = "Willing to Relocate"
         scrollView.addSubview(wtrLabel)
-        
         willingToRelocate = createDynamicLabel()
         scrollView.addSubview(willingToRelocate)
         
         var ceLabel = createStaticLabel()
         ceLabel.text = "Currently Employed"
         scrollView.addSubview(ceLabel)
-        
         currentlyEmployed = createDynamicLabel()
         scrollView.addSubview(currentlyEmployed)
         
         var pwtLabel = createStaticLabel()
         pwtLabel.text = "Preferred Work Type"
         scrollView.addSubview(pwtLabel)
-        
         worktypeLabel = createDynamicLabel()
         scrollView.addSubview(worktypeLabel)
         
-        var paLabel = createStaticLabel()
-        paLabel.text = "Permanent Address"
-        scrollView.addSubview(paLabel)
-        
-        permanentAddress = createDynamicLabel()
-        scrollView.addSubview(permanentAddress)
-        
-        var ppLabel = createStaticLabel()
-        ppLabel.text = "Permanent Pin"
-        scrollView.addSubview(ppLabel)
-        
-        permanentPin = createDynamicLabel()
-        scrollView.addSubview(permanentPin)
-        
-        var caLabel = createStaticLabel()
-        caLabel.text = "Current Address"
-        scrollView.addSubview(caLabel)
-        
-        currentAddress = createDynamicLabel()
-        scrollView.addSubview(currentAddress)
-        
-        var cpLabel = createStaticLabel()
-        cpLabel.text = "Current Pin"
-        scrollView.addSubview(cpLabel)
-        
-        currentPin = createDynamicLabel()
-        scrollView.addSubview(currentPin)
-        
         NSLayoutConstraint.activate([
-            pfLabel.topAnchor.constraint(equalTo: projectLabel.bottomAnchor, constant: 20),
+            pfLabel.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
             pfLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
             portfolioLabel.topAnchor.constraint(equalTo: pfLabel.bottomAnchor, constant: 10),
-            portfolioLabel.leadingAnchor.constraint(equalTo: pfLabel.leadingAnchor, constant: 4),
+            portfolioLabel.leadingAnchor.constraint(equalTo: pfLabel.leadingAnchor),
             portfolioLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             ccLabel.topAnchor.constraint(equalTo: portfolioLabel.bottomAnchor, constant: 20),
             ccLabel.leadingAnchor.constraint(equalTo: pfLabel.leadingAnchor),
-            
             currCtcLabel.topAnchor.constraint(equalTo: ccLabel.bottomAnchor, constant: 10),
-            currCtcLabel.leadingAnchor.constraint(equalTo: ccLabel.leadingAnchor, constant: 4),
+            currCtcLabel.leadingAnchor.constraint(equalTo: ccLabel.leadingAnchor),
             
             ecLabel.topAnchor.constraint(equalTo: currCtcLabel.bottomAnchor, constant: 20),
             ecLabel.leadingAnchor.constraint(equalTo: ccLabel.leadingAnchor),
-            
             expectedCtcLabel.topAnchor.constraint(equalTo: ecLabel.bottomAnchor, constant: 10),
-            expectedCtcLabel.leadingAnchor.constraint(equalTo: ecLabel.leadingAnchor, constant: 4),
+            expectedCtcLabel.leadingAnchor.constraint(equalTo: ecLabel.leadingAnchor),
             
             npLabel.topAnchor.constraint(equalTo: expectedCtcLabel.bottomAnchor, constant: 20),
             npLabel.leadingAnchor.constraint(equalTo: ecLabel.leadingAnchor),
-            
             noticePeriodLabel.topAnchor.constraint(equalTo: npLabel.bottomAnchor, constant: 10),
-            noticePeriodLabel.leadingAnchor.constraint(equalTo: npLabel.leadingAnchor, constant: 4),
+            noticePeriodLabel.leadingAnchor.constraint(equalTo: npLabel.leadingAnchor),
             
-            gLabel.topAnchor.constraint(equalTo: noticePeriodLabel.bottomAnchor, constant: 20),
-            gLabel.leadingAnchor.constraint(equalTo:npLabel.leadingAnchor),
-            
-            genderLabel.topAnchor.constraint(equalTo: gLabel.bottomAnchor, constant: 10),
-            genderLabel.leadingAnchor.constraint(equalTo: gLabel.leadingAnchor, constant: 4),
-            
-            wtrLabel.topAnchor.constraint(equalTo: genderLabel.bottomAnchor, constant: 20),
-            wtrLabel.leadingAnchor.constraint(equalTo:gLabel.leadingAnchor),
-            
+            wtrLabel.topAnchor.constraint(equalTo: noticePeriodLabel.bottomAnchor, constant: 20),
+            wtrLabel.leadingAnchor.constraint(equalTo:noticePeriodLabel.leadingAnchor),
             willingToRelocate.topAnchor.constraint(equalTo: wtrLabel.bottomAnchor, constant: 10),
-            willingToRelocate.leadingAnchor.constraint(equalTo: wtrLabel.leadingAnchor, constant: 4),
+            willingToRelocate.leadingAnchor.constraint(equalTo: wtrLabel.leadingAnchor),
             
             ceLabel.topAnchor.constraint(equalTo: willingToRelocate.bottomAnchor, constant: 20),
             ceLabel.leadingAnchor.constraint(equalTo: wtrLabel.leadingAnchor),
-            
             currentlyEmployed.topAnchor.constraint(equalTo: ceLabel.bottomAnchor, constant: 10),
-            currentlyEmployed.leadingAnchor.constraint(equalTo: ceLabel.leadingAnchor, constant: 4),
+            currentlyEmployed.leadingAnchor.constraint(equalTo: ceLabel.leadingAnchor),
             
             pwtLabel.topAnchor.constraint(equalTo: currentlyEmployed.bottomAnchor, constant: 20),
             pwtLabel.leadingAnchor.constraint(equalTo: ceLabel.leadingAnchor),
-            
             worktypeLabel.topAnchor.constraint(equalTo: pwtLabel.bottomAnchor, constant: 10),
-            worktypeLabel.leadingAnchor.constraint(equalTo: pwtLabel.leadingAnchor, constant: 4),
-            
-            paLabel.topAnchor.constraint(equalTo: pwtLabel.bottomAnchor, constant: 40),
-            paLabel.leadingAnchor.constraint(equalTo: pwtLabel.leadingAnchor),
-            
-            permanentAddress.topAnchor.constraint(equalTo: paLabel.bottomAnchor, constant: 10),
-            permanentAddress.leadingAnchor.constraint(equalTo: paLabel.leadingAnchor, constant: 4),
-            
-            ppLabel.topAnchor.constraint(equalTo: permanentAddress.bottomAnchor, constant: 20),
-            ppLabel.leadingAnchor.constraint(equalTo: paLabel.leadingAnchor),
-            
-            permanentPin.topAnchor.constraint(equalTo: ppLabel.bottomAnchor, constant: 10),
-            permanentPin.leadingAnchor.constraint(equalTo: ppLabel.leadingAnchor, constant: 4),
-            
-            caLabel.topAnchor.constraint(equalTo: permanentPin.bottomAnchor, constant: 20),
-            caLabel.leadingAnchor.constraint(equalTo: ppLabel.leadingAnchor),
-            
-            currentAddress.topAnchor.constraint(equalTo: caLabel.bottomAnchor, constant: 10),
-            currentAddress.leadingAnchor.constraint(equalTo: caLabel.leadingAnchor, constant: 4),
-            
-            cpLabel.topAnchor.constraint(equalTo: currentAddress.bottomAnchor, constant: 20),
-            cpLabel.leadingAnchor.constraint(equalTo: caLabel.leadingAnchor),
-            
-            currentPin.topAnchor.constraint(equalTo: cpLabel.bottomAnchor, constant: 10),
-            currentPin.leadingAnchor.constraint(equalTo: cpLabel.leadingAnchor, constant: 4),
+            worktypeLabel.leadingAnchor.constraint(equalTo: pwtLabel.leadingAnchor),
         ])
         
         
-        separatorLine5.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine5.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine5)
-        NSLayoutConstraint.activate([
-            separatorLine5.topAnchor.constraint(equalTo: currentPin.bottomAnchor, constant: 40),
-            separatorLine5.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine5.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine5.heightAnchor.constraint(equalToConstant: 1)
-        ])
+        
     }
     
     var editPreferencesView : UIView!
+    
     func setupEditPreferencesVC() {
         
         editPreferencesView = preferencesVC.view!
@@ -1672,7 +1880,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         preferencesVC.bottomHeightConstraint?.isActive = true
         preferencesVC.bottomView.isHidden = true
         
-        let contentHeight = view.bounds.height + 400
+        let contentHeight = view.bounds.height - 100
         preferencesVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
         editPreferencesView.layoutIfNeeded()
         
@@ -1730,13 +1938,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
     }
     
-    
     @objc func didTapEditPreferencesButton() {
         UIView.animate(withDuration: 0.36) {
             self.editPreferencesView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)
         }
     }
-    
     @objc func savePreferencesChanges() {
         
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
@@ -1744,15 +1950,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
-        guard let portfolio = preferencesVC.portfolioTextField.text, !portfolio.isEmpty,
+        guard let portfolio = preferencesVC.portfolioTextField.text,
               let currentCtcText = preferencesVC.currentCtcTextField.text, !currentCtcText.isEmpty, let currentCtc = Double(currentCtcText),
               let expectedCtcText = preferencesVC.expectedCtcTextField.text, !expectedCtcText.isEmpty, let expectedCtc = Double(expectedCtcText),
-              let permanentAddress = preferencesVC.permanentTextField.text, !permanentAddress.isEmpty,
-              let permanentPin = preferencesVC.permanentPinTextField.text, !permanentPin.isEmpty,
-              let currentAddress = preferencesVC.currentTextField.text, !currentAddress.isEmpty,
-              let currentPin = preferencesVC.currentPinTextField.text, !currentPin.isEmpty,
               let noticePeriod = preferencesVC.selectedNoticeOptionsButton?.titleLabel?.text,
-              let gender = preferencesVC.selectedGenderButton?.titleLabel?.text,
               let willingToRelocate = preferencesVC.selectedRelocateButton?.titleLabel?.text,
               let currentlyEmployed = preferencesVC.selectedEmployedButton?.titleLabel?.text,
               let preferredWorkType = preferencesVC.selectedWorkTypeButton?.titleLabel?.text
@@ -1761,22 +1962,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             return
         }
         
-        let userProfileUpdate = UserProfileUpdate(
+        let userPreferencesUpdate = UserPreferencesUpdate(
             hobbies: "",
-            preferredWorkType: preferredWorkType,
+            preferredWorkType: preferredWorkType.trimmingCharacters(in: .whitespacesAndNewlines),
             willingToRelocate: willingToRelocate,
-            gender: gender,
             noticePeriod: noticePeriod,
             currentlyEmployed: currentlyEmployed,
-            permanentAddress: Address(address: permanentAddress, pinCode: permanentPin),
-            currentAddress: Address(address: currentAddress, pinCode: currentPin),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
-//            language: [
-//                Language(language: "English", proficiencyLevel: "Expert", read: true, write: true, speak: true)
-//            ],
-//            language: languageArray,
-            language: preferencesVC.languageArray,
             portfolio: portfolio
         )
         
@@ -1787,9 +1980,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
-        
         do {
-            let jsonData = try JSONEncoder().encode(userProfileUpdate)
+            let jsonData = try JSONEncoder().encode(userPreferencesUpdate)
             request.httpBody = jsonData
         } catch {
             print("Failed to encode user profile to JSON: \(error)")
@@ -1799,9 +1991,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 print("Failed to upload user profile, status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                print(response)
                 return
             }
-            print(response)
+            
             if let data = data, let responseString = String(data: data, encoding: .utf8) {
                 print("Server response: \(responseString)")
             }
@@ -1818,7 +2011,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.editPreferencesView.transform = .identity
         }
     }
-    
     @objc func cancelPreferencesChanges() {
         UIView.animate(withDuration: 0.36) {
             self.editPreferencesView.transform = .identity
@@ -1826,38 +2018,62 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
+    func setupSeparatorLine5() {
+        separatorLine5.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine5.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(separatorLine5)
+        NSLayoutConstraint.activate([
+            separatorLine5.topAnchor.constraint(equalTo: worktypeLabel.bottomAnchor, constant: 40),
+            separatorLine5.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine5.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine5.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    
+    // Headline and Summary :
     var headlineEditButton : UIButton = {
         let btn = UIButton()
         btn.setTitle("Edit", for: .normal)
         btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        btn.backgroundColor = .white
+        btn.layer.cornerRadius = 8
         return btn
     }()
-    
     var headlineSaveButton : UIButton!
     
     func setupHeadlineAndSummary() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
         
         let prefer = UILabel()
         prefer.text = "Headline and Summary"
         prefer.font = .boldSystemFont(ofSize: 20)
-        
+        prefer.textColor = .white
         prefer.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(prefer)
         
-        
         headlineEditButton.addTarget(self, action: #selector(didTapEditHeadline), for: .touchUpInside)
-        
         scrollView.addSubview(headlineEditButton)
         headlineEditButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            prefer.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 20),
+            bgView.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            prefer.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
             prefer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            headlineEditButton.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 16),
+                
+            headlineEditButton.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 5),
             headlineEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            headlineEditButton.widthAnchor.constraint(equalToConstant: 70),
+            headlineEditButton.heightAnchor.constraint(equalToConstant: 30),
         ])
-        scrollView.bringSubviewToFront(prefer)
         
         
         
@@ -1876,11 +2092,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headlineVC.generateSummary.isHidden = true
         headlineVC.resumeTextView.isEditable = false
         headlineVC.summaryTextView.isEditable = false
+        headlineVC.resumeTextView.inputAccessoryView = nil
+        headlineVC.summaryTextView.inputAccessoryView = nil
         
         tempView.layoutIfNeeded()
         
         let contentHeight = view.bounds.height - 300
         headlineVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        headlineVC.scrollView.isScrollEnabled = false
         tempView.layoutIfNeeded()
         
         tempView.translatesAutoresizingMaskIntoConstraints = false
@@ -1906,12 +2125,12 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         
         NSLayoutConstraint.activate([
-            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 10),
+            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 20),
             tempView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tempView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tempView.heightAnchor.constraint(equalToConstant: 700),
             
-            headlineSaveButton.bottomAnchor.constraint(equalTo: tempView.bottomAnchor, constant: -100),
+            headlineSaveButton.bottomAnchor.constraint(equalTo: tempView.bottomAnchor, constant: -180),
             headlineSaveButton.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
             headlineSaveButton.widthAnchor.constraint(equalToConstant: 80),
             headlineSaveButton.heightAnchor.constraint(equalToConstant: 40),
@@ -1927,6 +2146,9 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             headlineVC.resumeTextView.isEditable = true
             headlineVC.summaryTextView.isEditable = true
+            
+            headlineVC.resumeTextView.addDoneButtonOnKeyboard()
+            headlineVC.summaryTextView.addDoneButtonOnKeyboard()
         }
         else {
             headlineEditButton.setTitle("Edit", for: .normal)
@@ -1937,10 +2159,12 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             headlineVC.resumeTextView.isEditable = false
             headlineVC.summaryTextView.isEditable = false
             
+            headlineVC.resumeTextView.inputAccessoryView = nil
+            headlineVC.summaryTextView.inputAccessoryView = nil
+            
             fetchUserProfile()
         }
     }
-    
     @objc func saveHeadlineChanges() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
             print("Invalid URL")
@@ -2003,11 +2227,237 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         headlineVC.resumeTextView.isEditable = false
         headlineVC.summaryTextView.isEditable = false
+        
+        headlineVC.resumeTextView.inputAccessoryView = nil
+        headlineVC.summaryTextView.inputAccessoryView = nil
+    }
+    
+    
+    func setupSeparatorLine6() {
+        separatorLine6.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine6.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(separatorLine6)
+        NSLayoutConstraint.activate([
+            separatorLine6.topAnchor.constraint(equalTo: headlineSaveButton.bottomAnchor, constant: 20),
+            separatorLine6.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine6.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine6.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    // *************************** Softwares ******************************
+    
+    var softwaresContainerView = UIView()
+    
+    func setupSoftwares() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
+        let title = UILabel()
+        title.text = "Softwares"
+        title.font = .boldSystemFont(ofSize: 20)
+        title.textColor = .white
+        title.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(title)
+        
+        var softwareEditButton : UIButton = {
+            let btn = UIButton()
+            btn.setTitle("Edit", for: .normal)
+            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
+            return btn
+        }()
+        softwareEditButton.addTarget(self, action: #selector(didTapEditSoftwares), for: .touchUpInside)
+        scrollView.addSubview(softwareEditButton)
+        softwareEditButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        softwaresContainerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(softwaresContainerView)
+        NSLayoutConstraint.activate([
+            softwaresContainerView.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
+            softwaresContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            softwaresContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
+        
+        NSLayoutConstraint.activate([
+            bgView.topAnchor.constraint(equalTo: separatorLine6.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            title.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                
+            softwareEditButton.topAnchor.constraint(equalTo: separatorLine6.bottomAnchor, constant: 5),
+            softwareEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            softwareEditButton.widthAnchor.constraint(equalToConstant: 70),
+            softwareEditButton.heightAnchor.constraint(equalToConstant: 30),
+        ])
+        
+    }
+    
+    func addLabelsInSoftwares() {
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        let spacing: CGFloat = 10
+        let maxWidth: CGFloat = view.bounds.width - 32  // Adjust for left and right padding
+        
+        for string in softwaresArray {
+            print("Element : ", string)
+            let label = PaddedLabel()
+            label.text = string
+            label.font = .boldSystemFont(ofSize: 16)
+            label.backgroundColor = .white
+            label.textColor = .black
+            label.layer.borderColor = UIColor.lightGray.cgColor
+            label.layer.borderWidth = 1
+            label.layer.cornerRadius = 8
+            label.clipsToBounds = true
+            
+            // Ensure the label fits the text with padding
+            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
+            
+            // Check if the label fits in the current line
+            if currentX + labelSize.width > maxWidth {
+                // Move to the next line
+                currentX = 0
+                currentY += labelSize.height + spacing
+            }
+            
+            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
+            softwaresContainerView.addSubview(label)
+            
+            // Update currentX to the next position
+            currentX += labelSize.width + spacing
+        }
+        
+        softwaresContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
+    }
+    
+    @objc func didTapEditSoftwares() {
+        let vc = EditSoftwareVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+    func setupSeparatorLine7() {
+        separatorLine7.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine7.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(separatorLine7)
+        NSLayoutConstraint.activate([
+            separatorLine7.topAnchor.constraint(equalTo: softwaresContainerView.bottomAnchor, constant: 40),
+            separatorLine7.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine7.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine7.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    
+    var skillsContainerView = UIView()
+    
+    func setupSkills() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#1E293B")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(bgView)
+        
+        let title = UILabel()
+        title.text = "Skills"
+        title.font = .boldSystemFont(ofSize: 20)
+        title.textColor = .white
+        title.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(title)
+        
+        var skillsEditButton : UIButton = {
+            let btn = UIButton()
+            btn.setTitle("Edit", for: .normal)
+            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            btn.backgroundColor = .white
+            btn.layer.cornerRadius = 8
+            return btn
+        }()
+        skillsEditButton.addTarget(self, action: #selector(didTapEditSkills), for: .touchUpInside)
+        scrollView.addSubview(skillsEditButton)
+        skillsEditButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        skillsContainerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(skillsContainerView)
+        NSLayoutConstraint.activate([
+            skillsContainerView.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
+            skillsContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            skillsContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
+        
+        NSLayoutConstraint.activate([
+            bgView.topAnchor.constraint(equalTo: separatorLine7.bottomAnchor),
+            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bgView.heightAnchor.constraint(equalToConstant: 40),
+            
+            title.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                
+            skillsEditButton.topAnchor.constraint(equalTo: separatorLine7.bottomAnchor, constant: 5),
+            skillsEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            skillsEditButton.widthAnchor.constraint(equalToConstant: 70),
+            skillsEditButton.heightAnchor.constraint(equalToConstant: 30),
+        ])
+        
+    }
+    
+    func addLabelsInSkills() {
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        let spacing: CGFloat = 10
+        let maxWidth: CGFloat = view.bounds.width - 32  // Adjust for left and right padding
+        
+        for string in skillsArray {
+            let label = PaddedLabel()
+            label.text = string
+            label.font = .boldSystemFont(ofSize: 16)
+            label.backgroundColor = .white
+            label.textColor = .black
+            label.layer.borderColor = UIColor.lightGray.cgColor
+            label.layer.borderWidth = 1
+            label.layer.cornerRadius = 8
+            label.clipsToBounds = true
+            
+            // Ensure the label fits the text with padding
+            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
+            
+            // Check if the label fits in the current line
+            if currentX + labelSize.width > maxWidth {
+                // Move to the next line
+                currentX = 0
+                currentY += labelSize.height + spacing
+            }
+            
+            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
+            skillsContainerView.addSubview(label)
+            
+            // Update currentX to the next position
+            currentX += labelSize.width + spacing
+        }
+        
+        skillsContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
+    }
+    
+    @objc func didTapEditSkills() {
+        let vc = EditSkillVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     
     
+    
     // ******************* Common Methods ***********************************
+    
     func updateScrollViewContentSize() {
         let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
         // Add other collection view heights if there are more
@@ -2039,7 +2489,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
-    // ***********************************************************************************************************************
+    // ***********************************************************************************************************
     
     func setupLogOut() {
         let logOutButton = UIButton()
@@ -2069,9 +2519,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             UserDefaults.standard.removeObject(forKey: "accessToken")
             UserDefaults.standard.synchronize() // To ensure the accessToken is removed
             
-            let vc = RegistrationVC()
-            vc.modalPresentationStyle = .fullScreen
-            self.present(vc, animated: true)
+            let vc = LoginVC()
+            let navVC = UINavigationController(rootViewController: vc)
+            navVC.modalPresentationStyle = .fullScreen
+            navVC.navigationBar.isHidden = true
+            self.present(navVC, animated: true)
         }
         
         let noAction = UIAlertAction(title: "No", style: .cancel)
@@ -2289,7 +2741,7 @@ extension ProfileController { // Extension for APIs
 
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
-                print("User fetched: \(user)")
+//                print("User fetched: \(user)")
                 
                 let initialsOfName = self.extractInitials(from: user.name)
                 let userName = user.name ?? ""
@@ -2298,9 +2750,28 @@ extension ProfileController { // Extension for APIs
                     self.profileCircleLabel.text = initialsOfName
                     self.userNameLabel.text = "\(userName)"
                     self.jobTitleLabel.text = user.designation
-                    self.locationLabel.text = user.currentAddress?.address ?? "cityNil"
-                    self.profileImageView.image = UIImage(named: user.profilePic ?? "")
-                    print("profilePic " , user.profilePic)
+                    self.locationLabel.text = user.currentAddress?.city ?? "cityNil"
+                    
+                    self.fetchProfilePicture(size: "m", userID: user._id)
+                    
+                    self.dobLabel.text = user.dateOfBirth
+                    self.nationalityLabel.text = user.nationality
+                    self.genderLabel.text = user.gender?.trimmingCharacters(in: .whitespaces)
+                    self.permanentAddressLabel.text = user.permanentAddress
+                    self.currentAddressLabel.text = user.currentAddress?.address
+                    self.stateLabel.text = user.currentAddress?.state
+                    self.cityLabel.text = user.currentAddress?.city
+                    self.pincodeLabel.text = user.currentAddress?.pincode
+                    self.uidLabel.text = user.uidNumber ?? "UID nil"
+                    self.passportLabel.text = user.passportNo ?? "Passport nil"
+                    self.pancardLabel.text = user.panNo ?? "PAN nil"
+                    
+                    var a : [String] = []
+                    for s in user.language! {
+                        a.append(s.language)
+                    }
+                    self.languageLabel.text = a.joined(separator: ", ")
+                    
                     
                     self.empDataArray = user.experience!
                     self.reloadEmploymentsCollectionView()
@@ -2312,18 +2783,10 @@ extension ProfileController { // Extension for APIs
                     self.reloadProjectCollectionView()
                     
                     self.totalExperience = user.totalExperience
-                    print("Total Exp " , self.totalExperience)
                     
                     self.preferencesVC.portfolioTextField.text = user.portfolio
                     self.preferencesVC.currentCtcTextField.text = user.currentCtc
                     self.preferencesVC.expectedCtcTextField.text = user.expectedCtc
-                    let noticePeriod = user.noticePeriod
-                    self.preferencesVC.permanentTextField.text = user.permanentAddress?.address
-                    self.preferencesVC.permanentPinTextField.text = user.permanentAddress?.pinCode
-                    self.preferencesVC.currentTextField.text = user.currentAddress?.address
-                    self.preferencesVC.currentPinTextField.text = user.currentAddress?.pinCode
-                    self.preferencesVC.languageArray = user.language!
-                    self.preferencesVC.reloadCollectionView()
                     
                     self.headlineVC.resumeTextView.text = user.headline
                     self.headlineVC.summaryTextView.text = user.summary
@@ -2334,18 +2797,60 @@ extension ProfileController { // Extension for APIs
                     self.expectedCtcLabel.text = user.expectedCtc
             
                     self.noticePeriodLabel.text = user.noticePeriod?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.genderLabel.text = user.gender?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.willingToRelocate.text = user.willingToRelocate?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.currentlyEmployed.text = user.currentlyEmployed?.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.worktypeLabel.text = user.preferredWorkType?.trimmingCharacters(in: .whitespacesAndNewlines)
                     
-                    self.permanentAddress.text = user.permanentAddress?.address
-                    self.permanentPin.text = user.permanentAddress?.pinCode
-                    self.currentAddress.text = user.currentAddress?.address
-                    self.currentPin.text = user.currentAddress?.pinCode
+//                    for s in user.softwares! {
+//                        self.softwaresArray.append(s)
+//                    }
+                    
+                    for subview in self.softwaresContainerView.subviews {
+                        subview.removeFromSuperview()
+                    }
+                    self.softwaresArray = user.softwares!
+                    self.addLabelsInSoftwares()
+                    
+                    for subview in self.skillsContainerView.subviews {
+                        subview.removeFromSuperview()
+                    }
+                    self.skillsArray = user.skills!
+                    self.addLabelsInSkills()
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")
+            }
+        }
+
+        task.resume()
+    }
+    
+    func fetchProfilePicture(size: String, userID: String) {
+        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile/\(size)/\(userID)"
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")", forHTTPHeaderField: "Authorization")
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            DispatchQueue.main.async {
+                if let image = UIImage(data: data) {
+                    // Use the image in your app, e.g., assign it to an UIImageView
+                    self.profileImageView.image = image
+                    print("Image Fetched Successfully")
+                } else {
+                    print("Failed to decode image")
+                }
             }
         }
 
@@ -2359,3 +2864,25 @@ extension ProfileController { // Extension for APIs
         return initials.map(String.init).joined().uppercased()
     }
 }
+
+
+class PaddedLabel: UILabel {
+    var edgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: edgeInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width + edgeInsets.left + edgeInsets.right,
+                      height: size.height + edgeInsets.top + edgeInsets.bottom)
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let sizeThatFits = super.sizeThatFits(size)
+        return CGSize(width: sizeThatFits.width + edgeInsets.left + edgeInsets.right,
+                      height: sizeThatFits.height + edgeInsets.top + edgeInsets.bottom)
+    }
+}
+

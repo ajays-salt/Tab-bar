@@ -56,13 +56,25 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     
     let loginButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Log In", for: .normal)
+        button.setTitle("Get OTP", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 24)
         button.backgroundColor = UIColor(hex: "#0079C4")
         button.layer.cornerRadius = 8
         button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    let googleButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "googleLogo"), for: .normal)
+        button.layer.cornerRadius = 20
+        button.layer.borderWidth = 1
+        
+        button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
         return button
     }()
     
@@ -82,6 +94,9 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         return label
     }()
     
+    let toggleButton = UIButton(type: .custom)
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
@@ -99,7 +114,8 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     func setupViews() {
         setupHeaderView()
         setupUI()
-//        setupLogin()
+        setupToggleButton()
+        setupGoogleSignIn()
     }
     
     func setupHeaderView() {
@@ -140,7 +156,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         headLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(headLabel)
         NSLayoutConstraint.activate([
-            headLabel.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 40),
+            headLabel.topAnchor.constraint(equalTo: olousLogo.bottomAnchor, constant: 20),
             headLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
             headLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
@@ -171,11 +187,14 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         view.addSubview(passwordTextField)
         view.addSubview(forgotPasswordLabel)
         view.addSubview(loginButton)
+        
+        view.addSubview(googleButton)
+        
         view.addSubview(signUpLabel)
         
         NSLayoutConstraint.activate([
             
-            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
             emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
             emailTextField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 8),
@@ -200,37 +219,52 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             loginButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             loginButton.heightAnchor.constraint(equalToConstant: 50),
             
-            signUpLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 50),
+            googleButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
+            googleButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            googleButton.heightAnchor.constraint(equalToConstant: 80),
+            googleButton.widthAnchor.constraint(equalToConstant: 80),
+            
+            signUpLabel.topAnchor.constraint(equalTo: googleButton.bottomAnchor, constant: 20),
             signUpLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
         ])
     }
     
-    @objc private func loginButtonTapped() {
+    func setupToggleButton() {
+        toggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        toggleButton.setImage(UIImage(systemName: "eye"), for: .selected)
+        toggleButton.tintColor = UIColor(hex: "#667085")
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility(_:)), for: .touchUpInside)
         
+        passwordTextField.rightView = toggleButton
+        passwordTextField.rightViewMode = .always
+        toggleButton.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
+    }
+    
+    @objc func togglePasswordVisibility(_ sender: UIButton) {
+        sender.isSelected.toggle()
+        if let textField = sender.superview as? UITextField {
+            textField.isSecureTextEntry = !sender.isSelected
+        }
+    }
+    
+    
+    @objc private func loginButtonTapped() {
         guard let email = emailTextField.text, !email.isEmpty, email.isValidEmail(),
               let password = passwordTextField.text, !password.isEmpty else {
             
-                // Handle validation failure
-                let alertController = UIAlertController(title: "Alert!", message: "Fill all the details", preferredStyle: .alert)
-                let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-                alertController.addAction(cancelAction)
-                self.present(alertController, animated: true, completion: nil)
-            
+            // Handle validation failure
+            showAlert(title: "Alert!", message: "Fill all the details")
             return
         }
         
-        let loginData: [String: String] = [
-            "email": email,
-            "password": password
-        ]
+        let loginData: [String: String] = ["email": email, "password": password]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: loginData) else {
-            print("Failed to serialize registration data")
+            print("Failed to serialize login data")
             return
         }
         
-        // Create the request URL
         let loginURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/login")!
         
         // Create the request
@@ -239,76 +273,126 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
         
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            // Check for errors
+            defer {
+                DispatchQueue.main.async {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                }
+            }
+            
             if let error = error {
-                print("Registration request error: \(error)")
+                print("Login request error: \(error)")
                 return
             }
             
-            // Check for response data
             guard let data = data else {
                 print("No data received")
                 return
             }
             
-            // Attempt to decode the response as a string
-            if let resp = String(data: data, encoding: .utf8) {
-//                print(resp)
-                
-                // Attempt to parse the JSON response
-                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    // Check if the registration was successful
-                    print(json)
-                    if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
-                        
-                        // Save the access token to UserDefaults or any other secure storage mechanism
-                        UserDefaults.standard.set(accessToken, forKey: "accessToken")
-                        
-                        // Navigate to the BasicDetails1 view controller
-                        DispatchQueue.main.async {
-                            let vc = BasicDetails1()
-                            let navVC = UINavigationController(rootViewController: vc)
-                            navVC.modalPresentationStyle = .fullScreen
-                            navVC.navigationBar.isHidden = true
-                            self.present(navVC, animated: true)
-                            
-//                            let viewController = ViewController()
-//                            viewController.modalPresentationStyle = .overFullScreen
-//                            viewController.overrideUserInterfaceStyle = .light
-//                            self.present(viewController, animated: true)
-                        }
-                    } else if let msg = json["msg"] as? String, msg == "Invalid credentials" {
-                        // Handle the case where the user already exists
-                        DispatchQueue.main.async {
-                            let alertController = UIAlertController(title: "Alert!", message: "Invalid Login Credentials", preferredStyle: .alert)
-                            
-                            let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
-                            
-                            alertController.addAction(cancelAction)
-                            
-                            self.present(alertController, animated: true, completion: nil)
-                        }
-                        
-                    } else {
-                        print("Unexpected response from server")
-                        // Handle other unexpected responses from the server
-                    }
-                } else {
-                    print("Failed to parse JSON response")
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                print(jsonResponse)
+                DispatchQueue.main.async {
+                    self.handleLoginResponse(jsonResponse, email: email)
                 }
             } else {
-                print("Failed to decode response as string")
+                print("Failed to parse JSON response")
             }
         }
         task.resume()
     }
+
+    private func handleLoginResponse(_ json: [String: Any], email: String) {
+        if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
+            UserDefaults.standard.set(accessToken, forKey: "accessToken")
+//            navigateToBasicDetails()
+        } else if let msg = json["msg"] as? String, msg == "user does not exist" {
+            showAlert(title: "Alert!", message: "User does not Exist")
+        } else if let msg = json["msg"] as? String, msg == "Invalid credentials" {
+            showAlert(title: "Alert!", message: "Invalid Login Credentials")
+        } else if let msg = json["msg"] as? String, msg == "otp sent" {
+            navigateToLoginOtpVC(email: email)
+        } else {
+            print("Unexpected response from server")
+        }
+    }
+
+    private func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+
+    private func navigateToBasicDetails() {
+        let vc = BasicDetails1()
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
+    }
+
+    private func navigateToLoginOtpVC(email: String) {
+        let vc = LoginOtpVC()
+        vc.email = email
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    
+    func setupGoogleSignIn() {
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor(hex: "fafafa") // or any appropriate background color
+        containerView.layer.cornerRadius = 31 // Half of height and width to make it circular
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(containerView)
+        
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 23.5),
+            containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            containerView.heightAnchor.constraint(equalToConstant: 62),
+            containerView.widthAnchor.constraint(equalToConstant: 62),
+        ])
+        
+        // ImageView for the Google logo
+        let imageView = UIImageView(image: UIImage(named: "googleLogo"))
+        imageView.isUserInteractionEnabled = true
+        imageView.contentMode = .scaleAspectFill  // Maintain the aspect ratio
+        imageView.layer.cornerRadius = 50
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
+            imageView.widthAnchor.constraint(equalToConstant: 100),  // Adjust size as needed
+            imageView.heightAnchor.constraint(equalToConstant: 100), // Adjust size as needed
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 4),
+        ])
+        
+        containerView.isHidden = true
+        imageView.isHidden = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleGoogleSignInTap))
+        imageView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func handleGoogleSignInTap() {
+        print("Google Sign-In tapped")
+    }
+    
+    
     
     @objc func signUpTapped() {
         let vc = RegistrationVC()
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
     }
     
     @objc func forgotPasswordTapped() {

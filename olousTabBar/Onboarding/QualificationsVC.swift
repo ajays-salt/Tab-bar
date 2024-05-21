@@ -41,7 +41,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         label.font = .systemFont(ofSize: 16)
         return label
     }()
-    var passArray = ["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013"]
+    var passArray = ["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010","2009", "2008", "2007", "2006", "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", "1995", "1994", "1993", "1992", "1991", "1990"]
     var passTableView : UITableView = {
         let tableView = UITableView()
         tableView.layer.borderWidth = 1
@@ -137,7 +137,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "2/8"
+        profileCircleLabel.text = "2/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -152,7 +152,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 2 / 8
+        let percentage: CGFloat = 2 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         

@@ -7,24 +7,24 @@
 
 import UIKit
 
-class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class JobSearchScreen: UIViewController, UITextFieldDelegate {
     
     
-    var jobsArray = ["Paris", "New York", "Pimpri", "Lonar", "Berlin", "Partur", "Pune"]
-    var locationsArray = ["Paris", "New York", "Pimpri", "Lonar", "Berlin", "Partur", "Pune"]
-    var filteredJobs = [String]()
-    var filteredLocations = [String]()
-    
-    let jobsTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.isHidden = true
-        return tableView
-    }()
-    let locationsTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.isHidden = true
-        return tableView
-    }()
+//    var jobsArray = ["Paris", "New York", "Pimpri", "Lonar", "Berlin", "Partur", "Pune"]
+//    var locationsArray = ["Paris", "New York", "Pimpri", "Lonar", "Berlin", "Partur", "Pune"]
+//    var filteredJobs = [String]()
+//    var filteredLocations = [String]()
+//    
+//    let jobsTableView: UITableView = {
+//        let tableView = UITableView()
+//        tableView.isHidden = true
+//        return tableView
+//    }()
+//    let locationsTableView: UITableView = {
+//        let tableView = UITableView()
+//        tableView.isHidden = true
+//        return tableView
+//    }()
     
     var jobSearchButton : UIButton = {
         let button = UIButton()
@@ -70,25 +70,25 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         locationTextField.tag = 2
         
         
-        jobsTableView.delegate = self
-        jobsTableView.dataSource = self
-        locationsTableView.delegate = self
-        locationsTableView.dataSource = self
+//        jobsTableView.delegate = self
+//        jobsTableView.dataSource = self
+//        locationsTableView.delegate = self
+//        locationsTableView.dataSource = self
         
-        setupJobsTableView()
-        setupLocationsTableView()
+//        setupJobsTableView()
+//        setupLocationsTableView()
         
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         companiesCollectionVC = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        companiesCollectionVC.register(CompaniesCell.self, forCellWithReuseIdentifier: "id")
+        companiesCollectionVC.register(JobsCell.self, forCellWithReuseIdentifier: "id")
         setupTopCompaniesView()
 
     }
     
     func setupJobSearchSection() {
-        jobSearchSection.backgroundColor = .systemBackground
+        jobSearchSection.backgroundColor = UIColor(hex: "#1E293B")
         // #007AFF systemBlue
         jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(jobSearchSection)
@@ -180,61 +180,60 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         
     }
     
-    func setupJobsTableView() {
-        jobsTableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(jobsTableView)
-        NSLayoutConstraint.activate([
-            jobsTableView.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 50),
-            jobsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            jobsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            jobsTableView.heightAnchor.constraint(equalToConstant: 150)
-        ])
-    }
+//    func setupJobsTableView() {
+//        jobsTableView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(jobsTableView)
+//        NSLayoutConstraint.activate([
+//            jobsTableView.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 50),
+//            jobsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+//            jobsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+//            jobsTableView.heightAnchor.constraint(equalToConstant: 150)
+//        ])
+//    }
+//    func setupLocationsTableView() {
+//        locationsTableView.layer.borderWidth = 1
+//        locationsTableView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+//        locationsTableView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(locationsTableView)
+//        NSLayoutConstraint.activate([
+//            locationsTableView.topAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: 0),
+//            locationsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+//            locationsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+//            locationsTableView.heightAnchor.constraint(equalToConstant: 130)
+//        ])
+//    }
     
-    func setupLocationsTableView() {
-        locationsTableView.layer.borderWidth = 1
-        locationsTableView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        locationsTableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(locationsTableView)
-        NSLayoutConstraint.activate([
-            locationsTableView.topAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: 0),
-            locationsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            locationsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            locationsTableView.heightAnchor.constraint(equalToConstant: 130)
-        ])
-    }
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField == jobsTextField {
-            let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
-            filterJobs(with: searchText)
-        }
-        else {
-            let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
-            filterLocations(with: searchText)
-        }
-        return true
-    }
+//    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+//        if textField == jobsTextField {
+//            let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
+//            filterJobs(with: searchText)
+//        }
+//        else {
+//            let searchText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
+//            filterLocations(with: searchText)
+//        }
+//        return true
+//    }
     
     // Step 5: Filter locations based on search text
-    func filterJobs(with searchText: String) {
-        filteredJobs = jobsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
-        jobsTableView.isHidden = filteredJobs.isEmpty
-        if(filteredJobs.count == jobsArray.count) {
-            filteredJobs.removeAll()
-            jobsTableView.isHidden = true
-        }
-        jobsTableView.reloadData()
-    }
-    func filterLocations(with searchText: String) {
-        filteredLocations = locationsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
-        locationsTableView.isHidden = filteredLocations.isEmpty
-        if(filteredLocations.count == locationsArray.count) {
-            filteredLocations.removeAll()
-            locationsTableView.isHidden = true
-        }
-        locationsTableView.reloadData()
-    }
+//    func filterJobs(with searchText: String) {
+//        filteredJobs = jobsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
+//        jobsTableView.isHidden = filteredJobs.isEmpty
+//        if(filteredJobs.count == jobsArray.count) {
+//            filteredJobs.removeAll()
+//            jobsTableView.isHidden = true
+//        }
+//        jobsTableView.reloadData()
+//    }
+//    func filterLocations(with searchText: String) {
+//        filteredLocations = locationsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
+//        locationsTableView.isHidden = filteredLocations.isEmpty
+//        if(filteredLocations.count == locationsArray.count) {
+//            filteredLocations.removeAll()
+//            locationsTableView.isHidden = true
+//        }
+//        locationsTableView.reloadData()
+//    }
     
     func setupSearchJobsButton() {
         jobSearchButton.addTarget(self, action: #selector(didTapSearchJobs), for: .touchUpInside)
@@ -264,6 +263,23 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         navigationController?.pushViewController(jobResultVC, animated: true)
     }
     
+    func setupSeparatorView1() {
+        let separatorLine = UIView()
+        separatorLine.backgroundColor = .systemGray6
+        view.addSubview(separatorLine)
+        
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            separatorLine.topAnchor.constraint(equalTo: jobSearchButton.bottomAnchor, constant: 30),
+            separatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            separatorLine.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: 8)
+        ])
+        
+    }
+    
+    
     func setupTopCompaniesView() {
         
         topCompaniesView.translatesAutoresizingMaskIntoConstraints = false
@@ -273,20 +289,20 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
             topCompaniesView.topAnchor.constraint(equalTo: jobSearchButton.bottomAnchor, constant: 60),
             topCompaniesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topCompaniesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topCompaniesView.heightAnchor.constraint(equalToConstant: 261)
+            topCompaniesView.heightAnchor.constraint(equalToConstant: 301)
         ])
         
         let label = UILabel()
-        label.text = "Top Companies"
+        label.text = "Recommended Jobs"
         label.font = .boldSystemFont(ofSize: 20)
         
         label.translatesAutoresizingMaskIntoConstraints = false
         topCompaniesView.addSubview(label)
         
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 10),
+            label.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 5),
             label.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
-            label.widthAnchor.constraint(equalToConstant: 170),
+            label.widthAnchor.constraint(equalToConstant: 200),
             label.heightAnchor.constraint(equalToConstant: 24)
         ])
         
@@ -295,7 +311,7 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         topCompaniesView.addSubview(viewAllCompaniesButton)
         
         NSLayoutConstraint.activate([
-            viewAllCompaniesButton.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 10),
+            viewAllCompaniesButton.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 5),
             viewAllCompaniesButton.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: view.frame.width - 93),
             viewAllCompaniesButton.widthAnchor.constraint(equalToConstant: 73),
             viewAllCompaniesButton.heightAnchor.constraint(equalToConstant: 20)
@@ -313,31 +329,20 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         topCompaniesView.addSubview(companiesCollectionVC)
         
         NSLayoutConstraint.activate([
-            companiesCollectionVC.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 60),
+            companiesCollectionVC.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 45),
             companiesCollectionVC.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
             companiesCollectionVC.trailingAnchor.constraint(equalTo: topCompaniesView.trailingAnchor),
             companiesCollectionVC.bottomAnchor.constraint(equalTo: topCompaniesView.bottomAnchor, constant: -19)
         ])
     }
     @objc func didTapViewAllCompanies() {
-        print(#function)
+        tabBarController?.selectedIndex = 1
+        UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
     
-    func setupSeparatorView1() {
-        let separatorLine = UIView()
-        separatorLine.backgroundColor = .systemGray6
-        view.addSubview(separatorLine)
-        
-        separatorLine.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            separatorLine.topAnchor.constraint(equalTo: jobSearchButton.bottomAnchor, constant: 30),
-            separatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine.heightAnchor.constraint(equalToConstant: 8)
-        ])
-        
-    }
+    
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -353,23 +358,6 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
         
         tabBarController?.tabBar.isHidden = false
         navigationController?.navigationBar.isHidden = true
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id", for: indexPath) as! CompaniesCell
-        cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        cell.layer.borderWidth = 1
-        cell.layer.cornerRadius = 12
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: 228, height: 182)
     }
     
     
@@ -394,40 +382,63 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate, UICollectionViewDe
     }
 }
 
-extension JobSearchScreen : UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == jobsTableView {
-            return filteredJobs.count
-        }
-        else {
-            return filteredLocations.count
-        }
+extension JobSearchScreen : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        if tableView == jobsTableView {
+//            return filteredJobs.count
+//        }
+//        else {
+//            return filteredLocations.count
+//        }
+//    }
+//    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+//        if tableView == jobsTableView {
+//            cell.textLabel?.text = filteredJobs[indexPath.row]
+//        }
+//        else {
+//            cell.textLabel?.text = filteredLocations[indexPath.row]
+//        }
+//        
+//        cell.backgroundColor = UIColor(hex: "#FFFFFF")
+//        return cell
+//    }
+//    
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        if tableView == jobsTableView {
+//            let selectedJob = filteredJobs[indexPath.row]
+//            jobsTextField.text = selectedJob
+//            jobsTableView.isHidden = true
+//        }
+//        else {
+//            let selectedLocation = filteredLocations[indexPath.row]
+//            locationTextField.text = selectedLocation
+//            locationsTableView.isHidden = true
+//        }
+//    }
+//    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        if tableView == jobsTableView {
-            cell.textLabel?.text = filteredJobs[indexPath.row]
-        }
-        else {
-            cell.textLabel?.text = filteredLocations[indexPath.row]
-        }
-        
-        cell.backgroundColor = UIColor(hex: "#FFFFFF")
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id", for: indexPath) as! JobsCell
+        cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        cell.layer.borderWidth = 1
+        cell.layer.cornerRadius = 12
+        cell.saveButton.isHidden = true
+        cell.jobExperienceLabel.isHidden = true
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView == jobsTableView {
-            let selectedJob = filteredJobs[indexPath.row]
-            jobsTextField.text = selectedJob
-            jobsTableView.isHidden = true
-        }
-        else {
-            let selectedLocation = filteredLocations[indexPath.row]
-            locationTextField.text = selectedLocation
-            locationsTableView.isHidden = true
-        }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return .init(width: 306, height: 198)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        tabBarController?.selectedIndex = 1
+        UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
 }
 

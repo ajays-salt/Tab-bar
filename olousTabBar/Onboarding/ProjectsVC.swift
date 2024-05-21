@@ -164,7 +164,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "5/8"
+        profileCircleLabel.text = "5/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -179,7 +179,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 5 / 8
+        let percentage: CGFloat = 5 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -981,14 +981,6 @@ extension String {
 }
 
 
-struct Project1 {
-    let name: String
-    let role: String
-    let responsibility: String
-    let description: String
-}
-
-
 extension ProjectsVC {
     
     
@@ -1047,6 +1039,11 @@ extension ProjectsVC {
     }
     
     func uploadProjects() {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
@@ -1069,6 +1066,11 @@ extension ProjectsVC {
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                spinner.stopAnimating()
+                spinner.removeFromSuperview()
+            }
+            
             guard let httpResponse = response as? HTTPURLResponse else {
                 print("Failed to upload projects, status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
                 return

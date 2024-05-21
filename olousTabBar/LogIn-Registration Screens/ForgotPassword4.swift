@@ -1,44 +1,16 @@
 //
-//  ForgotPassword1.swift
+//  ForgotPassword4.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 26/03/24.
+//  Created by Salt Technologies on 07/05/24.
 //
 
 import UIKit
 
-class ForgotPassword1: UIViewController {
-    
+class ForgotPassword4: UIViewController {
+
     var headerView : UIView!
-    
     var keyLogoView : UIView!
-    
-    let emailLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Email :"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    let emailTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter your email"
-        textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
-    
-    let sendOtpButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Send OTP", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .boldSystemFont(ofSize: 24)
-        button.backgroundColor = UIColor(hex: "#0079C4")
-        button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(sendOtpButtonTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
     
     let backToLogin : UIButton = {
         let button = UIButton()
@@ -68,17 +40,13 @@ class ForgotPassword1: UIViewController {
         return button
     }()
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
-
-        setupViews()
-    }
-    
-    func setupViews() {
+        
         setupHeaderView()
-        setupUI()
         setupBackButton()
     }
     
@@ -114,7 +82,8 @@ class ForgotPassword1: UIViewController {
         keyLogoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         keyLogoView.layer.cornerRadius = 12
         
-        let imgView = UIImageView(image: UIImage(named: "key-01"))
+        let imgView = UIImageView(image: UIImage(systemName: "checkmark.circle"))
+        imgView.tintColor = UIColor(hex: "#344054")
         imgView.translatesAutoresizingMaskIntoConstraints = false
         keyLogoView.addSubview(imgView)
         
@@ -135,7 +104,7 @@ class ForgotPassword1: UIViewController {
         
         let headLabel : UILabel = {
             let label = UILabel()
-            label.text = "Forgot Password?"
+            label.text = "Password reset"
             label.font = .boldSystemFont(ofSize: 28)
             label.textColor = UIColor(hex: "#101828")
             return label
@@ -151,9 +120,11 @@ class ForgotPassword1: UIViewController {
         
         let secondLabel : UILabel = {
             let label = UILabel()
-            label.text = "No worries. You can reset it!"
+            label.text = "Your password was successfully reset.       Go back to login"
             label.font = .systemFont(ofSize: 18)
             label.textColor = UIColor(hex: "#475467")
+            label.numberOfLines = 0
+            label.textAlignment = .center
             return label
         }()
         
@@ -161,87 +132,9 @@ class ForgotPassword1: UIViewController {
         headerView.addSubview(secondLabel)
         NSLayoutConstraint.activate([
             secondLabel.topAnchor.constraint(equalTo: headLabel.bottomAnchor, constant: 10),
-            secondLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            secondLabel.heightAnchor.constraint(equalToConstant: 24)
+            secondLabel.widthAnchor.constraint(lessThanOrEqualTo: headerView.widthAnchor, constant: -32),
+            secondLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor)
         ])
-    }
-    
-
-    func setupUI() {
-        view.addSubview(emailLabel)
-        view.addSubview(emailTextField)
-        view.addSubview(sendOtpButton)
-        
-        NSLayoutConstraint.activate([
-            
-            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
-            emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            
-            emailTextField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 8),
-            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            emailTextField.heightAnchor.constraint(equalToConstant: 40),
-            
-            sendOtpButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 40),
-            sendOtpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            sendOtpButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            sendOtpButton.heightAnchor.constraint(equalToConstant: 50),
-        ])
-    }
-    
-    @objc func sendOtpButtonTapped() {
-        guard let email = emailTextField.text, !email.isEmpty else {
-            showAlert(withTitle: "Input Error", message: "Email cannot be empty.")
-            return
-        }
-
-        if !isValidEmail(email) {
-            showAlert(withTitle: "Input Error", message: "Please enter a valid email address.")
-            return
-        }
-
-        let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/send-reset-password-otp")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = ["email": email]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Failed to send OTP: \(error?.localizedDescription ?? "No error description")")
-                return
-            }
-            print("Data : " , data)
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                print("OTP sent successfully")
-                
-                DispatchQueue.main.async {
-                    let vc = ForgotPassword2()
-                    vc.emailLabel.text = email
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            } else {
-                print("Failed to send OTP with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
-            }
-        }.resume()
-        
-//        let vc = ForgotPassword2()
-//        self.navigationController?.pushViewController(vc, animated: true)
-    }
-
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegex)
-        return emailPred.evaluate(with: email)
-    }
-
-    private func showAlert(withTitle title: String, message: String) {
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            self.present(alert, animated: true, completion: nil)
-        }
     }
 
     
@@ -249,12 +142,12 @@ class ForgotPassword1: UIViewController {
         backToLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backToLogin)
         NSLayoutConstraint.activate([
-            backToLogin.topAnchor.constraint(equalTo: sendOtpButton.bottomAnchor, constant: 50),
+            backToLogin.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 50),
             backToLogin.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
     
     @objc func didTapBackToLogin() {
-        navigationController?.popViewController(animated: true)
+        navigationController?.popToRootViewController(animated: true)
     }
 }

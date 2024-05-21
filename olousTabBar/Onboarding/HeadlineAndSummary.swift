@@ -137,7 +137,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "8/8"
+        profileCircleLabel.text = "9/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -152,7 +152,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 7.9 / 8
+        let percentage: CGFloat = 8.9 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -258,10 +258,14 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
         resumeTextView.layer.borderWidth = 1.0 // Border width
         resumeTextView.layer.cornerRadius = 12.0
         resumeTextView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10) // Padding
+        
+        resumeTextView.addDoneButtonOnKeyboard()
+        
         resumeTextView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(resumeTextView)
         
         generateResume.addTarget(self, action: #selector(didTapGenerateResume), for: .touchUpInside)
+        
         generateResume.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(generateResume)
         
@@ -278,7 +282,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             resumeTextView.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20),
             resumeTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             resumeTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            resumeTextView.heightAnchor.constraint(equalToConstant: 200),
+            resumeTextView.heightAnchor.constraint(equalToConstant: 160),
         ])
         
         
@@ -300,6 +304,9 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
         summaryTextView.layer.borderWidth = 1.0 // Border width
         summaryTextView.layer.cornerRadius = 12.0
         summaryTextView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10) // Padding
+        
+        summaryTextView.addDoneButtonOnKeyboard()
+        
         summaryTextView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(summaryTextView)
         
@@ -319,7 +326,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             summaryTextView.topAnchor.constraint(equalTo: summaryLabel.bottomAnchor, constant: 20),
             summaryTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             summaryTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            summaryTextView.heightAnchor.constraint(equalToConstant: 200),
+            summaryTextView.heightAnchor.constraint(equalToConstant: 160),
         ])
     }
     
@@ -392,11 +399,6 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
     
     @objc func didTapNextButton() {
         postResumeData()
-        
-        let viewController = ViewController()
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.overrideUserInterfaceStyle = .light
-        self.present(viewController, animated: true)
     }
     
     
@@ -411,6 +413,23 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
             let remainingCharacters = 300 - textView.text.count
             charactersLeftLabel.text = "\(remainingCharacters) characters left"
         }
+    }
+    
+    func createToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        toolbar.setItems([spaceButton, doneButton], animated: false)
+        
+        return toolbar
+    }
+    
+    @objc func doneButtonTapped() {
+        resumeTextView.resignFirstResponder()
+        summaryTextView.resignFirstResponder()
     }
     
     
@@ -599,6 +618,11 @@ extension HeadlineAndSummary {
             print("Failed to encode resume data: \(error)")
             return
         }
+        
+        let loader = UIActivityIndicatorView(style: .large)
+        loader.center = view.center
+        loader.startAnimating()
+        view.addSubview(loader)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -617,6 +641,15 @@ extension HeadlineAndSummary {
             
             if let error = error {
                 print("Error uploading data: \(error.localizedDescription)")
+            }
+            
+            DispatchQueue.main.async {
+                loader.stopAnimating()
+                loader.removeFromSuperview()
+                let viewController = ViewController()
+                viewController.modalPresentationStyle = .overFullScreen
+                viewController.overrideUserInterfaceStyle = .light
+                self.present(viewController, animated: true)
             }
         }.resume()
     }

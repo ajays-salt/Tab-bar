@@ -17,10 +17,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     let portfolioTextField : UITextField = {
         let textField = UITextField()
-        
         textField.borderStyle = .roundedRect
         textField.placeholder = "Portfolio link(Github, Drive etc)"
-//        textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -29,7 +27,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         
         textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 4.8"
+        textField.placeholder = "E.g. 4"
         textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +50,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let textField = UITextField()
         
         textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 6.5"
+        textField.placeholder = "E.g. 7.5"
         textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -73,8 +71,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     // changes to fit this VC in User Profile VC
     var noticeOptionsScrollView = UIScrollView()
-    var noticePeriodOptions = ["Immediate", "15 days", "1 Month", "2 Months", "3 Months", "More than 3 Months", ]
-    var genderStackView = UIStackView()
+    var noticePeriodOptions = ["Immediate", "15 days", "1 Month", "2 Months", "3 Months" ]
     var relocateStackView = UIStackView()
     var employedStackView = UIStackView()
     var workTypeScrollView = UIScrollView()
@@ -152,7 +149,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         return textField
     }()
     
-    var addLanguageContainer = UIView()
     
     var bottomView : UIView!
     var bottomHeightConstraint: NSLayoutConstraint?
@@ -173,8 +169,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         setupScrollView()
         setupUI1()
         setupUI2()
-        setupUI3()
-        setupUI4()
         
         setupBottomView()
     }
@@ -184,10 +178,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         currentCtcTextField.delegate = self
         expectedCtcTextField.delegate = self
         
-        permanentTextField.delegate = self
-        permanentPinTextField.delegate = self
-        currentTextField.delegate = self
-        currentPinTextField.delegate = self
     }
     
     func setupHeaderView() {
@@ -222,7 +212,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             label.font = .boldSystemFont(ofSize: 24)
             return label
         }()
-        profileCircleLabel.text = "7/8"
+        profileCircleLabel.text = "8/9"
         
         profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
         circleContainerView.addSubview(profileCircleLabel)
@@ -237,7 +227,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
         
         // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 7 / 8
+        let percentage: CGFloat = 8 / 9
         let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
         let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
         
@@ -315,7 +305,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 450
+        let extraSpaceHeight: CGFloat = 50
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -328,11 +318,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     func setupUI1() {
         let portfolioLabel : UILabel = {
             let label = UILabel()
-            
-            let attributedText1 = NSMutableAttributedString(string: "Portfolio Link")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
+            label.text = "Portfolio Link(Architects, Interior designers)"
             label.font = .boldSystemFont(ofSize: 16)
             label.textColor = UIColor(hex: "#344054")
             
@@ -372,7 +358,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         }
         
         NSLayoutConstraint.activate([
-            portfolioLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 10),
+            portfolioLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
             portfolioLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             portfolioTextField.topAnchor.constraint(equalTo: portfolioLabel.bottomAnchor, constant: 10),
@@ -388,7 +374,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             currentCtcTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             currentCtcTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            expectedCtcLabel.topAnchor.constraint(equalTo: currentCtcTextField.bottomAnchor, constant: 10),
+            expectedCtcLabel.topAnchor.constraint(equalTo: currentCtcTextField.bottomAnchor, constant: 20),
             expectedCtcLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             expectedCtcTextField.topAnchor.constraint(equalTo: expectedCtcLabel.bottomAnchor, constant: 10),
@@ -448,54 +434,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         
         scrollView.addSubview(noticePLabel)
         scrollView.addSubview(noticeOptionsScrollView)
-        
-        
-        let genderLabel : UILabel = {
-            let label = UILabel()
-            
-            let attributedText1 = NSMutableAttributedString(string: "Gender")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-//            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        
-        
-        genderStackView.axis = .horizontal
-        genderStackView.spacing = 12
-        genderStackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let genderOptions = ["Male", "Female", "Others"]
-        i = 1
-        for (index, option) in genderOptions.enumerated() {
-            let button = UIButton(type: .system)
-            button.layer.borderWidth = 1
-            button.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-            button.layer.cornerRadius = 8
-            button.setTitle("  \(option)  ", for: .normal)
-            button.titleLabel?.font = .systemFont(ofSize: 18)
-            button.setTitleColor(.black, for: .normal)
-            
-            if i == 1 {
-                selectedGenderButton = button
-                selectedGenderButton?.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-                selectedGenderButton?.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-            }
-            i = i + 1
-            
-            button.addTarget(self, action: #selector(genderOptionSelected(_:)), for: .touchUpInside)
-            
-            button.translatesAutoresizingMaskIntoConstraints = false
-            genderStackView.addArrangedSubview(button)
-        }
-        
-        scrollView.addSubview(genderLabel)
-        scrollView.addSubview(genderStackView)
-        
         
         let relocateLabel : UILabel = {
             let label = UILabel()
@@ -656,13 +594,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             noticeOptionsStackView.trailingAnchor.constraint(equalTo: noticeOptionsScrollView.trailingAnchor),
             noticeOptionsStackView.heightAnchor.constraint(equalToConstant: 40),
             
-            genderLabel.topAnchor.constraint(equalTo: noticeOptionsScrollView.bottomAnchor, constant: 20),
-            genderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            genderStackView.topAnchor.constraint(equalTo: genderLabel.bottomAnchor, constant: 10),
-            genderStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            relocateLabel.topAnchor.constraint(equalTo: genderStackView.bottomAnchor, constant: 20),
+            relocateLabel.topAnchor.constraint(equalTo: noticeOptionsScrollView.bottomAnchor, constant: 20),
             relocateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             relocateStackView.topAnchor.constraint(equalTo: relocateLabel.bottomAnchor, constant: 10),
@@ -691,281 +623,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         workTypeScrollViewBottomAnchor = workTypeScrollView.bottomAnchor
     }
     
-    func setupUI3() {
-        let permanentLabel : UILabel = {
-            let label = UILabel()
-            
-            let attributedText1 = NSMutableAttributedString(string: "Permanent Address")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        let permanentPinLabel : UILabel = {
-            let label = UILabel()
-            
-            let attributedText1 = NSMutableAttributedString(string: "Pin Code")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        let currentLabel : UILabel = {
-            let label = UILabel()
-            
-            let attributedText1 = NSMutableAttributedString(string: "Current Address")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        let currentPinLabel : UILabel = {
-            let label = UILabel()
-            
-            let attributedText1 = NSMutableAttributedString(string: "Pin Code")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        
-        [permanentLabel, permanentTextField, permanentPinLabel, permanentPinTextField, currentLabel, currentTextField, currentPinLabel, currentPinTextField].forEach { v in
-            scrollView.addSubview(v)
-        }
-        
-        NSLayoutConstraint.activate([
-            permanentLabel.topAnchor.constraint(equalTo: workTypeScrollViewBottomAnchor!, constant: 20),
-            permanentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            permanentTextField.topAnchor.constraint(equalTo: permanentLabel.bottomAnchor, constant: 10),
-            permanentTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            permanentTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            permanentTextField.heightAnchor.constraint(equalToConstant: 40),
-            
-            permanentPinLabel.topAnchor.constraint(equalTo: permanentTextField.bottomAnchor, constant: 20),
-            permanentPinLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            permanentPinTextField.topAnchor.constraint(equalTo: permanentPinLabel.bottomAnchor, constant: 10),
-            permanentPinTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            permanentPinTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            permanentPinTextField.heightAnchor.constraint(equalToConstant: 40),
-            
-            currentLabel.topAnchor.constraint(equalTo: permanentPinTextField.bottomAnchor, constant: 20),
-            currentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            currentTextField.topAnchor.constraint(equalTo: currentLabel.bottomAnchor, constant: 10),
-            currentTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            currentTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            currentTextField.heightAnchor.constraint(equalToConstant: 40),
-            
-            currentPinLabel.topAnchor.constraint(equalTo: currentTextField.bottomAnchor, constant: 20),
-            currentPinLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            currentPinTextField.topAnchor.constraint(equalTo: currentPinLabel.bottomAnchor, constant: 10),
-            currentPinTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            currentPinTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            currentPinTextField.heightAnchor.constraint(equalToConstant: 40),
-        ])
-    }
-    
-    
-    
-    // This will hold your language entries
-    
-    let languagePicker = UIPickerView()
-    let fluencyPicker = UIPickerView()
-    
-    let languageTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Select Language"
-        textField.borderStyle = .roundedRect
-        return textField
-    }()
-    let fluencyTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Select Fluency Level"
-        textField.borderStyle = .roundedRect
-        return textField
-    }()
-    
-    var languageArray: [Language] = []
-    let languages = ["English", "Spanish", "French", "German"]
-    let fluencyLevels = ["Beginner", "Intermediate", "Advanced", "Native"]
-    struct LanguageInfo {
-        var language: String
-        var fluency: String
-    }
-    
-    lazy var addLanguageButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("+ Add Language", for: .normal)
-        button.addTarget(self, action: #selector(addLanguageEntry), for: .touchUpInside)
-        return button
-    }()
-    var languageCV : UICollectionView!
-    var languageCVHeightConstraint: NSLayoutConstraint!
-    
-    
-    func setupUI4() {
-        let langLabel = UILabel()
-        langLabel.text = "Languages :"
-        langLabel.font = .boldSystemFont(ofSize: 20)
-        langLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(langLabel)
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        languageCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        
-        languageCV.register(LanguageCell.self, forCellWithReuseIdentifier: "language")
-        languageCV.dataSource = self
-        languageCV.delegate = self
-        
-        languageCV.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(languageCV)
-        
-        NSLayoutConstraint.activate([
-            langLabel.topAnchor.constraint(equalTo: currentPinTextField.bottomAnchor, constant: 20),
-            langLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            languageCV.topAnchor.constraint(equalTo: langLabel.bottomAnchor, constant: 10),
-            languageCV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            languageCV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-        
-        languageCVHeightConstraint = languageCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
-        languageCVHeightConstraint.isActive = true
-        
-        
-        
-        
-        
-        addLanguageContainer.layer.borderWidth = 1
-        addLanguageContainer.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        addLanguageContainer.layer.cornerRadius = 12
-        addLanguageContainer.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(addLanguageContainer)
-        
-        let addLangLabel = UILabel()
-        addLangLabel.text = "Add Language"
-        addLangLabel.font = .boldSystemFont(ofSize: 18)
-        addLangLabel.translatesAutoresizingMaskIntoConstraints = false
-        addLanguageContainer.addSubview(addLangLabel)
-        
-        addLanguageContainer.addSubview(languageTextField)
-        addLanguageContainer.addSubview(fluencyTextField)
-        
-//        languageTextField.inputView = languagePicker
-        fluencyTextField.inputView = fluencyPicker
-        languagePicker.delegate = self
-        languagePicker.dataSource = self
-        fluencyPicker.delegate = self
-        fluencyPicker.dataSource = self
-        
-        languageTextField.translatesAutoresizingMaskIntoConstraints = false
-        fluencyTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        addLanguageButton.translatesAutoresizingMaskIntoConstraints = false
-        addLanguageContainer.addSubview(addLanguageButton)
-        
-        NSLayoutConstraint.activate([
-            addLanguageContainer.topAnchor.constraint(equalTo: languageCV.bottomAnchor, constant: 20),
-            addLanguageContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addLanguageContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addLanguageContainer.heightAnchor.constraint(equalToConstant: 120),
-            
-            addLangLabel.topAnchor.constraint(equalTo: addLanguageContainer.topAnchor, constant: 10),
-            addLangLabel.leadingAnchor.constraint(equalTo: addLanguageContainer.leadingAnchor, constant: 10),
-            
-            languageTextField.topAnchor.constraint(equalTo: addLangLabel.bottomAnchor, constant: 10),
-            languageTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26),
-            languageTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45, constant: -10),
-            
-            fluencyTextField.topAnchor.constraint(equalTo: addLangLabel.bottomAnchor, constant: 10),
-            fluencyTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -26),
-            fluencyTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45, constant: -10),
-            
-            addLanguageButton.topAnchor.constraint(equalTo: fluencyTextField.bottomAnchor, constant: 8),
-            addLanguageButton.centerXAnchor.constraint(equalTo: fluencyTextField.centerXAnchor),
-        ])
-        
-    }
-    
-    func reloadCollectionView() {
-        languageCV.reloadData()
-            
-        // Calculate the content size
-        languageCV.layoutIfNeeded()
-        let contentSize = languageCV.collectionViewLayout.collectionViewContentSize
-        
-        // Update the height constraint based on content size
-        languageCVHeightConstraint.constant = contentSize.height
-        
-        // Update constraints
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
-    
-    @objc func addLanguageEntry() {
-        
-        guard let language = languageTextField.text, !language.isEmpty,
-            let fluency = fluencyTextField.text, !fluency.isEmpty else {
-            // Show an alert if either field is empty
-            let alert = UIAlertController(title: "Missing Information", message: "Fill all the details", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-        
-        // Create a new LanguageInfo object and append it to the array
-        let newEntry = Language(language: language, fluencyLevel: fluencyTextField.text!, read: true, write: true, speak: true)
-        languageArray.append(newEntry)
-        
-        // Reload the collection view to display the new entry
-        reloadCollectionView()
-    }
-    
-    @objc func deleteLanguageEntry(_ sender: UIButton) {
-        // Find the collection view cell that is the parent view of the delete button
-        var superView = sender.superview
-        while let view = superView, !(view is UICollectionViewCell) {
-            superView = view.superview
-        }
-        
-        // Ensure we have a valid cell and can retrieve its index path
-        guard let cell = superView as? UICollectionViewCell,
-              let indexPath = languageCV.indexPath(for: cell) else {
-            return
-        }
-        
-        // Remove the item from the data source
-        languageArray.remove(at: indexPath.row)
-        
-        // Remove the cell from the collection view
-        languageCV.performBatchUpdates({
-            languageCV.deleteItems(at: [indexPath])
-        }, completion: { _ in
-            // Reload collection view to recalculate heights and other layout properties if needed
-            self.reloadCollectionView()
-        })
-    }
     
     
     @objc func noticeOptionButtonTapped(_ sender: UIButton) {
@@ -977,14 +634,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         selectedNoticeOptionsButton = sender
     }
     
-    @objc func genderOptionSelected(_ sender: UIButton) {
-        selectedGenderButton?.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        selectedGenderButton?.setTitleColor(.black, for: .normal)
-        
-        sender.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-        sender.layer.borderColor = UIColor(hex: "#0079C4").cgColor
-        selectedGenderButton = sender
-    }
     
     @objc func relocateOptionSelected(_ sender: UIButton) {
         selectedRelocateButton?.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
@@ -1076,8 +725,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     @objc func didTapNextButton() {
         uploadUserProfile()
-        let vc = HeadlineAndSummary()
-        navigationController?.pushViewController(vc, animated: true)
     }
     
     
@@ -1100,60 +747,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     }
 }
 
-extension PreferencesVC : UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return languageArray.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "language", for: indexPath) as! LanguageCell
-        cell.deleteButton.addTarget(self, action: #selector(deleteLanguageEntry), for: .touchUpInside)
-        cell.languageLabel.text = languageArray[indexPath.row].language
-        cell.fluencyLabel.text = languageArray[indexPath.row].fluencyLevel
-        cell.deleteButton.addTarget(self, action: #selector(deleteLanguageEntry), for: .touchUpInside)
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: view.frame.width - 20, height: 50)
-    }
-    
-    // Within LanguageViewController
-
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1  // Both pickers only have one component
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView === languagePicker {
-            return languages.count
-        } else if pickerView === fluencyPicker {
-            return fluencyLevels.count
-        }
-        return 0
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView === languagePicker {
-            return languages[row]
-        } else if pickerView === fluencyPicker {
-            return fluencyLevels[row]
-        }
-        return nil
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView === languagePicker {
-            languageTextField.text = languages[row]
-        } else if pickerView === fluencyPicker {
-            fluencyTextField.text = fluencyLevels[row]
-        }
-        // Dismiss the picker view by resigning the text field as the first responder
-        self.view.endEditing(true)
-    }
-
-}
 
 
 extension PreferencesVC {
@@ -1163,15 +756,10 @@ extension PreferencesVC {
             return
         }
         
-        guard let portfolio = portfolioTextField.text, !portfolio.isEmpty,
+        guard let portfolio = portfolioTextField.text,
               let currentCtcText = currentCtcTextField.text, !currentCtcText.isEmpty, let currentCtc = Double(currentCtcText),
               let expectedCtcText = expectedCtcTextField.text, !expectedCtcText.isEmpty, let expectedCtc = Double(expectedCtcText),
-              let permanentAddress = permanentTextField.text, !permanentAddress.isEmpty,
-              let permanentPin = permanentPinTextField.text, !permanentPin.isEmpty,
-              let currentAddress = currentTextField.text, !currentAddress.isEmpty,
-              let currentPin = currentPinTextField.text, !currentPin.isEmpty,
               let noticePeriod = selectedNoticeOptionsButton?.titleLabel?.text,
-              let gender = selectedGenderButton?.titleLabel?.text,
               let willingToRelocate = selectedRelocateButton?.titleLabel?.text,
               let currentlyEmployed = selectedEmployedButton?.titleLabel?.text,
               let preferredWorkType = selectedWorkTypeButton?.titleLabel?.text 
@@ -1180,22 +768,14 @@ extension PreferencesVC {
             return
         }
         
-        
-        let userProfileUpdate = UserProfileUpdate(
+        let userPreferencesUpdate = UserPreferencesUpdate(
             hobbies: "",
-            preferredWorkType: preferredWorkType,
+            preferredWorkType: preferredWorkType.trimmingCharacters(in: .whitespacesAndNewlines),
             willingToRelocate: willingToRelocate,
-            gender: gender,
             noticePeriod: noticePeriod,
             currentlyEmployed: currentlyEmployed,
-            permanentAddress: Address(address: permanentAddress, pinCode: permanentPin),
-            currentAddress: Address(address: currentAddress, pinCode: currentPin),
             currentCtc: currentCtc,
             expectedCtc: expectedCtc,
-//            language: [
-//                Language(language: "English", proficiencyLevel: "Expert", read: true, write: true, speak: true)
-//            ],
-            language: languageArray,
             portfolio: portfolio
         )
         
@@ -1209,12 +789,17 @@ extension PreferencesVC {
         
         
         do {
-            let jsonData = try JSONEncoder().encode(userProfileUpdate)
+            let jsonData = try JSONEncoder().encode(userPreferencesUpdate)
             request.httpBody = jsonData
         } catch {
             print("Failed to encode user profile to JSON: \(error)")
             return
         }
+        
+        let loader = UIActivityIndicatorView(style: .large)
+        loader.center = view.center
+        loader.startAnimating()
+        view.addSubview(loader)
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -1228,7 +813,13 @@ extension PreferencesVC {
             if let error = error {
                 print("Error uploading user profile: \(error.localizedDescription)")
             } else {
-                print("User profile successfully uploaded.")
+                print("User Preferences successfully uploaded.")
+            }
+            DispatchQueue.main.async {
+                loader.stopAnimating()
+                loader.removeFromSuperview()
+                let vc = HeadlineAndSummary()
+                self.navigationController?.pushViewController(vc, animated: true)
             }
         }.resume()
     }

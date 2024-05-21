@@ -1,16 +1,13 @@
 //
-//  SkillsVC.swift
+//  EditSoftwareVC.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 02/04/24.
+//  Created by Salt Technologies on 20/05/24.
 //
 
 import UIKit
 
-class SkillsVC: UIViewController, UITextFieldDelegate {
-
-    var headerView : UIView!
-    var circleContainerView : UIView!
+class EditSoftwareVC: UIViewController, UITextFieldDelegate {
     
     var loader: UIActivityIndicatorView!
     
@@ -39,44 +36,50 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }()
     var suggestedSkillsView : UICollectionView!
     var suggestedSkillsHashSet = Set<String>()
-    var suggestedSkillsArray = ["Dancing", "Singing", "Swimming", "Cooking", "Painting", "Tekla", "iOS", "UIKit", "Programming", "C-Sharp"]
+    var suggestedSkillsArray : [String] = []
     var suggestedSkillsViewHeightConstraint: NSLayoutConstraint!
     
     var bottomView : UIView!
-    
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+
+        navigationItem.title = "Edit Softwares"
+        navigationItem.hidesBackButton = true
+        
+        let backButtonImage = UIImage(systemName: "xmark") // Change "xmark" to any system image you prefer
+        let backButton = UIBarButtonItem(image: backButtonImage, style: .plain, target: self, action: #selector(backButtonPressed))
+        navigationItem.leftBarButtonItem = backButton
         
         skillsTextField.delegate = self
         skillsTableView.delegate = self
         skillsTableView.dataSource = self
         
+//        fetchUserProfile()
         fetchAndProcessSoftwares()
         
         setupViews()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    @objc func backButtonPressed() {
+        let alertController = UIAlertController(title: "Warning", message: "Do you want to proceed without editing Profile?", preferredStyle: .alert)
         
-        loader = UIActivityIndicatorView(style: .large)
-//        loader.center = view.center
-        loader.hidesWhenStopped = true
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let proceedAction = UIAlertAction(title: "Proceed", style: .destructive) { _ in
+            self.navigationController?.popViewController(animated: true) // Pop to previous view controller
+        }
         
-        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
-        view.addSubview(loader)
-        NSLayoutConstraint.activate([
-            loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
-            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
-        ])
+        alertController.addAction(cancelAction)
+        alertController.addAction(proceedAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     func setupViews() {
-        setupHeaderView()
         setupScrollView()
         
         setupUI()
@@ -86,118 +89,6 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         setupBottomView()
     }
     
-    func setupHeaderView() {
-        
-        headerView = UIView()
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(headerView)
-        NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 80)
-        ])
-        
-        
-        circleContainerView = UIView(frame: CGRect(x: 60, y: 60, width: 60, height: 60))
-        circleContainerView.layer.cornerRadius = 30
-        
-        circleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(circleContainerView)
-        NSLayoutConstraint.activate([
-            circleContainerView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
-            circleContainerView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            circleContainerView.widthAnchor.constraint(equalToConstant: 60),
-            circleContainerView.heightAnchor.constraint(equalToConstant: 60)
-        ])
-        
-        let profileCircleLabel : UILabel = {
-            let label = UILabel()
-            label.textAlignment = .center
-            label.textColor = UIColor(hex: "#000000")
-            label.font = .boldSystemFont(ofSize: 24)
-            return label
-        }()
-        profileCircleLabel.text = "6/9"
-        
-        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
-        circleContainerView.addSubview(profileCircleLabel)
-        NSLayoutConstraint.activate([
-            profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
-            profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
-        ])
-        
-        
-        // Calculate the center and radius of the circle
-        let center = CGPoint(x: circleContainerView.bounds.midX, y: circleContainerView.bounds.midY)
-        let radius = min(circleContainerView.bounds.width, circleContainerView.bounds.height) / 2
-        
-        // Calculate the end angle based on the percentage (0.75 for 75%)
-        let percentage: CGFloat = 6 / 9
-        let greenEndAngle = CGFloat.pi * 2 * percentage + CGFloat.pi / 2
-        let normalEndAngle = CGFloat.pi * 2 + CGFloat.pi / 2
-        
-        // Create a circular path for the green layer
-        let greenPath = UIBezierPath(arcCenter: center,
-                                     radius: radius,
-                                     startAngle: CGFloat.pi / 2,
-                                     endAngle: greenEndAngle,
-                                     clockwise: true)
-        
-        let greenBorderLayer : CAShapeLayer = {
-            let greenBorderLayer = CAShapeLayer()
-            greenBorderLayer.path = greenPath.cgPath
-            greenBorderLayer.lineWidth = 6 // Border width
-            greenBorderLayer.strokeColor = UIColor(hex: "#0079C4").cgColor // Border color
-            greenBorderLayer.fillColor = UIColor.clear.cgColor
-            return greenBorderLayer
-        }()
-        circleContainerView.layer.addSublayer(greenBorderLayer)
-        
-        
-        // regular border without green color
-        let normalPath = UIBezierPath(arcCenter: center,
-                                      radius: radius,
-                                      startAngle: greenEndAngle,
-                                      endAngle: normalEndAngle,
-                                      clockwise: true)
-        
-        // Create shape layer for the normal circle border
-        let normalBorderLayer : CAShapeLayer = {
-            let normalBorderLayer = CAShapeLayer()
-            normalBorderLayer.path = normalPath.cgPath
-            normalBorderLayer.lineWidth = 6 // Border width
-            normalBorderLayer.strokeColor = UIColor(hex: "#D9D9D9").cgColor // Border color
-            normalBorderLayer.fillColor = UIColor.clear.cgColor
-            return normalBorderLayer
-        }()
-        circleContainerView.layer.addSublayer(normalBorderLayer)
-        
-        
-        let titleLabel = UILabel()
-        titleLabel.text = "Skills"
-        titleLabel.font = .boldSystemFont(ofSize: 24)
-        
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(titleLabel)
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            
-        ])
-        
-        let borderView = UIView()
-        borderView.backgroundColor = UIColor(hex: "#EAECF0")
-        
-        borderView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(borderView)
-        NSLayoutConstraint.activate([
-            borderView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -1),
-            borderView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            borderView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            borderView.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
     
     func setupScrollView() {
         scrollView = UIScrollView()
@@ -205,13 +96,13 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 150
+        let extraSpaceHeight: CGFloat = 50
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -222,19 +113,9 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     func setupUI() {
-        let titleLabel : UILabel =  {
-            let label = UILabel()
-            label.text = "SKILLS"
-            label.font = .boldSystemFont(ofSize: 20)
-            label.textColor = UIColor(hex: "#101828")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        scrollView.addSubview(titleLabel)
-        
         let skillsLabel : UILabel = {
             let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Skills")
+            let attributedText1 = NSMutableAttributedString(string: "Softwares")
             let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
             attributedText1.append(asterisk1)
             label.attributedText = attributedText1
@@ -245,7 +126,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         }()
         scrollView.addSubview(skillsLabel)
         
-        skillsTextField.placeholder = "Add skills"
+        skillsTextField.placeholder = "Add Softwares"
         skillsTextField.borderStyle = .roundedRect
         skillsTextField.layer.borderWidth = 1
         skillsTextField.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
@@ -261,10 +142,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            skillsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            skillsLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
             skillsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             skillsTextField.topAnchor.constraint(equalTo: skillsLabel.bottomAnchor, constant: 10),
@@ -344,9 +222,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             suggestedSkillsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
         
-        suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 0) 
+        suggestedSkillsViewHeightConstraint = suggestedSkillsView.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
         suggestedSkillsViewHeightConstraint.isActive = true
-        
         
 //        reloadSuggestedSkills()
     }
@@ -376,6 +253,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         
         return true
     }
+    
     func filterSkills(with searchText: String) {
         filteredSkillsArray = skillsArray.filter { $0.lowercased().hasPrefix(searchText.lowercased()) }
         
@@ -395,41 +273,22 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     
-   
-    
-    
     func setupBottomView() {
         bottomView = UIView()
         bottomView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomView)
         
-        let nextButton = UIButton()
-        nextButton.setTitle("Next", for: .normal)
-        nextButton.titleLabel?.font = .systemFont(ofSize: 20)
-        nextButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
-        nextButton.backgroundColor = UIColor(hex: "#0079C4")
-        nextButton.layer.cornerRadius = 8
+        let saveButton = UIButton()
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.titleLabel?.font = .systemFont(ofSize: 20)
+        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveButton.layer.cornerRadius = 8
         
-        nextButton.addTarget(self, action: #selector(didTapNextButton), for: .touchUpInside)
+        saveButton.addTarget(self, action: #selector(didTapNextButton), for: .touchUpInside)
         
-        nextButton.translatesAutoresizingMaskIntoConstraints = false
-        bottomView.addSubview(nextButton)
-        
-        let backButton = UIButton()
-        backButton.setTitle("Back", for: .normal)
-        backButton.titleLabel?.font = .systemFont(ofSize: 20)
-        backButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
-        backButton.backgroundColor = UIColor(hex: "#FFFFFF")
-        backButton.layer.cornerRadius = 8
-        backButton.layer.borderWidth = 1
-        backButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        
-        backButton.isUserInteractionEnabled = true
-        
-        backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
-        
-        backButton.translatesAutoresizingMaskIntoConstraints = false
-        bottomView.addSubview(backButton)
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        bottomView.addSubview(saveButton)
         
         
         NSLayoutConstraint.activate([
@@ -438,15 +297,11 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomView.heightAnchor.constraint(equalToConstant: 100),
             
-            backButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 15),
-            backButton.leadingAnchor.constraint(equalTo: bottomView.leadingAnchor, constant: 16),
-            backButton.heightAnchor.constraint(equalToConstant: 50),
-            backButton.widthAnchor.constraint(equalToConstant: 100),
             
-            nextButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 15),
-            nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            nextButton.heightAnchor.constraint(equalToConstant: 50),
-            nextButton.widthAnchor.constraint(equalToConstant: 100),
+            saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            saveButton.heightAnchor.constraint(equalToConstant: 60),
+            saveButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
         ])
     }
     
@@ -457,8 +312,6 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     
     @objc func didTapNextButton() {
         uploadAddedSkills()
-        let vc = PersonalInfoVC()
-        navigationController?.pushViewController(vc, animated: true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -470,9 +323,28 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
+    
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        view.backgroundColor = .systemBackground
+        
+        tabBarController?.tabBar.isHidden = true
+        navigationController?.navigationBar.isHidden = false
+        
+        
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        tabBarController?.tabBar.isHidden = false
+        navigationController?.navigationBar.isHidden = true
+    }
 }
 
-extension SkillsVC : UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+
+extension EditSoftwareVC : UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == suggestedSkillsView {
@@ -583,58 +455,105 @@ extension SkillsVC : UITableViewDelegate, UITableViewDataSource, UICollectionVie
     }
 }
 
-extension SkillsVC {
-    struct SkillsFetchResponse: Codable {
+extension EditSoftwareVC {
+    struct SoftwareFetchResponse: Codable {
         let softwareSuggestions: String
         let softwares: String
+    }
+    
+    
+    func fetchUserProfile() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+            print("Invalid URL")
+            return
+        }
+
+        // Prepare the request
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        // Retrieve the accessToken and set the Authorization header
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            do {
+                let user = try JSONDecoder().decode(User.self, from: data)
+                print(user)
+                self.addedSkillsArray = user.softwares!
+                DispatchQueue.main.async {
+                    self.reloadAddedSkills()
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+
+        task.resume()
     }
 
     // Fetch and process softwares from API
     func fetchAndProcessSoftwares() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/soft") else {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/softwares") else {
             print("Invalid URL")
             return
         }
+        
+        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+//        loader.center = view.center
+        loader.hidesWhenStopped = true
+        
+        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        view.addSubview(loader)
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
+            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+        ])
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         // Include accessToken for Authorization
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
+
         DispatchQueue.main.async {
             self.scrollView.alpha = 0
             self.loader.startAnimating()
             print("Loader should be visible now")
         }
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                self.fetchUserProfile()
+            }
             guard let data = data, error == nil else {
                 print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
             do {
                 // Decode the JSON into the SoftwareFetchResponse struct
-                let response = try JSONDecoder().decode(SkillsFetchResponse.self, from: data)
-                print("Software Suggestions: \(response.softwareSuggestions)")
-                print("Softwares: \(response.softwares)")
-                
-                print("Space")
+                let response = try JSONDecoder().decode(SoftwareFetchResponse.self, from: data)
                 
                 let processedSoftwares = self.processSoftwareString(softwareString: response.softwares)
                 print("Processed Softwares: \(processedSoftwares)")
                 let pss = self.processSoftwareString(softwareString: response.softwareSuggestions)
                 print("Processed Suggestions: \(pss)")
                 
-                self.addedSkillsArray = processedSoftwares
                 self.suggestedSkillsArray = pss
                 DispatchQueue.main.async {
-                    self.reloadAddedSkills()
                     self.reloadSuggestedSkills()
-                    if self.suggestedSkillsArray.count > 50 {
-                        let contentHeight = self.view.bounds.height + 600
-                        self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: contentHeight)
-                    }
                 }
                 
             } catch {
@@ -689,11 +608,10 @@ extension SkillsVC {
     }
     
     func uploadAddedSkills() {
-        DispatchQueue.main.async {
-            self.scrollView.alpha = 0
-            self.loader.startAnimating()
-            print("Loader should be visible now")
-        }
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
         
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
             print("Invalid URL")
@@ -710,7 +628,7 @@ extension SkillsVC {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
         // Prepare the JSON body
-        let json: [String: Any] = ["skills": addedSkillsArray]
+        let json: [String: Any] = ["softwares": addedSkillsArray]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: json, options: [])
         } catch {
@@ -726,51 +644,17 @@ extension SkillsVC {
             }
             
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                print("Successfully uploaded skills")
+                print("Successfully uploaded softwares")
             } else {
                 print("Failed to upload softwares with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
             }
             
-            // You might want to handle the response data if needed
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    print("Response JSON: \(json)")
-                }
-            } catch {
-                print("Failed to parse response data: \(error)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                spinner.stopAnimating()
+                spinner.removeFromSuperview()
+                self.navigationController?.popViewController(animated: true)
             }
-            DispatchQueue.main.async {
-                self.loader.stopAnimating()
-                self.scrollView.alpha = 1
-                print("loader stopped")
-            }
+            
         }.resume()
-    }
-}
-
-
-class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
-
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let attributes = super.layoutAttributesForElements(in: rect)
-
-        var leftMargin = sectionInset.left
-        var maxY: CGFloat = -1.0
-        attributes?.forEach { layoutAttribute in
-            if layoutAttribute.frame.origin.y >= maxY {
-                leftMargin = sectionInset.left // Reset left margin for new row
-            }
-
-            if layoutAttribute.frame.origin.x == sectionInset.left {
-                leftMargin = sectionInset.left // Stick to left side for the first item
-            } else {
-                layoutAttribute.frame.origin.x = leftMargin // Adjust following items
-            }
-
-            leftMargin += layoutAttribute.frame.width + minimumInteritemSpacing
-            maxY = max(layoutAttribute.frame.maxY , maxY)
-        }
-
-        return attributes
     }
 }

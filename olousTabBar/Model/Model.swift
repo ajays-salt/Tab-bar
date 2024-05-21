@@ -6,37 +6,28 @@
 //
 
 import Foundation
+import UIKit
 
-struct EmploymentTemp {
-    let companyName: String
-    let startYear: Int
-    let endYear: Int
-    let jobType: String
+extension UITextView {
+    func addDoneButtonOnKeyboard() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        
+        toolbar.setItems([flexSpace, doneButton], animated: false)
+        self.inputAccessoryView = toolbar
+    }
+    
+    @objc private func doneButtonTapped() {
+        self.resignFirstResponder()
+    }
 }
-//
-struct EducationTemp {
-    let collegeName: String
-    let startYear: Int
-    let endYear: Int
-    let courseType: String
-}
-
-
-
 
 struct SoftwaresResponse: Codable {
     let softwares: String
 }
-
-
-
-
-// Assuming there is an array of experience
-struct ExperienceList: Decodable {
-    let experience: [Employment]
-}
-
-
 
 struct UserProfileUpdate: Codable {
     let hobbies: String
@@ -45,7 +36,7 @@ struct UserProfileUpdate: Codable {
     let gender: String
     let noticePeriod: String
     let currentlyEmployed: String
-    let permanentAddress: Address
+    let permanentAddress: String
     let currentAddress: Address
     let currentCtc: Double
     let expectedCtc: Double
@@ -53,12 +44,36 @@ struct UserProfileUpdate: Codable {
     let portfolio: String
 }
 
-
+struct UserPersonalInfo: Codable {
+    var name: String
+    var panNo: String // "Pan no" in the JavaScript code
+    var dateOfBirth: String
+    var nationality: String
+    var passportNo: String
+    var uidNumber: String
+    var permanentAddress: String
+    var gender: String
+    var profilePicData: Data? // For the resume/profilePic
+}
 
 struct Address: Codable {
     let address: String
-    let pinCode: String
+    let state: String?
+    let city: String?
+    let pincode: String
 }
+
+struct UserPreferencesUpdate: Codable {
+    let hobbies: String
+    let preferredWorkType: String
+    let willingToRelocate: String
+    let noticePeriod: String
+    let currentlyEmployed: String
+    let currentCtc: Double
+    let expectedCtc: Double
+    let portfolio: String
+}
+
 
 struct Education: Codable {
     let educationName: String?
@@ -93,9 +108,9 @@ struct Employment: Codable {
 struct Language: Codable {
     let language: String
     let fluencyLevel: String?
-    let read: Bool
-    let write: Bool
-    let speak: Bool
+    let read: Bool?
+    let write: Bool?
+    let speak: Bool?
     
     enum CodingKeys: String, CodingKey {
         case language
@@ -107,6 +122,7 @@ struct Language: Codable {
 }
 
 struct User: Codable {
+    var _id: String
     var email: String?
     var name: String?
     var password: String?
@@ -116,10 +132,10 @@ struct User: Codable {
     var designation: String?
     var profilePic: String?
     var resume: String?
-    var education: [Education]? // Consider defining specific struct if structure is known
-    var experience: [Employment]? // Consider defining specific struct if structure is known
+    var education: [Education]?
+    var experience: [Employment]?
     var softwares: [String]?
-    var projects: [Project]? // Consider defining specific struct if structure is known
+    var projects: [Project]?
     var skills: [String]?
     var additionalCertificates: [String]?
     var currentCtc: String?
@@ -133,14 +149,24 @@ struct User: Codable {
     var headline: String?
     var portfolio: String?
     var summary: String?
-    var totalExperience: Int?
+    var totalExperience: Double?
     var hasCompletedOnboarding: Bool?
-    var permanentAddress: Address?
+    var permanentAddress: String?
     var currentAddress: Address?
     var language: [Language]?
     var emailVerified: Bool?
     var mobile: String?
     var whatsappUpdate: Bool?
+    var seenDashboard: Bool?
+    var panNo: String?
+    var dateOfBirth: String?
+    var nationality: String?
+    var passportNo: String?
+    var uidNumber: String?
+
+    enum CodingKeys: String, CodingKey {
+        case _id, email, name, password, role, city, state, designation, profilePic, resume, education, experience, softwares, projects, skills, additionalCertificates, currentCtc, expectedCtc, noticePeriod, gender, willingToRelocate, currentlyEmployed, preferredWorkType, hobbies, headline, portfolio, summary, totalExperience, hasCompletedOnboarding, permanentAddress, currentAddress, language, emailVerified, mobile, whatsappUpdate, seenDashboard, panNo = "Pan no", dateOfBirth, nationality, passportNo, uidNumber
+    }
 }
 
 struct ProjectsResponse: Codable {
@@ -158,5 +184,65 @@ struct Project: Codable {
         case role = "Role"
         case responsibility = "Responsibility"
         case description = "Description"
+    }
+}
+
+
+struct CompanyResponse: Codable {
+    let currentPage: Int
+    let totalPages: Int
+    let companies: [Company]
+}
+
+struct Company: Codable {
+    let id: String
+    let createdBy: String
+    let description: String
+    let location: String?
+    let email: String
+    let field: String
+    let jobCount: Int?
+    let logo: String
+    let name: String
+    let sector: [String]
+    let size: String
+    let website: String
+    let who: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case createdBy, description, location, email, field, jobCount, logo, name, sector, size, website, who
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        createdBy = try container.decode(String.self, forKey: .createdBy)
+        description = try container.decode(String.self, forKey: .description)
+        
+        location = try container.decodeIfPresent(String.self, forKey: .location)
+        
+        email = try container.decode(String.self, forKey: .email)
+        field = try container.decode(String.self, forKey: .field)
+        
+        jobCount = try container.decodeIfPresent(Int.self, forKey: .jobCount)
+        
+        logo = try container.decode(String.self, forKey: .logo)
+        name = try container.decode(String.self, forKey: .name)
+        sector = try container.decode([String].self, forKey: .sector)
+        website = try container.decode(String.self, forKey: .website)
+        who = try container.decode(String.self, forKey: .who)
+        
+        // Decode size which might be Int or String
+        if let sizeValue = try? container.decode(Int.self, forKey: .size) {
+            size = String(sizeValue)
+        } else if let sizeValue = try? container.decode(String.self, forKey: .size) {
+            size = sizeValue
+        } else {
+            throw DecodingError.typeMismatch(
+                String.self,
+                DecodingError.Context(codingPath: [CodingKeys.size],
+                                      debugDescription: "Expected to decode String or Int for size field"))
+        }
     }
 }
