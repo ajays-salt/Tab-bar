@@ -44,6 +44,11 @@ class JobSearchResult2: UIViewController {
     
     var blurView : UIView!
     
+    
+    var currentPage: Int = 1
+    var totalPages: Int = 1
+    var isLoadingData = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white // Set the background color for the view
@@ -339,6 +344,7 @@ class JobSearchResult2: UIViewController {
         let layout = UICollectionViewFlowLayout()
         jobsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         jobsCollectionView.register(JobsCell.self, forCellWithReuseIdentifier: "id2")
+        jobsCollectionView.register(LoadingFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "LoadingFooter")
         
         jobsCollectionView.dataSource = self
         jobsCollectionView.delegate = self
@@ -354,6 +360,40 @@ class JobSearchResult2: UIViewController {
         ])
     }
     
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.bounds.height
+        
+        print(offsetY , contentHeight - height)
+        
+        if offsetY > 0 && offsetY > contentHeight - height && !isLoadingData && currentPage < totalPages {
+            print("Attempting to load more data..." , " Current Page: \(currentPage)")
+            loadMoreData()
+        }
+    }
+    func loadMoreData() {
+        guard !isLoadingData else { return }
+        isLoadingData = true
+        
+        DispatchQueue.main.async {
+            self.jobsCollectionView.reloadSections(IndexSet(integer: 0)) // Assuming you have only one section
+        }
+        
+        currentPage += 1
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.fetchData { result in
+                switch result {
+                case .success(let fetchedJobs):
+                    self.jobs.append(contentsOf: fetchedJobs)
+                    print("jobs fetched successfully")
+                case .failure(let error):
+                    print("Error fetching data: \(error)")
+                }
+            }
+        }
+    }
 
     
     
@@ -424,6 +464,19 @@ extension JobSearchResult2 : UICollectionViewDelegate, UICollectionViewDataSourc
         let jobDetailVC = JobDetailScreen()
         jobDetailVC.selectedJob = selectedJob
         navigationController?.pushViewController(jobDetailVC, animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return isLoadingData ? CGSize(width: collectionView.bounds.width, height: 50) : .zero
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionFooter else {
+            return UICollectionReusableView()
+        }
+        
+        let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "LoadingFooter", for: indexPath) as! LoadingFooterView
+        return footer
     }
     
     
@@ -556,7 +609,7 @@ extension JobSearchResult2 { // extension for API
     
     func fetchData(completion: @escaping (Result<[Job], Error>) -> Void) {
         
-        var urlStr = finalURL
+        var urlStr = "\(finalURL)&page=\(currentPage)"
         print(urlStr)
         
         guard let url = URL(string: urlStr) else {
@@ -565,6 +618,7 @@ extension JobSearchResult2 { // extension for API
         }
         
         URLSession.shared.dataTask(with: url) { (data, response, error) in
+            defer { self.isLoadingData = false }
             guard let data = data, error == nil else {
                 completion(.failure(error ?? NSError(domain: "Unknown Error", code: 0, userInfo: nil)))
                 return
@@ -573,6 +627,12 @@ extension JobSearchResult2 { // extension for API
             do {
                 let jobResponse = try JSONDecoder().decode(JobResponse.self, from: data)
                 completion(.success(jobResponse.jobs))
+                DispatchQueue.main.async {
+                    self.totalPages = jobResponse.totalPages
+                    self.isLoadingData = false
+                    self.jobsCollectionView.reloadSections(IndexSet(integer: 0))
+                    self.jobsCountLabel.text = "\(self.jobs.count) jobs found"
+                }
             } catch {
                 completion(.failure(error))
             }

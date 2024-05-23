@@ -40,6 +40,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
 //        setupTextFields()
         setupResumeUploadView()
         setupNextButton()
+        setupBackButton()
     }
     
     
@@ -359,7 +360,6 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             nextButton.widthAnchor.constraint(equalToConstant: 100)
         ])
     }
-    
     @objc func didTapNextButton() {
         if isResumeUploaded == false {
             // Handle validation failure
@@ -374,6 +374,49 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         navigationController?.pushViewController(vc, animated: true)
     }
     
+    func setupBackButton() {
+        let backButton = UIButton()
+        let attributedString = NSMutableAttributedString()
+        
+        // Add back arrow symbol
+        let backArrowImage = UIImage(systemName: "arrow.left")!
+        let tintedImage = backArrowImage.withTintColor(UIColor(hex: "#475467"), renderingMode: .alwaysOriginal)
+        let backArrowAttachment = NSTextAttachment()
+        backArrowAttachment.image = tintedImage
+        let backArrowString = NSAttributedString(attachment: backArrowAttachment)
+        attributedString.append(backArrowString)
+        
+        // Add space
+        attributedString.append(NSAttributedString(string: " "))
+        
+        // Add "back to login" text
+        let backToLoginString = NSAttributedString(string: "Back to Login")
+        attributedString.append(backToLoginString)
+        
+        // Set attributed title for button
+        backButton.setAttributedTitle(attributedString, for: .normal)
+        backButton.titleLabel?.font = .systemFont(ofSize: 20)
+        backButton.titleLabel?.textColor = UIColor(hex: "#475467")
+        
+        backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backButton)
+        NSLayoutConstraint.activate([
+            backButton.topAnchor.constraint(equalTo: resumeContainer.bottomAnchor, constant: 200),
+            backButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            backButton.heightAnchor.constraint(equalToConstant: 50),
+            backButton.widthAnchor.constraint(equalToConstant: 200)
+        ])
+    }
+    
+    @objc func didTapBackButton() {
+        let vc = LoginVC()
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
+    }
     
     
     @objc func uploadButtonTapped() {

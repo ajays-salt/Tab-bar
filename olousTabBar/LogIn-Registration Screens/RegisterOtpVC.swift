@@ -54,12 +54,43 @@ class RegisterOtpVC: UIViewController, UITextFieldDelegate {
         button.addTarget(self, action: #selector(didTapBackToLogin), for: .touchUpInside)
         return button
     }()
+    
+    let resendOtpLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Resend OTP in"
+        label.font = .systemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "#475467")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let timeLabel: UILabel = {
+        let label = UILabel()
+        label.text = "2:00"
+        label.font = .systemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "#475467")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let resendOtp: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Click here to Resend", for: .normal)
+        button.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
+        button.addTarget(self, action: #selector(didTapResendOtp), for: .touchUpInside)
+        return button
+    }()
+    
+    private var timer: Timer?
+    private var remainingTime = 120
 
     override func viewDidLoad() {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
+        startTimer()
         setupViews()
     }
     
@@ -67,6 +98,7 @@ class RegisterOtpVC: UIViewController, UITextFieldDelegate {
         setupHeaderView()
         setupOTPFields()
         setupLoginButton()
+        setupResendOtp()
         setupBackButton()
     }
     
@@ -271,11 +303,104 @@ class RegisterOtpVC: UIViewController, UITextFieldDelegate {
         }
     }
     
+    
+    func setupResendOtp() {
+        view.addSubview(resendOtpLabel)
+        view.addSubview(timeLabel)
+        view.addSubview(resendOtp)
+        
+        NSLayoutConstraint.activate([
+            resendOtpLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 25),
+            resendOtpLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -20),
+            
+            timeLabel.centerYAnchor.constraint(equalTo: resendOtpLabel.centerYAnchor),
+            timeLabel.leadingAnchor.constraint(equalTo: resendOtpLabel.trailingAnchor, constant: 6),
+            
+            resendOtp.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 22),
+            resendOtp.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+    }
+    
+    @objc func didTapResendOtp() {
+        resendOtpApiCall()
+        remainingTime = 120  // Reset the timer
+        startTimer()
+        resendOtp.isHidden = true
+        resendOtpLabel.isHidden = false
+        timeLabel.isHidden = false
+    }
+    
+    func resendOtpApiCall(){
+        let loginData: [String: String] = ["email": email]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: loginData) else {
+            print("Failed to serialize login data")
+            return
+        }
+        
+        let loginURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/resend-otp")!
+        
+        // Create the request
+        var request = URLRequest(url: loginURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Login request error: \(error)")
+                return
+            }
+            
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+            
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                print(jsonResponse)
+                if let msg = jsonResponse["msg"] as? String, msg == "otp sent" {
+                    print("Otp Resend Successful")
+                }
+            } else {
+                print("Failed to parse JSON response")
+            }
+        }
+        task.resume()
+    
+    }
+    
+    func startTimer() {
+        timer?.invalidate()  // Invalidate the previous timer if it exists
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+    }
+    
+    @objc func updateTimer() {
+        if remainingTime > 0 {
+            remainingTime -= 1
+            let minutes = remainingTime / 60
+            let seconds = remainingTime % 60
+            let timeString = String(format: "%d:%02d", minutes, seconds)
+            timeLabel.text = timeString
+        } else {
+            timer?.invalidate()
+            resendOtpLabel.isHidden = true
+            timeLabel.isHidden = true
+            resendOtp.isHidden = false
+        }
+    }
+    
+    deinit {
+        timer?.invalidate()
+    }
+    
+    
     func setupBackButton() {
         backToLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backToLogin)
         NSLayoutConstraint.activate([
-            backToLogin.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 20),
+            backToLogin.topAnchor.constraint(equalTo: resendOtp.bottomAnchor, constant: 20),
             backToLogin.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }

@@ -646,10 +646,13 @@ extension HeadlineAndSummary {
             DispatchQueue.main.async {
                 loader.stopAnimating()
                 loader.removeFromSuperview()
-                let viewController = ViewController()
-                viewController.modalPresentationStyle = .overFullScreen
-                viewController.overrideUserInterfaceStyle = .light
-                self.present(viewController, animated: true)
+//                let viewController = ViewController()
+//                viewController.modalPresentationStyle = .overFullScreen
+//                viewController.overrideUserInterfaceStyle = .light
+//                self.present(viewController, animated: true)
+                
+                let viewController = PreviewVC()
+                self.navigationController?.pushViewController(viewController, animated: true)
             }
         }.resume()
     }

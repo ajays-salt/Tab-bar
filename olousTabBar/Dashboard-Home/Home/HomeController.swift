@@ -811,10 +811,12 @@ class HomeController: UIViewController {
         
         setupCompaniesCollectionVC()
     }
+    
     @objc func didTapViewAllCompanies() {
         tabBarController?.selectedIndex = 2
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
+    
     func setupCompaniesCollectionVC() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -835,11 +837,6 @@ class HomeController: UIViewController {
             companiesCollectionVC.bottomAnchor.constraint(equalTo: topCompaniesView.bottomAnchor, constant: -19)
         ])
     }
-    
-    
-    
-    
-   
 }
 
 extension UIColor {
@@ -847,8 +844,12 @@ extension UIColor {
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
         
-        var rgb: UInt64 = 0
+        // Replace specific color if it matches the old color
+        if hexSanitized.lowercased() == "0079c4" {
+            hexSanitized = "0056E2"
+        }
         
+        var rgb: UInt64 = 0
         Scanner(string: hexSanitized).scanHexInt64(&rgb)
         
         let red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0

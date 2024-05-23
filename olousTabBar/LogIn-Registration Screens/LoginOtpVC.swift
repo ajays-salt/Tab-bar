@@ -14,10 +14,11 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
     var otpTextFields: [UITextField] = []
     
     var email : String = ""
+    var pass : String = ""
     
     let loginButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Log In", for: .normal)
+        button.setTitle("Verify OTP", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 24)
         button.backgroundColor = UIColor(hex: "#0079C4")
@@ -54,12 +55,44 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
         button.addTarget(self, action: #selector(didTapBackToLogin), for: .touchUpInside)
         return button
     }()
+    
+    let resendOtpLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Resend OTP in"
+        label.font = .systemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "#475467")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let timeLabel: UILabel = {
+        let label = UILabel()
+        label.text = "2:00"
+        label.font = .systemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "#475467")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let resendOtp: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Click here to Resend", for: .normal)
+        button.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
+        button.addTarget(self, action: #selector(didTapResendOtp), for: .touchUpInside)
+        return button
+    }()
+    
+    private var timer: Timer?
+    private var remainingTime = 120
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
+        startTimer()
         setupViews()
     }
     
@@ -67,6 +100,7 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
         setupHeaderView()
         setupOTPFields()
         setupLoginButton()
+        setupResendOtp()
         setupBackButton()
     }
     
@@ -184,13 +218,12 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
         view.addSubview(loginButton)
         
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 135),
+            loginButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 115),
             loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loginButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             loginButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-    
     @objc func loginButtonTapped() {
         
         let otp = otpTextFields.compactMap { $0.text }.joined()
@@ -202,6 +235,7 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
         
         verifyOtp(otp: otp, email: email ?? "nil")
     }
+    
     
     func verifyOtp(otp: String, email: String) {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/verify-otp") else {
@@ -243,24 +277,79 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
                     if let user = json["user"] as? [String: Any], let email = user["email"] as? String, let accessToken = json["accessToken"] as? String {
                         
                         UserDefaults.standard.set(accessToken, forKey: "accessToken")
+                        
+                        // Check if user has completed onboarding
+                        self.checkUserOnboardingStatus(accessToken: accessToken) { hasCompletedOnboarding in
+                            DispatchQueue.main.async {
+                                spinner.stopAnimating()
+                                spinner.removeFromSuperview()
+                                
+                                if hasCompletedOnboarding {
+                                    let viewController = ViewController()
+                                    viewController.modalPresentationStyle = .overFullScreen
+                                    viewController.overrideUserInterfaceStyle = .light
+                                    self.present(viewController, animated: true)
+                                } else {
+                                    let vc = BasicDetails1()
+                                    let navVC = UINavigationController(rootViewController: vc)
+                                    navVC.modalPresentationStyle = .overFullScreen
+                                    navVC.navigationBar.isHidden = true
+                                    self.present(navVC, animated: true)
+                                }
+                            }
+                        }
                     }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    spinner.stopAnimating()
-                    spinner.removeFromSuperview()
-                    
-                    let viewController = ViewController()
-                    viewController.modalPresentationStyle = .overFullScreen
-                    viewController.overrideUserInterfaceStyle = .light
-                    self.present(viewController, animated: true)
                 }
             } else {
                 DispatchQueue.main.async {
                     self.showAlert(withTitle: "Verification Failed", message: "Failed to verify OTP. Please try again.")
                 }
             }
+            DispatchQueue.main.async {
+                spinner.stopAnimating()
+                spinner.removeFromSuperview()
+            }
         }.resume()
     }
+
+    func checkUserOnboardingStatus(accessToken: String, completion: @escaping (Bool) -> Void) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+            print("Invalid URL")
+            completion(false)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error fetching user profile: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+
+            guard let data = data else {
+                print("No data received")
+                completion(false)
+                return
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let hasCompletedOnboarding = json["hasCompletedOnboarding"] as? Bool {
+                    completion(hasCompletedOnboarding)
+                } else {
+                    completion(false)
+                }
+            } catch {
+                print("Failed to parse JSON: \(error)")
+                completion(false)
+            }
+        }.resume()
+    }
+
     
     private func showAlert(withTitle title: String, message: String) {
         DispatchQueue.main.async {
@@ -270,11 +359,104 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
         }
     }
     
+    
+    func setupResendOtp() {
+        view.addSubview(resendOtpLabel)
+        view.addSubview(timeLabel)
+        view.addSubview(resendOtp)
+        
+        NSLayoutConstraint.activate([
+            resendOtpLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 25),
+            resendOtpLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -20),
+            
+            timeLabel.centerYAnchor.constraint(equalTo: resendOtpLabel.centerYAnchor),
+            timeLabel.leadingAnchor.constraint(equalTo: resendOtpLabel.trailingAnchor, constant: 6),
+            
+            resendOtp.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 22),
+            resendOtp.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+    }
+    
+    @objc func didTapResendOtp() {
+        resendOtpApiCall()
+        remainingTime = 120  // Reset the timer
+        startTimer()
+        resendOtp.isHidden = true
+        resendOtpLabel.isHidden = false
+        timeLabel.isHidden = false
+    }
+    
+    func resendOtpApiCall(){
+        let loginData: [String: String] = ["email": email, "password": pass]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: loginData) else {
+            print("Failed to serialize login data")
+            return
+        }
+        
+        let loginURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/login")!
+        
+        // Create the request
+        var request = URLRequest(url: loginURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Login request error: \(error)")
+                return
+            }
+            
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+            
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                print(jsonResponse)
+                if let msg = jsonResponse["msg"] as? String, msg == "otp sent" {
+                    print("Otp Resend Successful")
+                }
+            } else {
+                print("Failed to parse JSON response")
+            }
+        }
+        task.resume()
+    
+    }
+    
+    func startTimer() {
+        timer?.invalidate()  // Invalidate the previous timer if it exists
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+    }
+    
+    @objc func updateTimer() {
+        if remainingTime > 0 {
+            remainingTime -= 1
+            let minutes = remainingTime / 60
+            let seconds = remainingTime % 60
+            let timeString = String(format: "%d:%02d", minutes, seconds)
+            timeLabel.text = timeString
+        } else {
+            timer?.invalidate()
+            resendOtpLabel.isHidden = true
+            timeLabel.isHidden = true
+            resendOtp.isHidden = false
+        }
+    }
+    
+    deinit {
+        timer?.invalidate()
+    }
+    
+    
     func setupBackButton() {
         backToLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backToLogin)
         NSLayoutConstraint.activate([
-            backToLogin.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 20),
+            backToLogin.topAnchor.constraint(equalTo: resendOtp.bottomAnchor, constant: 16),
             backToLogin.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }

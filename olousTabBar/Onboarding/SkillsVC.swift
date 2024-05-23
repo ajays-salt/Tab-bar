@@ -450,16 +450,17 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         ])
     }
     
-    
     @objc func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
-    
     @objc func didTapNextButton() {
         uploadAddedSkills()
-        let vc = PersonalInfoVC()
-        navigationController?.pushViewController(vc, animated: true)
+        
     }
+    
+    
+    
+    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
@@ -739,10 +740,12 @@ extension SkillsVC {
             } catch {
                 print("Failed to parse response data: \(error)")
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.loader.stopAnimating()
                 self.scrollView.alpha = 1
                 print("loader stopped")
+                let vc = PersonalInfoVC()
+                self.navigationController?.pushViewController(vc, animated: true)
             }
         }.resume()
     }

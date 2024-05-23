@@ -29,6 +29,7 @@
 		FAB8E7012BF387A70020ED39 /* PersonalInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB8E7002BF387A70020ED39 /* PersonalInfoVC.swift */; };
 		FABBA10E2BE8ECA800B2F933 /* ForgotPassword3.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABBA10D2BE8ECA800B2F933 /* ForgotPassword3.swift */; };
 		FAC251BA2B9ECB5E0076DE75 /* JobDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */; };
+		FAC2F9702BFEF57800B66433 /* PreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2F96F2BFEF57800B66433 /* PreviewVC.swift */; };
 		FAC3A13A2B9191C500E17AFD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A1392B9191C500E17AFD /* AppDelegate.swift */; };
 		FAC3A13C2B9191C600E17AFD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */; };
 		FAC3A13E2B9191C600E17AFD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC3A13D2B9191C600E17AFD /* ViewController.swift */; };
@@ -79,6 +80,7 @@
 		FAB8E7002BF387A70020ED39 /* PersonalInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalInfoVC.swift; sourceTree = "<group>"; };
 		FABBA10D2BE8ECA800B2F933 /* ForgotPassword3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword3.swift; sourceTree = "<group>"; };
 		FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobDetailScreen.swift; sourceTree = "<group>"; };
+		FAC2F96F2BFEF57800B66433 /* PreviewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewVC.swift; sourceTree = "<group>"; };
 		FAC3A1362B9191C500E17AFD /* olousTabBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = olousTabBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC3A1392B9191C500E17AFD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				FAB8E7002BF387A70020ED39 /* PersonalInfoVC.swift */,
 				FAD560B82BCF867900A7FCBD /* PreferencesVC.swift */,
 				FAA2C5402BB404380006E7A6 /* HeadlineAndSummary.swift */,
+				FAC2F96F2BFEF57800B66433 /* PreviewVC.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -402,6 +405,7 @@
 				FAF4B59F2BBE8651008E3645 /* LanguageCell.swift in Sources */,
 				FACCE4D92BB2D80B00DAD5D2 /* ForgotPassword1.swift in Sources */,
 				FAC3A1572B919F6400E17AFD /* ProfileController.swift in Sources */,
+				FAC2F9702BFEF57800B66433 /* PreviewVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

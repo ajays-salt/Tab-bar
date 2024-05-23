@@ -341,6 +341,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     private func navigateToLoginOtpVC(email: String) {
         let vc = LoginOtpVC()
         vc.email = email
+        vc.pass = passwordTextField.text!
         navigationController?.pushViewController(vc, animated: true)
     }
 

@@ -11,49 +11,122 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
+    //            let vc = PreviewVC()
+    //            let navVC = UINavigationController(rootViewController: vc)
+    //            navVC.modalPresentationStyle = .overFullScreen
+    //            navVC.navigationBar.isHidden = true
+    //            window.rootViewController = navVC
+
+//    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//        guard let _ = (scene as? UIWindowScene) else { return }
+//        guard let windowScene = (scene as? UIWindowScene) else { return }
+//        
+//        // Set up window and root view controller
+//        let window = UIWindow(windowScene: windowScene)
+//        
+//        if let _ = UserDefaults.standard.string(forKey: "accessToken") {
+//            // Access token is present, navigate to the home screen
+//            let viewController = ViewController()
+//            viewController.modalPresentationStyle = .overFullScreen
+//            window.rootViewController = viewController
+//            
+//            window.rootViewController?.modalPresentationStyle = .overFullScreen
+//            self.window = window
+//            window.makeKeyAndVisible()
+//        }
+//        else {
+//            let registrationVC = RegistrationVC()
+//            let navVC = UINavigationController(rootViewController: registrationVC)
+//            navVC.modalPresentationStyle = .fullScreen
+//            navVC.navigationBar.isHidden = true
+//            
+//            window.rootViewController = navVC
+//            window.overrideUserInterfaceStyle = .light
+//            self.window = window
+//            window.makeKeyAndVisible()
+//        }
+//    }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let _ = (scene as? UIWindowScene) else { return }
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        // Set up window and root view controller
         let window = UIWindow(windowScene: windowScene)
-        
-        
-//
-        if let _ = UserDefaults.standard.string(forKey: "accessToken") {
-            // Access token is present, navigate to the home screen
-//            
-            let viewController = ViewController()
-            viewController.modalPresentationStyle = .overFullScreen
-            
-            window.rootViewController = viewController
+        self.window = window
+        window.overrideUserInterfaceStyle = .light
 
-//            let vc = PreferencesVC()
-//            let navVC = UINavigationController(rootViewController: vc)
-//            navVC.modalPresentationStyle = .overFullScreen
-//            navVC.navigationBar.isHidden = true
-//            window.rootViewController = navVC
-            
-            window.rootViewController?.modalPresentationStyle = .overFullScreen
-            self.window = window
-            window.makeKeyAndVisible()
-        }
-        else {
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            // Access token is present, check if the user has completed onboarding
+            checkUserOnboardingStatus(accessToken: accessToken) { hasCompletedOnboarding in
+                DispatchQueue.main.async {
+                    if hasCompletedOnboarding {
+                        // User has completed onboarding, navigate to the home screen
+                        let viewController = ViewController()
+                        viewController.modalPresentationStyle = .overFullScreen
+                        window.rootViewController = viewController
+                    } else {
+                        // User has not completed onboarding, navigate to the onboarding screen
+                        let vc = BasicDetails1()
+                        let navVC = UINavigationController(rootViewController: vc)
+                        navVC.modalPresentationStyle = .overFullScreen
+                        navVC.navigationBar.isHidden = true
+                        window.rootViewController = navVC
+                    }
+                    window.makeKeyAndVisible()
+                }
+            }
+        } else {
+            // No access token, navigate to the registration screen
             let registrationVC = RegistrationVC()
             let navVC = UINavigationController(rootViewController: registrationVC)
             navVC.modalPresentationStyle = .fullScreen
             navVC.navigationBar.isHidden = true
             
             window.rootViewController = navVC
-            window.overrideUserInterfaceStyle = .light
-            self.window = window
             window.makeKeyAndVisible()
         }
-        
-        
     }
 
+    func checkUserOnboardingStatus(accessToken: String, completion: @escaping (Bool) -> Void) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+            print("Invalid URL")
+            completion(false)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error fetching user profile: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+
+            guard let data = data else {
+                print("No data received")
+                completion(false)
+                return
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let hasCompletedOnboarding = json["hasCompletedOnboarding"] as? Bool {
+                    completion(hasCompletedOnboarding)
+                } else {
+                    completion(false)
+                }
+            } catch {
+                print("Failed to parse JSON: \(error)")
+                completion(false)
+            }
+        }.resume()
+    }
+
+    
+    
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
