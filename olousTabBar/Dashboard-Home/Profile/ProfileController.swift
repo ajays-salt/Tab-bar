@@ -2298,6 +2298,12 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     func addLabelsInSoftwares() {
+        if let existingHeightConstraint = softwaresContainerView.constraints.first(where: { $0.firstAttribute == .height }) {
+            existingHeightConstraint.isActive = false
+        }
+        for subview in softwaresContainerView.subviews {
+            subview.removeFromSuperview()
+        }
         var currentX: CGFloat = 0
         var currentY: CGFloat = 0
         let spacing: CGFloat = 10
@@ -2330,8 +2336,24 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             // Update currentX to the next position
             currentX += labelSize.width + spacing
         }
+        // Calculate new height
+        let newHeight = currentY + 28
         
-        softwaresContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
+        // Create and activate the new height constraint
+        let newHeightConstraint = softwaresContainerView.heightAnchor.constraint(equalToConstant: newHeight)
+        newHeightConstraint.isActive = true
+        
+        softwaresContainerView.setNeedsLayout()
+        softwaresContainerView.layoutIfNeeded()
+        
+        if newHeight > 250 {
+            let contentHeight = scrollView.contentSize.height + 200
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+        if newHeight > 500 {
+            let contentHeight = scrollView.contentSize.height + 500
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
     }
     
     @objc func didTapEditSoftwares() {
@@ -2408,6 +2430,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     func addLabelsInSkills() {
+        
+        if let existingHeightConstraint = skillsContainerView.constraints.first(where: { $0.firstAttribute == .height }) {
+            existingHeightConstraint.isActive = false
+        }
+        for subview in skillsContainerView.subviews {
+            subview.removeFromSuperview()
+        }
+        
         var currentX: CGFloat = 0
         var currentY: CGFloat = 0
         let spacing: CGFloat = 10
@@ -2441,7 +2471,25 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             currentX += labelSize.width + spacing
         }
         
-        skillsContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
+        // Calculate new height
+        let newHeight = currentY + 28
+        
+        // Create and activate the new height constraint
+        let newHeightConstraint = skillsContainerView.heightAnchor.constraint(equalToConstant: newHeight)
+        newHeightConstraint.isActive = true
+        
+        skillsContainerView.setNeedsLayout()
+        skillsContainerView.layoutIfNeeded()
+        
+//        print("New Height : " , newHeight)
+        if newHeight > 250 {
+            let contentHeight = scrollView.contentSize.height + 200
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+        if newHeight > 500 {
+            let contentHeight = scrollView.contentSize.height + 500
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
     }
     
     @objc func didTapEditSkills() {
@@ -2842,7 +2890,7 @@ extension ProfileController { // Extension for APIs
                 if let image = UIImage(data: data) {
                     // Use the image in your app, e.g., assign it to an UIImageView
                     self.profileImageView.image = image
-                    print("Image Fetched Successfully")
+//                    print("Image Fetched Successfully")
                 } else {
                     print("Failed to decode image")
                 }

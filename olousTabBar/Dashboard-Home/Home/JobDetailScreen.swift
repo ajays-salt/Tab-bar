@@ -187,7 +187,13 @@ class JobDetailScreen: UIViewController {
         }
         
         if selectedJob.salaryRangeFrom != nil && selectedJob.salaryRangeTo != nil {
-            salaryLabel.text = "\(selectedJob.salaryRangeFrom!) - \(selectedJob.salaryRangeTo!) LPA"
+            var text = "\(selectedJob.salaryRangeFrom!) - \(selectedJob.salaryRangeTo!)"
+            if text.hasSuffix("LPA") {
+                salaryLabel.text = text
+            }
+            else {
+                salaryLabel.text = "\(text) LPA"
+            }
         }
         
         if selectedJob.workPlace != nil {
@@ -312,7 +318,8 @@ class JobDetailScreen: UIViewController {
         NSLayoutConstraint.activate([
             jobLocationLabel.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
             jobLocationLabel.leadingAnchor.constraint(equalTo: locationIcon.trailingAnchor, constant: 6),
-            jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
+            jobLocationLabel.heightAnchor.constraint(equalToConstant: 20),
+            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 150)
         ])
         
         if let locationText = jobLocationLabel.text, locationText.count > 25 {
@@ -320,7 +327,7 @@ class JobDetailScreen: UIViewController {
             jobLocationLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
         } else {
             // If text is within 20 characters, don't set a fixed width
-            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 200).isActive = true
+            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 150).isActive = true
         }
         
         
@@ -344,13 +351,15 @@ class JobDetailScreen: UIViewController {
         
         NSLayoutConstraint.activate([
             jobExperienceLabel.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
-            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 6),
-            jobExperienceLabel.heightAnchor.constraint(equalToConstant: 20)
+            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 2),
+            jobExperienceLabel.heightAnchor.constraint(equalToConstant: 20),
+            jobExperienceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     
         setupSaveButton()
         setupApplyButton()
     }
+    
     func setupSaveButton() {
         saveButton.setTitle("Save", for: .normal)
         saveButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
@@ -503,7 +512,7 @@ class JobDetailScreen: UIViewController {
             
             if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
                 print("Job application successful")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     
                     self.applyButton.setTitle("Applied", for: .normal)
                     self.applyButton.titleLabel?.font = .boldSystemFont(ofSize: 16)

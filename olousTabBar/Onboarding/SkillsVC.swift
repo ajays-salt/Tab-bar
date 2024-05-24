@@ -632,8 +632,12 @@ extension SkillsVC {
                 DispatchQueue.main.async {
                     self.reloadAddedSkills()
                     self.reloadSuggestedSkills()
-                    if self.suggestedSkillsArray.count > 50 {
+                    if self.suggestedSkillsArray.count > 20 {
                         let contentHeight = self.view.bounds.height + 600
+                        self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: contentHeight)
+                    }
+                    if self.suggestedSkillsArray.count > 50 {
+                        let contentHeight = self.view.bounds.height + 1000
                         self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: contentHeight)
                     }
                 }

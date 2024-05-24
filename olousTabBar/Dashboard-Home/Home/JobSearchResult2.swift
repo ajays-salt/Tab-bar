@@ -524,7 +524,9 @@ extension JobSearchResult2 : UICollectionViewDelegate, UICollectionViewDataSourc
         
         attributedString.append(NSAttributedString(string: " "))
         attributedString.append(NSAttributedString(string: experience))
-        attributedString.append(NSAttributedString(string: " years"))
+        if !experience.hasSuffix("years") {
+            attributedString.append(NSAttributedString(string: " years"))
+        }
         
 //        let textString = NSAttributedString(string: "1-5 years")
 //        attributedString.append(textString)

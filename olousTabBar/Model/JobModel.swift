@@ -7,47 +7,7 @@
 
 import Foundation
 
-struct Jobs: Codable {
-    let id: String
-    let title: String
-    let location: Location
-    let company: String
-    let status: String
-    let educationalQualification: [Qualification]
-    let experience: [Experience]?
-    let softwares: [Software]
-    let sectors: [Sector]
-    let projectExperience: [ProjectExperience]
-    let responsibilities: [Responsibility]
-    let requirements: [Requirement]
-    let yearsOfExperience: String
-    let createdAt: String
-    let updatedAt: String
-    let workPlace: String?
-    let companyName: String //
-    let companyLogo: String //
 
-    private enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case title
-        case location
-        case company
-        case status
-        case educationalQualification
-        case experience
-        case softwares
-        case sectors
-        case projectExperience
-        case responsibilities
-        case requirements
-        case yearsOfExperience
-        case createdAt
-        case updatedAt
-        case workPlace
-        case companyName
-        case companyLogo
-    }
-}
 
 
 // being used
@@ -56,7 +16,7 @@ struct Job: Codable {
     let version: Int?
     let title: String
     let location: Location
-    let company: String
+    let company: RecJobCompany
     let status: String
     let educationalQualification: [Qualification]
     let experience: [Experience]?
@@ -114,7 +74,7 @@ struct Job: Codable {
         version = try container.decodeIfPresent(Int.self, forKey: .version)
         title = try container.decode(String.self, forKey: .title)
         location = try container.decode(Location.self, forKey: .location)
-        company = try container.decode(String.self, forKey: .company)
+//        company = try container.decode(String.self, forKey: .company)
         status = try container.decode(String.self, forKey: .status)
         educationalQualification = try container.decode([Qualification].self, forKey: .educationalQualification)
         experience = try container.decodeIfPresent([Experience].self, forKey: .experience)
@@ -173,13 +133,14 @@ struct Job: Codable {
             salaryRangeTo = nil
         }
         
+        do {
+            company = try container.decode(RecJobCompany.self, forKey: .company)
+        } catch DecodingError.typeMismatch {
+            let companyString = try container.decode(String.self, forKey: .company)
+            company = RecJobCompany(id: companyString, name: companyString, description: "", logo: "", updatedAt: "")
+        }
     }
 }
-
-
-
-
-
 
 
 struct Location: Codable {

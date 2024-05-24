@@ -14,7 +14,6 @@ class HomeController: UIViewController {
     
     
     let scrollView = UIScrollView()
-    var jobsArray : [String] = ["a", "ab", "abc", "y", "yz"];
     
     var headerView : UIView = UIView()
     var olousLogo : UIImageView = {
@@ -69,16 +68,20 @@ class HomeController: UIViewController {
     let secondView = UIView()
     let thirdView = UIView()
     
+    
     let separatorLine = UIView()
+    
     
     var recommendedJobsView = UIView()
     var recommendedJobsCollectionVC : UICollectionView!
+    var jobs: [Job] = []
     var viewAllJobsButton : UIButton = {
         let button = UIButton()
         button.setTitle("View all", for: .normal)
         button.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         return button
     }()
+    
     
     let separatorLine2 = UIView()
     
@@ -101,6 +104,7 @@ class HomeController: UIViewController {
         view.backgroundColor = .systemBackground
         
         fetchUserProfile()
+        fetchRecommendedJobs()
         
         setupViews()
         
@@ -121,7 +125,7 @@ class HomeController: UIViewController {
         setupSeparatorView1()
         
         setupRecommendedJobsView()
-        
+        setupNoJobsImageView()
         
         
         setupSeparatorView2()
@@ -754,6 +758,24 @@ class HomeController: UIViewController {
         ])
     }
     
+    var noJobsImageView = UIImageView()
+    
+    private func setupNoJobsImageView() {
+        noJobsImageView = UIImageView()
+        noJobsImageView.image = UIImage(named: "no-jobs")  // Ensure you have this image in your assets
+        
+        noJobsImageView.translatesAutoresizingMaskIntoConstraints = false
+        noJobsImageView.isHidden = true  // Hide it by default
+        view.addSubview(noJobsImageView)
+
+        NSLayoutConstraint.activate([
+            noJobsImageView.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 50),
+            noJobsImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noJobsImageView.widthAnchor.constraint(equalToConstant: 300),
+            noJobsImageView.heightAnchor.constraint(equalToConstant: 200)
+        ])
+    }
+    
     
     func setupSeparatorView2() {
         
@@ -839,26 +861,7 @@ class HomeController: UIViewController {
     }
 }
 
-extension UIColor {
-    convenience init(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-        
-        // Replace specific color if it matches the old color
-        if hexSanitized.lowercased() == "0079c4" {
-            hexSanitized = "0056E2"
-        }
-        
-        var rgb: UInt64 = 0
-        Scanner(string: hexSanitized).scanHexInt64(&rgb)
-        
-        let red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
-        let green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
-        let blue = CGFloat(rgb & 0x0000FF) / 255.0
-        
-        self.init(red: red, green: green, blue: blue, alpha: 1.0)
-    }
-}
+
 
 extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
@@ -866,7 +869,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         if collectionView == companiesCollectionVC {
             return 10
         }
-        return 5
+        return jobs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -879,11 +882,35 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         }
         else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id2", for: indexPath) as! JobsCell
+            let job = jobs[indexPath.row]
+            
             cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
             cell.layer.borderWidth = 1
             cell.layer.cornerRadius = 12
-            cell.saveButton.isHidden = true
-            cell.jobExperienceLabel.isHidden = true
+            
+            cell.jobTitle.text = job.title
+            cell.companyName.text = job.company.name
+            cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+            
+            let s = getTimeAgoString(from: job.createdAt)
+            cell.jobPostedTime.text = s
+            
+            let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
+            cell.jobExperienceLabel.attributedText = expText
+            
+            // Fetch company logo asynchronously
+            let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+            let companyLogoURLString = baseURLString + (job.company.logo)
+            if let companyLogoURL = URL(string: companyLogoURLString) {
+                URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
+                    if let data = data, let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            cell.companyLogo.image = image
+                        }
+                    }
+                }.resume()
+            }
+            
             return cell
         }
     }
@@ -892,7 +919,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         if collectionView == companiesCollectionVC {
             return .init(width: 228, height: 182)
         }
-        return .init(width: 306, height: 198)
+        return .init(width: view.frame.width - 46, height: 198)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -906,6 +933,59 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         }
     }
     
+    
+    func getTimeAgoString(from createdAt: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        guard let date = dateFormatter.date(from: createdAt) else {
+            return "Invalid date"
+        }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date, to: now)
+        
+        if let year = components.year, year > 0 {
+            return "\(year) year\(year == 1 ? "" : "s") ago"
+        } else if let month = components.month, month > 0 {
+            return "\(month) month\(month == 1 ? "" : "s") ago"
+        } else if let day = components.day, day > 0 {
+            return "\(day) day\(day == 1 ? "" : "s") ago"
+        } else if let hour = components.hour, hour > 0 {
+            return "\(hour) hour\(hour == 1 ? "" : "s") ago"
+        } else if let minute = components.minute, minute > 0 {
+            return "\(minute) minute\(minute == 1 ? "" : "s") ago"
+        } else {
+            return "Just now"
+        }
+    }
+    
+    func attributedStringForExperience(_ experience: String) -> NSAttributedString {
+        // Create a mutable attributed string
+        let attributedString = NSMutableAttributedString()
+        
+        attributedString.append(NSAttributedString(string: "|"))
+        
+        attributedString.append(NSAttributedString(string: "  "))
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
+        
+        let symbolString = NSAttributedString(attachment: symbolAttachment)
+        attributedString.append(symbolString)
+        
+        attributedString.append(NSAttributedString(string: " "))
+        attributedString.append(NSAttributedString(string: experience))
+        if !experience.hasSuffix("years") {
+            attributedString.append(NSAttributedString(string: " years"))
+        }
+        
+//        let textString = NSAttributedString(string: "1-5 years")
+//        attributedString.append(textString)
+
+        return attributedString
+    }
 }
 
 
@@ -1019,7 +1099,7 @@ extension HomeController {
                 if let image = UIImage(data: data) {
                     // Use the image in your app, e.g., assign it to an UIImageView
                     self.profileImageView.image = image
-                    print("Image Fetched Successfully")
+//                    print("Image Fetched Successfully")
                 } else {
                     print("Failed to decode image")
                 }
@@ -1030,4 +1110,84 @@ extension HomeController {
     }
 
 
+    func fetchRecommendedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/recommended-jobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+            
+            do {
+                // Decode directly as an array of dictionaries
+                if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+//                    print("Job Array: \(jobArray)")
+                    
+                    // Map dictionaries to Job objects
+                    let decoder = JSONDecoder()
+                    let jobData = try JSONSerialization.data(withJSONObject: jobArray, options: [])
+                    let jobs = try decoder.decode([Job].self, from: jobData)
+                    
+                    // Update the jobs array on the main thread
+                    DispatchQueue.main.async {
+                        self.jobs = jobs
+                        print(jobs.count)
+                        if jobs.count == 0 {
+                            self.noJobsImageView.isHidden = false
+                        }
+                        self.recommendedJobsCollectionVC.reloadData()
+                    }
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+                if self.jobs.count == 0 {
+                    self.noJobsImageView.isHidden = false
+                }
+            }
+        }
+        task.resume()
+    }
+}
+
+
+
+extension UIColor {
+    convenience init(hex: String) {
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+        
+        // Replace specific color if it matches the old color
+        if hexSanitized.lowercased() == "0079c4" {
+            hexSanitized = "0056E2"
+        }
+        
+        var rgb: UInt64 = 0
+        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+        
+        let red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+        let green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+        let blue = CGFloat(rgb & 0x0000FF) / 255.0
+        
+        self.init(red: red, green: green, blue: blue, alpha: 1.0)
+    }
 }

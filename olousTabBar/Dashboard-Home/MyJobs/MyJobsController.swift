@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MyJobsController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class MyJobsController: UIViewController {
     
     var isSelected : String = "Recommended"
     var savedJobs = [IndexPath]()
@@ -80,8 +80,12 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
         if isSelected == "Recommended" {
             recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         }
+        
+        fetchRecommendedJobs()
+        
         setupViews()
     }
+    
     
     func setupViews() {
         setupBellIcon()
@@ -191,41 +195,6 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
         ])
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id2", for: indexPath) as! JobsCell
-        cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        cell.layer.borderWidth = 1
-        cell.layer.cornerRadius = 12
-        cell.saveButton.addTarget(self, action: #selector(didTapSaveJobButton(_:)), for: .touchUpInside)
-        cell.saveButton.tag = indexPath.row
-        
-        if savedJobs.contains(indexPath) {
-            let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#667085"))
-            cell.saveButton.tintColor = UIColor(hex: "#667085")
-            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
-        }
-        else {
-            let attributedString = getAttributedString(image: "bookmark",tintColor: UIColor(hex: "#475467"))
-            cell.saveButton.tintColor = UIColor(hex: "#475467")
-            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
-        }
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch collectionState {
-        case .recommended:
-            return 10
-        case .applied:
-            return 5
-        case .saved:
-            return savedJobs.count
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: view.frame.width - 32, height: 198)
-    }
     
     @objc func didTapSaveJobButton(_ sender : UIButton) {
         let indexPath = IndexPath(row: sender.tag, section: 0)
@@ -270,6 +239,7 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
     
     @objc func didTapRecommendedButton() {
         if isSelected != "Recommended" {
+            fetchRecommendedJobs()
             isSelected = "Recommended"
             recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             appliedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
@@ -280,13 +250,15 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
                 self.widthConstraint.constant = 130
                 self.view.layoutIfNeeded()
             }
+            collectionState = .recommended
         }
-        collectionState = .recommended
-        jobsCountLabel.text = "26 recommended jobs"
+        
+//        jobsCountLabel.text = "\(jobs.count) recommended jobs"
     }
     
     @objc func didTapAppliedButton() {
         if isSelected != "Applied" {
+            fetchAppliedJobs()
             isSelected = "Applied"
             appliedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             recommendedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
@@ -297,9 +269,10 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
                 self.widthConstraint.constant = 68
                 self.view.layoutIfNeeded()
             }
+            collectionState = .applied
         }
-        collectionState = .applied
-        jobsCountLabel.text = "10 applied jobs"
+        
+//        jobsCountLabel.text = "\(jobs.count) applied jobs"
     }
     
     @objc func didTapSavedButton() {
@@ -318,20 +291,263 @@ class MyJobsController: UIViewController, UICollectionViewDelegate, UICollection
         collectionState = .saved
         jobsCountLabel.text = "\(savedJobs.count) saved jobs"
     }
+}
+
+
+extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let jobDetailVC = JobDetailScreen()
-//        navigationController?.pushViewController(jobDetailVC, animated: true)
-//    }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id2", for: indexPath) as! JobsCell
+        let job = jobs[indexPath.row]
+        
+        cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        cell.layer.borderWidth = 1
+        cell.layer.cornerRadius = 12
+        cell.saveButton.addTarget(self, action: #selector(didTapSaveJobButton(_:)), for: .touchUpInside)
+        cell.saveButton.tag = indexPath.row
+        
+        if savedJobs.contains(indexPath) {
+            let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#667085"))
+            cell.saveButton.tintColor = UIColor(hex: "#667085")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+        else {
+            let attributedString = getAttributedString(image: "bookmark",tintColor: UIColor(hex: "#475467"))
+            cell.saveButton.tintColor = UIColor(hex: "#475467")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+        
+        
+        cell.jobTitle.text = job.title
+        cell.companyName.text = job.company.name
+        if isSelected == "Applied" {
+            cell.companyName.text = job.companyName
+        }
+        cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+        
+        let s = getTimeAgoString(from: job.createdAt)
+        cell.jobPostedTime.text = s
+        
+        let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
+        cell.jobExperienceLabel.attributedText = expText
+        
+        // Fetch company logo asynchronously
+        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let companyLogoURLString = baseURLString + (job.company.logo)
+        if let companyLogoURL = URL(string: companyLogoURLString) {
+            URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        cell.companyLogo.image = image
+                    }
+                }
+            }.resume()
+        }
+        
+        cell.saveButton.isHidden = true
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        switch collectionState {
+        case .recommended:
+            return jobs.count
+        case .applied:
+            return jobs.count
+        case .saved:
+            return savedJobs.count
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return .init(width: view.frame.width - 32, height: 198)
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Recommended is not done yet")
-        return
+//        print("Recommended is not done yet")
+//        return
         
         let selectedJob = jobs[indexPath.row]
         let jobDetailVC = JobDetailScreen()
         jobDetailVC.selectedJob = selectedJob
         navigationController?.pushViewController(jobDetailVC, animated: true)
     }
+    
+    
+    func getTimeAgoString(from createdAt: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        guard let date = dateFormatter.date(from: createdAt) else {
+            return "Invalid date"
+        }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date, to: now)
+        
+        if let year = components.year, year > 0 {
+            return "\(year) year\(year == 1 ? "" : "s") ago"
+        } else if let month = components.month, month > 0 {
+            return "\(month) month\(month == 1 ? "" : "s") ago"
+        } else if let day = components.day, day > 0 {
+            return "\(day) day\(day == 1 ? "" : "s") ago"
+        } else if let hour = components.hour, hour > 0 {
+            return "\(hour) hour\(hour == 1 ? "" : "s") ago"
+        } else if let minute = components.minute, minute > 0 {
+            return "\(minute) minute\(minute == 1 ? "" : "s") ago"
+        } else {
+            return "Just now"
+        }
+    }
+    
+    func attributedStringForExperience(_ experience: String) -> NSAttributedString {
+        // Create a mutable attributed string
+        let attributedString = NSMutableAttributedString()
+        
+        attributedString.append(NSAttributedString(string: "|"))
+        
+        attributedString.append(NSAttributedString(string: "  "))
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
+        
+        let symbolString = NSAttributedString(attachment: symbolAttachment)
+        attributedString.append(symbolString)
+        
+        attributedString.append(NSAttributedString(string: " "))
+        attributedString.append(NSAttributedString(string: experience))
+        if !experience.hasSuffix("years") {
+            attributedString.append(NSAttributedString(string: " years"))
+        }
+        
+//        let textString = NSAttributedString(string: "1-5 years")
+//        attributedString.append(textString)
 
+        return attributedString
+    }
+}
+
+
+extension MyJobsController {
+    
+    func fetchRecommendedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/recommended-jobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            do {
+                // Decode directly as an array of dictionaries
+                if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                    print("Job Array: \(jobArray)")
+                    
+                    // Map dictionaries to Job objects
+                    let decoder = JSONDecoder()
+                    let jobData = try JSONSerialization.data(withJSONObject: jobArray, options: [])
+                    let jobs = try decoder.decode([Job].self, from: jobData)
+                    
+                    // Update the jobs array on the main thread
+                    DispatchQueue.main.async {
+                        self.jobs = jobs
+                        print(jobs.count)
+                        if jobs.count == 0 {
+//                            self.noJobsImageView.isHidden = false
+                        }
+                        self.jobsCountLabel.text = "\(jobs.count) recommended jobs"
+                        self.jobsCollectionView.reloadData()
+                    }
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+                if self.jobs.count == 0 {
+//                    self.noJobsImageView.isHidden = false
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    func fetchAppliedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/applied-jobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            do {
+                // Decode directly as an array of dictionaries
+                let decoder = JSONDecoder()
+                let responseDict = try decoder.decode([String: [Job]].self, from: data)
+                
+                // Extract the "jobs" array
+                if let jobs = responseDict["jobs"] {
+                    print("Job Array: \(jobs)")
+                    
+                    // Update the jobs array on the main thread
+                    DispatchQueue.main.async {
+                        self.jobs = jobs
+                        print(jobs.count)
+                        if jobs.count == 0 {
+                            // self.noJobsImageView.isHidden = false
+                        }
+                        self.jobsCountLabel.text = "\(jobs.count) applied jobs"
+                        self.jobsCollectionView.reloadData()
+                    }
+                } else {
+                    print("Failed to find jobs in the response")
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+                if self.jobs.count == 0 {
+//                    self.noJobsImageView.isHidden = false
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    
+    
+    //    if let responseString = String(data: data, encoding: .utf8) {
+    //                print("Raw response data: \(responseString)")
+    //            }
 }
