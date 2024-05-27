@@ -94,6 +94,30 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         textField.borderStyle = .roundedRect
         textField.keyboardType = .numberPad
         textField.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create a custom accessory view with a Done button
+        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        accessoryView.backgroundColor = .clear
+        
+        let doneButton = UIButton(type: .system)
+        doneButton.backgroundColor = .systemGray6
+        doneButton.layer.cornerRadius = 8
+        doneButton.setTitle("Done", for: .normal)
+        doneButton.titleLabel?.font = .systemFont(ofSize: 18)
+        
+        doneButton.addTarget(textField, action: #selector(resignFirstResponder), for: .touchUpInside)
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        accessoryView.addSubview(doneButton)
+        
+        // Position the Done button to the right side of the accessory view
+        NSLayoutConstraint.activate([
+            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -6),
+            doneButton.bottomAnchor.constraint(equalTo: accessoryView.bottomAnchor, constant: -4),
+            doneButton.widthAnchor.constraint(equalToConstant: 60),
+            doneButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
+        
+        textField.inputAccessoryView = accessoryView
         return textField
     }()
     

@@ -49,10 +49,13 @@ class JobSearchResult2: UIViewController {
     var totalPages: Int = 1
     var isLoadingData = false
     
+    
+    var appliedJobs : [String] = []
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white // Set the background color for the view
-        
         
         baseURL = "\(baseURL)?jobTitle=\(jobTitle!)"
         urlSettings()
@@ -400,11 +403,11 @@ class JobSearchResult2: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         view.backgroundColor = .systemBackground
+        fetchTotalAppliedJobs()
         
         tabBarController?.tabBar.isHidden = true
         navigationController?.navigationBar.isHidden = false
     }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -424,7 +427,12 @@ extension JobSearchResult2 : UICollectionViewDelegate, UICollectionViewDataSourc
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id2", for: indexPath) as! JobsCell
         let job = jobs[indexPath.row]
         
-        
+        if appliedJobs.contains(job.id) {
+            cell.appliedLabel.isHidden = false
+        }
+        else {
+            cell.appliedLabel.isHidden = true
+        }
         
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
@@ -639,6 +647,58 @@ extension JobSearchResult2 { // extension for API
                 completion(.failure(error))
             }
         }.resume()
+    }
+    
+    func fetchTotalAppliedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            // Print the raw response data as a string
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+
+            do {
+                // Decode the JSON response as a dictionary with jobIds array
+                let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
+                
+                if let jobIds = responseDict["jobIds"] {
+                    print("Job IDs: \(jobIds)")
+                    
+                    // Process the job IDs as needed
+                    DispatchQueue.main.async {
+                        self.appliedJobs = jobIds
+                        if self.jobsCollectionView != nil {
+                            self.jobsCollectionView.reloadData()
+                        }
+                    }
+                } else {
+                    print("Failed to find job IDs in the response")
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+        task.resume()
     }
 }
 

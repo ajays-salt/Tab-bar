@@ -44,8 +44,11 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
     let locationTextField = UITextField()
 
     
-    var topCompaniesView = UIView()
-    var companiesCollectionVC : UICollectionView!
+    var recJobsView = UIView()
+    var jobsCollectionView : UICollectionView!
+    var jobs: [Job] = []
+    var appliedJobs : [String] = []
+    
     var viewAllCompaniesButton : UIButton = {
         let button = UIButton()
         button.setTitle("View all", for: .normal)
@@ -53,16 +56,18 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
         return button
     }()
     
+    var noJobsImageView = UIImageView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        setupJobSearchSection()
-        setupJobSearchInnerSection()
-        setupSearchJobsButton()
-        setupSeparatorView1()
+        fetchRecommendedJobs()
+        fetchTotalAppliedJobs()
+        
+        setupViews()
         
         jobsTextField.delegate = self
         jobsTextField.tag = 1
@@ -79,12 +84,18 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
 //        setupLocationsTableView()
         
         
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        companiesCollectionVC = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        companiesCollectionVC.register(JobsCell.self, forCellWithReuseIdentifier: "id")
-        setupTopCompaniesView()
-
+        
+        
+    }
+    
+    func setupViews() {
+        setupJobSearchSection()
+        setupJobSearchInnerSection()
+        setupSearchJobsButton()
+        setupSeparatorView1()
+        setupRecJobsView()
+        setupJobsCollectionVC()
+        setupNoJobsImageView()
     }
     
     func setupJobSearchSection() {
@@ -280,16 +291,16 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
     }
     
     
-    func setupTopCompaniesView() {
+    func setupRecJobsView() {
         
-        topCompaniesView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(topCompaniesView)
+        recJobsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(recJobsView)
         
         NSLayoutConstraint.activate([
-            topCompaniesView.topAnchor.constraint(equalTo: jobSearchButton.bottomAnchor, constant: 60),
-            topCompaniesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            topCompaniesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topCompaniesView.heightAnchor.constraint(equalToConstant: 301)
+            recJobsView.topAnchor.constraint(equalTo: jobSearchButton.bottomAnchor, constant: 60),
+            recJobsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            recJobsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            recJobsView.heightAnchor.constraint(equalToConstant: 301)
         ])
         
         let label = UILabel()
@@ -297,42 +308,46 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
         label.font = .boldSystemFont(ofSize: 20)
         
         label.translatesAutoresizingMaskIntoConstraints = false
-        topCompaniesView.addSubview(label)
+        recJobsView.addSubview(label)
         
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 5),
-            label.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
+            label.topAnchor.constraint(equalTo: recJobsView.topAnchor, constant: 5),
+            label.leadingAnchor.constraint(equalTo: recJobsView.leadingAnchor, constant: 16),
             label.widthAnchor.constraint(equalToConstant: 200),
             label.heightAnchor.constraint(equalToConstant: 24)
         ])
         
         viewAllCompaniesButton.addTarget(self, action: #selector(didTapViewAllCompanies), for: .touchUpInside)
         viewAllCompaniesButton.translatesAutoresizingMaskIntoConstraints = false
-        topCompaniesView.addSubview(viewAllCompaniesButton)
+        recJobsView.addSubview(viewAllCompaniesButton)
         
         NSLayoutConstraint.activate([
-            viewAllCompaniesButton.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 5),
-            viewAllCompaniesButton.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: view.frame.width - 93),
+            viewAllCompaniesButton.topAnchor.constraint(equalTo: recJobsView.topAnchor, constant: 5),
+            viewAllCompaniesButton.leadingAnchor.constraint(equalTo: recJobsView.leadingAnchor, constant: view.frame.width - 93),
             viewAllCompaniesButton.widthAnchor.constraint(equalToConstant: 73),
             viewAllCompaniesButton.heightAnchor.constraint(equalToConstant: 20)
         ])
         
-        setupCompaniesCollectionVC()
     }
-    func setupCompaniesCollectionVC() {
-        companiesCollectionVC.showsHorizontalScrollIndicator = false
+    func setupJobsCollectionVC() {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        jobsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        jobsCollectionView.register(JobsCell.self, forCellWithReuseIdentifier: "id")
         
-        companiesCollectionVC.dataSource = self
-        companiesCollectionVC.delegate = self
+        jobsCollectionView.showsHorizontalScrollIndicator = false
         
-        companiesCollectionVC.translatesAutoresizingMaskIntoConstraints = false
-        topCompaniesView.addSubview(companiesCollectionVC)
+        jobsCollectionView.dataSource = self
+        jobsCollectionView.delegate = self
+        
+        jobsCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        recJobsView.addSubview(jobsCollectionView)
         
         NSLayoutConstraint.activate([
-            companiesCollectionVC.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 45),
-            companiesCollectionVC.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
-            companiesCollectionVC.trailingAnchor.constraint(equalTo: topCompaniesView.trailingAnchor),
-            companiesCollectionVC.bottomAnchor.constraint(equalTo: topCompaniesView.bottomAnchor, constant: -19)
+            jobsCollectionView.topAnchor.constraint(equalTo: recJobsView.topAnchor, constant: 45),
+            jobsCollectionView.leadingAnchor.constraint(equalTo: recJobsView.leadingAnchor, constant: 16),
+            jobsCollectionView.trailingAnchor.constraint(equalTo: recJobsView.trailingAnchor),
+            jobsCollectionView.bottomAnchor.constraint(equalTo: recJobsView.bottomAnchor, constant: -19)
         ])
     }
     @objc func didTapViewAllCompanies() {
@@ -340,6 +355,21 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
     
+    private func setupNoJobsImageView() {
+        noJobsImageView = UIImageView()
+        noJobsImageView.image = UIImage(named: "no-jobs")  // Ensure you have this image in your assets
+        
+        noJobsImageView.translatesAutoresizingMaskIntoConstraints = false
+        noJobsImageView.isHidden = true  // Hide it by default
+        view.addSubview(noJobsImageView)
+
+        NSLayoutConstraint.activate([
+            noJobsImageView.topAnchor.constraint(equalTo: recJobsView.topAnchor, constant: 50),
+            noJobsImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noJobsImageView.widthAnchor.constraint(equalToConstant: 300),
+            noJobsImageView.heightAnchor.constraint(equalToConstant: 200)
+        ])
+    }
     
     
     
@@ -419,27 +449,214 @@ extension JobSearchScreen : UICollectionViewDelegate, UICollectionViewDataSource
 //    }
 //    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return jobs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id", for: indexPath) as! JobsCell
+        let job = jobs[indexPath.row]
+        
+        if appliedJobs.contains(job.id) {
+            cell.appliedLabel.isHidden = false
+        }
+        
         cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         cell.layer.borderWidth = 1
         cell.layer.cornerRadius = 12
-        cell.saveButton.isHidden = true
-        cell.jobExperienceLabel.isHidden = true
+        
+        cell.jobTitle.text = job.title
+        cell.companyName.text = job.company.name
+        cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+        
+        let s = getTimeAgoString(from: job.createdAt)
+        cell.jobPostedTime.text = s
+        
+        let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
+        cell.jobExperienceLabel.attributedText = expText
+        
+        // Fetch company logo asynchronously
+        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let companyLogoURLString = baseURLString + (job.company.logo)
+        if let companyLogoURL = URL(string: companyLogoURLString) {
+            URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        cell.companyLogo.image = image
+                    }
+                }
+            }.resume()
+        }
+        
         return cell
     }
     
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: 306, height: 198)
+        return .init(width: view.frame.width - 40, height: 198)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         tabBarController?.selectedIndex = 1
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
+    
+    
+    func getTimeAgoString(from createdAt: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        guard let date = dateFormatter.date(from: createdAt) else {
+            return "Invalid date"
+        }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date, to: now)
+        
+        if let year = components.year, year > 0 {
+            return "\(year) year\(year == 1 ? "" : "s") ago"
+        } else if let month = components.month, month > 0 {
+            return "\(month) month\(month == 1 ? "" : "s") ago"
+        } else if let day = components.day, day > 0 {
+            return "\(day) day\(day == 1 ? "" : "s") ago"
+        } else if let hour = components.hour, hour > 0 {
+            return "\(hour) hour\(hour == 1 ? "" : "s") ago"
+        } else if let minute = components.minute, minute > 0 {
+            return "\(minute) minute\(minute == 1 ? "" : "s") ago"
+        } else {
+            return "Just now"
+        }
+    }
+    
+    func attributedStringForExperience(_ experience: String) -> NSAttributedString {
+        // Create a mutable attributed string
+        let attributedString = NSMutableAttributedString()
+        
+        attributedString.append(NSAttributedString(string: "|"))
+        
+        attributedString.append(NSAttributedString(string: "  "))
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
+        
+        let symbolString = NSAttributedString(attachment: symbolAttachment)
+        attributedString.append(symbolString)
+        
+        attributedString.append(NSAttributedString(string: " "))
+        attributedString.append(NSAttributedString(string: experience))
+        if !experience.hasSuffix("years") {
+            attributedString.append(NSAttributedString(string: " years"))
+        }
+        
+//        let textString = NSAttributedString(string: "1-5 years")
+//        attributedString.append(textString)
+
+        return attributedString
+    }
 }
 
 
+extension JobSearchScreen {
+    func fetchRecommendedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/recommended-jobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            do {
+                // Decode directly as an array of dictionaries
+                if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                    
+                    // Map dictionaries to Job objects
+                    let decoder = JSONDecoder()
+                    let jobData = try JSONSerialization.data(withJSONObject: jobArray, options: [])
+                    let jobs = try decoder.decode([Job].self, from: jobData)
+                    
+                    // Update the jobs array on the main thread
+                    DispatchQueue.main.async {
+                        self.jobs = jobs
+                        if jobs.count == 0 {
+                            self.noJobsImageView.isHidden = false
+                        }
+                        self.jobsCollectionView.reloadData()
+                    }
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+            DispatchQueue.main.async {
+                if self.jobs.count == 0 {
+                    self.noJobsImageView.isHidden = false
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    func fetchTotalAppliedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            // Print the raw response data as a string
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+
+            do {
+                // Decode the JSON response as a dictionary with jobIds array
+                let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
+                
+                if let jobIds = responseDict["jobIds"] {
+                    print("Job IDs: \(jobIds)")
+                    
+                    // Process the job IDs as needed
+                    DispatchQueue.main.async {
+                        self.appliedJobs = jobIds
+                        self.jobsCollectionView.reloadData()
+                    }
+                } else {
+                    print("Failed to find job IDs in the response")
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+        task.resume()
+    }
+}

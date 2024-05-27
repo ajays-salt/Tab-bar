@@ -1185,14 +1185,7 @@ extension PersonalInfoVC {
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         request.httpBody = body
         
-        DispatchQueue.main.async {
-            
-        }
-        
         let task = URLSession.shared.uploadTask(with: request, from: body) { (data, response, error) in
-            DispatchQueue.main.async {
-                
-            }
             
             if let error = error {
                 print("Error: \(error)")

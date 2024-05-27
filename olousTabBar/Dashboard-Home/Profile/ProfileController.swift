@@ -307,7 +307,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             jobTitleLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
             jobTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 6),
+            locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 10),
             locationLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
             locationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])

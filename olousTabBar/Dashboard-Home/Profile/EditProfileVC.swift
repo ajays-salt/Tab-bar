@@ -41,6 +41,13 @@ class EditProfileVC: UIViewController {
         tf.placeholder = "Enter Full Name"
         return tf
     }()
+    var designationTF : UITextField = {
+        let tf = UITextField()
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        tf.borderStyle = .roundedRect
+        tf.placeholder = "Enter Designation"
+        return tf
+    }()
     var dobTF : UITextField = {
         let dobTextField = UITextField()
         dobTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -355,6 +362,17 @@ class EditProfileVC: UIViewController {
         scrollView.addSubview(fullNameTF)
         
         
+        let designationLabel = UILabel()
+        designationLabel.attributedText = createAttributedText(for: "Designation")
+        designationLabel.font = .boldSystemFont(ofSize: 16)
+        designationLabel.textColor = UIColor(hex: "#344054")
+        designationLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(designationLabel)
+        
+        designationTF.delegate = self
+        scrollView.addSubview(designationTF)
+        
+        
         let dobLabel = UILabel()
         dobLabel.attributedText = createAttributedText(for: "Date of Birth")
         dobLabel.font = .boldSystemFont(ofSize: 16)
@@ -386,7 +404,14 @@ class EditProfileVC: UIViewController {
             fullNameTF.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
             fullNameTF.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            dobLabel.topAnchor.constraint(equalTo: fullNameTF.bottomAnchor, constant: 16),
+            designationLabel.topAnchor.constraint(equalTo: fullNameTF.bottomAnchor, constant: 16),
+            designationLabel.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
+            
+            designationTF.topAnchor.constraint(equalTo: designationLabel.bottomAnchor, constant: 8),
+            designationTF.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
+            designationTF.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            dobLabel.topAnchor.constraint(equalTo: designationTF.bottomAnchor, constant: 16),
             dobLabel.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
             
             dobTF.topAnchor.constraint(equalTo: dobLabel.bottomAnchor, constant: 8),
@@ -1022,6 +1047,7 @@ extension EditProfileVC {
                     self.fetchProfilePicture(size: "m", userID: user._id)
                     
                     self.fullNameTF.text = user.name
+                    self.designationTF.text = user.designation
                     self.dobTF.text = user.dateOfBirth
                     self.nationalityTF.text = user.nationality
                     var gender = user.gender?.trimmingCharacters(in: .whitespaces)
@@ -1086,6 +1112,7 @@ extension EditProfileVC {
 
 
 extension EditProfileVC {
+    
     func submitPersonalInfo() {
         // Validate the input fields
         guard let image = profileImageView.image,
@@ -1096,6 +1123,7 @@ extension EditProfileVC {
             return
         }
         guard let fullName = fullNameTF.text, !fullName.isEmpty,
+              let designation = designationTF.text, !designation.isEmpty,
               let dob = dobTF.text, !dob.isEmpty,
               let nationality = nationalityTF.text, !nationality.isEmpty,
               let gender = selectedGenderButton?.titleLabel?.text, !gender.isEmpty,
@@ -1125,8 +1153,56 @@ extension EditProfileVC {
             profilePicData: imageData
         )
         
+        updateDesignation(designation: designation)
         uploadPersonalInfo(userInfo: personalInfo)
         updateUserInfo()
+    }
+    
+    func updateDesignation(designation : String) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+            print("Access token not found in UserDefaults")
+            return
+        }
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        let requestBody: [String: String] = ["designation": designation]
+        
+        do {
+            let jsonData = try JSONEncoder().encode(requestBody)
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode designation: \(error)")
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  !(400...599).contains(httpResponse.statusCode) else {
+                print("Server Error")
+                return
+            }
+            
+            if let data = data {
+                print("Response: \(String(data: data, encoding: .utf8) ?? "")")
+            }
+            
+            print("Designation updated successfully")
+        }
+        task.resume()
     }
     
     func uploadPersonalInfo(userInfo: UserPersonalInfo) {
@@ -1272,4 +1348,5 @@ extension EditProfileVC {
         }
         task.resume()
     }
+    
 }

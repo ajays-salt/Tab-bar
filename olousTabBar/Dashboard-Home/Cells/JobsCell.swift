@@ -51,6 +51,37 @@ class JobsCell: UICollectionViewCell {
     
     let saveButton = UIButton(type: .system)
     
+    let appliedLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create the text part
+        let appliedText = NSAttributedString(string: "Applied ", attributes: [
+            .font: UIFont.systemFont(ofSize: 14),
+            .foregroundColor: UIColor(hex: "#067647")
+        ])
+        
+        // Create the tickmark image part
+        let tickmarkImage = UIImage(systemName: "checkmark.circle.fill")?.withTintColor(UIColor(hex: "#067647"), renderingMode: .alwaysOriginal)
+        let tickmarkAttachment = NSTextAttachment()
+        tickmarkAttachment.image = tickmarkImage
+        
+        // Adjust the bounds of the image to match the text height
+        let tickmarkImageOffsetY: CGFloat = -2.0
+        tickmarkAttachment.bounds = CGRect(x: 0, y: tickmarkImageOffsetY, width: 14, height: 14)
+        
+        // Combine text and image into one attributed string
+        let completeText = NSMutableAttributedString()
+        completeText.append(appliedText)
+        completeText.append(NSAttributedString(attachment: tickmarkAttachment))
+        
+        // Set the attributed text to the label
+        label.attributedText = completeText
+        
+        label.isHidden = true
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -67,6 +98,7 @@ class JobsCell: UICollectionViewCell {
         setupLocationView()
         setupExperienceLabel()
         setupSaveButton()
+        setupDatePostedAndAppliedButton()
     }
     
     func setupCompanyLogo() {
@@ -114,7 +146,7 @@ class JobsCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             jobTitle.topAnchor.constraint(equalTo: topAnchor, constant: 74),
             jobTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-//            jobTitle.widthAnchor.constraint(equalToConstant: 196),
+            //            jobTitle.widthAnchor.constraint(equalToConstant: 196),
             jobTitle.heightAnchor.constraint(equalToConstant: 20)
         ])
     }
@@ -143,13 +175,13 @@ class JobsCell: UICollectionViewCell {
             locationIcon.heightAnchor.constraint(equalToConstant: 20)
         ])
         
-        
+        jobLocationLabel.numberOfLines = 2
         addSubview(jobLocationLabel)
         NSLayoutConstraint.activate([
             jobLocationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 128),
             jobLocationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 36),
-//            jobLocationLabel.widthAnchor.constraint(equalToConstant: 125),
-            jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
+            //            jobLocationLabel.widthAnchor.constraint(equalToConstant: 125),
+//            jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
         
         if let locationText = jobLocationLabel.text, locationText.count > 25 {
@@ -159,22 +191,6 @@ class JobsCell: UICollectionViewCell {
             // If text is within 20 characters, don't set a fixed width
             jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
         }
-        
-        
-        jobPostedTime.text = "1h ago"
-        jobPostedTime.font = .systemFont(ofSize: 12)
-        jobPostedTime.textColor = UIColor(hex: "#667085")
-        
-        jobPostedTime.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(jobPostedTime)
-        NSLayoutConstraint.activate([
-            jobPostedTime.topAnchor.constraint(equalTo: topAnchor, constant: 166),
-            jobPostedTime.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-//            jobPostedTime.widthAnchor.constraint(equalToConstant: 76),
-            jobPostedTime.heightAnchor.constraint(equalToConstant: 20)
-        ])
-        
-        
     }
     
     func setupExperienceLabel() {
@@ -199,13 +215,36 @@ class JobsCell: UICollectionViewCell {
         jobExperienceLabel.font = .systemFont(ofSize: 14)
         jobExperienceLabel.tintColor = UIColor(hex: "#667085")
         
+        jobExperienceLabel.numberOfLines = 2
         addSubview(jobExperienceLabel)
         
         NSLayoutConstraint.activate([
             jobExperienceLabel.topAnchor.constraint(equalTo: topAnchor, constant: 126),
-            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 10),
-//            jobExperienceLabel.widthAnchor.constraint(equalToConstant: 100),
-            jobExperienceLabel.heightAnchor.constraint(equalToConstant: 20)
+            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 8),
+            jobExperienceLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8)
+        ])
+    }
+    
+    func setupDatePostedAndAppliedButton() {
+        jobPostedTime.text = "1h ago"
+        jobPostedTime.font = .systemFont(ofSize: 12)
+        jobPostedTime.textColor = UIColor(hex: "#667085")
+        
+        jobPostedTime.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(jobPostedTime)
+        
+        addSubview(appliedLabel)
+        
+        NSLayoutConstraint.activate([
+            jobPostedTime.topAnchor.constraint(equalTo: topAnchor, constant: 166),
+            jobPostedTime.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            //            jobPostedTime.widthAnchor.constraint(equalToConstant: 76),
+            jobPostedTime.heightAnchor.constraint(equalToConstant: 20),
+            
+            appliedLabel.topAnchor.constraint(equalTo: jobPostedTime.topAnchor),
+            appliedLabel.leadingAnchor.constraint(equalTo: jobPostedTime.trailingAnchor, constant: 20),
+            
         ])
     }
 }
+

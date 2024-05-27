@@ -63,10 +63,14 @@ class HomeController: UIViewController {
         label.textColor = UIColor(hex: "#101828")
         return label
     }()
+    let designationLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Designation "
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#101828")
+        return label
+    }()
     var profileImageView : UIImageView!
-    
-    let secondView = UIView()
-    let thirdView = UIView()
     
     
     let separatorLine = UIView()
@@ -96,6 +100,8 @@ class HomeController: UIViewController {
     }()
     
     
+    var appliedJobs : [String] = []
+    
 // *********************** View Did Load ***************************************************
     
     override func viewDidLoad() {
@@ -105,6 +111,7 @@ class HomeController: UIViewController {
         
         fetchUserProfile()
         fetchRecommendedJobs()
+        fetchTotalAppliedJobs()
         
         setupViews()
         
@@ -131,9 +138,7 @@ class HomeController: UIViewController {
         setupSeparatorView2()
         setupTopCompaniesView()
         
-        setupFirstView()
-        setupSecondView()
-        setupThirdView()
+        setupProfileInfoView()
     }
     
     
@@ -306,66 +311,23 @@ class HomeController: UIViewController {
             scrollSection.heightAnchor.constraint(equalToConstant: 180)
         ])
         
-        horizontalScrollView = UIScrollView()
-        horizontalScrollView.showsHorizontalScrollIndicator = false
-        let contentWidth = (view.frame.width - 48) * CGFloat(3) + 16 * CGFloat(3) + 16// Total width of subviews including spacing
-        horizontalScrollView.contentSize = CGSize(width: contentWidth, height: 150)
-        
-        horizontalScrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollSection.addSubview(horizontalScrollView)
-        NSLayoutConstraint.activate([
-            horizontalScrollView.topAnchor.constraint(equalTo: scrollSection.topAnchor, constant: 0),
-            horizontalScrollView.leadingAnchor.constraint(equalTo: scrollSection.leadingAnchor),
-            horizontalScrollView.trailingAnchor.constraint(equalTo: scrollSection.trailingAnchor),
-            horizontalScrollView.widthAnchor.constraint(equalToConstant: view.frame.width * 3),
-            horizontalScrollView.heightAnchor.constraint(equalToConstant: 180)
-        ])
-        
         firstView.backgroundColor = UIColor(hex: "#F0F9FF")
         firstView.layer.borderColor = UIColor(hex: "#DEF2FF").cgColor
         firstView.layer.borderWidth = 1
         firstView.layer.cornerRadius = 8
         
         firstView.translatesAutoresizingMaskIntoConstraints = false
-        horizontalScrollView.addSubview(firstView)
+        scrollSection.addSubview(firstView)
         NSLayoutConstraint.activate([
-            firstView.topAnchor.constraint(equalTo: horizontalScrollView.topAnchor, constant: 16),
-            firstView.leadingAnchor.constraint(equalTo: horizontalScrollView.leadingAnchor, constant: 16),
-            firstView.widthAnchor.constraint(equalToConstant: view.frame.width - 48),
+            firstView.topAnchor.constraint(equalTo: scrollSection.topAnchor, constant: 16),
+            firstView.leadingAnchor.constraint(equalTo: scrollSection.leadingAnchor, constant: 16),
+            firstView.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             firstView.heightAnchor.constraint(equalToConstant: 148)
         ])
         
-        
-        secondView.backgroundColor = UIColor(hex: "#FFFAEB")
-        secondView.layer.borderWidth = 1
-        secondView.layer.borderColor = UIColor(hex: "#FEF0C7").cgColor
-        secondView.layer.cornerRadius = 8
-        
-        secondView.translatesAutoresizingMaskIntoConstraints = false
-        horizontalScrollView.addSubview(secondView)
-        NSLayoutConstraint.activate([
-            secondView.topAnchor.constraint(equalTo: horizontalScrollView.topAnchor, constant: 16),
-            secondView.leadingAnchor.constraint(equalTo: firstView.trailingAnchor, constant: 16),
-            secondView.widthAnchor.constraint(equalToConstant: view.frame.width - 48),
-            secondView.heightAnchor.constraint(equalToConstant: 148)
-        ])
-        
-        thirdView.backgroundColor = UIColor(hex: "#ECFDF3")
-        thirdView.layer.borderWidth = 1
-        thirdView.layer.borderColor = UIColor(hex: "#DCFAE6").cgColor
-        thirdView.layer.cornerRadius = 8
-        
-        thirdView.translatesAutoresizingMaskIntoConstraints = false
-        horizontalScrollView.addSubview(thirdView)
-        NSLayoutConstraint.activate([
-            thirdView.topAnchor.constraint(equalTo: horizontalScrollView.topAnchor, constant: 16),
-            thirdView.leadingAnchor.constraint(equalTo: secondView.trailingAnchor, constant: 16),
-            thirdView.widthAnchor.constraint(equalToConstant: view.frame.width - 48),
-            thirdView.heightAnchor.constraint(equalToConstant: 148)
-        ])
     }
     
-    func setupFirstView() {
+    func setupProfileInfoView() {
         let circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
         circleContainerView.backgroundColor = UIColor(hex: "#D7F0FF")
         circleContainerView.layer.cornerRadius = 50
@@ -512,7 +474,7 @@ class HomeController: UIViewController {
         
         // Add subviews to stack view
         stackView.addArrangedSubview(userNameLabel)
-        stackView.addArrangedSubview(pendingLabel)
+        stackView.addArrangedSubview(designationLabel)
         stackView.addArrangedSubview(updateProfilButton)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -523,147 +485,6 @@ class HomeController: UIViewController {
         ])
     }
     
-    func setupSecondView() {
-        let circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
-        circleContainerView.backgroundColor = UIColor(hex: "#FFE28F")
-        circleContainerView.layer.opacity = 0.4
-        circleContainerView.layer.cornerRadius = 50
-        
-        circleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        secondView.addSubview(circleContainerView)
-        NSLayoutConstraint.activate([
-            circleContainerView.topAnchor.constraint(equalTo: secondView.topAnchor, constant: 24),
-            circleContainerView.leadingAnchor.constraint(equalTo: secondView.leadingAnchor, constant: 16),
-            circleContainerView.widthAnchor.constraint(equalToConstant: 100),
-            circleContainerView.heightAnchor.constraint(equalToConstant: 100)
-        ])
-        
-        let profileCircleLabel : UILabel = {
-            let label = UILabel()
-            label.textAlignment = .center
-            label.textColor = UIColor(hex: "#101828")
-            label.font = .boldSystemFont(ofSize: 40)
-            return label
-        }()
-        profileCircleLabel.text = "48"
-        
-        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
-        secondView.addSubview(profileCircleLabel)
-        NSLayoutConstraint.activate([
-            profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
-            profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
-        ])
-        
-        
-        let recruiterActionsLabel : UILabel = {
-            let label = UILabel()
-            let attributedString = NSMutableAttributedString(string: "Recruiter actions on your profile")
-//            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#EB5757"), range: NSRange(location: 0, length: 1))
-            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#344054"), range: NSRange(location: 0, length: attributedString.length ))
-        
-            label.attributedText = attributedString
-            label.font = .systemFont(ofSize: 18)
-            label.numberOfLines = 0
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        
-        let viewDetailsButton : UIButton = {
-            let button = UIButton()
-            
-            let title = NSAttributedString(string: "   View details   ",
-                                                attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
-                                                             .foregroundColor: UIColor(hex: "#00629E")])
-            button.setAttributedTitle(title, for: .normal)
-            button.backgroundColor = UIColor(hex: "#D7F0FF")
-            button.layer.cornerRadius = 12
-            button.addTarget(self, action: #selector(didTapViewActionDetails), for: .touchUpInside)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            return button
-        }()
-        
-        secondView.addSubview(recruiterActionsLabel)
-        secondView.addSubview(viewDetailsButton)
-        NSLayoutConstraint.activate([
-            recruiterActionsLabel.topAnchor.constraint(equalTo: secondView.topAnchor, constant: 30),
-            recruiterActionsLabel.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
-            recruiterActionsLabel.trailingAnchor.constraint(equalTo: secondView.trailingAnchor, constant: -16),
-            
-            viewDetailsButton.topAnchor.constraint(equalTo: recruiterActionsLabel.bottomAnchor, constant: 20),
-            viewDetailsButton.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16)
-        ])
-    }
-    
-    func setupThirdView() {
-        let circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
-        circleContainerView.backgroundColor = UIColor(hex: "#CEF4DE")
-        circleContainerView.layer.opacity = 0.4
-        circleContainerView.layer.cornerRadius = 50
-        
-        circleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        thirdView.addSubview(circleContainerView)
-        NSLayoutConstraint.activate([
-            circleContainerView.topAnchor.constraint(equalTo: thirdView.topAnchor, constant: 24),
-            circleContainerView.leadingAnchor.constraint(equalTo: thirdView.leadingAnchor, constant: 16),
-            circleContainerView.widthAnchor.constraint(equalToConstant: 100),
-            circleContainerView.heightAnchor.constraint(equalToConstant: 100)
-        ])
-        
-        let profileCircleLabel : UILabel = {
-            let label = UILabel()
-            label.textAlignment = .center
-            label.textColor = UIColor(hex: "#101828")
-            label.font = .boldSystemFont(ofSize: 40)
-            return label
-        }()
-        profileCircleLabel.text = "128"
-        
-        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
-        thirdView.addSubview(profileCircleLabel)
-        NSLayoutConstraint.activate([
-            profileCircleLabel.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
-            profileCircleLabel.centerYAnchor.constraint(equalTo: circleContainerView.centerYAnchor)
-        ])
-        
-        
-        let searchAppearanceLabel : UILabel = {
-            let label = UILabel()
-            let attributedString = NSMutableAttributedString(string: "Search appearance")
-//            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#EB5757"), range: NSRange(location: 0, length: 1))
-            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#344054"), range: NSRange(location: 0, length: attributedString.length ))
-        
-            label.attributedText = attributedString
-            label.font = .systemFont(ofSize: 18)
-            label.numberOfLines = 0
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        
-        let viewDetailsButton : UIButton = {
-            let button = UIButton()
-            
-            let title = NSAttributedString(string: "   View details   ",
-                                                attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
-                                                             .foregroundColor: UIColor(hex: "#00629E")])
-            button.setAttributedTitle(title, for: .normal)
-            button.backgroundColor = UIColor(hex: "#D7F0FF")
-            button.layer.cornerRadius = 12
-            button.addTarget(self, action: #selector(didTapViewSearchAppearanceDetails), for: .touchUpInside)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            return button
-        }()
-        
-        thirdView.addSubview(searchAppearanceLabel)
-        thirdView.addSubview(viewDetailsButton)
-        NSLayoutConstraint.activate([
-            searchAppearanceLabel.topAnchor.constraint(equalTo: thirdView.topAnchor, constant: 30),
-            searchAppearanceLabel.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
-            searchAppearanceLabel.trailingAnchor.constraint(equalTo: thirdView.trailingAnchor, constant: -16),
-            
-            viewDetailsButton.topAnchor.constraint(equalTo: searchAppearanceLabel.bottomAnchor, constant: 20),
-            viewDetailsButton.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16)
-        ])
-    }
     
     @objc func didTapUpdateProfile() {
         tabBarController?.selectedIndex = 3
@@ -678,7 +499,8 @@ class HomeController: UIViewController {
     
     func setupSeparatorView1() {
         
-        separatorLine.backgroundColor = UIColor(hex: "#F9FAFB")
+//        separatorLine.backgroundColor = UIColor(hex: "#F9FAFB")
+        separatorLine.backgroundColor = UIColor(hex: "#1E293B")
         
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(separatorLine)
@@ -751,7 +573,7 @@ class HomeController: UIViewController {
         recommendedJobsView.addSubview(recommendedJobsCollectionVC)
         
         NSLayoutConstraint.activate([
-            recommendedJobsCollectionVC.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 60),
+            recommendedJobsCollectionVC.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 50),
             recommendedJobsCollectionVC.leadingAnchor.constraint(equalTo: recommendedJobsView.leadingAnchor, constant: 16),
             recommendedJobsCollectionVC.trailingAnchor.constraint(equalTo: recommendedJobsView.trailingAnchor),
             recommendedJobsCollectionVC.bottomAnchor.constraint(equalTo: recommendedJobsView.bottomAnchor, constant: -19)
@@ -779,7 +601,8 @@ class HomeController: UIViewController {
     
     func setupSeparatorView2() {
         
-        separatorLine2.backgroundColor = UIColor(hex: "#F9FAFB")
+//        separatorLine2.backgroundColor = UIColor(hex: "#F9FAFB")
+        separatorLine2.backgroundColor = UIColor(hex: "#1E293B")
         
         separatorLine2.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(separatorLine2)
@@ -884,6 +707,10 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id2", for: indexPath) as! JobsCell
             let job = jobs[indexPath.row]
             
+            if appliedJobs.contains(job.id) {
+                cell.appliedLabel.isHidden = false
+            }
+            
             cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
             cell.layer.borderWidth = 1
             cell.layer.cornerRadius = 12
@@ -919,7 +746,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         if collectionView == companiesCollectionVC {
             return .init(width: 228, height: 182)
         }
-        return .init(width: view.frame.width - 46, height: 198)
+        return .init(width: view.frame.width - 40, height: 198)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -1030,6 +857,7 @@ extension HomeController {
                     self.percentLabel.text = "\(percent)%"
                     self.profileCircleLabel.text = initialsOfName
                     self.userNameLabel.text = "Hi, \(userName)"
+                    self.designationLabel.text = "\(user.designation!)"
                     self.fetchProfilePicture(size: "m", userID: user._id)
                 }
             } catch {
@@ -1163,6 +991,56 @@ extension HomeController {
                 if self.jobs.count == 0 {
                     self.noJobsImageView.isHidden = false
                 }
+            }
+        }
+        task.resume()
+    }
+    
+    func fetchTotalAppliedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            // Print the raw response data as a string
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+
+            do {
+                // Decode the JSON response as a dictionary with jobIds array
+                let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
+                
+                if let jobIds = responseDict["jobIds"] {
+                    print("Job IDs: \(jobIds)")
+                    
+                    // Process the job IDs as needed
+                    DispatchQueue.main.async {
+                        self.appliedJobs = jobIds
+                        self.recommendedJobsCollectionVC.reloadData()
+                    }
+                } else {
+                    print("Failed to find job IDs in the response")
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
             }
         }
         task.resume()

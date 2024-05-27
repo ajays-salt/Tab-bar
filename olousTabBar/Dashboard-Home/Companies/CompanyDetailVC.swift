@@ -39,6 +39,7 @@ class CompanyDetailVC: UIViewController {
     var jobsCollectionView: UICollectionView!
     
     var jobs: [Job] = []
+    var appliedJobs : [String] = []
     
     var noJobsImageView = UIImageView()
     
@@ -61,9 +62,8 @@ class CompanyDetailVC: UIViewController {
 //                print("Error fetching data: \(error)")
 //            }
 //        }
+        
         setupViews()
-        
-        
     }
     
     
@@ -403,6 +403,8 @@ class CompanyDetailVC: UIViewController {
                 print("Error fetching data: \(error)")
             }
         }
+        
+        fetchTotalAppliedJobs()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -423,7 +425,12 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! JobsCell
         let job = jobs[indexPath.row]
         
-        
+        if appliedJobs.contains(job.id) {
+            cell.appliedLabel.isHidden = false
+        }
+        else {
+            cell.appliedLabel.isHidden = true
+        }
         
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
@@ -520,9 +527,10 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
 }
 
 extension CompanyDetailVC {
+    
     func fetchData(completion: @escaping (Result<[Job], Error>) -> Void) {
         
-        var urlStr = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/jobs/\(company.id)"
+        let urlStr = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/jobs/\(company.id)"
         print("Company ID ",company.id)
         
         guard let url = URL(string: urlStr) else {
@@ -538,7 +546,7 @@ extension CompanyDetailVC {
             
             do {
                    if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                       print(jsonObject)
+//                       print(jsonObject)
                    } else {
                        print("Data is not a valid JSON object")
                    }
@@ -553,5 +561,57 @@ extension CompanyDetailVC {
                 completion(.failure(error))
             }
         }.resume()
+    }
+    
+    func fetchTotalAppliedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            // Print the raw response data as a string
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+
+            do {
+                // Decode the JSON response as a dictionary with jobIds array
+                let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
+                
+                if let jobIds = responseDict["jobIds"] {
+                    print("Job IDs: \(jobIds)")
+                    
+                    // Process the job IDs as needed
+                    DispatchQueue.main.async {
+                        self.appliedJobs = jobIds
+                        if self.jobsCollectionView != nil {
+                            self.jobsCollectionView.reloadData()
+                        }
+                    }
+                } else {
+                    print("Failed to find job IDs in the response")
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+        task.resume()
     }
 }

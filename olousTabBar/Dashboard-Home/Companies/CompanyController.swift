@@ -33,6 +33,15 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
     var currentPage: Int = 1
     var totalPages: Int = 1
     var isLoadingData = false
+    
+    var filterIcon : UIImageView = {
+        let imgView = UIImageView()
+        imgView.image = UIImage(systemName: "slider.horizontal.3")
+        imgView.tintColor = UIColor(hex: "#000000")
+        imgView.contentMode = .scaleAspectFit
+        imgView.isUserInteractionEnabled = true
+        return imgView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,15 +51,34 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
         
         
         setupViews()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapFilterIcon))
+        filterIcon.addGestureRecognizer(tap)
         fetchCompany(page: currentPage)
     }
     
     func setupViews() {
+        setupFilterIcon()
         setupCompaniesLabel()
         setupCompanySearchSection()
         setupCompanySearchInnerSection()
         setupSearchCompanyButton()
         setupCompaniesCollectionView()
+    }
+    
+    func setupFilterIcon() {
+        filterIcon.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(filterIcon)
+        NSLayoutConstraint.activate([
+            filterIcon.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
+            filterIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            filterIcon.widthAnchor.constraint(equalToConstant: 30),
+            filterIcon.heightAnchor.constraint(equalToConstant: 36)
+        ])
+    }
+    @objc func didTapFilterIcon() {
+        print(#function)
+        let vc = CompanyFilterVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func setupCompaniesLabel() {
@@ -63,7 +91,7 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
         
         NSLayoutConstraint.activate([
             companiesLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            companiesLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            companiesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
         ])
     }
     

@@ -12,6 +12,7 @@ class MyJobsController: UIViewController {
     var isSelected : String = "Recommended"
     var savedJobs = [IndexPath]()
     var jobs: [Job] = []
+    var appliedJobs : [String] = []
     
     enum CollectionState {
         case recommended
@@ -72,16 +73,20 @@ class MyJobsController: UIViewController {
     var jobsCollectionView : UICollectionView!
     
     
+    var noJobsImageView = UIImageView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+        
         if isSelected == "Recommended" {
             recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         }
         
         fetchRecommendedJobs()
+        fetchTotalAppliedJobs()
         
         setupViews()
     }
@@ -93,6 +98,7 @@ class MyJobsController: UIViewController {
         setupLineView()
         setupJobsCountLabel()
         setupJobsCollectionView()
+        setupNoJobsImageView()
     }
     
     func setupBellIcon() {
@@ -245,7 +251,7 @@ class MyJobsController: UIViewController {
             appliedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             savedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             
-            UIView.animate(withDuration: 0.5) {
+            UIView.animate(withDuration: 0.7) {
                 self.leadingConstraint.constant = 16
                 self.widthConstraint.constant = 130
                 self.view.layoutIfNeeded()
@@ -264,8 +270,8 @@ class MyJobsController: UIViewController {
             recommendedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             savedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             
-            UIView.animate(withDuration: 0.5) {
-                self.leadingConstraint.constant = 182
+            UIView.animate(withDuration: 0.7) {
+                self.leadingConstraint.constant = 184
                 self.widthConstraint.constant = 68
                 self.view.layoutIfNeeded()
             }
@@ -282,7 +288,7 @@ class MyJobsController: UIViewController {
             recommendedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             appliedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             
-            UIView.animate(withDuration: 0.5) {
+            UIView.animate(withDuration: 0.7) {
                 self.leadingConstraint.constant = 290
                 self.widthConstraint.constant = 60
                 self.view.layoutIfNeeded()
@@ -290,6 +296,27 @@ class MyJobsController: UIViewController {
         }
         collectionState = .saved
         jobsCountLabel.text = "\(savedJobs.count) saved jobs"
+    }
+    
+    
+    private func setupNoJobsImageView() {
+        noJobsImageView = UIImageView()
+        noJobsImageView.image = UIImage(named: "no-jobs")  // Ensure you have this image in your assets
+        
+        noJobsImageView.translatesAutoresizingMaskIntoConstraints = false
+        noJobsImageView.isHidden = true  // Hide it by default
+        view.addSubview(noJobsImageView)
+
+        NSLayoutConstraint.activate([
+            noJobsImageView.topAnchor.constraint(equalTo: jobsCountLabel.bottomAnchor, constant: 50),
+            noJobsImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noJobsImageView.widthAnchor.constraint(equalToConstant: 300),
+            noJobsImageView.heightAnchor.constraint(equalToConstant: 200)
+        ])
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        fetchTotalAppliedJobs()
     }
 }
 
@@ -299,6 +326,10 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id2", for: indexPath) as! JobsCell
         let job = jobs[indexPath.row]
+        
+        if appliedJobs.contains(job.id) {
+            cell.appliedLabel.isHidden = false
+        }
         
         cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         cell.layer.borderWidth = 1
@@ -344,7 +375,7 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
             }.resume()
         }
         
-        cell.saveButton.isHidden = true
+//        cell.saveButton.isHidden = true
         
         return cell
     }
@@ -458,7 +489,6 @@ extension MyJobsController {
             do {
                 // Decode directly as an array of dictionaries
                 if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-                    print("Job Array: \(jobArray)")
                     
                     // Map dictionaries to Job objects
                     let decoder = JSONDecoder()
@@ -468,9 +498,8 @@ extension MyJobsController {
                     // Update the jobs array on the main thread
                     DispatchQueue.main.async {
                         self.jobs = jobs
-                        print(jobs.count)
                         if jobs.count == 0 {
-//                            self.noJobsImageView.isHidden = false
+                            self.noJobsImageView.isHidden = false
                         }
                         self.jobsCountLabel.text = "\(jobs.count) recommended jobs"
                         self.jobsCollectionView.reloadData()
@@ -481,7 +510,7 @@ extension MyJobsController {
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
-//                    self.noJobsImageView.isHidden = false
+                    self.noJobsImageView.isHidden = false
                 }
             }
         }
@@ -518,14 +547,12 @@ extension MyJobsController {
                 
                 // Extract the "jobs" array
                 if let jobs = responseDict["jobs"] {
-                    print("Job Array: \(jobs)")
                     
                     // Update the jobs array on the main thread
                     DispatchQueue.main.async {
                         self.jobs = jobs
-                        print(jobs.count)
                         if jobs.count == 0 {
-                            // self.noJobsImageView.isHidden = false
+                             self.noJobsImageView.isHidden = false
                         }
                         self.jobsCountLabel.text = "\(jobs.count) applied jobs"
                         self.jobsCollectionView.reloadData()
@@ -538,7 +565,7 @@ extension MyJobsController {
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
-//                    self.noJobsImageView.isHidden = false
+                    self.noJobsImageView.isHidden = false
                 }
             }
         }
@@ -546,8 +573,54 @@ extension MyJobsController {
     }
     
     
-    
-    //    if let responseString = String(data: data, encoding: .utf8) {
-    //                print("Raw response data: \(responseString)")
-    //            }
+    func fetchTotalAppliedJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            // Print the raw response data as a string
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+
+            do {
+                // Decode the JSON response as a dictionary with jobIds array
+                let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
+                
+                if let jobIds = responseDict["jobIds"] {
+                    print("Job IDs: \(jobIds)")
+                    
+                    // Process the job IDs as needed
+                    DispatchQueue.main.async {
+                        self.appliedJobs = jobIds
+                        self.jobsCollectionView.reloadData()
+                    }
+                } else {
+                    print("Failed to find job IDs in the response")
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+        task.resume()
+    }
+
 }
