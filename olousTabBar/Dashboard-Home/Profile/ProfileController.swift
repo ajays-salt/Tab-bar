@@ -130,10 +130,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.isHidden = true
         
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+        
+        navigationController?.navigationBar.isHidden = true
         
 //        fetchUserProfile()
                 
@@ -142,7 +143,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print(#function)
         fetchUserProfile()
     }
     

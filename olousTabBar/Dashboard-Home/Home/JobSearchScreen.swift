@@ -267,7 +267,7 @@ class JobSearchScreen: UIViewController, UITextFieldDelegate {
             present(alert, animated: true)
             return
         }
-        let jobResultVC = JobSearchResult2()
+        let jobResultVC = JobSearchResult()
         jobResultVC.jobTitle = jobTitle
         jobResultVC.jobLocation = locationTextField.text!
         

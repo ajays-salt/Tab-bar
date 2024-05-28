@@ -26,14 +26,6 @@ class MyJobsController: UIViewController {
         }
     }
     
-    var notificationBellIcon : UIImageView = {
-        let imgView = UIImageView()
-        imgView.image = UIImage(systemName: "bell")
-        imgView.tintColor = UIColor(hex: "#000000")
-        imgView.contentMode = .scaleAspectFit
-        return imgView
-    }()
-    
     var categorySection = UIView()
     var recommendedButton : UIButton = {
         let button = UIButton()
@@ -81,6 +73,8 @@ class MyJobsController: UIViewController {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
+        navigationController?.navigationBar.isHidden = true
+        
         if isSelected == "Recommended" {
             recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         }
@@ -93,7 +87,6 @@ class MyJobsController: UIViewController {
     
     
     func setupViews() {
-        setupBellIcon()
         setupCategorySection()
         setupLineView()
         setupJobsCountLabel()
@@ -101,16 +94,6 @@ class MyJobsController: UIViewController {
         setupNoJobsImageView()
     }
     
-    func setupBellIcon() {
-        notificationBellIcon.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(notificationBellIcon)
-        NSLayoutConstraint.activate([
-            notificationBellIcon.topAnchor.constraint(equalTo: view.topAnchor, constant: 4),
-            notificationBellIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            notificationBellIcon.widthAnchor.constraint(equalToConstant: 30),
-            notificationBellIcon.heightAnchor.constraint(equalToConstant: 36)
-        ])
-    }
     
     func setupCategorySection() {
         categorySection.backgroundColor = UIColor(hex: "#C7EAFF")
@@ -118,7 +101,7 @@ class MyJobsController: UIViewController {
         view.addSubview(categorySection)
         
         NSLayoutConstraint.activate([
-            categorySection.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
+            categorySection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
             categorySection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             categorySection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             categorySection.heightAnchor.constraint(equalToConstant: 50)

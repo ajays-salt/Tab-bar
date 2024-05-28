@@ -41,7 +41,7 @@ class TabBarController: UITabBarController {
                               y: tabBar.frame.origin.y - 1, // Adjusting the y-coordinate by -1
                               width: tabBar.frame.size.width,
                               height: tabBar.frame.size.height)
-        tabBar.backgroundColor = UIColor(hex: "#EAECF0")
+        tabBar.backgroundColor = UIColor(hex: "#F7F8F9")
         
         
     }

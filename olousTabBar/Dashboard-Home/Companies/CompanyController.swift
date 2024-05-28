@@ -7,9 +7,69 @@
 
 import UIKit
 
-class CompanyController: UIViewController, UIScrollViewDelegate {
+class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate, CompanyFiltersDelegate {
+    
+    
+    func didApplyFilters(_ filtersURL: String) {
+        print("Applied filters URL: \(filtersURL)")
+        
+        // Remove brackets from the URL
+        let pattern = "\\(\\d+\\)"
+        let regex = try! NSRegularExpression(pattern: pattern, options: [])
+        let range = NSRange(location: 0, length: filtersURL.utf16.count)
+        let newUrlString = regex.stringByReplacingMatches(in: filtersURL, options: [], range: range, withTemplate: "")
+        
+        // Parse the new URL string to get individual components
+        var urlComponents = URLComponents(string: newUrlString)!
+        var queryItems: [URLQueryItem] = []
+        
+        // Separate the parameters into correct format
+        for item in urlComponents.queryItems ?? [] {
+            switch item.name {
+            case "fields":
+                let fields = item.value?.split(separator: ",").map { String($0) } ?? []
+                fields.forEach { field in
+                    queryItems.append(URLQueryItem(name: "field[]", value: field))
+                }
+            case "sectors":
+                let sectors = item.value?.split(separator: ",").map { String($0) } ?? []
+                sectors.forEach { sector in
+                    queryItems.append(URLQueryItem(name: "sector[]", value: sector))
+                }
+            case "categories":
+                let categories = item.value?.split(separator: ",").map { String($0) } ?? []
+                categories.forEach { category in
+                    queryItems.append(URLQueryItem(name: "category[]", value: category))
+                }
+            case "companySizes":
+                let companySizes = item.value?.split(separator: ",").map { String($0) } ?? []
+                companySizes.forEach { size in
+                    queryItems.append(URLQueryItem(name: "companySize[]", value: size))
+                }
+            default:
+                queryItems.append(item)
+            }
+        }
+        
+        urlComponents.queryItems = queryItems
+        let correctedUrlString = urlComponents.url?.absoluteString ?? ""
+        
+        print("New URL in correct format: ", correctedUrlString)
+        companiesArray.removeAll()
+        urlWithFilters = correctedUrlString
+        fetchCompany(page: 1)
+    }
+
+    var selectedFields = Set<String>()
+    var selectedSectors = Set<String>()
+    var selectedCategories = Set<String>()
+    var selectedCompanySizes = Set<String>()
+    
+    
     
     var searchURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company"
+    var urlWithFilters = ""
+    var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company"
     var companiesArray: [Company] = []
     var companiesLabel: UILabel!
     
@@ -77,8 +137,9 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
     }
     @objc func didTapFilterIcon() {
         print(#function)
-        let vc = CompanyFilterVC()
-        navigationController?.pushViewController(vc, animated: true)
+        let filtersVC = CompanyFilterVC(selectedFields: selectedFields, selectedSectors: selectedSectors, selectedCategories: selectedCategories, selectedCompanySizes: selectedCompanySizes)
+        filtersVC.delegate = self
+        navigationController?.pushViewController(filtersVC, animated: true)
     }
     
     func setupCompaniesLabel() {
@@ -149,6 +210,7 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
         separatorLine.bottomAnchor.constraint(equalTo: searchCompanyInnerSection.bottomAnchor, constant: -49).isActive = true
         
         
+        companyNameTextField.delegate = self
         companyNameTextField.placeholder = "Enter Company name (Required)"
         companyNameTextField.translatesAutoresizingMaskIntoConstraints = false
         searchCompanyInnerSection.addSubview(companyNameTextField)
@@ -172,6 +234,7 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
             locationIcon.heightAnchor.constraint(equalToConstant: 26)
         ])
         
+        locationTextField.delegate = self
         locationTextField.placeholder = "Enter Location (Optional)"
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
         searchCompanyInnerSection.addSubview(locationTextField)
@@ -265,6 +328,16 @@ class CompanyController: UIViewController, UIScrollViewDelegate {
         }
     }
     
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
+    }
 }
 
 extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -331,12 +404,13 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
 // Extension for API
 extension CompanyController {
     func fetchCompany(page: Int) {
-//        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company?page=\(page)") else {
-//            print("Invalid URL")
-//            return
-//        }
-        
-        var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company?page=\(page)"
+        if urlWithFilters != "" {
+            urlString = "\(searchURL)\(urlWithFilters)&page=\(page)"
+        }
+        else {
+            urlString = "\(searchURL)?page=\(page)"
+        }
+        print("Url String to fetch ", urlString)
         
         // Check if a search was performed and modify the URL accordingly
         if let companyName = companyNameTextField.text, !companyName.isEmpty {

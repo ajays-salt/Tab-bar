@@ -22,21 +22,15 @@ class HomeController: UIViewController {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    var notificationBellIcon : UIImageView = {
-        let imgView = UIImageView()
-        imgView.image = UIImage(systemName: "bell")
-        imgView.tintColor = UIColor(hex: "#000000")
-        imgView.contentMode = .scaleAspectFit
-        return imgView
-    }()
-    var jobSearchSection : UIView = UIView()
     
+    let scrollSection = UIView()
+    
+    var jobSearchSection : UIView = UIView()
     var jobSearchInnerSection : UIView = UIView()
     
     let jobsTextField = UITextField()
     let locationTextField = UITextField()
     
-    let scrollSection = UIView()
     var horizontalScrollView : UIScrollView!
     
     // subViews in horizontal scroll
@@ -122,7 +116,6 @@ class HomeController: UIViewController {
         
         setupHeaderView()
         setupOlousLogo()
-        setupBellIcon()
         setupScrollView()
         setupJobSearchSection()
         setupJobSearchInnerSection()
@@ -168,16 +161,6 @@ class HomeController: UIViewController {
         ])
     }
     
-    func setupBellIcon() {
-        notificationBellIcon.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(notificationBellIcon)
-        NSLayoutConstraint.activate([
-            notificationBellIcon.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 4),
-            notificationBellIcon.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            notificationBellIcon.widthAnchor.constraint(equalToConstant: 30),
-            notificationBellIcon.heightAnchor.constraint(equalToConstant: 36)
-        ])
-    }
     
     func setupScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -490,12 +473,7 @@ class HomeController: UIViewController {
         tabBarController?.selectedIndex = 3
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
-    @objc func didTapViewActionDetails() {
-        
-    }
-    @objc func didTapViewSearchAppearanceDetails() {
-        
-    }
+    
     
     func setupSeparatorView1() {
         

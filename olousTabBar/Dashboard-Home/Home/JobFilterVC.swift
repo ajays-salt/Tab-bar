@@ -1,22 +1,31 @@
 //
-//  CompanyFilterVC.swift
+//  JobFilterVC.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 27/05/24.
+//  Created by Salt Technologies on 28/05/24.
 //
 
 import UIKit
 
-class CompanyFilterVC: UIViewController {
+class JobFilterVC: UIViewController, UITextFieldDelegate {
     
+    private var activeSearchTextField: UITextField?
+    
+    var searchTextFields: [UITextField] = []
+    var filteredProfessions: [String] = []
+    var filteredQualifications: [String] = []
+    var filteredLocations: [String] = []
+    var filteredWorkPlaces: [String] = []
+
+
     weak var delegate: CompanyFiltersDelegate?
     var filtersURL = ""
     
-    init(selectedFields: Set<String>, selectedSectors: Set<String>, selectedCategories: Set<String>, selectedCompanySizes: Set<String>) {
-        self.selectedFields = selectedFields
-        self.selectedSectors = selectedSectors
-        self.selectedCategories = selectedCategories
-        self.selectedCompanySizes = selectedCompanySizes
+    init(selectedProfessions: Set<String>, selectedEducations: Set<String>, selectedLocations: Set<String>, selectedWorkplaces: Set<String>) {
+        self.selectedProfessions = selectedProfessions
+        self.selectedEducations = selectedEducations
+        self.selectedLocations = selectedLocations
+        self.selectedWorkplaces = selectedWorkplaces
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -24,15 +33,15 @@ class CompanyFilterVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    var fields = ["Field 1", "Field 2", "Field 3", "Field 4"]
-    var sectors = ["Sector 1", "Sector 2", "Sector 3", "Sector 4"]
-    var categories = ["Category 1", "Category 2", "Category 3", "Category 4"]
-    var companySizes = ["Small", "Medium", "Large", "Enterprise"]
+    var professions = ["Field 1", "Field 2", "Field 3", "Field 4"]
+    var qualifications = ["Sector 1", "Sector 2", "Sector 3", "Sector 4"]
+    var locations = ["Category 1", "Category 2", "Category 3", "Category 4"]
+    var workPlaces = ["Small", "Medium", "Large", "Enterprise"]
 
-    var selectedFields = Set<String>()
-    var selectedSectors = Set<String>()
-    var selectedCategories = Set<String>()
-    var selectedCompanySizes = Set<String>()
+    var selectedProfessions = Set<String>()
+    var selectedEducations = Set<String>()
+    var selectedLocations = Set<String>()
+    var selectedWorkplaces = Set<String>()
 
     let tableView = UITableView()
     
@@ -44,11 +53,52 @@ class CompanyFilterVC: UIViewController {
         view.backgroundColor = .systemBackground
 
         navigationItem.title = "Apply Filters"
-
+        
         fetchFiltersData()
         
         setupTableView()
         setupButtons()
+        
+        filteredProfessions = professions
+        filteredQualifications = qualifications
+        filteredLocations = locations
+        filteredWorkPlaces = workPlaces
+        
+        for _ in 0..<4 {
+            let searchTextField = UITextField()
+            searchTextField.placeholder = "Search"
+            searchTextField.borderStyle = .roundedRect
+            searchTextField.addTarget(self, action: #selector(searchTextChanged(_:)), for: .editingChanged)
+            searchTextFields.append(searchTextField)
+        }
+        
+        for searchTextField in searchTextFields {
+            searchTextField.delegate = self
+        }
+         
+    }
+    
+    @objc private func searchTextChanged(_ textField: UITextField) {
+        activeSearchTextField = textField
+        guard let searchText = textField.text else {
+            return
+        }
+
+        switch textField {
+        case searchTextFields[0]:
+            filteredProfessions = searchText.isEmpty ? professions : professions.filter { $0.lowercased().contains(searchText.lowercased()) }
+        case searchTextFields[1]:
+            filteredQualifications = searchText.isEmpty ? qualifications : qualifications.filter { $0.lowercased().contains(searchText.lowercased()) }
+        case searchTextFields[2]:
+            filteredLocations = searchText.isEmpty ? locations : locations.filter { $0.lowercased().contains(searchText.lowercased()) }
+        case searchTextFields[3]:
+            filteredWorkPlaces = searchText.isEmpty ? workPlaces : workPlaces.filter { $0.lowercased().contains(searchText.lowercased()) }
+        default:
+            break
+        }
+        
+        tableView.reloadData()
+        activeSearchTextField?.becomeFirstResponder()
     }
     
     
@@ -89,10 +139,10 @@ class CompanyFilterVC: UIViewController {
     }
     
     @objc private func clearFilters() {
-        selectedFields.removeAll()
-        selectedSectors.removeAll()
-        selectedCategories.removeAll()
-        selectedCompanySizes.removeAll()
+        selectedProfessions.removeAll()
+        selectedEducations.removeAll()
+        selectedLocations.removeAll()
+        selectedWorkplaces.removeAll()
         tableView.reloadData()
     }
     
@@ -101,11 +151,11 @@ class CompanyFilterVC: UIViewController {
         delegate?.didApplyFilters(filtersURL)
         
         // Pass the selected filters back to CompanyController
-        if let delegate = delegate as? CompanyController {
-            delegate.selectedFields = selectedFields
-            delegate.selectedSectors = selectedSectors
-            delegate.selectedCategories = selectedCategories
-            delegate.selectedCompanySizes = selectedCompanySizes
+        if let delegate = delegate as? JobSearchResult {
+            delegate.selectedProfessions = selectedProfessions
+            delegate.selectedEducations = selectedEducations
+            delegate.selectedLocations = selectedLocations
+            delegate.selectedWorkplaces = selectedWorkplaces
         }
         
         navigationController?.popViewController(animated: true)
@@ -113,6 +163,16 @@ class CompanyFilterVC: UIViewController {
 
     
     
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -129,8 +189,7 @@ class CompanyFilterVC: UIViewController {
     }
 }
 
-
-extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
+extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 4
@@ -139,10 +198,10 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if expandedSections[section] {
             switch section {
-            case 0: return fields.count
-            case 1: return sectors.count
-            case 2: return categories.count
-            case 3: return companySizes.count
+            case 0: return filteredProfessions.count
+            case 1: return filteredQualifications.count
+            case 2: return filteredLocations.count
+            case 3: return filteredWorkPlaces.count
             default: return 0
             }
         } else {
@@ -157,17 +216,17 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
 
         switch indexPath.section {
         case 0:
-            text = fields[indexPath.row]
-            isSelected = selectedFields.contains(text)
+            text = filteredProfessions[indexPath.row]
+            isSelected = selectedProfessions.contains(text)
         case 1:
-            text = sectors[indexPath.row]
-            isSelected = selectedSectors.contains(text)
+            text = filteredQualifications[indexPath.row]
+            isSelected = selectedEducations.contains(text)
         case 2:
-            text = categories[indexPath.row]
-            isSelected = selectedCategories.contains(text)
+            text = filteredLocations[indexPath.row]
+            isSelected = selectedLocations.contains(text)
         case 3:
-            text = companySizes[indexPath.row]
-            isSelected = selectedCompanySizes.contains(text)
+            text = filteredWorkPlaces[indexPath.row]
+            isSelected = selectedWorkplaces.contains(text)
         default:
             text = ""
             isSelected = false
@@ -179,38 +238,39 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         var text: String
 
         switch indexPath.section {
         case 0:
-            text = fields[indexPath.row]
-            if selectedFields.contains(text) {
-                selectedFields.remove(text)
+            text = professions[indexPath.row]
+            if selectedProfessions.contains(text) {
+                selectedProfessions.remove(text)
             } else {
-                selectedFields.insert(text)
+                selectedProfessions.insert(text)
             }
         case 1:
-            text = sectors[indexPath.row]
-            if selectedSectors.contains(text) {
-                selectedSectors.remove(text)
+            text = qualifications[indexPath.row]
+            if selectedEducations.contains(text) {
+                selectedEducations.remove(text)
             } else {
-                selectedSectors.insert(text)
+                selectedEducations.insert(text)
             }
         case 2:
-            text = categories[indexPath.row]
-            if selectedCategories.contains(text) {
-                selectedCategories.remove(text)
+            text = locations[indexPath.row]
+            if selectedLocations.contains(text) {
+                selectedLocations.remove(text)
             } else {
-                selectedCategories.insert(text)
+                selectedLocations.insert(text)
             }
         case 3:
-            text = companySizes[indexPath.row]
-            if selectedCompanySizes.contains(text) {
-                selectedCompanySizes.remove(text)
+            text = workPlaces[indexPath.row]
+            if selectedWorkplaces.contains(text) {
+                selectedWorkplaces.remove(text)
             } else {
-                selectedCompanySizes.insert(text)
+                selectedWorkplaces.insert(text)
             }
         default:
             return
@@ -224,6 +284,17 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
         return 32
     }
     
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let headerView = createSectionHeader(title: getTitleForSection(section), isExpanded: expandedSections[section])
+//        headerView.tag = section
+//        
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleHeaderTap(_:)))
+//        headerView.addGestureRecognizer(tapGesture)
+//        headerView.isUserInteractionEnabled = true
+//        
+//        return headerView
+//    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = createSectionHeader(title: getTitleForSection(section), isExpanded: expandedSections[section])
         headerView.tag = section
@@ -232,15 +303,26 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
         headerView.addGestureRecognizer(tapGesture)
         headerView.isUserInteractionEnabled = true
         
+        let searchTextField = searchTextFields[section]
+        searchTextField.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(searchTextField)
+        
+        NSLayoutConstraint.activate([
+            searchTextField.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
+            searchTextField.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            searchTextField.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 30), // Adjust the position to be inside the header view
+            searchTextField.heightAnchor.constraint(equalToConstant: 30)
+        ])
+        
         return headerView
     }
     
     private func getTitleForSection(_ section: Int) -> String {
         switch section {
-        case 0: return "Fields"
-        case 1: return "Sectors"
-        case 2: return "Categories"
-        case 3: return "Company Size"
+        case 0: return "Profession"
+        case 1: return "Education"
+        case 2: return "Job Location"
+        case 3: return "Workplace"
         default: return ""
         }
     }
@@ -266,11 +348,10 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: chevronImageView.leadingAnchor, constant: -8),
-            titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 8),
-            titleLabel.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -8),
+            titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 4),
             
             chevronImageView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            chevronImageView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
+            chevronImageView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 4),
         ])
 
         return headerView
@@ -285,30 +366,30 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 40 // Adjust the height as needed
+        return 70 // Adjust the height as needed
     }
 
     private func updateFiltersURL() {
         var urlComponents = URLComponents()
         var queryItems = [URLQueryItem]()
         
-        if !selectedFields.isEmpty {
-            let fieldsItem = URLQueryItem(name: "fields", value: selectedFields.joined(separator: ","))
+        if !selectedProfessions.isEmpty {
+            let fieldsItem = URLQueryItem(name: "jobTitles", value: selectedProfessions.joined(separator: ","))
             queryItems.append(fieldsItem)
         }
         
-        if !selectedSectors.isEmpty {
-            let sectorsItem = URLQueryItem(name: "sectors", value: selectedSectors.joined(separator: ","))
+        if !selectedEducations.isEmpty {
+            let sectorsItem = URLQueryItem(name: "qualifications", value: selectedEducations.joined(separator: ","))
             queryItems.append(sectorsItem)
         }
         
-        if !selectedCategories.isEmpty {
-            let categoriesItem = URLQueryItem(name: "categories", value: selectedCategories.joined(separator: ","))
+        if !selectedLocations.isEmpty {
+            let categoriesItem = URLQueryItem(name: "cities", value: selectedLocations.joined(separator: ","))
             queryItems.append(categoriesItem)
         }
         
-        if !selectedCompanySizes.isEmpty {
-            let sizesItem = URLQueryItem(name: "companySizes", value: selectedCompanySizes.joined(separator: ","))
+        if !selectedWorkplaces.isEmpty {
+            let sizesItem = URLQueryItem(name: "workPlaces", value: selectedWorkplaces.joined(separator: ","))
             queryItems.append(sizesItem)
         }
         
@@ -318,14 +399,15 @@ extension CompanyFilterVC : UITableViewDataSource, UITableViewDelegate {
     
 }
 
-protocol CompanyFiltersDelegate: AnyObject {
+protocol JobFiltersDelegate: AnyObject {
     func didApplyFilters(_ filtersURL: String)
 }
 
 
-extension CompanyFilterVC {
+extension JobFilterVC {
+    
     private func fetchFiltersData() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/filters") else {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/filters") else {
             print("Invalid URL")
             return
         }
@@ -345,6 +427,10 @@ extension CompanyFilterVC {
                 return
             }
             
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+            
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                 self.parseFiltersData(json: json)
@@ -358,44 +444,50 @@ extension CompanyFilterVC {
     private func parseFiltersData(json: [String: Any]?) {
         guard let json = json else { return }
         
-        if let fieldsArray = json["fields"] as? [[String: Any]] {
-            fields = fieldsArray.compactMap { item in
-                if let count = item["count"] as? Int, let field = item["field"] as? String {
-                    return "\(field.capitalized)(\(count))"
+        if let fieldsArray = json["jobTitles"] as? [[String: Any]] {
+            professions = fieldsArray.compactMap { item in
+                if let count = item["count"] as? Int, let jobTitle = item["jobTitle"] as? String {
+                    return "\(jobTitle.capitalized)(\(count))"
                 }
                 return nil
             }
+            filteredProfessions = professions
         }
         
-        if let sectorsArray = json["sectors"] as? [[String: Any]] {
-            sectors = sectorsArray.compactMap { item in
-                if let count = item["count"] as? Int, let sector = item["sector"] as? String {
-                    return "\(sector.trimmingCharacters(in: .whitespacesAndNewlines).capitalized)(\(count))"
+        if let sectorsArray = json["qualifications"] as? [[String: Any]] {
+            qualifications = sectorsArray.compactMap { item in
+                if let count = item["count"] as? Int, let qualification = item["qualification"] as? String {
+                    return "\(qualification.trimmingCharacters(in: .whitespacesAndNewlines).capitalized)(\(count))"
                 }
                 return nil
             }
+            filteredQualifications = qualifications
         }
         
-        if let categoriesArray = json["whos"] as? [[String: Any]] {
-            categories = categoriesArray.compactMap { item in
-                if let count = item["count"] as? Int, let category = item["who"] as? String {
-                    return "\(category.capitalized)(\(count))"
+        if let categoriesArray = json["cities"] as? [[String: Any]] {
+            locations = categoriesArray.compactMap { item in
+                if let count = item["count"] as? Int, let city = item["city"] as? String {
+                    return "\(city.capitalized)(\(count))"
                 }
                 return nil
             }
+            filteredLocations = locations
         }
         
-        if let sizesArray = json["sizes"] as? [[String: Any]] {
-            companySizes = sizesArray.compactMap { item in
-                if let count = item["count"] as? Int, let size = item["size"] as? String {
-                    return "\(size.capitalized)(\(count))"
+        if let sizesArray = json["workPlaces"] as? [[String: Any]] {
+            workPlaces = sizesArray.compactMap { item in
+                if let count = item["count"] as? Int, let workPlace = item["workPlace"] as? String {
+                    return "\(workPlace.capitalized)(\(count))"
                 }
                 return nil
             }
+            filteredWorkPlaces = workPlaces
         }
         
         DispatchQueue.main.async {
             self.tableView.reloadData()
+            self.activeSearchTextField?.becomeFirstResponder()
         }
     }
+
 }
