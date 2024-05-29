@@ -55,6 +55,7 @@ class HomeController: UIViewController {
         label.text = "Hi, Ajay Sarkate"
         label.font = .boldSystemFont(ofSize: 18)
         label.textColor = UIColor(hex: "#101828")
+        label.numberOfLines = 2
         return label
     }()
     let designationLabel : UILabel = {
@@ -302,10 +303,10 @@ class HomeController: UIViewController {
         firstView.translatesAutoresizingMaskIntoConstraints = false
         scrollSection.addSubview(firstView)
         NSLayoutConstraint.activate([
-            firstView.topAnchor.constraint(equalTo: scrollSection.topAnchor, constant: 16),
+            firstView.topAnchor.constraint(equalTo: scrollSection.topAnchor, constant: 10),
             firstView.leadingAnchor.constraint(equalTo: scrollSection.leadingAnchor, constant: 16),
             firstView.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            firstView.heightAnchor.constraint(equalToConstant: 148)
+            firstView.heightAnchor.constraint(equalToConstant: 160)
         ])
         
     }
@@ -424,48 +425,50 @@ class HomeController: UIViewController {
         
         // ************************************ right side info of circleView **********************************************
         
-        
-        
-        
-        let pendingLabel : UILabel = {
-            let label = UILabel()
-            let attributedString = NSMutableAttributedString(string: "5 pending actions")
-            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#EB5757"), range: NSRange(location: 0, length: 1))
-            attributedString.addAttribute(.foregroundColor, value: UIColor(hex: "#344054"), range: NSRange(location: 1, length: attributedString.length - 1))
-        
-            label.attributedText = attributedString
-            label.font = .systemFont(ofSize: 16)
-            return label
-        }()
-        
-        let updateProfilButton : UIButton = {
+        let updateProfilButton: UIButton = {
             let button = UIButton()
-            
-            let title = NSAttributedString(string: "   Update your profile   ",
-                                                attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
-                                                             .foregroundColor: UIColor(hex: "#00629E")])
+            let title = NSAttributedString(string: " Update your profile ",
+                                           attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
+                                                        .foregroundColor: UIColor(hex: "#00629E")])
             button.setAttributedTitle(title, for: .normal)
             button.backgroundColor = UIColor(hex: "#D7F0FF")
             button.layer.cornerRadius = 12
             button.addTarget(self, action: #selector(didTapUpdateProfile), for: .touchUpInside)
+            button.translatesAutoresizingMaskIntoConstraints = false
             return button
         }()
-        
+
+        let buttonContainerView = UIView()
+        buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
+        buttonContainerView.addSubview(updateProfilButton)
+
+        // Apply constraints to updateProfilButton within the container view
+        NSLayoutConstraint.activate([
+            updateProfilButton.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor),
+            updateProfilButton.centerYAnchor.constraint(equalTo: buttonContainerView.centerYAnchor),
+            updateProfilButton.widthAnchor.constraint(equalToConstant: 180),
+            updateProfilButton.heightAnchor.constraint(equalToConstant: 36) // Adjust the height as needed
+        ])
+
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 16
-        
+        stackView.spacing = 12
+
         // Add subviews to stack view
         stackView.addArrangedSubview(userNameLabel)
         stackView.addArrangedSubview(designationLabel)
-        stackView.addArrangedSubview(updateProfilButton)
-        
+        stackView.addArrangedSubview(buttonContainerView)
+
         stackView.translatesAutoresizingMaskIntoConstraints = false
         firstView.addSubview(stackView)
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: firstView.topAnchor, constant: 20),
-            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16)
+            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            buttonContainerView.heightAnchor.constraint(equalToConstant: 44) // Ensure container view has a height
         ])
+        
     }
     
     
@@ -694,18 +697,18 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             cell.layer.cornerRadius = 12
             
             cell.jobTitle.text = job.title
-            cell.companyName.text = job.company.name
+            cell.companyName.text = job.companyName
             cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
             
-            let s = getTimeAgoString(from: job.createdAt)
+            let s = getTimeAgoString(from: job.createdAt ?? "")
             cell.jobPostedTime.text = s
             
-            let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
+            let expText = attributedStringForExperience("\(job.minExperience ?? "nil")-\(job.maxExperience ?? "nil")")
             cell.jobExperienceLabel.attributedText = expText
             
             // Fetch company logo asynchronously
             let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-            let companyLogoURLString = baseURLString + (job.company.logo)
+            let companyLogoURLString = baseURLString + (job.companyLogo ?? "")
             if let companyLogoURL = URL(string: companyLogoURLString) {
                 URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                     if let data = data, let image = UIImage(data: data) {
@@ -716,6 +719,8 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
                 }.resume()
             }
             
+            cell.saveButton.isHidden = true
+            
             return cell
         }
     }
@@ -724,7 +729,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         if collectionView == companiesCollectionVC {
             return .init(width: 228, height: 182)
         }
-        return .init(width: view.frame.width - 40, height: 198)
+        return .init(width: view.frame.width - 60, height: 198)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

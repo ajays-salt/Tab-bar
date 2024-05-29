@@ -465,10 +465,10 @@ extension JobSearchScreen : UICollectionViewDelegate, UICollectionViewDataSource
         cell.layer.cornerRadius = 12
         
         cell.jobTitle.text = job.title
-        cell.companyName.text = job.company.name
+        cell.companyName.text = job.companyName
         cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
         
-        let s = getTimeAgoString(from: job.createdAt)
+        let s = getTimeAgoString(from: job.createdAt ?? "")
         cell.jobPostedTime.text = s
         
         let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
@@ -476,7 +476,7 @@ extension JobSearchScreen : UICollectionViewDelegate, UICollectionViewDataSource
         
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + (job.company.logo)
+        let companyLogoURLString = baseURLString + (job.companyLogo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -487,12 +487,14 @@ extension JobSearchScreen : UICollectionViewDelegate, UICollectionViewDataSource
             }.resume()
         }
         
+        cell.saveButton.isHidden = true
+        
         return cell
     }
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: view.frame.width - 40, height: 198)
+        return .init(width: view.frame.width - 60, height: 198)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

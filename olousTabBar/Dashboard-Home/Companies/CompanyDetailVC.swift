@@ -40,6 +40,7 @@ class CompanyDetailVC: UIViewController {
     
     var jobs: [Job] = []
     var appliedJobs : [String] = []
+    var savedJobs2 : [String] = []
     
     var noJobsImageView = UIImageView()
     
@@ -67,7 +68,6 @@ class CompanyDetailVC: UIViewController {
     }
     
     
-    
     private func setupViews() {
         setupImagesAndName()
         setupTypeAndLocationLabel()
@@ -79,8 +79,6 @@ class CompanyDetailVC: UIViewController {
         updateViewSelection()
         setupNoJobsImageView()
     }
-    
-   
     
     private func setupImagesAndName() {
         let backgroundImageView = UIImageView()
@@ -373,7 +371,80 @@ class CompanyDetailVC: UIViewController {
     }
 
     
+    @objc func didTapSaveJob(_ sender : UIButton) {
+        let indexPath = IndexPath(row: sender.tag, section: 0)
+        guard let cell = jobsCollectionView.cellForItem(at: indexPath) as? JobsCell else {
+            return
+        }
+        
+        let job = jobs[indexPath.row]
+        
+        if savedJobs2.contains(job.id) {  // Already saved, remove it from saved jobs
+            let index = savedJobs2.firstIndex(of: job.id)
+            savedJobs2.remove(at: index!)
+            
+            saveOrUnsaveJob(id: job.id)
+            
+            let attributedString = getAttributedString(image: "bookmark", tintColor: UIColor(hex: "#475467"), title: "Save")
+            cell.saveButton.tintColor = UIColor(hex: "#475467")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+        
+        else {  // Not saved, save this job
+            savedJobs2.append(job.id)
+            
+            saveOrUnsaveJob(id: job.id)
+            
+            let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#667085"), title: "Saved")
+            cell.saveButton.tintColor = UIColor(hex: "#667085")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+    }
     
+    func saveOrUnsaveJob(id: String) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/save") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        let body: [String: Any] = ["jobId": id]
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode jobId: \(error)")
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Network request failed: \(error.localizedDescription)")
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                print("Server error")
+                return
+            }
+
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Response: \(responseString)")
+            }
+        }.resume()
+    }
     
     
     
@@ -405,6 +476,7 @@ class CompanyDetailVC: UIViewController {
         }
         
         fetchTotalAppliedJobs()
+        fetchSavedJobIDs()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -432,14 +504,28 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
             cell.appliedLabel.isHidden = true
         }
         
+        if savedJobs2.contains(job.id) {
+            let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#667085"), title: "Saved")
+            cell.saveButton.tintColor = UIColor(hex: "#667085")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+        else {
+            let attributedString = getAttributedString(image: "bookmark",tintColor: UIColor(hex: "#475467"), title: "Save")
+            cell.saveButton.tintColor = UIColor(hex: "#475467")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+        
+        cell.saveButton.addTarget(self, action: #selector(didTapSaveJob(_:)), for: .touchUpInside)
+        cell.saveButton.tag = indexPath.row
+        
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
         cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
         
-        let s = getTimeAgoString(from: job.createdAt)
+        let s = getTimeAgoString(from: job.createdAt ?? "")
         cell.jobPostedTime.text = s
         
-        let expText = attributedStringForExperience(job.yearsOfExperience)
+        let expText = attributedStringForExperience(job.yearsOfExperience ?? "")
         cell.jobExperienceLabel.attributedText = expText
         
         // Fetch company logo asynchronously
@@ -473,6 +559,22 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
     }
     
     
+    func getAttributedString(image: String, tintColor: UIColor, title : String) -> NSMutableAttributedString {
+        let attributedString = NSMutableAttributedString()
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: image)?.withTintColor(tintColor)
+        
+        let symbolString = NSAttributedString(attachment: symbolAttachment)
+        attributedString.append(symbolString)
+        
+        attributedString.append(NSAttributedString(string: " "))
+        
+        let textString = NSAttributedString(string: title)
+        attributedString.append(textString)
+        
+        return attributedString
+    }
     
     func getTimeAgoString(from createdAt: String) -> String {
         let dateFormatter = DateFormatter()
@@ -608,6 +710,49 @@ extension CompanyDetailVC {
                 } else {
                     print("Failed to find job IDs in the response")
                 }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+        task.resume()
+    }
+    
+    func fetchSavedJobIDs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
+            
+            do {
+                let response = try JSONDecoder().decode(SavedJobsResponse.self, from: data)
+                let jobIDs = response.savedJobs.savedJobs
+                
+                DispatchQueue.main.async {
+                    self.savedJobs2 = jobIDs
+                    print("saved Job IDs " , self.savedJobs2)
+                }
+                
             } catch {
                 print("Failed to decode JSON: \(error)")
             }

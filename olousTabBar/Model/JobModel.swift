@@ -16,7 +16,7 @@ struct Job: Codable {
     let version: Int?
     let title: String
     let location: Location
-    let company: RecJobCompany
+    let company: RecJobCompany?
     let status: String
     let educationalQualification: [Qualification]
     let experience: [Experience]?
@@ -25,9 +25,9 @@ struct Job: Codable {
     let projectExperience: [ProjectExperience]
     let responsibilities: [Responsibility]
     let requirements: [Requirement]
-    let yearsOfExperience: String
-    let createdAt: String
-    let updatedAt: String
+    let yearsOfExperience: String?
+    let createdAt: String?
+    let updatedAt: String?
     let workPlace: String?
     let companyName: String?
     let companyLogo: String?
@@ -38,6 +38,8 @@ struct Job: Codable {
     let salaryRangeFrom: String?
     let salaryRangeTo: String?
     let sessionId: String?
+    let showSalaryToCandidate: Bool?
+    let salaryRange: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -66,6 +68,8 @@ struct Job: Codable {
         case salaryRangeFrom
         case salaryRangeTo
         case sessionId
+        case showSalaryToCandidate
+        case salaryRange
     }
 
     init(from decoder: Decoder) throws {
@@ -74,7 +78,6 @@ struct Job: Codable {
         version = try container.decodeIfPresent(Int.self, forKey: .version)
         title = try container.decode(String.self, forKey: .title)
         location = try container.decode(Location.self, forKey: .location)
-//        company = try container.decode(String.self, forKey: .company)
         status = try container.decode(String.self, forKey: .status)
         educationalQualification = try container.decode([Qualification].self, forKey: .educationalQualification)
         experience = try container.decodeIfPresent([Experience].self, forKey: .experience)
@@ -83,20 +86,18 @@ struct Job: Codable {
         projectExperience = try container.decode([ProjectExperience].self, forKey: .projectExperience)
         responsibilities = try container.decode([Responsibility].self, forKey: .responsibilities)
         requirements = try container.decode([Requirement].self, forKey: .requirements)
-        yearsOfExperience = try container.decode(String.self, forKey: .yearsOfExperience)
-        createdAt = try container.decode(String.self, forKey: .createdAt)
-        updatedAt = try container.decode(String.self, forKey: .updatedAt)
+        yearsOfExperience = try container.decodeIfPresent(String.self, forKey: .yearsOfExperience)
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
         workPlace = try container.decodeIfPresent(String.self, forKey: .workPlace)
         companyName = try container.decodeIfPresent(String.self, forKey: .companyName)
         companyLogo = try container.decodeIfPresent(String.self, forKey: .companyLogo)
         jobType = try container.decodeIfPresent(String.self, forKey: .jobType)
-//        maxExperience = try container.decodeIfPresent(String.self, forKey: .maxExperience)
-//        minExperience = try container.decodeIfPresent(String.self, forKey: .minExperience)
         noOfPeople = try container.decodeIfPresent(Int.self, forKey: .noOfPeople)
-//        salaryRangeFrom = try container.decodeIfPresent(String.self, forKey: .salaryRangeFrom)
-//        salaryRangeTo = try container.decodeIfPresent(String.self, forKey: .salaryRangeTo)
         sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
-        
+        showSalaryToCandidate = try container.decodeIfPresent(Bool.self, forKey: .showSalaryToCandidate)
+        salaryRange = try container.decodeIfPresent(String.self, forKey: .salaryRange)
+
         // Decode maxExperience which might be Int or String
         if let maxExperienceValue = try? container.decode(Int.self, forKey: .maxExperience) {
             maxExperience = String(maxExperienceValue)
@@ -105,7 +106,7 @@ struct Job: Codable {
         } else {
             maxExperience = nil
         }
-        
+
         // Decode minExperience which might be Int or String
         if let minExperienceValue = try? container.decode(Int.self, forKey: .minExperience) {
             minExperience = String(minExperienceValue)
@@ -114,7 +115,7 @@ struct Job: Codable {
         } else {
             minExperience = nil
         }
-        
+
         // Decode salaryRangeFrom which might be String or Double
         if let salaryRangeFromValue = try? container.decode(Double.self, forKey: .salaryRangeFrom) {
             salaryRangeFrom = String(salaryRangeFromValue)
@@ -123,7 +124,7 @@ struct Job: Codable {
         } else {
             salaryRangeFrom = nil
         }
-        
+
         // Decode salaryRangeTo which might be String or Double
         if let salaryRangeToValue = try? container.decode(Double.self, forKey: .salaryRangeTo) {
             salaryRangeTo = String(salaryRangeToValue)
@@ -132,15 +133,18 @@ struct Job: Codable {
         } else {
             salaryRangeTo = nil
         }
-        
-        do {
-            company = try container.decode(RecJobCompany.self, forKey: .company)
-        } catch DecodingError.typeMismatch {
-            let companyString = try container.decode(String.self, forKey: .company)
-            company = RecJobCompany(id: companyString, name: companyString, description: "", logo: "", updatedAt: "")
+
+        // Decode company which might be a RecJobCompany or a String
+        if let company = try? container.decodeIfPresent(RecJobCompany.self, forKey: .company) {
+            self.company = company
+        } else if let companyString = try? container.decodeIfPresent(String.self, forKey: .company) {
+            self.company = RecJobCompany(id: companyString ?? "", name: companyString ?? "", description: "", logo: "", updatedAt: "")
+        } else {
+            self.company = nil
         }
     }
 }
+
 
 
 struct Location: Codable {
@@ -199,3 +203,21 @@ struct Attribute: Codable {
     let title: String
 }
 
+struct SavedJobsResponse: Codable {
+    let success: Bool
+    let savedJobs: SavedJobs
+}
+
+struct SavedJobs: Codable {
+    let id: String
+    let savedJobs: [String]
+    let savedBy: String
+    let v: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case savedJobs
+        case savedBy
+        case v = "__v"
+    }
+}

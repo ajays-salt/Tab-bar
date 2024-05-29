@@ -26,7 +26,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         let label = UILabel()
         label.text = "Ajay Sarkate"
         label.textColor = UIColor(hex: "#101828")
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = .boldSystemFont(ofSize: 22)
+        label.numberOfLines = 2
         return label
     }()
     let jobTitleLabel : UILabel = {
@@ -242,7 +243,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             headerView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 160)
+            headerView.heightAnchor.constraint(equalToConstant: 180)
         ])
     }
 
@@ -301,7 +302,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         NSLayoutConstraint.activate([
             userNameLabel.topAnchor.constraint(equalTo: profileCircle.topAnchor, constant: 16),
             userNameLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
-            userNameLabel.heightAnchor.constraint(equalToConstant: 24),
+//            userNameLabel.heightAnchor.constraint(equalToConstant: 24),
+            userNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             jobTitleLabel.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 12),
             jobTitleLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
@@ -326,6 +328,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             separatorLine0.heightAnchor.constraint(equalToConstant: 1)
         ])
     }
+    
     
     var dobLabel : UILabel!
     var nationalityLabel : UILabel!

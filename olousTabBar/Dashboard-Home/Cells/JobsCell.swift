@@ -135,8 +135,8 @@ class JobsCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             saveButton.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            saveButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 280),
-            saveButton.widthAnchor.constraint(equalToConstant: 60),
+            saveButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 270),
+            saveButton.widthAnchor.constraint(equalToConstant: 70),
             saveButton.heightAnchor.constraint(equalToConstant: 18)
         ])
     }

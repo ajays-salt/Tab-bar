@@ -245,28 +245,28 @@ extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
 
         switch indexPath.section {
         case 0:
-            text = professions[indexPath.row]
+            text = filteredProfessions[indexPath.row]
             if selectedProfessions.contains(text) {
                 selectedProfessions.remove(text)
             } else {
                 selectedProfessions.insert(text)
             }
         case 1:
-            text = qualifications[indexPath.row]
+            text = filteredQualifications[indexPath.row]
             if selectedEducations.contains(text) {
                 selectedEducations.remove(text)
             } else {
                 selectedEducations.insert(text)
             }
         case 2:
-            text = locations[indexPath.row]
+            text = filteredLocations[indexPath.row]
             if selectedLocations.contains(text) {
                 selectedLocations.remove(text)
             } else {
                 selectedLocations.insert(text)
             }
         case 3:
-            text = workPlaces[indexPath.row]
+            text = filteredWorkPlaces[indexPath.row]
             if selectedWorkplaces.contains(text) {
                 selectedWorkplaces.remove(text)
             } else {
@@ -279,21 +279,11 @@ extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
         updateFiltersURL()
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
+
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 32
     }
-    
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        let headerView = createSectionHeader(title: getTitleForSection(section), isExpanded: expandedSections[section])
-//        headerView.tag = section
-//        
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleHeaderTap(_:)))
-//        headerView.addGestureRecognizer(tapGesture)
-//        headerView.isUserInteractionEnabled = true
-//        
-//        return headerView
-//    }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = createSectionHeader(title: getTitleForSection(section), isExpanded: expandedSections[section])
