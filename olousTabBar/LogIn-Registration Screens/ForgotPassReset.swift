@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ForgotPassword3: UIViewController, UITextFieldDelegate {
+class ForgotPassReset: UIViewController, UITextFieldDelegate {
     
     var headerView : UIView!
     
@@ -275,12 +275,14 @@ class ForgotPassword3: UIViewController, UITextFieldDelegate {
         
         DispatchQueue.main.async {
             self.activityIndicator?.startAnimating()
+            self.resetButton.alpha = 0.3
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.activityIndicator?.stopAnimating()
+                self.resetButton.alpha = 1
             }
             
             guard let data = data, error == nil else {
@@ -291,7 +293,7 @@ class ForgotPassword3: UIViewController, UITextFieldDelegate {
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 print("Password reset successfully")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // Delay for 1 second
-                    let vc = ForgotPassword4()
+                    let vc = ForgotPassResetDone()
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             } else {

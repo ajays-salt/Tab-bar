@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ForgotPassword1: UIViewController {
+class ForgotPassword1: UIViewController, UITextFieldDelegate {
     
     var headerView : UIView!
     
@@ -168,13 +168,15 @@ class ForgotPassword1: UIViewController {
     
 
     func setupUI() {
+        emailTextField.delegate = self
+        
         view.addSubview(emailLabel)
         view.addSubview(emailTextField)
         view.addSubview(sendOtpButton)
         
         NSLayoutConstraint.activate([
             
-            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            emailLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 40),
             emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
             emailTextField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 8),
@@ -182,7 +184,7 @@ class ForgotPassword1: UIViewController {
             emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             emailTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            sendOtpButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 40),
+            sendOtpButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 50),
             sendOtpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             sendOtpButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             sendOtpButton.heightAnchor.constraint(equalToConstant: 50),
@@ -206,18 +208,46 @@ class ForgotPassword1: UIViewController {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let body: [String: Any] = ["email": email]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+        
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        DispatchQueue.main.async {
+            self.sendOtpButton.alpha = 0.3
+        }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print("Failed to send OTP: \(error?.localizedDescription ?? "No error description")")
                 return
             }
-            print("Data : " , data)
+            
+            defer {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                    self.sendOtpButton.alpha = 1
+                }
+            }
+            
+            // Parse the JSON response
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                if let message = jsonResponse["msg"] as? String {
+                    if message == "User not found" {
+                        DispatchQueue.main.async {
+                            self.showAlert(withTitle: "Input Error", message: "User Not Found")
+                        }
+                        return
+                    }
+                }
+            }
+
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 print("OTP sent successfully")
                 
                 DispatchQueue.main.async {
-                    let vc = ForgotPassword2()
+                    let vc = ForgotPassOTP()
                     vc.emailLabel.text = email
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
@@ -225,10 +255,8 @@ class ForgotPassword1: UIViewController {
                 print("Failed to send OTP with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
             }
         }.resume()
-        
-//        let vc = ForgotPassword2()
-//        self.navigationController?.pushViewController(vc, animated: true)
     }
+
 
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
@@ -256,5 +284,15 @@ class ForgotPassword1: UIViewController {
     
     @objc func didTapBackToLogin() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
     }
 }

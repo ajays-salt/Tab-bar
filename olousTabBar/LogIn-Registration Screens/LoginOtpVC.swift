@@ -7,11 +7,11 @@
 
 import UIKit
 
-class LoginOtpVC: UIViewController, UITextFieldDelegate {
+class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
     
     var headerView : UIView!
     
-    var otpTextFields: [UITextField] = []
+    var otpTextFields: [BackspaceDetectingTextField] = []
     
     var email : String = ""
     var pass : String = ""
@@ -179,39 +179,54 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
             stackView.heightAnchor.constraint(equalToConstant: 50)
         ])
         
-        for _ in 1...4 {
-            let textField = UITextField()
+        for i in 0..<4 {
+            let textField = BackspaceDetectingTextField()
             textField.delegate = self
+            textField.backspaceDelegate = self
             textField.textAlignment = .center
             textField.font = UIFont.systemFont(ofSize: 24)
             textField.keyboardType = .numberPad
             textField.borderStyle = .roundedRect
+            textField.tag = i
             otpTextFields.append(textField)
             stackView.addArrangedSubview(textField)
         }
     }
+    
+    func textFieldDidDeleteBackward(_ textField: BackspaceDetectingTextField) {
+        // Handle backspace on empty text field
+        if textField.text?.isEmpty ?? true, textField.tag > 0 {
+            otpTextFields[textField.tag - 1].becomeFirstResponder()
+        }
+    }
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
-        if range.length + range.location > currentText.count {
+        // Handle backspace on Non Empty text field
+        if string.isEmpty { // string.isEmpty means the input is backspace
+            if textField.tag > 0 {
+                textField.text = ""
+                otpTextFields[textField.tag - 1].becomeFirstResponder()
+                return false
+            }
+        }
+        
+        // Handle digit input
+        if !string.isEmpty {
+            textField.text = string
+            // Move to the next text field if available
+            if textField.tag < otpTextFields.count - 1 {
+                otpTextFields[textField.tag + 1].becomeFirstResponder()
+            } else {
+                textField.resignFirstResponder() // Last field, resign first responder
+            }
             return false
         }
         
-        let newLength = currentText.count + string.count - range.length
-        if newLength == 1 {
-            textField.text = string
-            if let nextTextField = otpTextFields.first(where: { $0.text?.isEmpty ?? true }) {
-                nextTextField.becomeFirstResponder()
-            }
-            return false
-        } else if newLength == 0 {
-            textField.text = ""
-            if let previousTextField = otpTextFields.reversed().first(where: { $0 != textField && !($0.text?.isEmpty ?? true) }) {
-                previousTextField.becomeFirstResponder()
-            }
-            return false
-        }
         return true
     }
+
+
+
 
     func setupLoginButton() {
         loginButton.translatesAutoresizingMaskIntoConstraints = false
@@ -463,5 +478,21 @@ class LoginOtpVC: UIViewController, UITextFieldDelegate {
     
     @objc func didTapBackToLogin() {
         navigationController?.popViewController(animated: true)
+    }
+}
+
+
+
+protocol BackspaceDetectingTextFieldDelegate: UITextFieldDelegate {
+    func textFieldDidDeleteBackward(_ textField: BackspaceDetectingTextField)
+}
+
+class BackspaceDetectingTextField: UITextField {
+    
+    weak var backspaceDelegate: BackspaceDetectingTextFieldDelegate?
+    
+    override func deleteBackward() {
+        super.deleteBackward()
+        backspaceDelegate?.textFieldDidDeleteBackward(self)
     }
 }

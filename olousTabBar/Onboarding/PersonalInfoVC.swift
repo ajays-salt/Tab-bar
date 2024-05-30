@@ -1109,10 +1109,10 @@ extension PersonalInfoVC {
               let city = cityTF.text, !city.isEmpty,
               let state = stateTF.text, !state.isEmpty,
               let pincode = pincodeTF.text, !pincode.isEmpty,
-              let uid = uidTF.text, !uid.isEmpty,
-              let passport = passportTF.text, !passport.isEmpty,
-              let pan = panTF.text, !pan.isEmpty else {
-            
+              let uid = uidTF.text,
+              let passport = passportTF.text,
+              let pan = panTF.text
+        else {
             showAlert(withTitle: "Alert!", message: "Please fill all the details")
             return
         }

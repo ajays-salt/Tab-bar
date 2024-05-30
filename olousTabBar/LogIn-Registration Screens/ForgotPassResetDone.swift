@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ForgotPassword4: UIViewController {
+class ForgotPassResetDone: UIViewController {
 
     var headerView : UIView!
     var keyLogoView : UIView!

@@ -14,6 +14,13 @@ class JobDetailScreen: UIViewController {
     var scrollView : UIScrollView!
     var headerView : UIView!
     
+    let companyLogo : UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "photo.artframe")
+        imageView.tintColor = .systemRed
+        return imageView
+    }()
+    
     let jobTitle: UILabel = {
         let label = UILabel()
         label.text = "Design Coordinator"
@@ -157,9 +164,10 @@ class JobDetailScreen: UIViewController {
     
     func assignValues() {
         jobTitle.text = selectedJob.title
-        
-        companyName.text = selectedJob.companyName
+        companyName.text = selectedJob.companyName ?? selectedJob.company?.name
         jobLocationLabel.text = "\(selectedJob.location.city), \(selectedJob.location.state)"
+        let expText = attributedStringForExperience("\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")")
+        jobExperienceLabel.attributedText = expText
         
         for responsibility in selectedJob.responsibilities {
             let title = String(responsibility.title.dropFirst(0))
@@ -210,6 +218,18 @@ class JobDetailScreen: UIViewController {
         
         DispatchQueue.main.async {
             self.updateScrollViewHeight()
+        }
+        
+        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let companyLogoURLString = baseURLString + ((selectedJob.companyLogo ?? selectedJob.company?.logo) ?? "")
+        if let companyLogoURL = URL(string: companyLogoURLString) {
+            URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self.companyLogo.image = image
+                    }
+                }
+            }.resume()
         }
     }
     
@@ -276,28 +296,35 @@ class JobDetailScreen: UIViewController {
             headerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 180)
+            headerView.heightAnchor.constraint(equalToConstant: 150)
         ])
+        
+        companyLogo.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(companyLogo)
         
         jobTitle.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(jobTitle)
-        
-        NSLayoutConstraint.activate([
-            jobTitle.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20),
-            jobTitle.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            jobTitle.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 0),
-            jobTitle.heightAnchor.constraint(equalToConstant: 24)
-        ])
         
         companyName.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(companyName)
         
         NSLayoutConstraint.activate([
+            companyLogo.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            companyLogo.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            companyLogo.widthAnchor.constraint(equalToConstant: 48),
+            companyLogo.heightAnchor.constraint(equalToConstant: 46),
+            
+            jobTitle.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            jobTitle.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16),
+            jobTitle.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 0),
+            jobTitle.heightAnchor.constraint(equalToConstant: 24),
+            
             companyName.topAnchor.constraint(equalTo: jobTitle.bottomAnchor, constant: 4),
-            companyName.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            companyName.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16),
             companyName.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 0),
             companyName.heightAnchor.constraint(equalToConstant: 18)
         ])
+        
         
         let locationIcon : UIImageView = UIImageView()
         locationIcon.image = UIImage(named: "locationLogo")
@@ -305,53 +332,30 @@ class JobDetailScreen: UIViewController {
         locationIcon.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(locationIcon)
         
-        NSLayoutConstraint.activate([
-            locationIcon.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
-            locationIcon.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            locationIcon.widthAnchor.constraint(equalToConstant: 16),
-            locationIcon.heightAnchor.constraint(equalToConstant: 20)
-        ])
-        
         jobLocationLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(jobLocationLabel)
         
         NSLayoutConstraint.activate([
+            locationIcon.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
+            locationIcon.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            locationIcon.widthAnchor.constraint(equalToConstant: 16),
+            locationIcon.heightAnchor.constraint(equalToConstant: 20),
+            
             jobLocationLabel.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
             jobLocationLabel.leadingAnchor.constraint(equalTo: locationIcon.trailingAnchor, constant: 6),
             jobLocationLabel.heightAnchor.constraint(equalToConstant: 20),
-            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 150)
         ])
         
         if let locationText = jobLocationLabel.text, locationText.count > 25 {
-            // If text exceeds 20 characters, set a fixed width of 150
-            jobLocationLabel.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        } else {
-            // If text is within 20 characters, don't set a fixed width
-            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 150).isActive = true
+            jobLocationLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
         }
         
-        
-        let attributedString = NSMutableAttributedString()
-        attributedString.append(NSAttributedString(string: "|"))
-        attributedString.append(NSAttributedString(string: "  "))
-        let symbolAttachment = NSTextAttachment()
-        symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
-        let symbolString = NSAttributedString(attachment: symbolAttachment)
-        attributedString.append(symbolString)
-        attributedString.append(NSAttributedString(string: " "))
-        
-        let exp = "\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")"
-        let textString = NSAttributedString(string: exp)
-        attributedString.append(textString)
-        
-        jobExperienceLabel.attributedText = attributedString
         jobExperienceLabel.tintColor = UIColor(hex: "#667085")
-        
         headerView.addSubview(jobExperienceLabel)
         
         NSLayoutConstraint.activate([
             jobExperienceLabel.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 16),
-            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 2),
+            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 6),
             jobExperienceLabel.heightAnchor.constraint(equalToConstant: 20),
             jobExperienceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
@@ -369,6 +373,8 @@ class JobDetailScreen: UIViewController {
         saveButton.layer.cornerRadius = 12
         saveButton.clipsToBounds = true
         saveButton.titleLabel?.textAlignment = .center
+        
+        saveButton.isHidden = true
         
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(saveButton)
@@ -396,7 +402,7 @@ class JobDetailScreen: UIViewController {
         
         NSLayoutConstraint.activate([
             applyButton.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 20),
-            applyButton.leadingAnchor.constraint(equalTo: saveButton.trailingAnchor, constant: 16),
+            applyButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             applyButton.widthAnchor.constraint(equalToConstant: 75),
             applyButton.heightAnchor.constraint(equalToConstant: 36)
         ])
@@ -887,6 +893,32 @@ class JobDetailScreen: UIViewController {
             softwaresLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
         ])
     }
+    
+    func attributedStringForExperience(_ experience: String) -> NSAttributedString {
+        // Create a mutable attributed string
+        let attributedString = NSMutableAttributedString()
+        
+        attributedString.append(NSAttributedString(string: "|"))
+        
+        attributedString.append(NSAttributedString(string: "  "))
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
+        
+        let symbolString = NSAttributedString(attachment: symbolAttachment)
+        attributedString.append(symbolString)
+        
+        attributedString.append(NSAttributedString(string: " "))
+        attributedString.append(NSAttributedString(string: experience))
+        if !experience.hasSuffix("years") {
+            attributedString.append(NSAttributedString(string: " years"))
+        }
+
+        return attributedString
+    }
+    
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

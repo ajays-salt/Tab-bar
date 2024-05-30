@@ -56,7 +56,7 @@ class MyJobsController: UIViewController {
     
     var jobsCountLabel : UILabel = {
         let label = UILabel()
-        label.text = "26 recommended jobs"
+        label.text = ""
         label.font = .systemFont(ofSize: 14)
         label.tintColor = UIColor(hex: "#344054")
         return label
@@ -79,7 +79,7 @@ class MyJobsController: UIViewController {
             recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         }
         
-        fetchRecommendedJobs()
+        fetchTotalRecommendedJobs()
         fetchAppliedJobIDs()
         
         setupViews()
@@ -204,7 +204,7 @@ class MyJobsController: UIViewController {
     
     @objc func didTapRecommendedButton() {
         if isSelected != "Recommended" {
-            fetchRecommendedJobs()
+            fetchTotalRecommendedJobs()
             isSelected = "Recommended"
             recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             appliedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
@@ -426,9 +426,10 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
-        if isSelected == "Applied" {
-            cell.companyName.text = job.companyName
+        if isSelected == "Recommended" {
+            cell.companyName.text = job.company?.name
         }
+        
         cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
         
         let s = getTimeAgoString(from: job.createdAt ?? "")
@@ -439,7 +440,11 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + (job.companyLogo ?? "")
+        var companyLogoURLString = ""
+        companyLogoURLString = baseURLString + (job.companyLogo ?? "")
+        if isSelected == "Recommended" {
+            companyLogoURLString = baseURLString + (job.company?.logo ?? "")
+        }
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -529,9 +534,6 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         if !experience.hasSuffix("years") {
             attributedString.append(NSAttributedString(string: " years"))
         }
-        
-//        let textString = NSAttributedString(string: "1-5 years")
-//        attributedString.append(textString)
 
         return attributedString
     }
@@ -540,7 +542,7 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
 
 extension MyJobsController {
     
-    func fetchRecommendedJobs() {
+    func fetchTotalRecommendedJobs() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/recommended-jobs") else {
             print("Invalid URL")
             return
@@ -578,6 +580,9 @@ extension MyJobsController {
                         if jobs.count == 0 {
                             self.noJobsImageView.isHidden = false
                         }
+                        else {
+                            self.noJobsImageView.isHidden = true
+                        }
                         self.jobsCountLabel.text = "\(jobs.count) recommended jobs"
                         self.jobsCollectionView.reloadData()
                     }
@@ -593,6 +598,7 @@ extension MyJobsController {
         }
         task.resume()
     }
+    
     
     func fetchTotalAppliedJobs() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/applied-jobs") else {
@@ -631,6 +637,9 @@ extension MyJobsController {
                         if jobs.count == 0 {
                              self.noJobsImageView.isHidden = false
                         }
+                        else {
+                            self.noJobsImageView.isHidden = true
+                        }
                         self.jobsCountLabel.text = "\(jobs.count) applied jobs"
                         self.jobsCollectionView.reloadData()
                     }
@@ -648,7 +657,6 @@ extension MyJobsController {
         }
         task.resume()
     }
-    
     func fetchAppliedJobIDs() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
             print("Invalid URL")
@@ -697,6 +705,7 @@ extension MyJobsController {
         task.resume()
     }
     
+    
     func fetchTotalSavedJobs() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/saved-jobs") else {
             print("Invalid URL")
@@ -720,9 +729,9 @@ extension MyJobsController {
                 return
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                 // Decode directly as an array of Job
@@ -734,6 +743,9 @@ extension MyJobsController {
                     self.jobs = jobs
                     if jobs.isEmpty {
                         self.noJobsImageView.isHidden = false
+                    }
+                    else {
+                        self.noJobsImageView.isHidden = true
                     }
                     self.jobsCountLabel.text = "\(jobs.count) saved jobs"
                     self.jobsCollectionView.reloadData()

@@ -398,12 +398,14 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
    
     
     
+    let backButton = UIButton()
+    let nextButton = UIButton()
     func setupBottomView() {
         bottomView = UIView()
         bottomView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomView)
         
-        let nextButton = UIButton()
+    
         nextButton.setTitle("Next", for: .normal)
         nextButton.titleLabel?.font = .systemFont(ofSize: 20)
         nextButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
@@ -415,7 +417,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         nextButton.translatesAutoresizingMaskIntoConstraints = false
         bottomView.addSubview(nextButton)
         
-        let backButton = UIButton()
+        
         backButton.setTitle("Back", for: .normal)
         backButton.titleLabel?.font = .systemFont(ofSize: 20)
         backButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
@@ -424,16 +426,17 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         backButton.layer.borderWidth = 1
         backButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
         
-        backButton.isUserInteractionEnabled = true
-        
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         
         backButton.translatesAutoresizingMaskIntoConstraints = false
         bottomView.addSubview(backButton)
         
+        backButton.isUserInteractionEnabled = false
+        nextButton.isUserInteractionEnabled = false
+        bottomView.alpha = 0.2
         
         NSLayoutConstraint.activate([
-            bottomView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            bottomView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 5),
             bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomView.heightAnchor.constraint(equalToConstant: 100),
@@ -455,7 +458,6 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     @objc func didTapNextButton() {
         uploadAddedSkills()
-        
     }
     
     
@@ -649,6 +651,10 @@ extension SkillsVC {
                 self.loader.stopAnimating()
                 self.scrollView.alpha = 1
                 print("loader stopped")
+                
+                self.backButton.isUserInteractionEnabled = true
+                self.nextButton.isUserInteractionEnabled = true
+                self.bottomView.alpha = 1
             }
         }.resume()
     }

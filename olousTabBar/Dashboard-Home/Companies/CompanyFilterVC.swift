@@ -67,24 +67,52 @@ class CompanyFilterVC: UIViewController {
     }
 
     private func setupButtons() {
+        let bgView = UIView()
+        bgView.backgroundColor = UIColor(hex: "#F7F8F9")
+        bgView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bgView)
+        
         let clearButton = UIButton(type: .system)
         clearButton.setTitle("Clear Filters", for: .normal)
+        clearButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
+        clearButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        clearButton.backgroundColor = UIColor(hex: "#FFFFFF")
+        clearButton.layer.cornerRadius = 8
+        clearButton.layer.borderWidth = 1
+        clearButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        clearButton.clipsToBounds = true
+        clearButton.titleLabel?.textAlignment = .center
         clearButton.addTarget(self, action: #selector(clearFilters), for: .touchUpInside)
         clearButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(clearButton)
         
         let saveButton = UIButton(type: .system)
         saveButton.setTitle("Save", for: .normal)
+        saveButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
+        saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
+        saveButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveButton.layer.cornerRadius = 8
+        saveButton.clipsToBounds = true
+        saveButton.titleLabel?.textAlignment = .center
         saveButton.addTarget(self, action: #selector(saveFilters), for: .touchUpInside)
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(saveButton)
         
         NSLayoutConstraint.activate([
+            
+            bgView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            bgView.widthAnchor.constraint(equalToConstant: view.frame.width),
+            bgView.heightAnchor.constraint(equalToConstant: 80),
+            
             clearButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            clearButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            clearButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 8),
+            clearButton.widthAnchor.constraint(equalToConstant: 120),
+            clearButton.heightAnchor.constraint(equalToConstant: 36),
             
             saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+            saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 10),
+            saveButton.widthAnchor.constraint(equalToConstant: 70),
+            saveButton.heightAnchor.constraint(equalToConstant: 36),
         ])
     }
     

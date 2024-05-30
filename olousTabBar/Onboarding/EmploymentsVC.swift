@@ -97,7 +97,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         
         loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
 //        loader.center = view.center
-        loader.style = UIActivityIndicatorView.Style.medium
+        loader.style = UIActivityIndicatorView.Style.large
         loader.hidesWhenStopped = true
         
         loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
@@ -703,12 +703,14 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     }
     
     
+    let backButton = UIButton()
+    let nextButton = UIButton()
     func setupBottomView() {
         bottomView = UIView()
         bottomView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomView)
         
-        let nextButton = UIButton()
+    
         nextButton.setTitle("Next", for: .normal)
         nextButton.titleLabel?.font = .systemFont(ofSize: 20)
         nextButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
@@ -720,7 +722,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         nextButton.translatesAutoresizingMaskIntoConstraints = false
         bottomView.addSubview(nextButton)
         
-        let backButton = UIButton()
+        
         backButton.setTitle("Back", for: .normal)
         backButton.titleLabel?.font = .systemFont(ofSize: 20)
         backButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
@@ -729,13 +731,14 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         backButton.layer.borderWidth = 1
         backButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
         
-        backButton.isUserInteractionEnabled = true
-        
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         
         backButton.translatesAutoresizingMaskIntoConstraints = false
         bottomView.addSubview(backButton)
         
+        backButton.isUserInteractionEnabled = false
+        nextButton.isUserInteractionEnabled = false
+        bottomView.alpha = 0.2
         
         NSLayoutConstraint.activate([
             bottomView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 5),
@@ -1078,6 +1081,10 @@ extension EmploymentsVC {
                 self.loader.stopAnimating()
                 self.scrollView.alpha = 1
                 print("loader stopped")
+                
+                self.backButton.isUserInteractionEnabled = true
+                self.nextButton.isUserInteractionEnabled = true
+                self.bottomView.alpha = 1
             }
         }.resume()
     }
@@ -1166,9 +1173,6 @@ extension EmploymentsVC {
         }.resume()
     }
 
-    
-    
-
     func encodeEmploymentArray(experienceArray: [Employment], totalExperience: String) -> Data? {
         guard let firstDesignation = experienceArray.first?.employmentDesignation else {
             print("No employment designation available in the first item of the array.")
@@ -1189,9 +1193,6 @@ extension EmploymentsVC {
             return nil
         }
     }
-
-
-
 }
 
 struct EmploymentData: Codable {

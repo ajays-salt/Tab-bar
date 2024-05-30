@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ForgotPassword2: UIViewController, UITextFieldDelegate {
+class ForgotPassOTP: UIViewController, BackspaceDetectingTextFieldDelegate {
     
     var headerView : UIView!
     
@@ -15,7 +15,7 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
     
     var emailLabel = UILabel()
     
-    var otpTextFields: [UITextField] = []
+    var otpTextFields: [BackspaceDetectingTextField] = []
     let verifyOtpButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Verify OTP", for: .normal)
@@ -184,34 +184,53 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
             stackView.heightAnchor.constraint(equalToConstant: 50)
         ])
         
-        for _ in 1...4 {
-            let textField = UITextField()
+        for i in 0..<4 {
+            let textField = BackspaceDetectingTextField()
             textField.delegate = self
+            textField.backspaceDelegate = self
             textField.textAlignment = .center
             textField.font = UIFont.systemFont(ofSize: 24)
             textField.keyboardType = .numberPad
             textField.borderStyle = .roundedRect
+            textField.tag = i
             otpTextFields.append(textField)
             stackView.addArrangedSubview(textField)
         }
     }
     
+    func textFieldDidDeleteBackward(_ textField: BackspaceDetectingTextField) {
+        // Handle backspace on empty text field
+        if textField.text?.isEmpty ?? true, textField.tag > 0 {
+            otpTextFields[textField.tag - 1].becomeFirstResponder()
+        }
+    }
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
-        if range.length + range.location > currentText.count {
-            return false
+        // Handle backspace on Non Empty text field
+        if string.isEmpty { // string.isEmpty means the input is backspace
+            if textField.tag > 0 {
+                textField.text = ""
+                otpTextFields[textField.tag - 1].becomeFirstResponder()
+                return false
+            }
         }
         
-        let newLength = currentText.count + string.count - range.length
-        if newLength == 1 {
+        // Handle digit input
+        if !string.isEmpty {
             textField.text = string
-            if let nextTextField = otpTextFields.first(where: { $0.text?.isEmpty ?? true }) {
-                nextTextField.becomeFirstResponder()
+            // Move to the next text field if available
+            if textField.tag < otpTextFields.count - 1 {
+                otpTextFields[textField.tag + 1].becomeFirstResponder()
+            } else {
+                textField.resignFirstResponder() // Last field, resign first responder
             }
             return false
         }
+        
         return true
     }
+    
+    
     
     func setupVerifyOtp() {
         view.addSubview(verifyOtpButton)
@@ -254,7 +273,23 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
         
         request.httpBody = jsonData
         
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        DispatchQueue.main.async {
+            self.verifyOtpButton.alpha = 0.3
+        }
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
+            
+            defer {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                    self.verifyOtpButton.alpha = 1
+                }
+            }
             guard let data = data, error == nil else {
                 print("Error in URLSession data task: \(error?.localizedDescription ?? "Unknown error")")
                 return
@@ -262,8 +297,8 @@ class ForgotPassword2: UIViewController, UITextFieldDelegate {
             
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 print("OTP verified successfully")
-                DispatchQueue.main.async {
-                    let vc = ForgotPassword3()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    let vc = ForgotPassReset()
                     vc.otp = otp
                     vc.email = email
                     self.navigationController?.pushViewController(vc, animated: true)
