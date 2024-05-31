@@ -519,7 +519,7 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         cell.saveButton.tag = indexPath.row
         
         cell.jobTitle.text = job.title
-        cell.companyName.text = job.companyName
+        cell.companyName.text = job.companyName ?? job.company?.name
         cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
         
         let s = getTimeAgoString(from: job.createdAt ?? "")

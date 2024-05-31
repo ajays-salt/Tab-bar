@@ -10,50 +10,28 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
-    //            let vc = PreviewVC()
-    //            let navVC = UINavigationController(rootViewController: vc)
-    //            navVC.modalPresentationStyle = .overFullScreen
-    //            navVC.navigationBar.isHidden = true
-    //            window.rootViewController = navVC
-
-//    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-//        guard let _ = (scene as? UIWindowScene) else { return }
-//        guard let windowScene = (scene as? UIWindowScene) else { return }
-//        
-//        // Set up window and root view controller
-//        let window = UIWindow(windowScene: windowScene)
-//        
-//        if let _ = UserDefaults.standard.string(forKey: "accessToken") {
-//            // Access token is present, navigate to the home screen
-//            let viewController = ViewController()
-//            viewController.modalPresentationStyle = .overFullScreen
-//            window.rootViewController = viewController
-//            
-//            window.rootViewController?.modalPresentationStyle = .overFullScreen
-//            self.window = window
-//            window.makeKeyAndVisible()
-//        }
-//        else {
-//            let registrationVC = RegistrationVC()
-//            let navVC = UINavigationController(rootViewController: registrationVC)
-//            navVC.modalPresentationStyle = .fullScreen
-//            navVC.navigationBar.isHidden = true
-//            
-//            window.rootViewController = navVC
-//            window.overrideUserInterfaceStyle = .light
-//            self.window = window
-//            window.makeKeyAndVisible()
-//        }
-//    }
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
         self.window = window
-        window.overrideUserInterfaceStyle = .light
-
+        
+        // Create the SplashScreenViewController
+        let splashScreenViewController = SplashScreenViewController()
+        
+        // Set the completion handler to transition after the delay
+        splashScreenViewController.completion = {
+            self.setRootViewController(window: window)
+        }
+        
+        // Set SplashScreenViewController as the root view controller
+        window.rootViewController = splashScreenViewController
+        window.makeKeyAndVisible()
+    }
+    
+    private func setRootViewController(window: UIWindow) {
+        
         if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
             // Access token is present, check if the user has completed onboarding
             checkUserOnboardingStatus(accessToken: accessToken) { hasCompletedOnboarding in
@@ -84,7 +62,49 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.rootViewController = navVC
             window.makeKeyAndVisible()
         }
+        
     }
+    
+    
+    
+//    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//        guard let windowScene = (scene as? UIWindowScene) else { return }
+//        
+//        let window = UIWindow(windowScene: windowScene)
+//        self.window = window
+//        window.overrideUserInterfaceStyle = .light
+//
+//        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+//            // Access token is present, check if the user has completed onboarding
+//            checkUserOnboardingStatus(accessToken: accessToken) { hasCompletedOnboarding in
+//                DispatchQueue.main.async {
+//                    if hasCompletedOnboarding {
+//                        // User has completed onboarding, navigate to the home screen
+//                        let viewController = ViewController()
+//                        viewController.modalPresentationStyle = .overFullScreen
+//                        window.rootViewController = viewController
+//                    } else {
+//                        // User has not completed onboarding, navigate to the onboarding screen
+//                        let vc = BasicDetails1()
+//                        let navVC = UINavigationController(rootViewController: vc)
+//                        navVC.modalPresentationStyle = .overFullScreen
+//                        navVC.navigationBar.isHidden = true
+//                        window.rootViewController = navVC
+//                    }
+//                    window.makeKeyAndVisible()
+//                }
+//            }
+//        } else {
+//            // No access token, navigate to the registration screen
+//            let registrationVC = RegistrationVC()
+//            let navVC = UINavigationController(rootViewController: registrationVC)
+//            navVC.modalPresentationStyle = .fullScreen
+//            navVC.navigationBar.isHidden = true
+//            
+//            window.rootViewController = navVC
+//            window.makeKeyAndVisible()
+//        }
+//    }
 
     func checkUserOnboardingStatus(accessToken: String, completion: @escaping (Bool) -> Void) {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
