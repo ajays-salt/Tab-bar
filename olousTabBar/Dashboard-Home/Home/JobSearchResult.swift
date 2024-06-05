@@ -348,7 +348,7 @@ extension JobSearchResult : UICollectionViewDelegate, UICollectionViewDataSource
         
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
-        cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+        cell.jobLocationLabel.text = "\(job.location?.city ?? "NA"), \(job.location?.state ?? "NA")"
         
         let s = getTimeAgoString(from: job.createdAt ?? "")
         cell.jobPostedTime.text = s
@@ -498,9 +498,9 @@ extension JobSearchResult { // extension for API
             }
             
 //            if self.flag == true {
-//                if let responseString = String(data: data, encoding: .utf8) {
-//                    print("Raw response data: \(responseString)")
-//                }
+                if let responseString = String(data: data, encoding: .utf8) {
+                    print("Raw response data: \(responseString)")
+                }
 //            }
             
             do {
@@ -590,9 +590,9 @@ extension JobSearchResult { // extension for API
                 return
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                 let response = try JSONDecoder().decode(SavedJobsResponse.self, from: data)

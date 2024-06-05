@@ -358,7 +358,7 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
         
         // Fetch company logo
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + company.logo
+        let companyLogoURLString = baseURLString + (company.logo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -443,6 +443,10 @@ extension CompanyController {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
+            
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
 
             do {
                 let response = try JSONDecoder().decode(CompanyResponse.self, from: data)

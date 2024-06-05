@@ -164,28 +164,31 @@ class JobDetailScreen: UIViewController {
     
     func assignValues() {
         jobTitle.text = selectedJob.title
-        companyName.text = selectedJob.companyName ?? selectedJob.company?.name
-        jobLocationLabel.text = "\(selectedJob.location.city), \(selectedJob.location.state)"
+        companyName.text = selectedJob.companyName ?? selectedJob.companyName
+        jobLocationLabel.text = "\(selectedJob.location?.city), \(selectedJob.location?.state)"
         let expText = attributedStringForExperience("\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")")
         jobExperienceLabel.attributedText = expText
         
-        for responsibility in selectedJob.responsibilities {
-            let title = String(responsibility.title.dropFirst(0))
-            jobResponsibilityItems.append(title)
+        if let responsibilities = selectedJob.keyResponsibilities {
+            for responsibility in responsibilities {
+                let title = String(responsibility.title.dropFirst(0))
+                jobResponsibilityItems.append(title)
+            }
         }
+        
         for requirement in selectedJob.requirements {
             let title = String(requirement.title.dropFirst(0))
             jobRequirementItems.append(title)
         }
         
-        let sectorTitles = selectedJob.sectors.map { $0.title }
+        let sectorTitles = selectedJob.sectors.map { $0 }
         let sectorString = sectorTitles.joined(separator: ", ")
         sectorLabel.text = sectorString
         
         jobTypeLabel.text = selectedJob.jobType ?? "Nil"
         
         let location = selectedJob.location
-        locationLabel.text = "\(location.city), \(location.state), \(location.country)"
+        locationLabel.text = "\(location?.city), \(location?.state), \(location?.country)"
         if locationLabel.text == "" {
             locationLabel.text = "Nil"
         }
@@ -208,11 +211,11 @@ class JobDetailScreen: UIViewController {
             workmodeLabel.text = selectedJob.workPlace
         }
         
-        let qualificationTitle = selectedJob.educationalQualification.map { $0.title }
-        let qString = qualificationTitle.joined(separator: ", ")
+        let qualificationTitle = selectedJob.preferredQualification.map { $0 }
+        let qString = qualificationTitle?.joined(separator: ", ") ?? ""
         qualificationsLabel.text = qString
         
-        let softwareItems = selectedJob.softwares.map { $0.title }
+        let softwareItems = selectedJob.softwares.map { $0 }
         let softwares = softwareItems.joined(separator: ", ")
         softwaresLabel.text = softwares
         

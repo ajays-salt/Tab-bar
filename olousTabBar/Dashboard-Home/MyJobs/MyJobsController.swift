@@ -316,7 +316,7 @@ class MyJobsController: UIViewController {
                 }
                 
             } catch {
-                print("Failed to decode JSON: \(error)")
+                print("Failed to decode Saved IDs JSON: \(error)")
             }
         }
         task.resume()
@@ -427,10 +427,10 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
         if isSelected == "Recommended" {
-            cell.companyName.text = job.company?.name
+            cell.companyName.text = job.companyName
         }
         
-        cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+        cell.jobLocationLabel.text = "\(job.location?.city ?? "NA"), \(job.location?.state ?? "NA")"
         
         let s = getTimeAgoString(from: job.createdAt ?? "")
         cell.jobPostedTime.text = s
@@ -441,10 +441,7 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
         var companyLogoURLString = ""
-        companyLogoURLString = baseURLString + (job.companyLogo ?? "")
-        if isSelected == "Recommended" {
-            companyLogoURLString = baseURLString + (job.company?.logo ?? "")
-        }
+        companyLogoURLString = baseURLString + (job.company?.logo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -565,6 +562,10 @@ extension MyJobsController {
                 return
             }
             
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+            
             do {
                 // Decode directly as an array of dictionaries
                 if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
@@ -588,7 +589,7 @@ extension MyJobsController {
                     }
                 }
             } catch {
-                print("Failed to decode JSON: \(error)")
+                print("Failed to decode Recommended JSON: \(error)")
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
@@ -623,6 +624,10 @@ extension MyJobsController {
                 return
             }
             
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+            
             do {
                 // Decode directly as an array of dictionaries
                 let decoder = JSONDecoder()
@@ -647,7 +652,7 @@ extension MyJobsController {
                     print("Failed to find jobs in the response")
                 }
             } catch {
-                print("Failed to decode JSON: \(error)")
+                print("Failed to decode Applied Jobs JSON: \(error)")
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
@@ -699,7 +704,7 @@ extension MyJobsController {
                     print("Failed to find job IDs in the response")
                 }
             } catch {
-                print("Failed to decode JSON: \(error)")
+                print("Failed to decode Applied IDs JSON: \(error)")
             }
         }
         task.resume()
@@ -728,11 +733,11 @@ extension MyJobsController {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-            
+
 //            if let responseString = String(data: data, encoding: .utf8) {
 //                print("Raw response data: \(responseString)")
 //            }
-            
+
             do {
                 // Decode directly as an array of Job
                 let decoder = JSONDecoder()
@@ -741,17 +746,18 @@ extension MyJobsController {
                 // Update the jobs array on the main thread
                 DispatchQueue.main.async {
                     self.jobs = jobs
-                    if jobs.isEmpty {
-                        self.noJobsImageView.isHidden = false
-                    }
-                    else {
-                        self.noJobsImageView.isHidden = true
-                    }
+                    self.noJobsImageView.isHidden = !jobs.isEmpty
                     self.jobsCountLabel.text = "\(jobs.count) saved jobs"
                     self.jobsCollectionView.reloadData()
                 }
             } catch {
-                print("Failed to decode JSON: \(error)")
+                print("Failed to decode Saved JSON: \(error)")
+                DispatchQueue.main.async {
+                    self.jobs.removeAll()
+                    self.noJobsImageView.isHidden = false
+                    self.jobsCountLabel.text = "No saved jobs"
+                    self.jobsCollectionView.reloadData()
+                }
             }
         }
         task.resume()

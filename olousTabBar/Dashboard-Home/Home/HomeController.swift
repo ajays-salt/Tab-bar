@@ -106,7 +106,7 @@ class HomeController: UIViewController {
         
         fetchUserProfile()
         fetchRecommendedJobs()
-        fetchTotalAppliedJobs()
+        fetchTotalAppliedJobIDs()
         
         setupViews()
         
@@ -697,8 +697,8 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             cell.layer.cornerRadius = 12
             
             cell.jobTitle.text = job.title
-            cell.companyName.text = job.company?.name
-            cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+            cell.companyName.text = job.companyName
+            cell.jobLocationLabel.text = "\(job.location?.city ?? ""), \(job.location?.state ?? "")"
             
             let s = getTimeAgoString(from: job.createdAt ?? "")
             cell.jobPostedTime.text = s
@@ -825,12 +825,12 @@ extension HomeController {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
-                print("User fetched: \(user)")
+//                print("User fetched: \(user)")
                 
                 let percent = self.calculateProfileCompletion(for: user)
                 let initialsOfName = self.extractInitials(from: user.name)
@@ -968,7 +968,7 @@ extension HomeController {
                     }
                 }
             } catch {
-                print("Failed to decode JSON: \(error)")
+                print("Failed to decode Recommended JSON: \(error)")
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
@@ -979,7 +979,7 @@ extension HomeController {
         task.resume()
     }
     
-    func fetchTotalAppliedJobs() {
+    func fetchTotalAppliedJobIDs() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
             print("Invalid URL")
             return
@@ -1030,7 +1030,7 @@ extension HomeController {
     }
 }
 
-
+// dimag kam nhi kr rha bc
 
 extension UIColor {
     convenience init(hex: String) {

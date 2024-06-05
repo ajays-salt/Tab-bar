@@ -465,8 +465,8 @@ extension JobSearchScreen : UICollectionViewDelegate, UICollectionViewDataSource
         cell.layer.cornerRadius = 12
         
         cell.jobTitle.text = job.title
-        cell.companyName.text = job.company?.name
-        cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+        cell.companyName.text = job.companyName
+        cell.jobLocationLabel.text = "\(job.location?.city ?? "NA"), \(job.location?.state ?? "NA")"
         
         let s = getTimeAgoString(from: job.createdAt ?? "")
         cell.jobPostedTime.text = s

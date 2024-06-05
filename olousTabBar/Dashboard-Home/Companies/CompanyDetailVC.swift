@@ -103,7 +103,7 @@ class CompanyDetailVC: UIViewController {
         view.addSubview(logoImageView)
         
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + company.logo
+        let companyLogoURLString = baseURLString + (company.logo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -153,7 +153,7 @@ class CompanyDetailVC: UIViewController {
     }
     
     @objc func visitWebsite() {
-        guard let url = URL(string: company.website) else {
+        guard let url = URL(string: company.website ?? "") else {
             print("Invalid URL")
             return
         }
@@ -270,12 +270,12 @@ class CompanyDetailVC: UIViewController {
         
         var lastBottomAnchor = aboutView.topAnchor
         
-        let sections = [
-            ("Company Description", company.description),
-            ("Website", company.website),
-            ("Sectors", company.sector.joined(separator: ",")),
-            ("Category", company.who),
-            ("Field", company.field),
+        let sections: [(String, String)] = [
+            ("Company Description", company.description ?? ""),
+            ("Website", company.website ?? ""),
+            ("Sectors", company.sector?.joined(separator: ",") ?? ""),
+            ("Category", company.who ?? ""),
+            ("Field", company.field ?? ""),
             ("Company Size", "\(company.size)")
         ]
         
@@ -519,18 +519,18 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         cell.saveButton.tag = indexPath.row
         
         cell.jobTitle.text = job.title
-        cell.companyName.text = job.companyName ?? job.company?.name
-        cell.jobLocationLabel.text = "\(job.location.city), \(job.location.state)"
+        cell.companyName.text = job.companyName ?? job.companyName
+        cell.jobLocationLabel.text = "\(job.location?.city ?? "NA"), \(job.location?.state ?? "NA")"
         
         let s = getTimeAgoString(from: job.createdAt ?? "")
         cell.jobPostedTime.text = s
         
-        let expText = attributedStringForExperience(job.yearsOfExperience ?? "")
+        let expText = attributedStringForExperience("\(job.minExperience ?? "")-\(job.maxExperience ?? "")")
         cell.jobExperienceLabel.attributedText = expText
         
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + company.logo
+        let companyLogoURLString = baseURLString + (company.logo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -619,7 +619,9 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         
         attributedString.append(NSAttributedString(string: " "))
         attributedString.append(NSAttributedString(string: experience))
-        attributedString.append(NSAttributedString(string: " years"))
+        if !experience.hasSuffix("years") {
+            attributedString.append(NSAttributedString(string: " years"))
+        }
         
 //        let textString = NSAttributedString(string: "1-5 years")
 //        attributedString.append(textString)
@@ -644,6 +646,10 @@ extension CompanyDetailVC {
             guard let data = data, error == nil else {
                 completion(.failure(error ?? NSError(domain: "Unknown Error", code: 0, userInfo: nil)))
                 return
+            }
+            
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
             }
             
             do {
@@ -740,9 +746,9 @@ extension CompanyDetailVC {
                 return
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                 let response = try JSONDecoder().decode(SavedJobsResponse.self, from: data)
