@@ -97,7 +97,7 @@ class CompanyDetailVC: UIViewController {
         
         
         let logoImageView = UIImageView()
-        logoImageView.image = UIImage(named: "logoImage") // Provide your logo image name
+        logoImageView.image = UIImage(systemName: "photo.artframe") // Provide your logo image name
 //        logoImageView.contentMode = .scaleAspectFit
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoImageView)
@@ -109,6 +109,11 @@ class CompanyDetailVC: UIViewController {
                 if let data = data, let image = UIImage(data: data) {
                     DispatchQueue.main.async {
                         logoImageView.image = image
+                    }
+                }
+                DispatchQueue.main.async {
+                    if logoImageView.image == nil {
+                        logoImageView.image = UIImage(systemName: "photo.artframe")
                     }
                 }
             }.resume()
@@ -163,7 +168,7 @@ class CompanyDetailVC: UIViewController {
     
     private func setupTypeAndLocationLabel() {
         
-        companyTypeAndLocation.text = "\(company.who) • \(company.location ?? "No Location")"
+        companyTypeAndLocation.text = "\(company.who ?? "NA") • \(company.location ?? "No Location")"
         companyTypeAndLocation.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         companyTypeAndLocation.textAlignment = .center
         companyTypeAndLocation.textColor = .systemGray2
@@ -276,7 +281,7 @@ class CompanyDetailVC: UIViewController {
             ("Sectors", company.sector?.joined(separator: ",") ?? ""),
             ("Category", company.who ?? ""),
             ("Field", company.field ?? ""),
-            ("Company Size", "\(company.size)")
+            ("Company Size", "\(company.size ?? "NA")")
         ]
         
         for section in sections {

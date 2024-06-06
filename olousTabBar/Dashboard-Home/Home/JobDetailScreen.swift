@@ -165,7 +165,7 @@ class JobDetailScreen: UIViewController {
     func assignValues() {
         jobTitle.text = selectedJob.title
         companyName.text = selectedJob.companyName ?? selectedJob.companyName
-        jobLocationLabel.text = "\(selectedJob.location?.city), \(selectedJob.location?.state)"
+        jobLocationLabel.text = "\(selectedJob.location?.city ?? "NA"), \(selectedJob.location?.state ?? "NA")"
         let expText = attributedStringForExperience("\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")")
         jobExperienceLabel.attributedText = expText
         
@@ -188,7 +188,7 @@ class JobDetailScreen: UIViewController {
         jobTypeLabel.text = selectedJob.jobType ?? "Nil"
         
         let location = selectedJob.location
-        locationLabel.text = "\(location?.city), \(location?.state), \(location?.country)"
+        locationLabel.text = "\(location?.city ?? ""), \(location?.state ?? ""), \(location?.country ?? "")"
         if locationLabel.text == "" {
             locationLabel.text = "Nil"
         }
@@ -211,6 +211,7 @@ class JobDetailScreen: UIViewController {
             workmodeLabel.text = selectedJob.workPlace
         }
         
+        print("Preferred Qualifications : ", selectedJob.preferredQualification)
         let qualificationTitle = selectedJob.preferredQualification.map { $0 }
         let qString = qualificationTitle?.joined(separator: ", ") ?? ""
         qualificationsLabel.text = qString
