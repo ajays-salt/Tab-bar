@@ -14,11 +14,13 @@ class JobsCell: UICollectionViewCell {
         imageView.tintColor = .systemRed
         return imageView
     }()
+    
     let jobTitle: UILabel = {
         let label = UILabel()
         label.text = "Valuation Analyst"
         label.textColor = UIColor(hex: "#101828")
         label.font = .boldSystemFont(ofSize: 16)
+        label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -26,7 +28,18 @@ class JobsCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "Company Name"
         label.textColor = UIColor(hex: "#667085")
-        label.font = .systemFont(ofSize: 16)
+        label.font = .systemFont(ofSize: 14)
+        label.numberOfLines = 2
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let workPlaceView = UIView()
+    let workPlaceLabel : UILabel = {
+        let label = UILabel()
+        label.text = "NA"
+        label.textColor = UIColor(hex: "#667085")
+        label.font = .systemFont(ofSize: 14)
+        label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -35,13 +48,32 @@ class JobsCell: UICollectionViewCell {
         label.text = "Pune, Maharashtra"
         label.textColor = UIColor(hex: "#667085")
         label.font = .systemFont(ofSize: 14)
+        label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+    let salaryLabel : UILabel = {
+        let label = UILabel()
+        label.text = "NA"
+        label.textColor = UIColor(hex: "#667085")
+        label.font = .systemFont(ofSize: 14)
+        label.numberOfLines = 2
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let jobTypeLabel : UILabel = {
+        let label = UILabel()
+        label.text = "NA"
+        label.textColor = UIColor(hex: "#667085")
+        label.font = .systemFont(ofSize: 14)
+        label.numberOfLines = 2
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     let jobExperienceLabel : UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(hex: "#475467")
+        label.text = "NA"
+        label.textColor = UIColor(hex: "#667085")
         label.font = .systemFont(ofSize: 14)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -93,8 +125,8 @@ class JobsCell: UICollectionViewCell {
     
     private func setupViews() {
         setupCompanyLogo()
-        setupJobTitle()
-        setupCompanyName()
+        setupJobTitleAndCompanyName()
+        setupWorkplaceView()
         setupLocationView()
         setupExperienceLabel()
         setupSaveButton()
@@ -134,31 +166,49 @@ class JobsCell: UICollectionViewCell {
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            saveButton.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            saveButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
             saveButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 270),
             saveButton.widthAnchor.constraint(equalToConstant: 70),
             saveButton.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
     
-    func setupJobTitle() {
+    func setupJobTitleAndCompanyName() {
         addSubview(jobTitle)
+        addSubview(companyName)
         NSLayoutConstraint.activate([
-            jobTitle.topAnchor.constraint(equalTo: topAnchor, constant: 74),
-            jobTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            //            jobTitle.widthAnchor.constraint(equalToConstant: 196),
-            jobTitle.heightAnchor.constraint(equalToConstant: 20)
+            jobTitle.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            jobTitle.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16),
+            jobTitle.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            
+            companyName.topAnchor.constraint(equalTo: jobTitle.bottomAnchor, constant: 6),
+            companyName.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16),
+            companyName.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
         ])
     }
     
-    func setupCompanyName() {
-        addSubview(companyName)
+    func setupWorkplaceView() {
+        workPlaceView.backgroundColor = UIColor(hex: "#F9FAFB")
+        workPlaceView.layer.cornerRadius = 8
+        workPlaceView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(workPlaceView)
+        
+        workPlaceView.addSubview(workPlaceLabel)
+        
         NSLayoutConstraint.activate([
-            companyName.topAnchor.constraint(equalTo: topAnchor, constant: 98),
-            companyName.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            companyName.widthAnchor.constraint(equalToConstant: 232),
-            companyName.heightAnchor.constraint(equalToConstant: 18)
+            workPlaceView.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 10),
+            workPlaceView.leadingAnchor.constraint(equalTo: companyName.leadingAnchor),
+            workPlaceView.heightAnchor.constraint(equalToConstant: 24),
+            
+            workPlaceLabel.centerXAnchor.constraint(equalTo: workPlaceView.centerXAnchor),
+            workPlaceLabel.centerYAnchor.constraint(equalTo: workPlaceView.centerYAnchor),
         ])
+        if workPlaceLabel.text?.count ?? 0 <= 14 {
+            workPlaceView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        }
+        else {
+            workPlaceView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        }
     }
     
     func setupLocationView() {
@@ -168,61 +218,50 @@ class JobsCell: UICollectionViewCell {
         locationIcon.translatesAutoresizingMaskIntoConstraints = false
         addSubview(locationIcon)
         
-        NSLayoutConstraint.activate([
-            locationIcon.topAnchor.constraint(equalTo: topAnchor, constant: 128),
-            locationIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            locationIcon.widthAnchor.constraint(equalToConstant: 16),
-            locationIcon.heightAnchor.constraint(equalToConstant: 20)
-        ])
-        
         jobLocationLabel.numberOfLines = 2
         addSubview(jobLocationLabel)
         NSLayoutConstraint.activate([
-            jobLocationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 128),
-            jobLocationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 36),
-            //            jobLocationLabel.widthAnchor.constraint(equalToConstant: 125),
-//            jobLocationLabel.heightAnchor.constraint(equalToConstant: 20)
+            locationIcon.topAnchor.constraint(equalTo: workPlaceView.bottomAnchor, constant: 10),
+            locationIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            locationIcon.widthAnchor.constraint(equalToConstant: 16),
+            locationIcon.heightAnchor.constraint(equalToConstant: 20),
+            
+            jobLocationLabel.topAnchor.constraint(equalTo: workPlaceView.bottomAnchor, constant: 10),
+            jobLocationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
         ])
         
         if let locationText = jobLocationLabel.text, locationText.count > 25 {
-            // If text exceeds 20 characters, set a fixed width of 150
             jobLocationLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
         } else {
-            // If text is within 20 characters, don't set a fixed width
             jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
         }
     }
     
     func setupExperienceLabel() {
-        let attributedString = NSMutableAttributedString()
-        
-        attributedString.append(NSAttributedString(string: "|"))
-        
-        attributedString.append(NSAttributedString(string: "  "))
-        
-        let symbolAttachment = NSTextAttachment()
-        symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
-        
-        let symbolString = NSAttributedString(attachment: symbolAttachment)
-        attributedString.append(symbolString)
-        
-        attributedString.append(NSAttributedString(string: " "))
-        
-        let textString = NSAttributedString(string: "1-5 years")
-        attributedString.append(textString)
-        
-        jobExperienceLabel.attributedText = attributedString
-        jobExperienceLabel.font = .systemFont(ofSize: 14)
-        jobExperienceLabel.tintColor = UIColor(hex: "#667085")
+        let expIcon : UIImageView = UIImageView()
+        expIcon.image = UIImage(systemName: "briefcase")
+        expIcon.tintColor = UIColor(hex: "#667085")
+        expIcon.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(expIcon)
         
         jobExperienceLabel.numberOfLines = 2
         addSubview(jobExperienceLabel)
-        
         NSLayoutConstraint.activate([
-            jobExperienceLabel.topAnchor.constraint(equalTo: topAnchor, constant: 126),
-            jobExperienceLabel.leadingAnchor.constraint(equalTo: jobLocationLabel.trailingAnchor, constant: 8),
+            expIcon.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 10),
+            expIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            expIcon.widthAnchor.constraint(equalToConstant: 16),
+            expIcon.heightAnchor.constraint(equalToConstant: 16),
+            
+            jobExperienceLabel.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 8),
+            jobExperienceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
             jobExperienceLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8)
         ])
+        
+        if let locationText = jobExperienceLabel.text, locationText.count > 25 {
+            jobExperienceLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        } else {
+            jobExperienceLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
+        }
     }
     
     func setupDatePostedAndAppliedButton() {

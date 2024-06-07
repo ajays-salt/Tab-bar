@@ -427,7 +427,7 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
         if isSelected == "Recommended" {
-            cell.companyName.text = job.companyName
+            cell.companyName.text = job.company?.name
         }
         
         cell.jobLocationLabel.text = "\(job.location?.city ?? "NA"), \(job.location?.state ?? "NA")"

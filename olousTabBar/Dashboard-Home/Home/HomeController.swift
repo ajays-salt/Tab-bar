@@ -23,18 +23,25 @@ class HomeController: UIViewController {
         return imageView
     }()
     
-    let scrollSection = UIView()
+    let welcomeLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Welcome Ajay"
+        label.font = .boldSystemFont(ofSize: 28)
+        label.textColor = UIColor(hex: "#101828")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     
     var jobSearchSection : UIView = UIView()
     var jobSearchInnerSection : UIView = UIView()
+    var jobSearchIS2 : UIView = UIView()
     
     let jobsTextField = UITextField()
     let locationTextField = UITextField()
     
-    var horizontalScrollView : UIScrollView!
     
-    // subViews in horizontal scroll
-    let firstView = UIView()
+    let userProfileView = UIView()
     let profileCircleLabel : UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -52,23 +59,27 @@ class HomeController: UIViewController {
     }()
     let userNameLabel : UILabel = {
         let label = UILabel()
-        label.text = "Hi, Ajay Sarkate"
-        label.font = .boldSystemFont(ofSize: 18)
+        label.text = "Ajay Sarkate"
+        label.font = .boldSystemFont(ofSize: 20)
         label.textColor = UIColor(hex: "#101828")
         label.numberOfLines = 2
         return label
     }()
     let designationLabel : UILabel = {
         let label = UILabel()
-        label.text = "Designation "
+        label.text = "Designation"
         label.font = .systemFont(ofSize: 16)
-        label.textColor = UIColor(hex: "#101828")
+        label.textColor = UIColor(hex: "#475467")
+        return label
+    }()
+    let locationLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Location"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#475467")
         return label
     }()
     var profileImageView : UIImageView!
-    
-    
-    let separatorLine = UIView()
     
     
     var recommendedJobsView = UIView()
@@ -115,21 +126,16 @@ class HomeController: UIViewController {
     
     func setupViews() {
         
-        setupHeaderView()
-        setupOlousLogo()
         setupScrollView()
+        setupWelcomeLabel()
         setupJobSearchSection()
         setupJobSearchInnerSection()
         
-        setupHorizontalScroll()
-        
-        setupSeparatorView1()
+        setupUserProfileSection()
         
         setupRecommendedJobsView()
         setupNoJobsImageView()
         
-        
-        setupSeparatorView2()
         setupTopCompaniesView()
         
         setupProfileInfoView()
@@ -138,44 +144,19 @@ class HomeController: UIViewController {
     
 // ************************************ Functions *******************************************
     
-    func setupHeaderView() {
-        
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(headerView)
-        NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 40),
-        ])
-    }
-    
-    func setupOlousLogo() {
-        olousLogo.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(olousLogo)
-        
-        NSLayoutConstraint.activate([
-            olousLogo.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 5),
-            olousLogo.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            olousLogo.widthAnchor.constraint(equalToConstant: 150),
-            olousLogo.heightAnchor.constraint(equalToConstant: 30)
-        ])
-    }
-    
-    
     func setupScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceVertical = true
         view.addSubview(scrollView)
 
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
         ])
         
-        let extraSpaceHeight: CGFloat = 100
+        let extraSpaceHeight: CGFloat = 180
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -184,129 +165,187 @@ class HomeController: UIViewController {
         let contentHeight = view.bounds.height + extraSpaceHeight
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
+    
+    func setupWelcomeLabel() {
+        scrollView.addSubview(welcomeLabel)
+        
+        let ready = UILabel()
+        ready.text = "Ready to find the perfect match?"
+        ready.textColor = UIColor(hex: "#344054")
+        ready.font = .systemFont(ofSize: 18)
+        ready.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollView.addSubview(ready)
+        
+        NSLayoutConstraint.activate([
+            welcomeLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
+            welcomeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            ready.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 5),
+            ready.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+        ])
+    }
 
     func setupJobSearchSection() {
         jobSearchSection.backgroundColor = UIColor(hex: "#1E293B")
-        // #007AFF systemBlue
+        jobSearchSection.layer.cornerRadius = 8
         jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
+        
         scrollView.addSubview(jobSearchSection)
         
+        let ready = UILabel()
+        ready.text = "Let's find your dream job"
+        ready.textColor = UIColor(hex: "#FFFFFF")
+        ready.font = .boldSystemFont(ofSize: 20)
+        ready.translatesAutoresizingMaskIntoConstraints = false
+        
+        jobSearchSection.addSubview(ready)
+        
         NSLayoutConstraint.activate([
-            jobSearchSection.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            jobSearchSection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            jobSearchSection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            jobSearchSection.heightAnchor.constraint(equalToConstant: 164)
+            jobSearchSection.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 50),
+            jobSearchSection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            jobSearchSection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            jobSearchSection.heightAnchor.constraint(equalToConstant: 232),
+            
+            ready.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 16),
+            ready.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
         ])
     }
-    
+        
     func setupJobSearchInnerSection() {
-        jobSearchInnerSection.backgroundColor = .systemBackground
+        jobSearchInnerSection.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
         jobSearchInnerSection.layer.cornerRadius = 12
+        jobSearchInnerSection.layer.borderWidth = 1
+        let borderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        jobSearchInnerSection.layer.borderColor = borderColor.cgColor
+        
         jobSearchInnerSection.translatesAutoresizingMaskIntoConstraints = false
         jobSearchSection.addSubview(jobSearchInnerSection)
         
-        NSLayoutConstraint.activate([
-            jobSearchInnerSection.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 32),
-            jobSearchInnerSection.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
-            jobSearchInnerSection.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
-            jobSearchInnerSection.heightAnchor.constraint(equalToConstant: 100)
-        ])
         
-        let searchIcon : UIImageView = UIImageView()
+        var searchIcon : UIImageView = UIImageView()
         searchIcon.image = UIImage(systemName: "magnifyingglass")
-        searchIcon.tintColor = UIColor(hex: "#667085")
+        searchIcon.tintColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.6)
         searchIcon.translatesAutoresizingMaskIntoConstraints = false
         jobSearchInnerSection.addSubview(searchIcon)
         
-        NSLayoutConstraint.activate([
-            searchIcon.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 14),
-            searchIcon.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 16),
-            searchIcon.widthAnchor.constraint(equalToConstant: 22),
-            searchIcon.heightAnchor.constraint(equalToConstant: 22)
-        ])
         
-        let separatorLine = UIView()
-        separatorLine.backgroundColor = UIColor(hex: "#EAECF0")
-        jobSearchInnerSection.addSubview(separatorLine)
+        let placeholderText = "Enter Job Title (Required)"
+        let placeholderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        jobsTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
         
-        separatorLine.translatesAutoresizingMaskIntoConstraints = false
-        separatorLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        separatorLine.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor).isActive = true
-        separatorLine.trailingAnchor.constraint(equalTo: jobSearchInnerSection.trailingAnchor).isActive = true
-        separatorLine.bottomAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: -49).isActive = true
-        
-        
-        jobsTextField.placeholder = "Enter Job Title"
-        jobsTextField.isUserInteractionEnabled = false
         jobsTextField.translatesAutoresizingMaskIntoConstraints = false
         jobSearchInnerSection.addSubview(jobsTextField)
         
         NSLayoutConstraint.activate([
-            jobsTextField.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 14),
+            jobSearchInnerSection.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 56),
+            jobSearchInnerSection.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchInnerSection.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchInnerSection.heightAnchor.constraint(equalToConstant: 45),
+            
+            searchIcon.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 12),
+            searchIcon.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 16),
+            searchIcon.widthAnchor.constraint(equalToConstant: 22),
+            searchIcon.heightAnchor.constraint(equalToConstant: 22),
+            
+            jobsTextField.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 10),
             jobsTextField.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 46),
             jobsTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
             jobsTextField.heightAnchor.constraint(equalToConstant: 25)
         ])
         
-        let locationIcon : UIImageView = UIImageView()
-        locationIcon.image = UIImage(named: "locationLogo")
-        locationIcon.tintColor = UIColor(hex: "#667085")
+        
+        jobSearchIS2.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        jobSearchIS2.layer.cornerRadius = 12
+        jobSearchIS2.layer.borderWidth = 1
+        jobSearchIS2.layer.borderColor = borderColor.cgColor
+        
+        jobSearchIS2.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchSection.addSubview(jobSearchIS2)
+        
+        
+        var locationIcon : UIImageView = UIImageView()
+        locationIcon.image = UIImage(named: "location-dot")
         locationIcon.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchInnerSection.addSubview(locationIcon)
+        jobSearchIS2.addSubview(locationIcon)
         
-        NSLayoutConstraint.activate([
-            locationIcon.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 63),
-            locationIcon.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 18),
-            locationIcon.widthAnchor.constraint(equalToConstant: 21),
-            locationIcon.heightAnchor.constraint(equalToConstant: 26)
-        ])
         
-        locationTextField.placeholder = "Enter Location"
-        locationTextField.isUserInteractionEnabled = false
+        let placeholderText2 = "City, state or zip code"
+        let placeholderColor2 = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        locationTextField.attributedPlaceholder = NSAttributedString(string: placeholderText2, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor2])
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchInnerSection.addSubview(locationTextField)
+        jobSearchIS2.addSubview(locationTextField)
         
         NSLayoutConstraint.activate([
-            locationTextField.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 63),
-            locationTextField.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 47),
+            jobSearchIS2.topAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: 10),
+            jobSearchIS2.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchIS2.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchIS2.heightAnchor.constraint(equalToConstant: 45),
+            
+            locationIcon.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 12),
+            locationIcon.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 18),
+            locationIcon.widthAnchor.constraint(equalToConstant: 21),
+            locationIcon.heightAnchor.constraint(equalToConstant: 26),
+            
+            locationTextField.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 10),
+            locationTextField.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 47),
             locationTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
             locationTextField.heightAnchor.constraint(equalToConstant: 25)
         ])
         
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapJobSearchInnerSection))
-        jobSearchInnerSection.addGestureRecognizer(tap)
+        setupSearchJobsButton()
     }
     
-    @objc func didTapJobSearchInnerSection() {
-        let jobSearchVC = JobSearchScreen()
-        navigationController?.pushViewController(jobSearchVC, animated: true)
-    }
-    
-    
-    
-    func setupHorizontalScroll() {
-        scrollSection.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(scrollSection)
+    var jobSearchButton : UIButton = {
+        let button = UIButton()
+        button.setTitle("Search Jobs", for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = UIColor(hex: "#0079C4")
+        button.layer.cornerRadius = 12
+        return button
+    }()
+    func setupSearchJobsButton() {
+        jobSearchButton.addTarget(self, action: #selector(didTapSearchJobs), for: .touchUpInside)
+        
+        jobSearchButton.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchSection.addSubview(jobSearchButton)
+        
         NSLayoutConstraint.activate([
-            scrollSection.topAnchor.constraint(equalTo: jobSearchSection.bottomAnchor, constant: 0),
-            scrollSection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            scrollSection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            scrollSection.heightAnchor.constraint(equalToConstant: 180)
+            jobSearchButton.topAnchor.constraint(equalTo: jobSearchIS2.bottomAnchor, constant: 18),
+            jobSearchButton.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchButton.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchButton.heightAnchor.constraint(equalToConstant: 42)
         ])
+    }
+    @objc func didTapSearchJobs() {
+        guard let jobTitle = jobsTextField.text, !jobTitle.isEmpty else {
+            let alert = UIAlertController(title: "Missing Information", message: "Fill all the details", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        let jobResultVC = JobSearchResult()
+        jobResultVC.jobTitle = jobTitle
+        jobResultVC.jobLocation = locationTextField.text!
         
-        firstView.backgroundColor = UIColor(hex: "#F0F9FF")
-        firstView.layer.borderColor = UIColor(hex: "#DEF2FF").cgColor
-        firstView.layer.borderWidth = 1
-        firstView.layer.cornerRadius = 8
+        navigationController?.pushViewController(jobResultVC, animated: true)
+    }
+    
+    
+    
+    func setupUserProfileSection() {
         
-        firstView.translatesAutoresizingMaskIntoConstraints = false
-        scrollSection.addSubview(firstView)
+        userProfileView.layer.borderColor = UIColor(hex: "##EAECF0").cgColor
+        userProfileView.layer.borderWidth = 1
+        userProfileView.layer.cornerRadius = 8
+        
+        userProfileView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(userProfileView)
         NSLayoutConstraint.activate([
-            firstView.topAnchor.constraint(equalTo: scrollSection.topAnchor, constant: 10),
-            firstView.leadingAnchor.constraint(equalTo: scrollSection.leadingAnchor, constant: 16),
-            firstView.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            firstView.heightAnchor.constraint(equalToConstant: 160)
+            userProfileView.topAnchor.constraint(equalTo: jobSearchSection.bottomAnchor, constant: 20),
+            userProfileView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            userProfileView.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
+            userProfileView.heightAnchor.constraint(equalToConstant: 210)
         ])
         
     }
@@ -317,10 +356,10 @@ class HomeController: UIViewController {
         circleContainerView.layer.cornerRadius = 50
         
         circleContainerView.translatesAutoresizingMaskIntoConstraints = false
-        firstView.addSubview(circleContainerView)
+        userProfileView.addSubview(circleContainerView)
         NSLayoutConstraint.activate([
-            circleContainerView.topAnchor.constraint(equalTo: firstView.topAnchor, constant: 24),
-            circleContainerView.leadingAnchor.constraint(equalTo: firstView.leadingAnchor, constant: 16),
+            circleContainerView.topAnchor.constraint(equalTo: userProfileView.topAnchor, constant: 24),
+            circleContainerView.leadingAnchor.constraint(equalTo: userProfileView.leadingAnchor, constant: 16),
             circleContainerView.widthAnchor.constraint(equalToConstant: 100),
             circleContainerView.heightAnchor.constraint(equalToConstant: 100)
         ])
@@ -357,7 +396,7 @@ class HomeController: UIViewController {
         percentView.layer.cornerRadius = 14
         
         percentView.translatesAutoresizingMaskIntoConstraints = false
-        firstView.addSubview(percentView)
+        userProfileView.addSubview(percentView)
         NSLayoutConstraint.activate([
             percentView.topAnchor.constraint(equalTo: circleContainerView.bottomAnchor, constant: -18),
             percentView.centerXAnchor.constraint(equalTo: circleContainerView.centerXAnchor),
@@ -425,75 +464,66 @@ class HomeController: UIViewController {
         
         // ************************************ right side info of circleView **********************************************
         
+        
+
+        
+
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 14
+
+        // Add subviews to stack view
+        stackView.addArrangedSubview(userNameLabel)
+        stackView.addArrangedSubview(designationLabel)
+        stackView.addArrangedSubview(locationLabel)
+
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        userProfileView.addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: userProfileView.topAnchor, constant: 22),
+            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+        
+        
+        let buttonContainerView = UIView()
+        buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
+        userProfileView.addSubview(buttonContainerView)
+        
         let updateProfilButton: UIButton = {
             let button = UIButton()
-            let title = NSAttributedString(string: " Update your profile ",
-                                           attributes: [.font: UIFont.boldSystemFont(ofSize: 18),
-                                                        .foregroundColor: UIColor(hex: "#00629E")])
+            let title = NSAttributedString(string: " Complete my profile ",
+                                           attributes: [.font: UIFont.systemFont(ofSize: 18),
+                                                        .foregroundColor: UIColor(hex: "#FFFFFF")])
             button.setAttributedTitle(title, for: .normal)
-            button.backgroundColor = UIColor(hex: "#D7F0FF")
+            button.backgroundColor = UIColor(hex: "#2563EB")
             button.layer.cornerRadius = 12
             button.addTarget(self, action: #selector(didTapUpdateProfile), for: .touchUpInside)
             button.translatesAutoresizingMaskIntoConstraints = false
             return button
         }()
-
-        let buttonContainerView = UIView()
-        buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
         buttonContainerView.addSubview(updateProfilButton)
 
         // Apply constraints to updateProfilButton within the container view
         NSLayoutConstraint.activate([
+            buttonContainerView.heightAnchor.constraint(equalToConstant: 44),
+            buttonContainerView.bottomAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: -16),
+            buttonContainerView.leadingAnchor.constraint(equalTo: userProfileView.leadingAnchor, constant: 20),
+            buttonContainerView.widthAnchor.constraint(equalToConstant: view.frame.width - 72),
+            
             updateProfilButton.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor),
             updateProfilButton.centerYAnchor.constraint(equalTo: buttonContainerView.centerYAnchor),
-            updateProfilButton.widthAnchor.constraint(equalToConstant: 180),
-            updateProfilButton.heightAnchor.constraint(equalToConstant: 36) // Adjust the height as needed
-        ])
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 12
-
-        // Add subviews to stack view
-        stackView.addArrangedSubview(userNameLabel)
-        stackView.addArrangedSubview(designationLabel)
-        stackView.addArrangedSubview(buttonContainerView)
-
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        firstView.addSubview(stackView)
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: firstView.topAnchor, constant: 20),
-            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            
-            buttonContainerView.heightAnchor.constraint(equalToConstant: 44) // Ensure container view has a height
+            updateProfilButton.widthAnchor.constraint(equalToConstant: view.frame.width - 72),
+            updateProfilButton.heightAnchor.constraint(equalToConstant: 44),
         ])
         
     }
-    
-    
+
     @objc func didTapUpdateProfile() {
         tabBarController?.selectedIndex = 3
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
-    
-    
-    func setupSeparatorView1() {
-        
-//        separatorLine.backgroundColor = UIColor(hex: "#F9FAFB")
-        separatorLine.backgroundColor = UIColor(hex: "#1E293B")
-        
-        separatorLine.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine)
-        
-        NSLayoutConstraint.activate([
-            separatorLine.topAnchor.constraint(equalTo: scrollSection.bottomAnchor),
-            separatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine.heightAnchor.constraint(equalToConstant: 8)
-        ])
-        
-    }
+
     
     
     func setupRecommendedJobsView() {
@@ -501,7 +531,7 @@ class HomeController: UIViewController {
         scrollView.addSubview(recommendedJobsView)
         
         NSLayoutConstraint.activate([
-            recommendedJobsView.topAnchor.constraint(equalTo: separatorLine.bottomAnchor, constant: 16),
+            recommendedJobsView.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 20),
             recommendedJobsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             recommendedJobsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             recommendedJobsView.heightAnchor.constraint(equalToConstant: 278)
@@ -515,7 +545,7 @@ class HomeController: UIViewController {
         recommendedJobsView.addSubview(label)
         
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 10),
+            label.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 0),
             label.leadingAnchor.constraint(equalTo: recommendedJobsView.leadingAnchor, constant: 16),
             label.widthAnchor.constraint(equalToConstant: 200),
             label.heightAnchor.constraint(equalToConstant: 24)
@@ -526,7 +556,7 @@ class HomeController: UIViewController {
         recommendedJobsView.addSubview(viewAllJobsButton)
         
         NSLayoutConstraint.activate([
-            viewAllJobsButton.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 10),
+            viewAllJobsButton.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 0),
             viewAllJobsButton.leadingAnchor.constraint(equalTo: recommendedJobsView.leadingAnchor, constant: view.frame.width - 93),
             viewAllJobsButton.widthAnchor.constraint(equalToConstant: 73),
             viewAllJobsButton.heightAnchor.constraint(equalToConstant: 20)
@@ -554,7 +584,7 @@ class HomeController: UIViewController {
         recommendedJobsView.addSubview(recommendedJobsCollectionVC)
         
         NSLayoutConstraint.activate([
-            recommendedJobsCollectionVC.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 50),
+            recommendedJobsCollectionVC.topAnchor.constraint(equalTo: recommendedJobsView.topAnchor, constant: 40),
             recommendedJobsCollectionVC.leadingAnchor.constraint(equalTo: recommendedJobsView.leadingAnchor, constant: 16),
             recommendedJobsCollectionVC.trailingAnchor.constraint(equalTo: recommendedJobsView.trailingAnchor),
             recommendedJobsCollectionVC.bottomAnchor.constraint(equalTo: recommendedJobsView.bottomAnchor, constant: -19)
@@ -580,22 +610,6 @@ class HomeController: UIViewController {
     }
     
     
-    func setupSeparatorView2() {
-        
-//        separatorLine2.backgroundColor = UIColor(hex: "#F9FAFB")
-        separatorLine2.backgroundColor = UIColor(hex: "#1E293B")
-        
-        separatorLine2.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine2)
-        
-        NSLayoutConstraint.activate([
-            separatorLine2.topAnchor.constraint(equalTo: recommendedJobsView.bottomAnchor),
-            separatorLine2.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine2.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine2.heightAnchor.constraint(equalToConstant: 8)
-        ])
-        
-    }
     
     
     func setupTopCompaniesView() {
@@ -604,7 +618,7 @@ class HomeController: UIViewController {
         scrollView.addSubview(topCompaniesView)
         
         NSLayoutConstraint.activate([
-            topCompaniesView.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 28),
+            topCompaniesView.topAnchor.constraint(equalTo: recommendedJobsView.bottomAnchor, constant: 20),
             topCompaniesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topCompaniesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             topCompaniesView.heightAnchor.constraint(equalToConstant: 261)
@@ -618,7 +632,7 @@ class HomeController: UIViewController {
         topCompaniesView.addSubview(label)
         
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 10),
+            label.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 0),
             label.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
             label.widthAnchor.constraint(equalToConstant: 170),
             label.heightAnchor.constraint(equalToConstant: 24)
@@ -629,7 +643,7 @@ class HomeController: UIViewController {
         topCompaniesView.addSubview(viewAllCompaniesButton)
         
         NSLayoutConstraint.activate([
-            viewAllCompaniesButton.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 10),
+            viewAllCompaniesButton.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 0),
             viewAllCompaniesButton.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: view.frame.width - 93),
             viewAllCompaniesButton.widthAnchor.constraint(equalToConstant: 73),
             viewAllCompaniesButton.heightAnchor.constraint(equalToConstant: 20)
@@ -697,13 +711,33 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             cell.layer.cornerRadius = 12
             
             cell.jobTitle.text = job.title
-            cell.companyName.text = job.companyName
+            cell.companyName.text = job.companyName ?? job.company?.name
+            
+            print(job.workPlace ?? "")
+            
+            if job.workPlace == "office based" {
+                cell.workPlaceLabel.text = "Office Based"
+                cell.workPlaceView.backgroundColor = UIColor(hex: "#FEF3F2")
+                cell.workPlaceLabel.textColor = UIColor(hex: "#D92D20")
+            }
+            else {
+                cell.workPlaceLabel.text = "Hybrid(Office + Site)"
+                cell.workPlaceView.backgroundColor = UIColor(hex: "#ECFDF3")
+                cell.workPlaceLabel.textColor = UIColor(hex: "#067647")
+                
+                if let widthConstraint = cell.workPlaceView.constraints.first(where: { $0.firstAttribute == .width }) {
+                    cell.workPlaceView.removeConstraint(widthConstraint)
+                }
+                let widthConstraint = cell.workPlaceView.widthAnchor.constraint(equalToConstant: 160)
+                widthConstraint.isActive = true
+            }
+            
             cell.jobLocationLabel.text = "\(job.location?.city ?? ""), \(job.location?.state ?? "")"
             
             let s = getTimeAgoString(from: job.createdAt ?? "")
             cell.jobPostedTime.text = s
             
-            let expText = attributedStringForExperience("\(job.minExperience ?? "nil")-\(job.maxExperience ?? "nil")")
+            let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
             cell.jobExperienceLabel.attributedText = expText
             
             // Fetch company logo asynchronously
@@ -775,17 +809,16 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         // Create a mutable attributed string
         let attributedString = NSMutableAttributedString()
         
-        attributedString.append(NSAttributedString(string: "|"))
-        
-        attributedString.append(NSAttributedString(string: "  "))
+//        attributedString.append(NSAttributedString(string: "|"))
+//        attributedString.append(NSAttributedString(string: "  "))
         
         let symbolAttachment = NSTextAttachment()
         symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
         
         let symbolString = NSAttributedString(attachment: symbolAttachment)
-        attributedString.append(symbolString)
+//        attributedString.append(symbolString)
         
-        attributedString.append(NSAttributedString(string: " "))
+//        attributedString.append(NSAttributedString(string: "      "))
         attributedString.append(NSAttributedString(string: experience))
         if !experience.hasSuffix("years") {
             attributedString.append(NSAttributedString(string: " years"))
@@ -837,10 +870,12 @@ extension HomeController {
                 let userName = user.name ?? ""
                 
                 DispatchQueue.main.async {
+                    self.welcomeLabel.text = "Welcome \(userName.components(separatedBy: " ").first ?? "" )"
                     self.percentLabel.text = "\(percent)%"
                     self.profileCircleLabel.text = initialsOfName
-                    self.userNameLabel.text = "Hi, \(userName)"
+                    self.userNameLabel.text = userName
                     self.designationLabel.text = "\(user.designation!)"
+                    self.locationLabel.text = "\(user.currentAddress?.city ?? ""), \(user.currentAddress?.state ?? "")"
                     self.fetchProfilePicture(size: "m", userID: user._id)
                 }
             } catch {
