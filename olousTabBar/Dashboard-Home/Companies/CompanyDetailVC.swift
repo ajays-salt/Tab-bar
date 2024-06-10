@@ -510,12 +510,12 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         }
         
         if savedJobs2.contains(job.id) {
-            let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#667085"), title: "Saved")
-            cell.saveButton.tintColor = UIColor(hex: "#667085")
+            let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#2563EB"), title: "Saved")
+            cell.saveButton.tintColor = UIColor(hex: "#2563EB")
             cell.saveButton.setAttributedTitle(attributedString, for: .normal)
         }
         else {
-            let attributedString = getAttributedString(image: "bookmark",tintColor: UIColor(hex: "#475467"), title: "Save")
+            let attributedString = getAttributedString(image: "bookmark",tintColor: UIColor(hex: "#2563EB"), title: "Save")
             cell.saveButton.tintColor = UIColor(hex: "#475467")
             cell.saveButton.setAttributedTitle(attributedString, for: .normal)
         }
@@ -525,7 +525,35 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName ?? job.companyName
-        cell.jobLocationLabel.text = "\(job.location?.city ?? "NA"), \(job.location?.state ?? "NA")"
+        
+        if job.workPlace == "office based" {
+            cell.workPlaceLabel.text = "Office Based"
+            cell.workPlaceView.backgroundColor = UIColor(hex: "#FEF3F2")
+            cell.workPlaceLabel.textColor = UIColor(hex: "#D92D20")
+        }
+        else {
+            cell.workPlaceLabel.text = "Hybrid(Office + Site)"
+            cell.workPlaceView.backgroundColor = UIColor(hex: "#ECFDF3")
+            cell.workPlaceLabel.textColor = UIColor(hex: "#067647")
+            
+            if let widthConstraint = cell.workPlaceView.constraints.first(where: { $0.firstAttribute == .width }) {
+                cell.workPlaceView.removeConstraint(widthConstraint)
+            }
+            let widthConstraint = cell.workPlaceView.widthAnchor.constraint(equalToConstant: 160)
+            widthConstraint.isActive = true
+        }
+        
+        cell.jobLocationLabel.text = "\(job.location?.city ?? ""), \(job.location?.state ?? "")"
+        
+        var text = "\(job.salaryRangeFrom ?? "NA") - \(job.salaryRangeTo ?? "NA")"
+        if text.hasSuffix("LPA") {
+            cell.salaryLabel.text = text
+        }
+        else {
+            cell.salaryLabel.text = "\(text) LPA"
+        }
+        
+        cell.jobTypeLabel.text = job.jobType
         
         let s = getTimeAgoString(from: job.createdAt ?? "")
         cell.jobPostedTime.text = s
@@ -553,7 +581,7 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: view.frame.width - 32, height: 198)
+        return .init(width: view.frame.width - 32, height: 250)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -573,10 +601,10 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         let symbolString = NSAttributedString(attachment: symbolAttachment)
         attributedString.append(symbolString)
         
-        attributedString.append(NSAttributedString(string: " "))
-        
-        let textString = NSAttributedString(string: title)
-        attributedString.append(textString)
+//        attributedString.append(NSAttributedString(string: " "))
+//        
+//        let textString = NSAttributedString(string: title)
+//        attributedString.append(textString)
         
         return attributedString
     }
@@ -612,17 +640,16 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         // Create a mutable attributed string
         let attributedString = NSMutableAttributedString()
         
-        attributedString.append(NSAttributedString(string: "|"))
-        
-        attributedString.append(NSAttributedString(string: "  "))
+//        attributedString.append(NSAttributedString(string: "|"))
+//        attributedString.append(NSAttributedString(string: "  "))
         
         let symbolAttachment = NSTextAttachment()
         symbolAttachment.image = UIImage(systemName: "briefcase")?.withTintColor(UIColor(hex: "#667085"))
         
         let symbolString = NSAttributedString(attachment: symbolAttachment)
-        attributedString.append(symbolString)
+//        attributedString.append(symbolString)
         
-        attributedString.append(NSAttributedString(string: " "))
+//        attributedString.append(NSAttributedString(string: "      "))
         attributedString.append(NSAttributedString(string: experience))
         if !experience.hasSuffix("years") {
             attributedString.append(NSAttributedString(string: " years"))

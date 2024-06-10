@@ -38,9 +38,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 DispatchQueue.main.async {
                     if hasCompletedOnboarding {
                         // User has completed onboarding, navigate to the home screen
-                        let viewController = ViewController()
-                        viewController.modalPresentationStyle = .overFullScreen
-                        window.rootViewController = viewController
+//                        let viewController = ViewController()
+//                        viewController.modalPresentationStyle = .overFullScreen
+//                        window.rootViewController = viewController
+                        
+                        let vc = BasicDetails1()
+                        let navVC = UINavigationController(rootViewController: vc)
+                        navVC.modalPresentationStyle = .overFullScreen
+                        navVC.navigationBar.isHidden = true
+                        window.rootViewController = navVC
                     } else {
                         // User has not completed onboarding, navigate to the onboarding screen
                         let vc = BasicDetails1()

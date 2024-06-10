@@ -128,7 +128,10 @@ class JobsCell: UICollectionViewCell {
         setupJobTitleAndCompanyName()
         setupWorkplaceView()
         setupLocationView()
+        setupSalary()
+        setupJobtype()
         setupExperienceLabel()
+        setupBottomView()
         setupSaveButton()
         setupDatePostedAndAppliedButton()
     }
@@ -141,35 +144,6 @@ class JobsCell: UICollectionViewCell {
             companyLogo.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             companyLogo.widthAnchor.constraint(equalToConstant: 48),
             companyLogo.heightAnchor.constraint(equalToConstant: 46)
-        ])
-    }
-    
-    func setupSaveButton() {
-        
-        let attributedString = NSMutableAttributedString()
-        
-        let symbolAttachment = NSTextAttachment()
-        symbolAttachment.image = UIImage(systemName: "bookmark")?.withTintColor(UIColor(hex: "#475467"))
-        
-        let symbolString = NSAttributedString(attachment: symbolAttachment)
-        attributedString.append(symbolString)
-        
-        attributedString.append(NSAttributedString(string: " "))
-        
-        let textString = NSAttributedString(string: "Save")
-        attributedString.append(textString)
-        
-        saveButton.setAttributedTitle(attributedString, for: .normal)
-        saveButton.tintColor = UIColor(hex: "#475467")
-        
-        addSubview(saveButton)
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            saveButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
-            saveButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 270),
-            saveButton.widthAnchor.constraint(equalToConstant: 70),
-            saveButton.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
     
@@ -230,10 +204,62 @@ class JobsCell: UICollectionViewCell {
             jobLocationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
         ])
         
-        if let locationText = jobLocationLabel.text, locationText.count > 25 {
-            jobLocationLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
+//        if let locationText = jobLocationLabel.text, locationText.count > 25 {
+//            jobLocationLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
+//        } else {
+//            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
+//        }
+    }
+    
+    func setupSalary() {
+        let rupeesIcon : UIImageView = UIImageView()
+        rupeesIcon.image = UIImage(systemName: "indianrupeesign")
+        rupeesIcon.tintColor = UIColor(hex: "#667085")
+        rupeesIcon.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(rupeesIcon)
+        
+        salaryLabel.numberOfLines = 2
+        addSubview(salaryLabel)
+        NSLayoutConstraint.activate([
+            rupeesIcon.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 10),
+            rupeesIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            rupeesIcon.widthAnchor.constraint(equalToConstant: 14),
+            rupeesIcon.heightAnchor.constraint(equalToConstant: 16),
+            
+            salaryLabel.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 10),
+            salaryLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
+        ])
+        
+        if let locationText = salaryLabel.text, locationText.count > 25 {
+            salaryLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
         } else {
-            jobLocationLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
+            salaryLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
+        }
+    }
+    
+    func setupJobtype() {
+        let clockIcon : UIImageView = UIImageView()
+        clockIcon.image = UIImage(systemName: "clock")
+        clockIcon.tintColor = UIColor(hex: "#667085")
+        clockIcon.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(clockIcon)
+        
+        jobTypeLabel.numberOfLines = 2
+        addSubview(jobTypeLabel)
+        NSLayoutConstraint.activate([
+            clockIcon.topAnchor.constraint(equalTo: salaryLabel.bottomAnchor, constant: 10),
+            clockIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            clockIcon.widthAnchor.constraint(equalToConstant: 14),
+            clockIcon.heightAnchor.constraint(equalToConstant: 16),
+            
+            jobTypeLabel.topAnchor.constraint(equalTo: salaryLabel.bottomAnchor, constant: 10),
+            jobTypeLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
+        ])
+        
+        if let locationText = jobTypeLabel.text, locationText.count > 25 {
+            jobTypeLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        } else {
+            jobTypeLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
         }
     }
     
@@ -247,12 +273,12 @@ class JobsCell: UICollectionViewCell {
         jobExperienceLabel.numberOfLines = 2
         addSubview(jobExperienceLabel)
         NSLayoutConstraint.activate([
-            expIcon.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 10),
+            expIcon.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 9),
             expIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             expIcon.widthAnchor.constraint(equalToConstant: 16),
             expIcon.heightAnchor.constraint(equalToConstant: 16),
             
-            jobExperienceLabel.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 8),
+            jobExperienceLabel.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 8),
             jobExperienceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
             jobExperienceLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8)
         ])
@@ -262,6 +288,48 @@ class JobsCell: UICollectionViewCell {
         } else {
             jobExperienceLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
         }
+    }
+    
+    func setupBottomView() {
+        let bottomView = UIView()
+        bottomView.backgroundColor = UIColor(hex: "#F9FAFB")
+        
+        bottomView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(bottomView)
+        sendSubviewToBack(bottomView)
+        
+        NSLayoutConstraint.activate([
+            bottomView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            bottomView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            bottomView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            bottomView.heightAnchor.constraint(equalToConstant: 45)
+        ])
+    }
+    
+    func setupSaveButton() {
+        
+        let attributedString = NSMutableAttributedString()
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: "bookmark")?.withTintColor(UIColor(hex: "#2563EB"))
+        
+//        attributedString.append(NSAttributedString(string: " "))
+//        
+//        let textString = NSAttributedString(string: "Save")
+//        attributedString.append(textString)
+        
+        saveButton.setAttributedTitle(attributedString, for: .normal)
+        saveButton.tintColor = UIColor(hex: "#2563EB")
+        
+        addSubview(saveButton)
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            saveButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
+            saveButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -10),
+            saveButton.widthAnchor.constraint(equalToConstant: 70),
+            saveButton.heightAnchor.constraint(equalToConstant: 42)
+        ])
     }
     
     func setupDatePostedAndAppliedButton() {
@@ -275,13 +343,13 @@ class JobsCell: UICollectionViewCell {
         addSubview(appliedLabel)
         
         NSLayoutConstraint.activate([
-            jobPostedTime.topAnchor.constraint(equalTo: topAnchor, constant: 166),
-            jobPostedTime.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            jobPostedTime.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
+            jobPostedTime.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             //            jobPostedTime.widthAnchor.constraint(equalToConstant: 76),
             jobPostedTime.heightAnchor.constraint(equalToConstant: 20),
             
             appliedLabel.topAnchor.constraint(equalTo: jobPostedTime.topAnchor),
-            appliedLabel.leadingAnchor.constraint(equalTo: jobPostedTime.trailingAnchor, constant: 20),
+            appliedLabel.leadingAnchor.constraint(equalTo: saveButton.trailingAnchor, constant: 20),
             
         ])
     }

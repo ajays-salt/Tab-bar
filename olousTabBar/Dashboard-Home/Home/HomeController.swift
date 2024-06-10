@@ -534,7 +534,7 @@ class HomeController: UIViewController {
             recommendedJobsView.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 20),
             recommendedJobsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             recommendedJobsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            recommendedJobsView.heightAnchor.constraint(equalToConstant: 278)
+            recommendedJobsView.heightAnchor.constraint(equalToConstant: 328)
         ])
         
         let label = UILabel()
@@ -713,7 +713,6 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             cell.jobTitle.text = job.title
             cell.companyName.text = job.companyName ?? job.company?.name
             
-            print(job.workPlace ?? "")
             
             if job.workPlace == "office based" {
                 cell.workPlaceLabel.text = "Office Based"
@@ -733,6 +732,17 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             }
             
             cell.jobLocationLabel.text = "\(job.location?.city ?? ""), \(job.location?.state ?? "")"
+            
+            var text = "\(job.salaryRangeFrom ?? "NA") - \(job.salaryRangeTo ?? "NA")"
+            if text.hasSuffix("LPA") {
+                cell.salaryLabel.text = text
+            }
+            else {
+                cell.salaryLabel.text = "\(text) LPA"
+            }
+            
+            cell.jobTypeLabel.text = job.jobType
+            
             
             let s = getTimeAgoString(from: job.createdAt ?? "")
             cell.jobPostedTime.text = s
@@ -763,7 +773,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         if collectionView == companiesCollectionVC {
             return .init(width: 228, height: 182)
         }
-        return .init(width: view.frame.width - 80, height: 198)
+        return .init(width: view.frame.width - 80, height: 250)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -978,14 +988,13 @@ extension HomeController {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-//            if let responseString = String(data: data, encoding: .utf8) {
-//                print("Raw response data: \(responseString)")
-//            }
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
             
             do {
                 // Decode directly as an array of dictionaries
                 if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-//                    print("Job Array: \(jobArray)")
                     
                     // Map dictionaries to Job objects
                     let decoder = JSONDecoder()
