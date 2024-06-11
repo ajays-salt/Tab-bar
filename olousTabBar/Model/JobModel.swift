@@ -77,8 +77,8 @@ struct Job: Codable {
         id = try container.decode(String.self, forKey: .id)
         version = try container.decodeIfPresent(Int.self, forKey: .version)
         title = try container.decode(String.self, forKey: .title)
-//        location = try container.decode(Location.self, forKey: .location)
-//        company = try container.decodeIfPresent(Company.self, forKey: .company)
+        location = try container.decodeIfPresent(Location.self, forKey: .location)
+        company = try container.decodeIfPresent(Company.self, forKey: .company)
         status = try container.decode(String.self, forKey: .status)
         preferredQualification = try container.decodeIfPresent([String].self, forKey: .preferredQualification)
         sectors = try container.decode([String].self, forKey: .sectors)
@@ -93,7 +93,21 @@ struct Job: Codable {
         noOfPeople = try container.decodeIfPresent(Int.self, forKey: .noOfPeople)
         whatWeOffer = try container.decodeIfPresent([String].self, forKey: .whatWeOffer)
         jobSummary = try container.decodeIfPresent(String.self, forKey: .jobSummary)
-        softwares = try container.decode([String].self, forKey: .softwares)
+        
+        // Decode softwares which might be an array of strings or an array of dictionaries
+        var softwareArray = [String]()
+        var nestedContainer = try? container.nestedUnkeyedContainer(forKey: .softwares)
+        if nestedContainer != nil {
+            while !nestedContainer!.isAtEnd {
+                if let softwareString = try? nestedContainer!.decode(String.self) {
+                    softwareArray.append(softwareString)
+                } else if let softwareDict = try? nestedContainer!.decode([String: String].self),
+                          let softwareString = softwareDict["name"] {
+                    softwareArray.append(softwareString)
+                }
+            }
+        }
+        softwares = softwareArray
 
         // Decode maxExperience which might be Int or String
         if let maxExperienceValue = try? container.decode(Int.self, forKey: .maxExperience) {
@@ -129,19 +143,6 @@ struct Job: Codable {
             salaryRangeTo = salaryRangeToValue
         } else {
             salaryRangeTo = nil
-        }
-        
-        // Decode company which might be a Company or a String
-        if let company = try? container.decode(Company.self, forKey: .company) {
-            self.company = company
-        } else {
-            company = nil
-        }
-        
-        if let location = try? container.decode(Location.self, forKey: .location) {
-            self.location = location
-        } else {
-            location = nil
         }
     }
 }

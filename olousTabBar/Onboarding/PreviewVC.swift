@@ -11,6 +11,7 @@ import UIKit
 class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
     var headerView = UIView()
+    var topView = UIView()
     
     let profileCircle = UIView()
     let profileCircleLabel : UILabel = {
@@ -123,10 +124,10 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
     
     func setupViews() {
-        setupTitle()
+        setupHeaderView2()
         
         setupScrollView()
-        setupHeaderView()
+        setuptopView()
         setupProfileEditButton()
         
         setupProfileCircleView()
@@ -158,27 +159,201 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         setupBottomView()
     }
     
-    var previewTitle = UILabel()
-    func setupTitle() {
-        previewTitle.text = "Preview"
-        previewTitle.font = .boldSystemFont(ofSize: 24)
-        previewTitle.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(previewTitle)
+    
+    func setupHeaderView2() {
+        headerView = UIView()
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerView)
         
+        var stepsLabel = UILabel()
+        stepsLabel.text = "Steps"
+        stepsLabel.textColor = UIColor(hex: "#1D2026")
+        stepsLabel.font = .boldSystemFont(ofSize: 24)
+        stepsLabel.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(stepsLabel)
+        
+        var blueCircle1 = UIView()
+        blueCircle1.layer.cornerRadius = 4
+        blueCircle1.backgroundColor = UIColor(hex: "#0B945B")
+        blueCircle1.translatesAutoresizingMaskIntoConstraints = false
+        var blueCircle2 = UIView()
+        blueCircle2.layer.cornerRadius = 8
+        blueCircle2.backgroundColor = UIColor(hex: "#0B945B").withAlphaComponent(0.5)
+        blueCircle2.translatesAutoresizingMaskIntoConstraints = false
+        
+        var line = UIView()
+        line.backgroundColor = UIColor(hex: "#0B945B")
+        line.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(line)
+        
+        
+        headerView.addSubview(blueCircle2)
+        headerView.addSubview(blueCircle1)
         NSLayoutConstraint.activate([
-            previewTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            previewTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            stepsLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            stepsLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            
+            blueCircle2.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 46),
+            blueCircle2.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            blueCircle2.widthAnchor.constraint(equalToConstant: 16),
+            blueCircle2.heightAnchor.constraint(equalToConstant: 16),
+            
+            blueCircle1.centerXAnchor.constraint(equalTo: blueCircle2.centerXAnchor),
+            blueCircle1.centerYAnchor.constraint(equalTo: blueCircle2.centerYAnchor),
+            blueCircle1.widthAnchor.constraint(equalToConstant: 8),
+            blueCircle1.heightAnchor.constraint(equalToConstant: 8),
+            
+            line.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 53),
+            line.leadingAnchor.constraint(equalTo: blueCircle2.trailingAnchor, constant: 10),
+            line.heightAnchor.constraint(equalToConstant: 2),
+            line.widthAnchor.constraint(equalToConstant: 150),
+        ])
+        
+        var highlightCircle1 = UIView()
+        highlightCircle1.layer.cornerRadius = 4
+        highlightCircle1.backgroundColor = UIColor(hex: "#2563EB")
+        highlightCircle1.translatesAutoresizingMaskIntoConstraints = false
+        var highlightCircle2 = UIView()
+        highlightCircle2.layer.cornerRadius = 8
+        highlightCircle2.backgroundColor = UIColor(hex: "#2563EB").withAlphaComponent(0.5)
+        highlightCircle2.translatesAutoresizingMaskIntoConstraints = false
+        
+        var line1 = UIView()
+        line1.backgroundColor = UIColor(hex: "#2563EB")
+        line1.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(line1)
+        
+        
+        headerView.addSubview(highlightCircle2)
+        headerView.addSubview(highlightCircle1)
+        NSLayoutConstraint.activate([
+            
+            highlightCircle2.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 46),
+            highlightCircle2.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 204),
+            highlightCircle2.widthAnchor.constraint(equalToConstant: 16),
+            highlightCircle2.heightAnchor.constraint(equalToConstant: 16),
+            
+            highlightCircle1.centerXAnchor.constraint(equalTo: highlightCircle2.centerXAnchor),
+            highlightCircle1.centerYAnchor.constraint(equalTo: highlightCircle2.centerYAnchor),
+            highlightCircle1.widthAnchor.constraint(equalToConstant: 8),
+            highlightCircle1.heightAnchor.constraint(equalToConstant: 8),
+            
+            line1.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 53),
+            line1.leadingAnchor.constraint(equalTo: highlightCircle2.trailingAnchor, constant: 10),
+            line1.heightAnchor.constraint(equalToConstant: 2),
+            line1.widthAnchor.constraint(equalToConstant: 150),
+        ])
+
+        
+    
+        // Create step views
+        let steps = [("Preferences", "Preferences and Headline"),
+                     ("Preview", "Preview and Publish")]
+        
+        let firstStepView = createStepView(steps[0].0, subtitle: steps[0].1, isActive: true)
+        let secondStepView = createStepView(steps[1].0, subtitle: steps[1].1, isActive: false)
+        firstStepView.translatesAutoresizingMaskIntoConstraints = false
+        secondStepView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(firstStepView)
+        headerView.addSubview(secondStepView)
+        
+        // Create and configure the current step label
+        let currentStepLabel = UILabel()
+        currentStepLabel.text = "STEP 10 OF 10"
+        currentStepLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        currentStepLabel.textColor = .gray
+        headerView.addSubview(currentStepLabel)
+        currentStepLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create and configure the main step title
+        let mainStepTitleLabel = UILabel()
+        mainStepTitleLabel.text = "PREVIEW"
+        mainStepTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        headerView.addSubview(mainStepTitleLabel)
+        mainStepTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create and configure the progress view
+        let progressView = UIProgressView(progressViewStyle: .default)
+        progressView.progressTintColor = UIColor(hex: "#0B945B")
+        progressView.trackTintColor = UIColor(hex: "#E5E7EB")
+        progressView.setProgress(9.9, animated: false)
+        headerView.addSubview(progressView)
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create and configure the progress label
+        let progressLabel = UILabel()
+        progressLabel.text = "99%"
+        progressLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        progressLabel.textColor = .gray
+        headerView.addSubview(progressLabel)
+        progressLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Set up constraints
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            
+            firstStepView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 62),
+            firstStepView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            secondStepView.topAnchor.constraint(equalTo: firstStepView.topAnchor),
+            secondStepView.leadingAnchor.constraint(equalTo: firstStepView.trailingAnchor, constant: 190),
+            
+            currentStepLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 130),
+            currentStepLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            
+            mainStepTitleLabel.topAnchor.constraint(equalTo: currentStepLabel.bottomAnchor, constant: 8),
+            mainStepTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            
+            progressView.topAnchor.constraint(equalTo: mainStepTitleLabel.bottomAnchor, constant: 16),
+            progressView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            progressView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -52),
+            
+            progressLabel.centerYAnchor.constraint(equalTo: progressView.centerYAnchor),
+            progressLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            
+            headerView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 16)
         ])
     }
+    func createStepView(_ title: String, subtitle: String, isActive: Bool) -> UIView {
+        let view = UIView()
+        
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        titleLabel.textColor = isActive ? UIColor(hex: "#101828") : .black
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleLabel)
+        
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = subtitle
+        subtitleLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        subtitleLabel.textColor = .gray
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(subtitleLabel)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            subtitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        return view
+    }
+    
     
     func setupProfileEditButton() {
         profileEditButton.isHidden = true
         profileEditButton.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(profileEditButton)
+        topView.addSubview(profileEditButton)
         
         NSLayoutConstraint.activate([
-            profileEditButton.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 6),
-            profileEditButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            profileEditButton.topAnchor.constraint(equalTo: topView.topAnchor, constant: 6),
+            profileEditButton.trailingAnchor.constraint(equalTo: topView.trailingAnchor, constant: -16),
             profileEditButton.widthAnchor.constraint(equalToConstant: 36),
             profileEditButton.heightAnchor.constraint(equalToConstant: 36)
         ])
@@ -191,7 +366,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: previewTitle.bottomAnchor, constant: 10),
+            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 10),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
@@ -207,15 +382,15 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     
-    func setupHeaderView() {
-        headerView.backgroundColor = UIColor(hex: "#F0F9FF")
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(headerView)
+    func setuptopView() {
+        topView.backgroundColor = UIColor(hex: "#F0F9FF")
+        topView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(topView)
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 160)
+            topView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
+            topView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topView.heightAnchor.constraint(equalToConstant: 160)
         ])
     }
 
@@ -224,11 +399,11 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         profileCircle.layer.cornerRadius = 60
         
         profileCircle.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(profileCircle)
+        topView.addSubview(profileCircle)
         NSLayoutConstraint.activate([
 //            profileCircle.topAnchor.constraint(equalTo: headerView.top, constant: 30),
-            profileCircle.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
-            profileCircle.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
+            profileCircle.centerYAnchor.constraint(equalTo: topView.centerYAnchor),
+            profileCircle.leadingAnchor.constraint(equalTo: topView.leadingAnchor, constant: 20),
             profileCircle.widthAnchor.constraint(equalToConstant: 120),
             profileCircle.heightAnchor.constraint(equalToConstant: 120)
         ])
@@ -268,7 +443,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         
         [userNameLabel, jobTitleLabel, locationLabel].forEach { v in
             v.translatesAutoresizingMaskIntoConstraints = false
-            headerView.addSubview(v)
+            topView.addSubview(v)
         }
         
         NSLayoutConstraint.activate([
@@ -293,7 +468,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         scrollView.addSubview(separatorLine0)
         
         NSLayoutConstraint.activate([
-            separatorLine0.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -10),
+            separatorLine0.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: -10),
             separatorLine0.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine0.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine0.heightAnchor.constraint(equalToConstant: 1)

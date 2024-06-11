@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeController: UIViewController {
+class HomeController: UIViewController, UITextFieldDelegate {
    
     
 // ************************************** Variables ***************************************
@@ -118,6 +118,9 @@ class HomeController: UIViewController {
         fetchUserProfile()
         fetchRecommendedJobs()
         fetchTotalAppliedJobIDs()
+        
+        jobsTextField.delegate = self
+        locationTextField.delegate = self
         
         setupViews()
         
@@ -677,6 +680,17 @@ class HomeController: UIViewController {
             companiesCollectionVC.bottomAnchor.constraint(equalTo: topCompaniesView.bottomAnchor, constant: -19)
         ])
     }
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
+    }
 }
 
 
@@ -752,7 +766,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             
             // Fetch company logo asynchronously
             let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-            let companyLogoURLString = baseURLString + (job.company?.logo ?? "")
+            let companyLogoURLString = baseURLString + ((job.companyLogo ?? job.company?.logo) ?? "")
             if let companyLogoURL = URL(string: companyLogoURLString) {
                 URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                     if let data = data, let image = UIImage(data: data) {

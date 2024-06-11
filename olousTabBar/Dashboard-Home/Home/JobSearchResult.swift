@@ -524,11 +524,9 @@ extension JobSearchResult { // extension for API
                 return
             }
             
-//            if self.flag == true {
-                if let responseString = String(data: data, encoding: .utf8) {
-                    print("Raw response data: \(responseString)")
-                }
-//            }
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
             
             do {
                 let jobResponse = try JSONDecoder().decode(JobResponse.self, from: data)
@@ -540,7 +538,10 @@ extension JobSearchResult { // extension for API
                     self.jobsCountLabel.text = "\(self.jobs.count) jobs found"
                 }
             } catch {
-                print("Decoding error: \(error)")
+                DispatchQueue.main.async {
+                    print("Decoding error: \(error)")
+                    self.isLoadingData = false
+                }
             }
         }.resume()
     }

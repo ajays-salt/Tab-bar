@@ -468,7 +468,7 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
         var companyLogoURLString = ""
-        companyLogoURLString = baseURLString + (job.company?.logo ?? "")
+        companyLogoURLString = baseURLString + ((job.company?.logo ?? job.companyLogo) ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -653,9 +653,9 @@ extension MyJobsController {
                 return
             }
             
-//            if let responseString = String(data: data, encoding: .utf8) {
-//                print("Raw response data: \(responseString)")
-//            }
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
             
             do {
                 // Decode directly as an array of dictionaries
@@ -667,6 +667,7 @@ extension MyJobsController {
                     
                     // Update the jobs array on the main thread
                     DispatchQueue.main.async {
+                        self.jobs.removeAll()
                         self.jobs = jobs
                         if jobs.count == 0 {
                              self.noJobsImageView.isHidden = false
@@ -682,10 +683,12 @@ extension MyJobsController {
                 }
             } catch {
                 print("Failed to decode Applied Jobs JSON: \(error)")
+                self.jobs.removeAll()
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
                     self.noJobsImageView.isHidden = false
+                    self.jobsCollectionView.reloadData()
                 }
             }
         }

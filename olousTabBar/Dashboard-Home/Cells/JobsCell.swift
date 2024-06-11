@@ -170,9 +170,9 @@ class JobsCell: UICollectionViewCell {
         workPlaceView.addSubview(workPlaceLabel)
         
         NSLayoutConstraint.activate([
-            workPlaceView.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 10),
+            workPlaceView.topAnchor.constraint(equalTo: companyName.bottomAnchor, constant: 8),
             workPlaceView.leadingAnchor.constraint(equalTo: companyName.leadingAnchor),
-            workPlaceView.heightAnchor.constraint(equalToConstant: 24),
+            workPlaceView.heightAnchor.constraint(equalToConstant: 20),
             
             workPlaceLabel.centerXAnchor.constraint(equalTo: workPlaceView.centerXAnchor),
             workPlaceLabel.centerYAnchor.constraint(equalTo: workPlaceView.centerYAnchor),
@@ -325,7 +325,7 @@ class JobsCell: UICollectionViewCell {
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            saveButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
+            saveButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 2),
             saveButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -10),
             saveButton.widthAnchor.constraint(equalToConstant: 70),
             saveButton.heightAnchor.constraint(equalToConstant: 42)

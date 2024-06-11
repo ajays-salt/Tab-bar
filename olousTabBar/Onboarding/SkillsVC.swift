@@ -76,7 +76,7 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     func setupViews() {
-        setupHeaderView()
+        setupHeaderView2()
         setupScrollView()
         
         setupUI()
@@ -199,6 +199,194 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         ])
     }
     
+    func setupHeaderView2() {
+        headerView = UIView()
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerView)
+        
+        var stepsLabel = UILabel()
+        stepsLabel.text = "Steps"
+        stepsLabel.textColor = UIColor(hex: "#1D2026")
+        stepsLabel.font = .boldSystemFont(ofSize: 24)
+        stepsLabel.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(stepsLabel)
+        
+        var blueCircle1 = UIView()
+        blueCircle1.layer.cornerRadius = 4
+        blueCircle1.backgroundColor = UIColor(hex: "#2563EB")
+        blueCircle1.translatesAutoresizingMaskIntoConstraints = false
+        var blueCircle2 = UIView()
+        blueCircle2.layer.cornerRadius = 8
+        blueCircle2.backgroundColor = UIColor(hex: "#2563EB").withAlphaComponent(0.5)
+        blueCircle2.translatesAutoresizingMaskIntoConstraints = false
+        
+        var line = UIView()
+        line.backgroundColor = UIColor(hex: "#2563EB")
+        line.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(line)
+        
+        
+        headerView.addSubview(blueCircle2)
+        headerView.addSubview(blueCircle1)
+        NSLayoutConstraint.activate([
+            stepsLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            stepsLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            
+            blueCircle2.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 46),
+            blueCircle2.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            blueCircle2.widthAnchor.constraint(equalToConstant: 16),
+            blueCircle2.heightAnchor.constraint(equalToConstant: 16),
+            
+            blueCircle1.centerXAnchor.constraint(equalTo: blueCircle2.centerXAnchor),
+            blueCircle1.centerYAnchor.constraint(equalTo: blueCircle2.centerYAnchor),
+            blueCircle1.widthAnchor.constraint(equalToConstant: 8),
+            blueCircle1.heightAnchor.constraint(equalToConstant: 8),
+            
+            line.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 53),
+            line.leadingAnchor.constraint(equalTo: blueCircle2.trailingAnchor, constant: 10),
+            line.heightAnchor.constraint(equalToConstant: 2),
+            line.widthAnchor.constraint(equalToConstant: 150),
+        ])
+        
+        var highlightCircle1 = UIView()
+        highlightCircle1.layer.cornerRadius = 4
+        highlightCircle1.backgroundColor = UIColor(hex: "#D0D5DD")
+        highlightCircle1.translatesAutoresizingMaskIntoConstraints = false
+        var highlightCircle2 = UIView()
+        highlightCircle2.layer.cornerRadius = 8
+        highlightCircle2.backgroundColor = UIColor(hex: "#EAECF0")
+        highlightCircle2.translatesAutoresizingMaskIntoConstraints = false
+        
+        var line1 = UIView()
+        line1.backgroundColor = UIColor(hex: "#EAECF0")
+        line1.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(line1)
+        
+        
+        headerView.addSubview(highlightCircle2)
+        headerView.addSubview(highlightCircle1)
+        NSLayoutConstraint.activate([
+            
+            highlightCircle2.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 46),
+            highlightCircle2.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 204),
+            highlightCircle2.widthAnchor.constraint(equalToConstant: 16),
+            highlightCircle2.heightAnchor.constraint(equalToConstant: 16),
+            
+            highlightCircle1.centerXAnchor.constraint(equalTo: highlightCircle2.centerXAnchor),
+            highlightCircle1.centerYAnchor.constraint(equalTo: highlightCircle2.centerYAnchor),
+            highlightCircle1.widthAnchor.constraint(equalToConstant: 8),
+            highlightCircle1.heightAnchor.constraint(equalToConstant: 8),
+            
+            line1.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 53),
+            line1.leadingAnchor.constraint(equalTo: highlightCircle2.trailingAnchor, constant: 10),
+            line1.heightAnchor.constraint(equalToConstant: 2),
+            line1.widthAnchor.constraint(equalToConstant: 150),
+        ])
+
+        
+    
+        // Create step views
+        let steps = [("Projects", "Projects and Skills"),
+                     ("Personal Information", "Personal Details")]
+        
+        let firstStepView = createStepView(steps[0].0, subtitle: steps[0].1, isActive: true)
+        let secondStepView = createStepView(steps[1].0, subtitle: steps[1].1, isActive: false)
+        firstStepView.translatesAutoresizingMaskIntoConstraints = false
+        secondStepView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(firstStepView)
+        headerView.addSubview(secondStepView)
+        
+        // Create and configure the current step label
+        let currentStepLabel = UILabel()
+        currentStepLabel.text = "STEP 6 OF 10"
+        currentStepLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        currentStepLabel.textColor = .gray
+        headerView.addSubview(currentStepLabel)
+        currentStepLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create and configure the main step title
+        let mainStepTitleLabel = UILabel()
+        mainStepTitleLabel.text = "SKILLS"
+        mainStepTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        headerView.addSubview(mainStepTitleLabel)
+        mainStepTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create and configure the progress view
+        let progressView = UIProgressView(progressViewStyle: .default)
+        progressView.progressTintColor = UIColor(hex: "#2563EB")
+        progressView.trackTintColor = UIColor(hex: "#E5E7EB")
+        progressView.setProgress(0.6, animated: true)
+        headerView.addSubview(progressView)
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create and configure the progress label
+        let progressLabel = UILabel()
+        progressLabel.text = "60%"
+        progressLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        progressLabel.textColor = .gray
+        headerView.addSubview(progressLabel)
+        progressLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Set up constraints
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            
+            firstStepView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 62),
+            firstStepView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            secondStepView.topAnchor.constraint(equalTo: firstStepView.topAnchor),
+            secondStepView.leadingAnchor.constraint(equalTo: firstStepView.trailingAnchor, constant: 190),
+            
+            currentStepLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 130),
+            currentStepLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            
+            mainStepTitleLabel.topAnchor.constraint(equalTo: currentStepLabel.bottomAnchor, constant: 8),
+            mainStepTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            
+            progressView.topAnchor.constraint(equalTo: mainStepTitleLabel.bottomAnchor, constant: 16),
+            progressView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            progressView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -52),
+            
+            progressLabel.centerYAnchor.constraint(equalTo: progressView.centerYAnchor),
+            progressLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            
+            headerView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 16)
+        ])
+    }
+    
+    func createStepView(_ title: String, subtitle: String, isActive: Bool) -> UIView {
+        let view = UIView()
+        
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        titleLabel.textColor = isActive ? UIColor(hex: "#101828") : .black
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleLabel)
+        
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = subtitle
+        subtitleLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        subtitleLabel.textColor = .gray
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(subtitleLabel)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            subtitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        return view
+    }
+    
+    
+    
     func setupScrollView() {
         scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -222,28 +410,28 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     }
     
     func setupUI() {
-        let titleLabel : UILabel =  {
-            let label = UILabel()
-            label.text = "SKILLS"
-            label.font = .boldSystemFont(ofSize: 20)
-            label.textColor = UIColor(hex: "#101828")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        scrollView.addSubview(titleLabel)
+//        let titleLabel : UILabel =  {
+//            let label = UILabel()
+//            label.text = "SKILLS"
+//            label.font = .boldSystemFont(ofSize: 20)
+//            label.textColor = UIColor(hex: "#101828")
+//            label.translatesAutoresizingMaskIntoConstraints = false
+//            return label
+//        }()
+//        scrollView.addSubview(titleLabel)
         
-        let skillsLabel : UILabel = {
-            let label = UILabel()
-            let attributedText1 = NSMutableAttributedString(string: "Skills")
-            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-            attributedText1.append(asterisk1)
-            label.attributedText = attributedText1
-            label.font = .boldSystemFont(ofSize: 16)
-            label.textColor = UIColor(hex: "#344054")
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
-        scrollView.addSubview(skillsLabel)
+//        let skillsLabel : UILabel = {
+//            let label = UILabel()
+//            let attributedText1 = NSMutableAttributedString(string: "Skills")
+//            let asterisk1 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+//            attributedText1.append(asterisk1)
+//            label.attributedText = attributedText1
+//            label.font = .boldSystemFont(ofSize: 16)
+//            label.textColor = UIColor(hex: "#344054")
+//            label.translatesAutoresizingMaskIntoConstraints = false
+//            return label
+//        }()
+//        scrollView.addSubview(skillsLabel)
         
         skillsTextField.placeholder = "Add skills"
         skillsTextField.borderStyle = .roundedRect
@@ -261,13 +449,14 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            skillsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
-            skillsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            skillsTextField.topAnchor.constraint(equalTo: skillsLabel.bottomAnchor, constant: 10),
+//            titleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
+//            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+//            
+//            skillsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+//            skillsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+//            
+//            skillsTextField.topAnchor.constraint(equalTo: skillsLabel.bottomAnchor, constant: 10),
+            skillsTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
             skillsTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             skillsTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             skillsTextField.heightAnchor.constraint(equalToConstant: 50),

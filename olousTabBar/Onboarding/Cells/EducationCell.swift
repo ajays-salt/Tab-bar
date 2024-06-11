@@ -75,7 +75,8 @@ class EducationCell: UICollectionViewCell {
             
             collegeLabel.topAnchor.constraint(equalTo: educationLabel.topAnchor),
             collegeLabel.leadingAnchor.constraint(equalTo: educationLabel.trailingAnchor, constant: 6),
-            collegeLabel.widthAnchor.constraint(equalToConstant: 150),
+//            collegeLabel.widthAnchor.constraint(equalToConstant: 150),
+            collegeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -50),
             
             passYearLabel.topAnchor.constraint(equalTo: educationLabel.bottomAnchor, constant: 10),
             passYearLabel.leadingAnchor.constraint(equalTo: educationLabel.leadingAnchor),

@@ -240,22 +240,6 @@ struct Company: Codable {
     }
 }
 
-struct RecJobCompany: Codable {
-    let id: String
-    let name: String
-    let description: String
-    let logo: String
-    let updatedAt: String
-    let createdBy: String?
 
-    enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case name
-        case description
-        case logo
-        case updatedAt
-        case createdBy
-    }
-}
 
 

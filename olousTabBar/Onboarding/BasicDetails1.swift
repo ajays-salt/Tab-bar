@@ -33,6 +33,8 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(uploadButtonTapped))
         clickToUploadLabel.addGestureRecognizer(tapGesture)
+        let tapGesture2 = UITapGestureRecognizer(target: self, action: #selector(uploadButtonTapped))
+        uploadLogoView.addGestureRecognizer(tapGesture2)
     }
     
     func setupViews() {
@@ -257,7 +259,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         
         // Create and configure the current step label
         let currentStepLabel = UILabel()
-        currentStepLabel.text = "STEP 1 OF 9"
+        currentStepLabel.text = "STEP 1 OF 10"
         currentStepLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         currentStepLabel.textColor = .gray
         headerView.addSubview(currentStepLabel)
@@ -314,7 +316,6 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             headerView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 16)
         ])
     }
-    
     
     func createStepView(_ title: String, subtitle: String, isActive: Bool) -> UIView {
         let view = UIView()
@@ -592,7 +593,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backButton)
         NSLayoutConstraint.activate([
-            backButton.topAnchor.constraint(equalTo: resumeContainer.bottomAnchor, constant: 200),
+            backButton.topAnchor.constraint(equalTo: resumeContainer.bottomAnchor, constant: 100),
             backButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             backButton.heightAnchor.constraint(equalToConstant: 50),
             backButton.widthAnchor.constraint(equalToConstant: 200)
