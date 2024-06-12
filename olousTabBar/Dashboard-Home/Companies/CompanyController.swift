@@ -73,8 +73,11 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var companiesArray: [Company] = []
     var companiesLabel: UILabel!
     
+    
     var searchCompanySection : UIView = UIView()
     var searchCompanyInnerSection : UIView = UIView()
+    var jobSearchIS2 : UIView = UIView()
+    
     var searchIcon : UIImageView = UIImageView()
     let companyNameTextField = UITextField()
     var locationIcon : UIImageView = UIImageView()
@@ -158,90 +161,108 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func setupCompanySearchSection() {
         searchCompanySection.backgroundColor = UIColor(hex: "#1E293B")
+        searchCompanySection.layer.cornerRadius = 8
         searchCompanySection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(searchCompanySection)
         
+        let ready = UILabel()
+        ready.text = "Let's find your dream company"
+        ready.textColor = UIColor(hex: "#FFFFFF")
+        ready.font = .boldSystemFont(ofSize: 20)
+        ready.translatesAutoresizingMaskIntoConstraints = false
+        
+        searchCompanySection.addSubview(ready)
+        
         NSLayoutConstraint.activate([
             searchCompanySection.topAnchor.constraint(equalTo: companiesLabel.bottomAnchor, constant: 10),
-            searchCompanySection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchCompanySection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            searchCompanySection.heightAnchor.constraint(equalToConstant: 190)
+            searchCompanySection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchCompanySection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchCompanySection.heightAnchor.constraint(equalToConstant: 232),
+            
+            ready.topAnchor.constraint(equalTo: searchCompanySection.topAnchor, constant: 16),
+            ready.leadingAnchor.constraint(equalTo: searchCompanySection.leadingAnchor, constant: 16),
         ])
     }
         
     func setupCompanySearchInnerSection() {
-        searchCompanyInnerSection.backgroundColor = .systemBackground
+        searchCompanyInnerSection.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
         searchCompanyInnerSection.layer.cornerRadius = 12
         searchCompanyInnerSection.layer.borderWidth = 1
-        
-        let borderColor = UIColor(hex: "#EAECF0")
+        let borderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
         searchCompanyInnerSection.layer.borderColor = borderColor.cgColor
         
         searchCompanyInnerSection.translatesAutoresizingMaskIntoConstraints = false
         searchCompanySection.addSubview(searchCompanyInnerSection)
         
-        NSLayoutConstraint.activate([
-            searchCompanyInnerSection.topAnchor.constraint(equalTo: searchCompanySection.topAnchor, constant: 16),
-            searchCompanyInnerSection.leadingAnchor.constraint(equalTo: searchCompanySection.leadingAnchor, constant: 16),
-            searchCompanyInnerSection.trailingAnchor.constraint(equalTo: searchCompanySection.trailingAnchor, constant: -16),
-            searchCompanyInnerSection.heightAnchor.constraint(equalToConstant: 100)
-        ])
         
+        var searchIcon : UIImageView = UIImageView()
         searchIcon.image = UIImage(systemName: "magnifyingglass")
-        searchIcon.tintColor = UIColor(hex: "#667085")
+        searchIcon.tintColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.6)
         searchIcon.translatesAutoresizingMaskIntoConstraints = false
         searchCompanyInnerSection.addSubview(searchIcon)
         
-        NSLayoutConstraint.activate([
-            searchIcon.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 14),
-            searchIcon.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor, constant: 16),
-            searchIcon.widthAnchor.constraint(equalToConstant: 22),
-            searchIcon.heightAnchor.constraint(equalToConstant: 22)
-        ])
         
-        let separatorLine = UIView()
-        separatorLine.backgroundColor = UIColor(hex: "#EAECF0")
-        searchCompanyInnerSection.addSubview(separatorLine)
+        let placeholderText = "Enter Company name"
+        let placeholderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        companyNameTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
         
-        separatorLine.translatesAutoresizingMaskIntoConstraints = false
-        separatorLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        separatorLine.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor).isActive = true
-        separatorLine.trailingAnchor.constraint(equalTo: searchCompanyInnerSection.trailingAnchor).isActive = true
-        separatorLine.bottomAnchor.constraint(equalTo: searchCompanyInnerSection.bottomAnchor, constant: -49).isActive = true
-        
-        
-        companyNameTextField.delegate = self
-        companyNameTextField.placeholder = "Enter Company name (Required)"
+        companyNameTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         companyNameTextField.translatesAutoresizingMaskIntoConstraints = false
         searchCompanyInnerSection.addSubview(companyNameTextField)
         
         NSLayoutConstraint.activate([
-            companyNameTextField.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 14),
+            searchCompanyInnerSection.topAnchor.constraint(equalTo:         searchCompanySection.topAnchor, constant: 56),
+            searchCompanyInnerSection.leadingAnchor.constraint(equalTo:         searchCompanySection.leadingAnchor, constant: 16),
+            searchCompanyInnerSection.trailingAnchor.constraint(equalTo:         searchCompanySection.trailingAnchor, constant: -16),
+            searchCompanyInnerSection.heightAnchor.constraint(equalToConstant: 45),
+            
+            searchIcon.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 12),
+            searchIcon.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor, constant: 16),
+            searchIcon.widthAnchor.constraint(equalToConstant: 22),
+            searchIcon.heightAnchor.constraint(equalToConstant: 22),
+            
+            companyNameTextField.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 10),
             companyNameTextField.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor, constant: 46),
             companyNameTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
             companyNameTextField.heightAnchor.constraint(equalToConstant: 25)
         ])
         
-        locationIcon.image = UIImage(named: "locationLogo")
-        locationIcon.tintColor = UIColor(hex: "#667085")
+        
+        jobSearchIS2.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        jobSearchIS2.layer.cornerRadius = 12
+        jobSearchIS2.layer.borderWidth = 1
+        jobSearchIS2.layer.borderColor = borderColor.cgColor
+        
+        jobSearchIS2.translatesAutoresizingMaskIntoConstraints = false
+                searchCompanySection.addSubview(jobSearchIS2)
+        
+        
+        var locationIcon : UIImageView = UIImageView()
+        locationIcon.image = UIImage(named: "location-dot")
         locationIcon.translatesAutoresizingMaskIntoConstraints = false
-        searchCompanyInnerSection.addSubview(locationIcon)
+        jobSearchIS2.addSubview(locationIcon)
         
-        NSLayoutConstraint.activate([
-            locationIcon.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 63),
-            locationIcon.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor, constant: 18),
-            locationIcon.widthAnchor.constraint(equalToConstant: 21),
-            locationIcon.heightAnchor.constraint(equalToConstant: 26)
-        ])
         
-        locationTextField.delegate = self
-        locationTextField.placeholder = "Enter Location (Optional)"
+        let placeholderText2 = "City, state or zip code"
+        let placeholderColor2 = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        locationTextField.attributedPlaceholder = NSAttributedString(string: placeholderText2, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor2])
+        locationTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
-        searchCompanyInnerSection.addSubview(locationTextField)
+        jobSearchIS2.addSubview(locationTextField)
         
         NSLayoutConstraint.activate([
-            locationTextField.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 63),
-            locationTextField.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor, constant: 47),
+            jobSearchIS2.topAnchor.constraint(equalTo: searchCompanyInnerSection.bottomAnchor, constant: 10),
+            jobSearchIS2.leadingAnchor.constraint(equalTo:         searchCompanySection.leadingAnchor, constant: 16),
+            jobSearchIS2.trailingAnchor.constraint(equalTo:         searchCompanySection.trailingAnchor, constant: -16),
+            jobSearchIS2.heightAnchor.constraint(equalToConstant: 45),
+            
+            locationIcon.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 12),
+            locationIcon.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 18),
+            locationIcon.widthAnchor.constraint(equalToConstant: 21),
+            locationIcon.heightAnchor.constraint(equalToConstant: 26),
+            
+            locationTextField.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 10),
+            locationTextField.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 47),
             locationTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
             locationTextField.heightAnchor.constraint(equalToConstant: 25)
         ])
@@ -257,7 +278,7 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         searchCompanySection.addSubview(searchCompanyButton)
         
         NSLayoutConstraint.activate([
-            searchCompanyButton.topAnchor.constraint(equalTo: searchCompanyInnerSection.bottomAnchor, constant: 16),
+            searchCompanyButton.topAnchor.constraint(equalTo: jobSearchIS2.bottomAnchor, constant: 18),
             searchCompanyButton.leadingAnchor.constraint(equalTo: searchCompanySection.leadingAnchor, constant: 16),
             searchCompanyButton.trailingAnchor.constraint(equalTo: searchCompanySection.trailingAnchor, constant: -16),
             searchCompanyButton.heightAnchor.constraint(equalToConstant: 42)
@@ -356,6 +377,10 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
         
         cell.jobLocationLabel.text = company.location ?? "No Location"
         
+        cell.categoryLabel.text = company.who
+        cell.sectorLabel.text = company.sector?.joined(separator: ", ") ?? ""
+        cell.fieldLabel.text = company.field
+        
         // Fetch company logo
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (company.logo ?? "")
@@ -369,14 +394,14 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
             }.resume()
         }
         
-        cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        cell.layer.borderColor = UIColor(hex: "#E2E8F0").cgColor
         cell.layer.borderWidth = 1
         cell.layer.cornerRadius = 12
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: view.frame.width - 32, height: 182)
+        return .init(width: view.frame.width - 32, height: 222)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

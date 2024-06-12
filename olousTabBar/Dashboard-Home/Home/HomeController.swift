@@ -156,7 +156,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -0)
         ])
         
         let extraSpaceHeight: CGFloat = 180
@@ -236,6 +236,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         let placeholderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         jobsTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
         
+        jobsTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         jobsTextField.translatesAutoresizingMaskIntoConstraints = false
         jobSearchInnerSection.addSubview(jobsTextField)
         
@@ -275,6 +276,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         let placeholderText2 = "City, state or zip code"
         let placeholderColor2 = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         locationTextField.attributedPlaceholder = NSAttributedString(string: placeholderText2, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor2])
+        locationTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
         jobSearchIS2.addSubview(locationTextField)
         
@@ -1002,9 +1004,10 @@ extension HomeController {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+            
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                 // Decode directly as an array of dictionaries

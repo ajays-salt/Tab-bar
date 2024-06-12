@@ -50,7 +50,6 @@ class CompanyDetailVC: UIViewController {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        print("Company " ,company)
 //        fetchData { result in
 //            switch result {
 //            case .success(let fetchedJobs):
@@ -680,9 +679,9 @@ extension CompanyDetailVC {
                 return
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                    if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {

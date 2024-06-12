@@ -26,7 +26,7 @@ class TabBarController: UITabBarController {
         let companyController = CompanyController()
         let companyNavigationController = UINavigationController(rootViewController: companyController)
 //        companyController.view.backgroundColor = .systemBackground
-        companyController.tabBarItem = UITabBarItem(title: "Companies", image: UIImage(systemName: "globe"), tag: 2)
+        companyController.tabBarItem = UITabBarItem(title: "Companies", image: UIImage(named: "appartment"), tag: 2)
         
         let profileController = ProfileController()
 //        profileController.view.backgroundColor = .systemBackground
@@ -43,7 +43,9 @@ class TabBarController: UITabBarController {
                               height: tabBar.frame.size.height)
         tabBar.backgroundColor = UIColor(hex: "#F7F8F9")
         
-        
+        tabBar.shadowImage = UIImage()
+        tabBar.backgroundImage = UIImage()
+        tabBar.layer.shadowColor = UIColor.clear.cgColor // Ensure no shadow is applied
     }
     
 }

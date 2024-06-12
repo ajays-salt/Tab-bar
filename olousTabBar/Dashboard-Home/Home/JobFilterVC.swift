@@ -43,7 +43,7 @@ class JobFilterVC: UIViewController, UITextFieldDelegate {
     var selectedLocations = Set<String>()
     var selectedWorkplaces = Set<String>()
 
-    let tableView = UITableView()
+    var tableView = UITableView()
     
     var expandedSections: [Bool] = [true, true, true, true]
 
@@ -53,10 +53,18 @@ class JobFilterVC: UIViewController, UITextFieldDelegate {
         view.backgroundColor = .systemBackground
 
         navigationItem.title = "Apply Filters"
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.isTranslucent = false
+            navigationBar.barTintColor = .white // Set this to your desired color
+            navigationBar.backgroundColor = .white
+            navigationBar.shadowImage = UIImage() // Remove the shadow image
+            navigationBar.setBackgroundImage(UIImage(), for: .default) // Remove any background image
+        }
         
         fetchFiltersData()
         
         setupTableView()
+        tableView.sectionHeaderHeight = 0
         setupButtons()
         
         filteredProfessions = professions
@@ -103,8 +111,10 @@ class JobFilterVC: UIViewController, UITextFieldDelegate {
     
     
     private func setupTableView() {
+        tableView = UITableView(frame: .zero, style: .plain)
         tableView.dataSource = self
         tableView.delegate = self
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         
@@ -259,9 +269,43 @@ extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
             text = ""
             isSelected = false
         }
-
+        
+        tableView.separatorStyle = .none
         cell.textLabel?.text = text
-        cell.accessoryType = isSelected ? .checkmark : .none
+        cell.selectionStyle = .none
+//        cell.accessoryType = isSelected ? .checkmark : .none
+        
+        // Create the checkbox view
+        let checkboxView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+        checkboxView.layer.borderWidth = 1
+        checkboxView.layer.cornerRadius = 4
+        checkboxView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        checkboxView.backgroundColor = .clear
+        
+        // Add checkmark image if selected
+        if isSelected {
+            let checkmarkImageView = UIImageView(image: UIImage(systemName: "checkmark"))
+            checkmarkImageView.tintColor = .white
+            checkmarkImageView.frame = checkboxView.bounds.insetBy(dx: 3, dy: 3)
+            checkboxView.backgroundColor = UIColor(hex: "#2563EB")
+            checkboxView.addSubview(checkmarkImageView)
+        }
+        
+        checkboxView.translatesAutoresizingMaskIntoConstraints = false
+        cell.contentView.addSubview(checkboxView)
+        
+        cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            checkboxView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
+            checkboxView.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+            checkboxView.widthAnchor.constraint(equalToConstant: 20),
+            checkboxView.heightAnchor.constraint(equalToConstant: 20),
+            
+            cell.textLabel!.leadingAnchor.constraint(equalTo: checkboxView.trailingAnchor, constant: 10),
+            cell.textLabel!.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -15),
+            cell.textLabel!.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+        ])
+        
 
         return cell
     }
@@ -326,9 +370,9 @@ extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
         headerView.addSubview(searchTextField)
         
         NSLayoutConstraint.activate([
-            searchTextField.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
+            searchTextField.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             searchTextField.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            searchTextField.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 30), // Adjust the position to be inside the header view
+            searchTextField.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 40), // Adjust the position to be inside the header view
             searchTextField.heightAnchor.constraint(equalToConstant: 30)
         ])
         
@@ -347,19 +391,20 @@ extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
     
     private func createSectionHeader(title: String, isExpanded: Bool) -> UIView {
         let headerView = UIView()
-        headerView.backgroundColor = UIColor(hex: "#1E293B") // Adjust the background color
+        headerView.backgroundColor = .white
+//        headerView.backgroundColor = UIColor(hex: "#1E293B") // Adjust the background color
 
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.font = .boldSystemFont(ofSize: 20) // Adjust the font size
-        titleLabel.textColor = .white // Adjust the text color
+        titleLabel.textColor = UIColor(hex: "#344054") // Adjust the text color
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(titleLabel)
 
         let chevronImageView = UIImageView()
         let chevronImage = UIImage(systemName: isExpanded ? "chevron.up" : "chevron.down")
         chevronImageView.image = chevronImage
-        chevronImageView.tintColor = .white
+        chevronImageView.tintColor = UIColor(hex: "#344054")
         chevronImageView.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(chevronImageView)
 
@@ -384,7 +429,7 @@ extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 70 // Adjust the height as needed
+        return 80 // Adjust the height as needed
     }
 
     private func updateFiltersURL() {
@@ -415,6 +460,29 @@ extension JobFilterVC : UITableViewDataSource, UITableViewDelegate {
         filtersURL = urlComponents.url?.absoluteString ?? ""
     }
     
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footerView = UIView()
+        footerView.backgroundColor = .clear
+        
+        let separatorLine = UIView()
+        separatorLine.backgroundColor = UIColor(hex: "#EAECF0")
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        
+        footerView.addSubview(separatorLine)
+        
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: footerView.leadingAnchor, constant: 15),
+            separatorLine.trailingAnchor.constraint(equalTo: footerView.trailingAnchor, constant: -15),
+            separatorLine.heightAnchor.constraint(equalToConstant: 1),
+            separatorLine.bottomAnchor.constraint(equalTo: footerView.bottomAnchor, constant: 10)
+        ])
+        
+        return footerView
+    }
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 10 // Adjust this value as needed
+    }
 }
 
 protocol JobFiltersDelegate: AnyObject {

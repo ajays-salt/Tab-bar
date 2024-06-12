@@ -164,7 +164,7 @@ class JobDetailScreen: UIViewController {
     
     func assignValues() {
         jobTitle.text = selectedJob.title
-        companyName.text = selectedJob.companyName ?? selectedJob.companyName
+        companyName.text = selectedJob.companyName ?? selectedJob.company?.name
         jobLocationLabel.text = "\(selectedJob.location?.city ?? "NA"), \(selectedJob.location?.state ?? "NA")"
         let expText = attributedStringForExperience("\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")")
         jobExperienceLabel.attributedText = expText
@@ -354,7 +354,7 @@ class JobDetailScreen: UIViewController {
             jobLocationLabel.widthAnchor.constraint(equalToConstant: 180).isActive = true
         }
         
-        jobExperienceLabel.tintColor = UIColor(hex: "#667085")
+        jobExperienceLabel.textColor = UIColor(hex: "#667085")
         headerView.addSubview(jobExperienceLabel)
         
         NSLayoutConstraint.activate([

@@ -283,44 +283,6 @@ class MyJobsController: UIViewController {
     
     
     var savedJobs2 : [String] = []
-    
-    func fetchSavedJobIDs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
-            print("Invalid URL")
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-
-        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        } else {
-            print("Access Token not found")
-            return
-        }
-
-        // Execute the network request
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            
-            do {
-                let response = try JSONDecoder().decode(SavedJobsResponse.self, from: data)
-                let jobIDs = response.savedJobs.savedJobs
-                
-                DispatchQueue.main.async {
-                    self.savedJobs2 = jobIDs
-                }
-                
-            } catch {
-                print("Failed to decode Saved IDs JSON: \(error)")
-            }
-        }
-        task.resume()
-    }
 
     @objc func didTapSaveJob(_ sender : UIButton) {
         let indexPath = IndexPath(row: sender.tag, section: 0)
@@ -573,17 +535,17 @@ extension MyJobsController {
             print("Invalid URL")
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-
+        
         if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         } else {
             print("Access Token not found")
             return
         }
-
+        
         // Execute the network request
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
@@ -591,9 +553,9 @@ extension MyJobsController {
                 return
             }
             
-//            if let responseString = String(data: data, encoding: .utf8) {
-//                print("Raw response data: \(responseString)")
-//            }
+            //            if let responseString = String(data: data, encoding: .utf8) {
+            //                print("Raw response data: \(responseString)")
+            //            }
             
             do {
                 // Decode directly as an array of dictionaries
@@ -635,17 +597,17 @@ extension MyJobsController {
             print("Invalid URL")
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-
+        
         if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         } else {
             print("Access Token not found")
             return
         }
-
+        
         // Execute the network request
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
@@ -670,7 +632,7 @@ extension MyJobsController {
                         self.jobs.removeAll()
                         self.jobs = jobs
                         if jobs.count == 0 {
-                             self.noJobsImageView.isHidden = false
+                            self.noJobsImageView.isHidden = false
                         }
                         else {
                             self.noJobsImageView.isHidden = true
@@ -699,17 +661,17 @@ extension MyJobsController {
             print("Invalid URL")
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-
+        
         if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         } else {
             print("Access Token not found")
             return
         }
-
+        
         // Execute the network request
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
@@ -718,16 +680,16 @@ extension MyJobsController {
             }
             
             // Print the raw response data as a string
-//            if let responseString = String(data: data, encoding: .utf8) {
-//                print("Raw response data: \(responseString)")
-//            }
-
+            //            if let responseString = String(data: data, encoding: .utf8) {
+            //                print("Raw response data: \(responseString)")
+            //            }
+            
             do {
                 // Decode the JSON response as a dictionary with jobIds array
                 let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
                 
                 if let jobIds = responseDict["jobIds"] {
-//                    print("Job IDs: \(jobIds)")
+                    //                    print("Job IDs: \(jobIds)")
                     DispatchQueue.main.async {
                         self.appliedJobs = jobIds
                         self.jobsCollectionView.reloadData()
@@ -748,28 +710,28 @@ extension MyJobsController {
             print("Invalid URL")
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-
+        
         if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         } else {
             print("Access Token not found")
             return
         }
-
+        
         // Execute the network request
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-
-//            if let responseString = String(data: data, encoding: .utf8) {
-//                print("Raw response data: \(responseString)")
-//            }
-
+            
+            //            if let responseString = String(data: data, encoding: .utf8) {
+            //                print("Raw response data: \(responseString)")
+            //            }
+            
             do {
                 // Decode directly as an array of Job
                 let decoder = JSONDecoder()
@@ -793,5 +755,43 @@ extension MyJobsController {
             }
         }
         task.resume()
+    }
+    func fetchSavedJobIDs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+        
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            do {
+                let response = try JSONDecoder().decode(SavedJobsResponse.self, from: data)
+                let jobIDs = response.savedJobs.savedJobs
+                
+                DispatchQueue.main.async {
+                    self.savedJobs2 = jobIDs
+                }
+                
+            } catch {
+                print("Failed to decode Saved IDs JSON: \(error)")
+            }
+        }
+        task.resume()
+        
     }
 }
