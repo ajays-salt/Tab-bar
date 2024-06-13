@@ -107,6 +107,8 @@ class HomeController: UIViewController, UITextFieldDelegate {
     
     
     var appliedJobs : [String] = []
+    var savedJobs2 : [String] = []
+    
     
 // *********************** View Did Load ***************************************************
     
@@ -118,6 +120,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         fetchUserProfile()
         fetchRecommendedJobs()
         fetchTotalAppliedJobIDs()
+        fetchSavedJobIDs()
         
         jobsTextField.delegate = self
         locationTextField.delegate = self
@@ -305,7 +308,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         let button = UIButton()
         button.setTitle("Search Jobs", for: .normal)
         button.tintColor = .white
-        button.backgroundColor = UIColor(hex: "#0079C4")
+        button.backgroundColor = UIColor(hex: "#2563EB")
         button.layer.cornerRadius = 12
         return button
     }()
@@ -616,7 +619,6 @@ class HomeController: UIViewController, UITextFieldDelegate {
     
     
     
-    
     func setupTopCompaniesView() {
         
         topCompaniesView.translatesAutoresizingMaskIntoConstraints = false
@@ -626,7 +628,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
             topCompaniesView.topAnchor.constraint(equalTo: recommendedJobsView.bottomAnchor, constant: 20),
             topCompaniesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topCompaniesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topCompaniesView.heightAnchor.constraint(equalToConstant: 261)
+            topCompaniesView.heightAnchor.constraint(equalToConstant: 300)
         ])
         
         let label = UILabel()
@@ -676,12 +678,90 @@ class HomeController: UIViewController, UITextFieldDelegate {
         topCompaniesView.addSubview(companiesCollectionVC)
         
         NSLayoutConstraint.activate([
-            companiesCollectionVC.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 60),
+            companiesCollectionVC.topAnchor.constraint(equalTo: topCompaniesView.topAnchor, constant: 40),
             companiesCollectionVC.leadingAnchor.constraint(equalTo: topCompaniesView.leadingAnchor, constant: 16),
             companiesCollectionVC.trailingAnchor.constraint(equalTo: topCompaniesView.trailingAnchor),
             companiesCollectionVC.bottomAnchor.constraint(equalTo: topCompaniesView.bottomAnchor, constant: -19)
         ])
     }
+    
+    
+    
+    @objc func didTapSaveJob(_ sender : UIButton) {
+        let indexPath = IndexPath(row: sender.tag, section: 0)
+        guard let cell = recommendedJobsCollectionVC.cellForItem(at: indexPath) as? JobsCell else {
+            return
+        }
+        
+        let job = jobs[indexPath.row]
+        
+        if savedJobs2.contains(job.id) {  // Already saved, remove it from saved jobs
+            let index = savedJobs2.firstIndex(of: job.id)
+            savedJobs2.remove(at: index!)
+            
+            saveOrUnsaveJob(id: job.id)
+            
+            let attributedString = getAttributedString(image: "bookmark", tintColor: UIColor(hex: "#2563EB"), title: "Save")
+            cell.saveButton.tintColor = UIColor(hex: "#2563EB")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+        
+        else {  // Not saved, save this job
+            savedJobs2.append(job.id)
+            
+            saveOrUnsaveJob(id: job.id)
+            
+            let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#2563EB"), title: "Saved")
+            cell.saveButton.tintColor = UIColor(hex: "#2563EB")
+            cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+        }
+    }
+    
+    func saveOrUnsaveJob(id: String) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/save") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        let body: [String: Any] = ["jobId": id]
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode jobId: \(error)")
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Network request failed: \(error.localizedDescription)")
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                print("Server error")
+                return
+            }
+
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Response: \(responseString)")
+            }
+        }.resume()
+    }
+    
     
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -720,6 +800,9 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             
             if appliedJobs.contains(job.id) {
                 cell.appliedLabel.isHidden = false
+            }
+            else {
+                cell.appliedLabel.isHidden = true
             }
             
             cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
@@ -779,7 +862,19 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
                 }.resume()
             }
             
-            cell.saveButton.isHidden = true
+            cell.saveButton.tag = indexPath.row
+            cell.saveButton.addTarget(self, action: #selector(didTapSaveJob(_:)), for: .touchUpInside)
+            
+            if savedJobs2.contains(job.id) {
+                let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#2563EB"), title: "Saved")
+                cell.saveButton.tintColor = UIColor(hex: "#2563EB")
+                cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+            }
+            else {
+                let attributedString = getAttributedString(image: "bookmark",tintColor: UIColor(hex: "#2563EB"), title: "Save")
+                cell.saveButton.tintColor = UIColor(hex: "#475467")
+                cell.saveButton.setAttributedTitle(attributedString, for: .normal)
+            }
             
             return cell
         }
@@ -787,7 +882,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == companiesCollectionVC {
-            return .init(width: 228, height: 182)
+            return .init(width: view.frame.width - 80, height: 222)
         }
         return .init(width: view.frame.width - 80, height: 250)
     }
@@ -853,6 +948,23 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
 //        let textString = NSAttributedString(string: "1-5 years")
 //        attributedString.append(textString)
 
+        return attributedString
+    }
+    
+    func getAttributedString(image: String, tintColor: UIColor, title : String) -> NSMutableAttributedString {
+        let attributedString = NSMutableAttributedString()
+        
+        let symbolAttachment = NSTextAttachment()
+        symbolAttachment.image = UIImage(systemName: image)?.withTintColor(tintColor)
+        
+        let symbolString = NSAttributedString(attachment: symbolAttachment)
+        attributedString.append(symbolString)
+        
+//        attributedString.append(NSAttributedString(string: " "))
+//
+//        let textString = NSAttributedString(string: title)
+//        attributedString.append(textString)
+        
         return attributedString
     }
 }
@@ -1088,6 +1200,45 @@ extension HomeController {
             }
         }
         task.resume()
+    }
+    
+    func fetchSavedJobIDs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+        
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            do {
+                let response = try JSONDecoder().decode(SavedJobsResponse.self, from: data)
+                let jobIDs = response.savedJobs.savedJobs
+                
+                DispatchQueue.main.async {
+                    self.savedJobs2 = jobIDs
+                }
+                
+            } catch {
+                print("Failed to decode Saved IDs JSON: \(error)")
+            }
+        }
+        task.resume()
+        
     }
 }
 

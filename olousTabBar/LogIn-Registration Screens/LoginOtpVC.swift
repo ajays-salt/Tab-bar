@@ -149,9 +149,11 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
         
         let secondLabel : UILabel = {
             let label = UILabel()
-            label.text = "Please enter OTP."
+            label.text = "Please enter OTP sent to \(email)"
             label.font = .systemFont(ofSize: 18)
             label.textColor = UIColor(hex: "#475467")
+            label.numberOfLines = 2
+            label.textAlignment = .center
             return label
         }()
         
@@ -159,8 +161,9 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
         headerView.addSubview(secondLabel)
         NSLayoutConstraint.activate([
             secondLabel.topAnchor.constraint(equalTo: headLabel.bottomAnchor, constant: 10),
-            secondLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            secondLabel.heightAnchor.constraint(equalToConstant: 24)
+            secondLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            secondLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            secondLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor)
         ])
     }
     
@@ -186,6 +189,9 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
             textField.textAlignment = .center
             textField.font = UIFont.systemFont(ofSize: 24)
             textField.keyboardType = .numberPad
+            textField.layer.borderColor = UIColor(hex: "#667085").cgColor
+            textField.layer.borderWidth = 2
+            textField.layer.cornerRadius = 8
             textField.borderStyle = .roundedRect
             textField.tag = i
             otpTextFields.append(textField)

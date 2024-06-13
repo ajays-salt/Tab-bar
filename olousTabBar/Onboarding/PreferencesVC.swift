@@ -448,6 +448,9 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             
             headerView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 16)
         ])
+        let height = headerView.bounds.height
+        headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: height)
+        headerHeightConstraint?.isActive = true
     }
     
     func createStepView(_ title: String, subtitle: String, isActive: Bool) -> UIView {

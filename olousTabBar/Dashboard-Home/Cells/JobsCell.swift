@@ -181,7 +181,7 @@ class JobsCell: UICollectionViewCell {
             workPlaceView.widthAnchor.constraint(equalToConstant: 100).isActive = true
         }
         else {
-            workPlaceView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+            workPlaceView.widthAnchor.constraint(equalToConstant: 160).isActive = true
         }
     }
     
@@ -349,7 +349,7 @@ class JobsCell: UICollectionViewCell {
             jobPostedTime.heightAnchor.constraint(equalToConstant: 20),
             
             appliedLabel.topAnchor.constraint(equalTo: jobPostedTime.topAnchor),
-            appliedLabel.leadingAnchor.constraint(equalTo: saveButton.trailingAnchor, constant: 20),
+            appliedLabel.leadingAnchor.constraint(equalTo: saveButton.trailingAnchor, constant: -20),
             
         ])
     }

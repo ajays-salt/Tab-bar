@@ -371,6 +371,9 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         if appliedJobs.contains(job.id) {
             cell.appliedLabel.isHidden = false
         }
+        else {
+            cell.appliedLabel.isHidden = true
+        }
         
         if savedJobs2.contains(job.id) {
             let attributedString = getAttributedString(image: "bookmark.fill", tintColor: UIColor(hex: "#2563EB"), title: "Saved")
@@ -396,6 +399,12 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
             cell.workPlaceLabel.text = "Office Based"
             cell.workPlaceView.backgroundColor = UIColor(hex: "#FEF3F2")
             cell.workPlaceLabel.textColor = UIColor(hex: "#D92D20")
+            
+            if let widthConstraint = cell.workPlaceView.constraints.first(where: { $0.firstAttribute == .width }) {
+                cell.workPlaceView.removeConstraint(widthConstraint)
+            }
+            let widthConstraint = cell.workPlaceView.widthAnchor.constraint(equalToConstant: 100)
+            widthConstraint.isActive = true
         }
         else {
             cell.workPlaceLabel.text = "Hybrid(Office + Site)"

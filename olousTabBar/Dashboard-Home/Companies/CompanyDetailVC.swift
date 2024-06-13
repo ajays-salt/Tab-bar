@@ -10,6 +10,7 @@ import UIKit
 class CompanyDetailVC: UIViewController {
         
     var company : Company!
+    var headerView = UIView()
     let nameLabel = UILabel()
     let companyTypeAndLocation = UILabel()
     
@@ -18,14 +19,14 @@ class CompanyDetailVC: UIViewController {
         let button = UIButton()
         button.setTitle("About", for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        button.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+        button.setTitleColor(UIColor(hex: "#2563EB"), for: .normal)
         return button
     }()
     var jobsButton : UIButton = {
         let button = UIButton()
         button.setTitle("Jobs", for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        button.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+        button.setTitleColor(UIColor(hex: "#101828"), for: .normal)
         return button
     }()
     var isSelected : String = "About"
@@ -68,8 +69,9 @@ class CompanyDetailVC: UIViewController {
     
     
     private func setupViews() {
-        setupImagesAndName()
-        setupTypeAndLocationLabel()
+        setupHeaderView()
+        setupContentInHeaderView()
+        
         setupCategorySection()
         setupLineView()
         
@@ -79,27 +81,25 @@ class CompanyDetailVC: UIViewController {
         setupNoJobsImageView()
     }
     
-    private func setupImagesAndName() {
-        let backgroundImageView = UIImageView()
-        backgroundImageView.image = UIImage(named: "backgroundImage") // Use the correct image name
-        backgroundImageView.backgroundColor = .systemGray6
-        backgroundImageView.contentMode = .scaleAspectFill
-        backgroundImageView.clipsToBounds = true
-        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(backgroundImageView)
+    func setupHeaderView() {
+        headerView.backgroundColor = UIColor(hex: "#F9FAFB")
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerView)
+        
         NSLayoutConstraint.activate([
-            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            backgroundImageView.heightAnchor.constraint(equalToConstant: 80),
+            headerView.topAnchor.constraint(equalTo: view.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 180)
         ])
-        
-        
+    }
+    
+    private func setupContentInHeaderView() {
         let logoImageView = UIImageView()
         logoImageView.image = UIImage(systemName: "photo.artframe") // Provide your logo image name
 //        logoImageView.contentMode = .scaleAspectFit
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(logoImageView)
+        headerView.addSubview(logoImageView)
         
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (company.logo ?? "")
@@ -124,33 +124,65 @@ class CompanyDetailVC: UIViewController {
         } else {
             nameLabel.text = company.name
         }
-        nameLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        nameLabel.font = .boldSystemFont(ofSize: 22)
         nameLabel.numberOfLines = 0
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameLabel)
+        headerView.addSubview(nameLabel)
+        
+        
+        // •
+        companyTypeAndLocation.text = "\(company.sector?.joined(separator: ", ") ?? "") | \(company.location ?? "No Location")"
+        companyTypeAndLocation.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        companyTypeAndLocation.textColor = UIColor(hex: "#475467")
+        companyTypeAndLocation.translatesAutoresizingMaskIntoConstraints = false
+        companyTypeAndLocation.numberOfLines = 2
+        headerView.addSubview(companyTypeAndLocation)
+        
         
         let visitWebsiteButton = UIButton(type: .system)
-        visitWebsiteButton.setTitle("Visit Website", for: .normal)
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.image = UIImage(named: "shareIcon") // Use your image name here
+
+        let imageOffsetY: CGFloat = -2.0
+        imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: 16, height: 16)
+
+        let imageString = NSAttributedString(attachment: imageAttachment)
+        let textString = NSAttributedString(string: " Visit Website", attributes: [
+            .font: UIFont.systemFont(ofSize: 17),
+            .foregroundColor: UIColor.white
+        ])
+
+        let fullString = NSMutableAttributedString()
+        fullString.append(imageString)
+        fullString.append(textString)
+
+        visitWebsiteButton.setAttributedTitle(fullString, for: .normal)
+        
         visitWebsiteButton.setTitleColor(.white, for: .normal)
-        visitWebsiteButton.backgroundColor = UIColor(hex: "#0079C4")
+        visitWebsiteButton.tintColor = .white
+        visitWebsiteButton.backgroundColor = UIColor(hex: "#2563EB")
         visitWebsiteButton.layer.cornerRadius = 12
         visitWebsiteButton.addTarget(self, action: #selector(visitWebsite), for: .touchUpInside)
         visitWebsiteButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(visitWebsiteButton)
+        headerView.addSubview(visitWebsiteButton)
         
         NSLayoutConstraint.activate([
-            logoImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
+            logoImageView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20),
             logoImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             logoImageView.widthAnchor.constraint(equalToConstant: 100),
             logoImageView.heightAnchor.constraint(equalToConstant: 80),
             
-            nameLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 12),
-            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            nameLabel.topAnchor.constraint(equalTo: logoImageView.topAnchor),
+            nameLabel.leadingAnchor.constraint(equalTo: logoImageView.trailingAnchor, constant: 16),
             nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            visitWebsiteButton.topAnchor.constraint(equalTo: backgroundImageView.bottomAnchor, constant: 10),
-            visitWebsiteButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            visitWebsiteButton.widthAnchor.constraint(equalToConstant: 120),
+            companyTypeAndLocation.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
+            companyTypeAndLocation.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            companyTypeAndLocation.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            
+            visitWebsiteButton.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 20),
+            visitWebsiteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            visitWebsiteButton.widthAnchor.constraint(equalToConstant: 140),
             visitWebsiteButton.heightAnchor.constraint(equalToConstant: 40),
         ])
         
@@ -165,28 +197,13 @@ class CompanyDetailVC: UIViewController {
     }
     
     
-    private func setupTypeAndLocationLabel() {
-        
-        companyTypeAndLocation.text = "\(company.who ?? "NA") • \(company.location ?? "No Location")"
-        companyTypeAndLocation.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        companyTypeAndLocation.textAlignment = .center
-        companyTypeAndLocation.textColor = .systemGray2
-        companyTypeAndLocation.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(companyTypeAndLocation)
-        
-        NSLayoutConstraint.activate([
-            companyTypeAndLocation.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            companyTypeAndLocation.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-        ])
-    }
-    
     func setupCategorySection() {
-        categorySection.backgroundColor = UIColor(hex: "#C7EAFF")
+        categorySection.backgroundColor = UIColor(hex: "#C7EAFF").withAlphaComponent(0.5)
         categorySection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(categorySection)
         
         NSLayoutConstraint.activate([
-            categorySection.topAnchor.constraint(equalTo: companyTypeAndLocation.bottomAnchor, constant: 20),
+            categorySection.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
             categorySection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             categorySection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             categorySection.heightAnchor.constraint(equalToConstant: 40)
@@ -219,7 +236,7 @@ class CompanyDetailVC: UIViewController {
     func setupLineView() {
         lineView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(lineView)
-        lineView.backgroundColor = UIColor(hex: "#0079C4")
+        lineView.backgroundColor = UIColor(hex: "#2563EB")
         
         lineView.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 37).isActive = true
         leadingConstraint = lineView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 21)
@@ -233,8 +250,8 @@ class CompanyDetailVC: UIViewController {
         if isSelected != "About" {
             isSelected = "About"
             updateViewSelection()
-            aboutButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            jobsButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+            aboutButton.setTitleColor(UIColor(hex: "#2563EB"), for: .normal)
+            jobsButton.setTitleColor(UIColor(hex: "#101828"), for: .normal)
             
             UIView.animate(withDuration: 0.5) {
                 self.leadingConstraint.constant = 21
@@ -243,13 +260,12 @@ class CompanyDetailVC: UIViewController {
             }
         }
     }
-    
     @objc func didTapJobsButton() {
         if isSelected != "Jobs" {
             isSelected = "Jobs"
             updateViewSelection()
-            jobsButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            aboutButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+            jobsButton.setTitleColor(UIColor(hex: "#2563EB"), for: .normal)
+            aboutButton.setTitleColor(UIColor(hex: "#101828"), for: .normal)
             
             UIView.animate(withDuration: 0.5) {
                 self.leadingConstraint.constant = 122
@@ -259,23 +275,78 @@ class CompanyDetailVC: UIViewController {
         }
     }
     
+    
     private func setupAboutView() {
-        aboutView.backgroundColor = UIColor(hex: "#FAFAFA")
         aboutView.contentSize = CGSize(width: view.bounds.width, height: 1000)
         aboutView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(aboutView)
 
         NSLayoutConstraint.activate([
-            aboutView.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 10),
+            aboutView.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 0),
             aboutView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             aboutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             aboutView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
         
-        var lastBottomAnchor = aboutView.topAnchor
+        var descView = UIView()
+        descView.layer.borderWidth = 1
+        descView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        descView.layer.cornerRadius = 8
+        
+        descView.translatesAutoresizingMaskIntoConstraints = false
+        aboutView.addSubview(descView)
+        NSLayoutConstraint.activate([
+            descView.topAnchor.constraint(equalTo: aboutView.topAnchor, constant: 20),
+            descView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            descView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+        
+        
+        let titleLabel = UILabel()
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        titleLabel.textColor = UIColor(hex: "#101828")
+        titleLabel.text = "Company Description"
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        descView.addSubview(titleLabel)
+
+        let contentLabel = UILabel()
+        contentLabel.font = UIFont.systemFont(ofSize: 14)
+        contentLabel.textColor = UIColor(hex: "#475467")
+        contentLabel.numberOfLines = 0
+        contentLabel.text = company.description ?? ""
+        contentLabel.translatesAutoresizingMaskIntoConstraints = false
+        descView.addSubview(contentLabel)
+
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: descView.topAnchor, constant: 20),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            
+            contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            contentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            contentLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            descView.bottomAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 20)
+        ])
+        
+        
+        var infoView = UIView()
+        infoView.layer.borderWidth = 1
+        infoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        infoView.layer.cornerRadius = 8
+        
+        infoView.translatesAutoresizingMaskIntoConstraints = false
+        aboutView.addSubview(infoView)
+        NSLayoutConstraint.activate([
+            infoView.topAnchor.constraint(equalTo: descView.bottomAnchor, constant: 20),
+            infoView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            infoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+        
+        
+        
+        var lastBottomAnchor = infoView.topAnchor
         
         let sections: [(String, String)] = [
-            ("Company Description", company.description ?? ""),
             ("Website", company.website ?? ""),
             ("Sectors", company.sector?.joined(separator: ",") ?? ""),
             ("Category", company.who ?? ""),
@@ -284,10 +355,11 @@ class CompanyDetailVC: UIViewController {
         ]
         
         for section in sections {
-            lastBottomAnchor = addSection(title: section.0, content: section.1, toView: aboutView, topAnchor: lastBottomAnchor)
+            lastBottomAnchor = addSection(title: section.0, content: section.1, toView: infoView, topAnchor: lastBottomAnchor)
         }
         
         // This is critical to make the UIScrollView scrollable
+        infoView.bottomAnchor.constraint(equalTo: lastBottomAnchor, constant: 20).isActive = true
         aboutView.bottomAnchor.constraint(equalTo: lastBottomAnchor, constant: 20).isActive = true
     }
     
@@ -295,13 +367,14 @@ class CompanyDetailVC: UIViewController {
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        titleLabel.textColor = UIColor(hex: "#101828")
         titleLabel.text = title
         parentView.addSubview(titleLabel)
 
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 36),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -36)
         ])
 
         let contentLabel = UILabel()
@@ -309,12 +382,13 @@ class CompanyDetailVC: UIViewController {
         contentLabel.font = UIFont.systemFont(ofSize: 14)
         contentLabel.numberOfLines = 0
         contentLabel.text = content
+        contentLabel.textColor = UIColor(hex: "#475467")
         parentView.addSubview(contentLabel)
 
         NSLayoutConstraint.activate([
             contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-            contentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            contentLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            contentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 36),
+            contentLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -36)
         ])
 
         return contentLabel.bottomAnchor
