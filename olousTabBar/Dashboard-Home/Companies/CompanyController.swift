@@ -394,6 +394,8 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
             }.resume()
         }
         
+        cell.viewJobs.text = "View jobs(\(company.jobCount ?? 0))"
+        
         cell.layer.borderColor = UIColor(hex: "#E2E8F0").cgColor
         cell.layer.borderWidth = 1
         cell.layer.cornerRadius = 12

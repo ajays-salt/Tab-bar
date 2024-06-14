@@ -9,17 +9,17 @@ import UIKit
 
 class MyJobsController: UIViewController {
     
-    var isSelected : String = "Recommended"
+    var isSelected : String = "Recent"
     var savedJobs = [IndexPath]()
     var jobs: [Job] = []
     var appliedJobs : [String] = []
     
     enum CollectionState {
-        case recommended
+        case recent
         case applied
         case saved
     }
-    var collectionState: CollectionState = .recommended {
+    var collectionState: CollectionState = .recent {
         didSet {
             // Reload collection view data when collectionState changes
             jobsCollectionView.reloadData()
@@ -27,9 +27,9 @@ class MyJobsController: UIViewController {
     }
     
     var categorySection = UIView()
-    var recommendedButton : UIButton = {
+    var recentButton : UIButton = {
         let button = UIButton()
-        button.setTitle("Recommended", for: .normal)
+        button.setTitle("Recent", for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 18)
         button.setTitleColor(UIColor(hex: "#475467"), for: .normal)
         return button
@@ -75,11 +75,11 @@ class MyJobsController: UIViewController {
         
         navigationController?.navigationBar.isHidden = true
         
-        if isSelected == "Recommended" {
-            recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+        if isSelected == "Recent" {
+            recentButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
         }
         
-        fetchTotalRecommendedJobs()
+        fetchRecentJobs()
         fetchAppliedJobIDs()
         
         setupViews()
@@ -107,15 +107,15 @@ class MyJobsController: UIViewController {
             categorySection.heightAnchor.constraint(equalToConstant: 50)
         ])
         
-        recommendedButton.addTarget(self, action: #selector(didTapRecommendedButton), for: .touchUpInside)
-        recommendedButton.translatesAutoresizingMaskIntoConstraints = false
-        categorySection.addSubview(recommendedButton)
+        recentButton.addTarget(self, action: #selector(didTapRecentButton), for: .touchUpInside)
+        recentButton.translatesAutoresizingMaskIntoConstraints = false
+        categorySection.addSubview(recentButton)
         
         NSLayoutConstraint.activate([
-            recommendedButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 15),
-            recommendedButton.leadingAnchor.constraint(equalTo: categorySection.leadingAnchor, constant: 16),
-            recommendedButton.widthAnchor.constraint(equalToConstant: 130),
-            recommendedButton.heightAnchor.constraint(equalToConstant: 24)
+            recentButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 15),
+            recentButton.leadingAnchor.constraint(equalTo: categorySection.leadingAnchor, constant: 16),
+            recentButton.widthAnchor.constraint(equalToConstant: 80),
+            recentButton.heightAnchor.constraint(equalToConstant: 24)
         ])
         
         appliedButton.addTarget(self, action: #selector(didTapAppliedButton), for: .touchUpInside)
@@ -124,7 +124,7 @@ class MyJobsController: UIViewController {
         
         NSLayoutConstraint.activate([
             appliedButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 15),
-            appliedButton.leadingAnchor.constraint(equalTo: recommendedButton.trailingAnchor, constant: 36),
+            appliedButton.leadingAnchor.constraint(equalTo: recentButton.trailingAnchor, constant: 36),
             appliedButton.widthAnchor.constraint(equalToConstant: 70),
             appliedButton.heightAnchor.constraint(equalToConstant: 24)
         ])
@@ -135,7 +135,7 @@ class MyJobsController: UIViewController {
         
         NSLayoutConstraint.activate([
             savedButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 15),
-            savedButton.leadingAnchor.constraint(equalTo: appliedButton.trailingAnchor, constant: 32),
+            savedButton.leadingAnchor.constraint(equalTo: appliedButton.trailingAnchor, constant: 36),
             savedButton.widthAnchor.constraint(equalToConstant: 70),
             savedButton.heightAnchor.constraint(equalToConstant: 24)
         ])
@@ -147,9 +147,9 @@ class MyJobsController: UIViewController {
         lineView.backgroundColor = UIColor(hex: "#0079C4")
         
         lineView.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 47).isActive = true
-        leadingConstraint = lineView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+        leadingConstraint = lineView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 23)
         leadingConstraint.isActive = true
-        widthConstraint = lineView.widthAnchor.constraint(equalToConstant: 130)
+        widthConstraint = lineView.widthAnchor.constraint(equalToConstant: 70)
         widthConstraint.isActive = true
         lineView.heightAnchor.constraint(equalToConstant: 3).isActive = true
     }
@@ -202,20 +202,20 @@ class MyJobsController: UIViewController {
         return attributedString
     }
     
-    @objc func didTapRecommendedButton() {
-        if isSelected != "Recommended" {
-            fetchTotalRecommendedJobs()
-            isSelected = "Recommended"
-            recommendedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
+    @objc func didTapRecentButton() {
+        if isSelected != "Recent" {
+            fetchRecentJobs()
+            isSelected = "Recent"
+            recentButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
             appliedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             savedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             
             UIView.animate(withDuration: 0.7) {
-                self.leadingConstraint.constant = 16
-                self.widthConstraint.constant = 130
+                self.leadingConstraint.constant = 23
+                self.widthConstraint.constant = 70
                 self.view.layoutIfNeeded()
             }
-            collectionState = .recommended
+            collectionState = .recent
         }
         
 //        jobsCountLabel.text = "\(jobs.count) recommended jobs"
@@ -226,12 +226,12 @@ class MyJobsController: UIViewController {
             fetchTotalAppliedJobs()
             isSelected = "Applied"
             appliedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            recommendedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+            recentButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             savedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             
             UIView.animate(withDuration: 0.7) {
-                self.leadingConstraint.constant = 184
-                self.widthConstraint.constant = 68
+                self.leadingConstraint.constant = 132
+                self.widthConstraint.constant = 74
                 self.view.layoutIfNeeded()
             }
             collectionState = .applied
@@ -245,11 +245,11 @@ class MyJobsController: UIViewController {
             fetchTotalSavedJobs()
             isSelected = "Saved"
             savedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            recommendedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
+            recentButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             appliedButton.setTitleColor(UIColor(hex: "#475467"), for: .normal)
             
             UIView.animate(withDuration: 0.7) {
-                self.leadingConstraint.constant = 290
+                self.leadingConstraint.constant = 244
                 self.widthConstraint.constant = 60
                 self.view.layoutIfNeeded()
             }
@@ -391,9 +391,6 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         
         cell.jobTitle.text = job.title
         cell.companyName.text = job.companyName
-        if isSelected == "Recommended" {
-            cell.companyName.text = job.company?.name
-        }
         
         if job.workPlace == "office based" {
             cell.workPlaceLabel.text = "Office Based"
@@ -439,7 +436,7 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
         var companyLogoURLString = ""
-        companyLogoURLString = baseURLString + ((job.company?.logo ?? job.companyLogo) ?? "")
+        companyLogoURLString = baseURLString + (job.companyLogo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
@@ -459,8 +456,8 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionState {
-        case .recommended:
-            return jobs.count
+        case .recent:
+            return min(jobs.count, 5)
         case .applied:
             return jobs.count
         case .saved:
@@ -539,8 +536,8 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
 
 extension MyJobsController {
     
-    func fetchTotalRecommendedJobs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/recommended-jobs") else {
+    func fetchRecentJobs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs?sort=Newest&page=1") else {
             print("Invalid URL")
             return
         }
@@ -567,29 +564,23 @@ extension MyJobsController {
             //            }
             
             do {
-                // Decode directly as an array of dictionaries
-                if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                let decoder = JSONDecoder()
+                let jobResponse = try decoder.decode(JobResponse.self, from: data)
                     
-                    // Map dictionaries to Job objects
-                    let decoder = JSONDecoder()
-                    let jobData = try JSONSerialization.data(withJSONObject: jobArray, options: [])
-                    let jobs = try decoder.decode([Job].self, from: jobData)
-                    
-                    // Update the jobs array on the main thread
-                    DispatchQueue.main.async {
-                        self.jobs = jobs
-                        if jobs.count == 0 {
-                            self.noJobsImageView.isHidden = false
-                        }
-                        else {
-                            self.noJobsImageView.isHidden = true
-                        }
-                        self.jobsCountLabel.text = "\(jobs.count) recommended jobs"
-                        self.jobsCollectionView.reloadData()
+                // Update the jobs array on the main thread
+                DispatchQueue.main.async {
+                    self.jobs = jobResponse.jobs
+                    if self.jobs.count == 0 {
+                        self.noJobsImageView.isHidden = false
                     }
+                    else {
+                        self.noJobsImageView.isHidden = true
+                    }
+                    self.jobsCountLabel.text = "\(min(self.jobs.count, 5)) recent jobs"
+                    self.jobsCollectionView.reloadData()
                 }
             } catch {
-                print("Failed to decode Recommended JSON: \(error)")
+                print("Failed to decode Recent JSON: \(error)")
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {

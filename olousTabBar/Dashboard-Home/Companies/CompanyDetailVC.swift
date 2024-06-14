@@ -64,7 +64,7 @@ class CompanyDetailVC: UIViewController {
 //            }
 //        }
         
-        setupViews()
+//        setupViews()
     }
     
     
@@ -72,13 +72,15 @@ class CompanyDetailVC: UIViewController {
         setupHeaderView()
         setupContentInHeaderView()
         
-        setupCategorySection()
-        setupLineView()
-        
         setupAboutView()
+        
+        setupDescriptionView()
+        
+        setupInfoView()
+        
+        setupSocialMediaView()
+        
         setupJobsCollectionView()
-        updateViewSelection()
-        setupNoJobsImageView()
     }
     
     func setupHeaderView() {
@@ -197,110 +199,29 @@ class CompanyDetailVC: UIViewController {
     }
     
     
-    func setupCategorySection() {
-        categorySection.backgroundColor = UIColor(hex: "#C7EAFF").withAlphaComponent(0.5)
-        categorySection.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(categorySection)
-        
-        NSLayoutConstraint.activate([
-            categorySection.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
-            categorySection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            categorySection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            categorySection.heightAnchor.constraint(equalToConstant: 40)
-        ])
-        
-        aboutButton.addTarget(self, action: #selector(didTapAboutButton), for: .touchUpInside)
-        aboutButton.translatesAutoresizingMaskIntoConstraints = false
-        categorySection.addSubview(aboutButton)
-        
-        NSLayoutConstraint.activate([
-            aboutButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 10),
-            aboutButton.leadingAnchor.constraint(equalTo: categorySection.leadingAnchor, constant: 24),
-            aboutButton.heightAnchor.constraint(equalToConstant: 24)
-        ])
-        
-        
-        jobsButton.addTarget(self, action: #selector(didTapJobsButton), for: .touchUpInside)
-        jobsButton.translatesAutoresizingMaskIntoConstraints = false
-        categorySection.addSubview(jobsButton)
-        
-        NSLayoutConstraint.activate([
-            jobsButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 10),
-            jobsButton.leadingAnchor.constraint(equalTo: aboutButton.trailingAnchor, constant: 36),
-            jobsButton.widthAnchor.constraint(equalToConstant: 70),
-            jobsButton.heightAnchor.constraint(equalToConstant: 24)
-        ])
-        
-    }
-    
-    func setupLineView() {
-        lineView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(lineView)
-        lineView.backgroundColor = UIColor(hex: "#2563EB")
-        
-        lineView.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 37).isActive = true
-        leadingConstraint = lineView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 21)
-        leadingConstraint.isActive = true
-        widthConstraint = lineView.widthAnchor.constraint(equalToConstant: 60)
-        widthConstraint.isActive = true
-        lineView.heightAnchor.constraint(equalToConstant: 3).isActive = true
-    }
-    
-    @objc func didTapAboutButton() {
-        if isSelected != "About" {
-            isSelected = "About"
-            updateViewSelection()
-            aboutButton.setTitleColor(UIColor(hex: "#2563EB"), for: .normal)
-            jobsButton.setTitleColor(UIColor(hex: "#101828"), for: .normal)
-            
-            UIView.animate(withDuration: 0.5) {
-                self.leadingConstraint.constant = 21
-                self.widthConstraint.constant = 60
-                self.view.layoutIfNeeded()
-            }
-        }
-    }
-    @objc func didTapJobsButton() {
-        if isSelected != "Jobs" {
-            isSelected = "Jobs"
-            updateViewSelection()
-            jobsButton.setTitleColor(UIColor(hex: "#2563EB"), for: .normal)
-            aboutButton.setTitleColor(UIColor(hex: "#101828"), for: .normal)
-            
-            UIView.animate(withDuration: 0.5) {
-                self.leadingConstraint.constant = 122
-                self.widthConstraint.constant = 52
-                self.view.layoutIfNeeded()
-            }
-        }
-    }
-    
-    
     private func setupAboutView() {
-        aboutView.contentSize = CGSize(width: view.bounds.width, height: 1000)
+        aboutView.contentSize = CGSize(width: view.bounds.width, height: 1300)
+        aboutView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 500, right: 0)
         aboutView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(aboutView)
 
         NSLayoutConstraint.activate([
-            aboutView.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 0),
+            aboutView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
             aboutView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             aboutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             aboutView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
-        
-        var descView = UIView()
+    }
+    
+    var descView = UIView()
+    
+    func setupDescriptionView() {
         descView.layer.borderWidth = 1
         descView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         descView.layer.cornerRadius = 8
         
         descView.translatesAutoresizingMaskIntoConstraints = false
         aboutView.addSubview(descView)
-        NSLayoutConstraint.activate([
-            descView.topAnchor.constraint(equalTo: aboutView.topAnchor, constant: 20),
-            descView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            descView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-        ])
-        
         
         let titleLabel = UILabel()
         titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
@@ -318,6 +239,10 @@ class CompanyDetailVC: UIViewController {
         descView.addSubview(contentLabel)
 
         NSLayoutConstraint.activate([
+            descView.topAnchor.constraint(equalTo: aboutView.topAnchor, constant: 20),
+            descView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            descView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
             titleLabel.topAnchor.constraint(equalTo: descView.topAnchor, constant: 20),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
@@ -325,11 +250,15 @@ class CompanyDetailVC: UIViewController {
             contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             contentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
             contentLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            
             descView.bottomAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 20)
         ])
-        
-        
-        var infoView = UIView()
+    }
+    
+    
+    var infoView = UIView()
+    
+    func setupInfoView() {
         infoView.layer.borderWidth = 1
         infoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         infoView.layer.cornerRadius = 8
@@ -342,10 +271,7 @@ class CompanyDetailVC: UIViewController {
             infoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
         
-        
-        
         var lastBottomAnchor = infoView.topAnchor
-        
         let sections: [(String, String)] = [
             ("Website", company.website ?? ""),
             ("Sectors", company.sector?.joined(separator: ",") ?? ""),
@@ -394,59 +320,142 @@ class CompanyDetailVC: UIViewController {
         return contentLabel.bottomAnchor
     }
     
+    
+    var socialMediaView = UIView()
+    
+    func setupSocialMediaView() {
+        socialMediaView.layer.borderWidth = 1
+        socialMediaView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        socialMediaView.layer.cornerRadius = 8
+        
+        socialMediaView.translatesAutoresizingMaskIntoConstraints = false
+        aboutView.addSubview(socialMediaView)
+        NSLayoutConstraint.activate([
+            socialMediaView.topAnchor.constraint(equalTo: infoView.bottomAnchor, constant: 20),
+            socialMediaView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            socialMediaView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            socialMediaView.heightAnchor.constraint(equalToConstant: 100)
+        ])
+        
+        let connectLabel = UILabel()
+        connectLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        connectLabel.textColor = UIColor(hex: "#101828")
+        connectLabel.text = "Connect with \(company.name)"
+        
+        let linkedinBtn = createButton(image: "Linkedin")
+        let fbBtn = createButton(image: "facebook")
+        let xBtn = createButton(image: "X")
+        
+        [connectLabel, linkedinBtn, fbBtn, xBtn].forEach { btn in
+            btn.translatesAutoresizingMaskIntoConstraints = false
+            socialMediaView.addSubview(btn)
+        }
+        
+        linkedinBtn.addTarget(self, action: #selector(openLinkedin), for: .touchUpInside)
+        fbBtn.addTarget(self, action: #selector(openFacebook), for: .touchUpInside)
+        xBtn.addTarget(self, action: #selector(openTwitter), for: .touchUpInside)
+        
+        NSLayoutConstraint.activate([
+            connectLabel.topAnchor.constraint(equalTo: socialMediaView.topAnchor, constant: 20),
+            connectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            connectLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            
+            linkedinBtn.topAnchor.constraint(equalTo: connectLabel.bottomAnchor, constant: 15),
+            linkedinBtn.leadingAnchor.constraint(equalTo: connectLabel.leadingAnchor, constant: 3),
+            linkedinBtn.heightAnchor.constraint(equalToConstant: 30),
+            
+            fbBtn.topAnchor.constraint(equalTo: connectLabel.bottomAnchor, constant: 15),
+            fbBtn.leadingAnchor.constraint(equalTo: linkedinBtn.trailingAnchor, constant: 20),
+            fbBtn.heightAnchor.constraint(equalToConstant: 30),
+            
+            xBtn.topAnchor.constraint(equalTo: connectLabel.bottomAnchor, constant: 15),
+            xBtn.leadingAnchor.constraint(equalTo: fbBtn.trailingAnchor, constant: 20),
+            xBtn.heightAnchor.constraint(equalToConstant: 30),
+        ])
+    }
+    
+    func createButton(image: String) -> UIButton {
+        let button = UIButton()
+        button.tintColor = UIColor(hex: "#2563EB")
+        button.setImage(UIImage(named: image), for: .normal)
+        return button
+    }
+    
+    @objc func openLinkedin() {
+        if let url = URL(string: "https://www.linkedin.com") {
+            UIApplication.shared.open(url)
+        }
+    }
+    @objc func openFacebook() {
+        if let url = URL(string: "https://www.facebook.com") {
+            UIApplication.shared.open(url)
+        }
+    }
+    @objc func openTwitter() {
+        if let url = URL(string: "https://www.twitter.com") {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    
+    
+    
 
     private func setupJobsCollectionView() {
+        let titleLabel = UILabel()
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        titleLabel.textColor = UIColor(hex: "#101828")
+        titleLabel.text = "Job Openings(\(jobs.count))"
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        aboutView.addSubview(titleLabel)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: socialMediaView.bottomAnchor, constant: 30),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+        ])
+        
+        
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
+        layout.scrollDirection = .horizontal
+        
         jobsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        jobsCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        jobsCollectionView.isHidden = true
+        jobsCollectionView.register(JobsCell.self, forCellWithReuseIdentifier: "cell")
         
         jobsCollectionView.dataSource = self
         jobsCollectionView.delegate = self
-        view.addSubview(jobsCollectionView)
-
-        NSLayoutConstraint.activate([
-            jobsCollectionView.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 10),
-            jobsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            jobsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            jobsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)  // Adjust based on your content
-        ])
-
-        jobsCollectionView.register(JobsCell.self, forCellWithReuseIdentifier: "cell")
-    }
-    
-    private func setupNoJobsImageView() {
+        
+        jobsCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        aboutView.addSubview(jobsCollectionView)
+        
+        
         noJobsImageView = UIImageView()
         noJobsImageView.image = UIImage(named: "no-jobs")  // Ensure you have this image in your assets
+        if jobs.isEmpty {
+            jobsCollectionView.isHidden = true
+            noJobsImageView.isHidden = false
+        }
+        else {
+            jobsCollectionView.isHidden = false
+            noJobsImageView.isHidden = true
+        }
         
         noJobsImageView.translatesAutoresizingMaskIntoConstraints = false
-        noJobsImageView.isHidden = true  // Hide it by default
-        view.addSubview(noJobsImageView)
+        aboutView.addSubview(noJobsImageView)
+
 
         NSLayoutConstraint.activate([
-            noJobsImageView.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 50),
+            jobsCollectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            jobsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            jobsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),  // Adjust based on your content
+            jobsCollectionView.heightAnchor.constraint(equalToConstant: 270),
+            
+            noJobsImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
             noJobsImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             noJobsImageView.widthAnchor.constraint(equalToConstant: 300),
             noJobsImageView.heightAnchor.constraint(equalToConstant: 250)
         ])
     }
-
-    private func updateViewSelection() {
-        aboutView.isHidden = isSelected != "About"
-        jobsCollectionView.isHidden = isSelected != "Jobs"
-        
-        jobsCollectionView.reloadData()
-        
-        noJobsImageView.isHidden = true
-        
-        if jobsCollectionView.isHidden == false {
-            if jobs.isEmpty {
-                jobsCollectionView.isHidden = true
-                noJobsImageView.isHidden = false
-            }
-        }
-    }
+    
 
     
     @objc func didTapSaveJob(_ sender : UIButton) {
@@ -544,12 +553,12 @@ class CompanyDetailVC: UIViewController {
             switch result {
             case .success(let fetchedJobs):
                 self.jobs = fetchedJobs
-                print("jobs fetched successfully")
-//                DispatchQueue.main.async {
-//                    self.setupViews()
-//                }
+                print("jobs fetched successfully, \(self.jobs.count)")
             case .failure(let error):
                 print("Error fetching data: \(error)")
+            }
+            DispatchQueue.main.async {
+                self.setupViews()
             }
         }
         
@@ -603,6 +612,12 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
             cell.workPlaceLabel.text = "Office Based"
             cell.workPlaceView.backgroundColor = UIColor(hex: "#FEF3F2")
             cell.workPlaceLabel.textColor = UIColor(hex: "#D92D20")
+            
+            if let widthConstraint = cell.workPlaceView.constraints.first(where: { $0.firstAttribute == .width }) {
+                cell.workPlaceView.removeConstraint(widthConstraint)
+            }
+            let widthConstraint = cell.workPlaceView.widthAnchor.constraint(equalToConstant: 100)
+            widthConstraint.isActive = true
         }
         else {
             cell.workPlaceLabel.text = "Hybrid(Office + Site)"
@@ -753,9 +768,9 @@ extension CompanyDetailVC {
                 return
             }
             
-//            if let responseString = String(data: data, encoding: .utf8) {
-//                print("Raw response data: \(responseString)")
-//            }
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
             
             do {
                    if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
@@ -809,7 +824,7 @@ extension CompanyDetailVC {
                 let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
                 
                 if let jobIds = responseDict["jobIds"] {
-                    print("Job IDs: \(jobIds)")
+//                    print("Job IDs: \(jobIds)")
                     
                     // Process the job IDs as needed
                     DispatchQueue.main.async {
@@ -861,7 +876,7 @@ extension CompanyDetailVC {
                 
                 DispatchQueue.main.async {
                     self.savedJobs2 = jobIDs
-                    print("saved Job IDs " , self.savedJobs2)
+//                    print("saved Job IDs " , self.savedJobs2)
                 }
                 
             } catch {

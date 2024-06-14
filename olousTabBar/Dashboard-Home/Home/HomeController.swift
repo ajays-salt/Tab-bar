@@ -783,7 +783,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
         if collectionView == companiesCollectionVC {
             return 10
         }
-        return jobs.count
+        return min(jobs.count, 5)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -810,7 +810,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             cell.layer.cornerRadius = 12
             
             cell.jobTitle.text = job.title
-            cell.companyName.text = job.companyName ?? job.company?.name
+            cell.companyName.text = job.companyName ?? ""
             
             
             if job.workPlace == "office based" {
@@ -851,7 +851,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
             
             // Fetch company logo asynchronously
             let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-            let companyLogoURLString = baseURLString + ((job.companyLogo ?? job.company?.logo) ?? "")
+            let companyLogoURLString = baseURLString + (job.companyLogo ?? "")
             if let companyLogoURL = URL(string: companyLogoURLString) {
                 URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                     if let data = data, let image = UIImage(data: data) {
@@ -1095,7 +1095,7 @@ extension HomeController {
 
 
     func fetchRecommendedJobs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/recommended-jobs") else {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs?sort=Newest&page=1") else {
             print("Invalid URL")
             return
         }
@@ -1122,24 +1122,19 @@ extension HomeController {
 //            }
             
             do {
-                // Decode directly as an array of dictionaries
-                if let jobArray = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-                    
-                    // Map dictionaries to Job objects
-                    let decoder = JSONDecoder()
-                    let jobData = try JSONSerialization.data(withJSONObject: jobArray, options: [])
-                    let jobs = try decoder.decode([Job].self, from: jobData)
-                    
-                    // Update the jobs array on the main thread
-                    DispatchQueue.main.async {
-                        self.jobs = jobs
-                        print(jobs.count)
-                        if jobs.count == 0 {
-                            self.noJobsImageView.isHidden = false
-                        }
-                        self.recommendedJobsCollectionVC.reloadData()
+                let decoder = JSONDecoder()
+                let jobResponse = try decoder.decode(JobResponse.self, from: data)
+                
+                // Update the jobs array on the main thread
+                DispatchQueue.main.async {
+                    self.jobs = jobResponse.jobs
+                    print(self.jobs.count)
+                    if self.jobs.count == 0 {
+                        self.noJobsImageView.isHidden = false
                     }
+                    self.recommendedJobsCollectionVC.reloadData()
                 }
+                
             } catch {
                 print("Failed to decode Recommended JSON: \(error)")
             }

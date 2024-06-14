@@ -164,7 +164,7 @@ class JobDetailScreen: UIViewController {
     
     func assignValues() {
         jobTitle.text = selectedJob.title
-        companyName.text = selectedJob.companyName ?? selectedJob.company?.name
+        companyName.text = selectedJob.companyName ?? "xyz"
         jobLocationLabel.text = "\(selectedJob.location?.city ?? "NA"), \(selectedJob.location?.state ?? "NA")"
         let expText = attributedStringForExperience("\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")")
         jobExperienceLabel.attributedText = expText
@@ -225,7 +225,7 @@ class JobDetailScreen: UIViewController {
         }
         
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + ((selectedJob.companyLogo ?? selectedJob.company?.logo) ?? "")
+        let companyLogoURLString = baseURLString + (selectedJob.companyLogo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {

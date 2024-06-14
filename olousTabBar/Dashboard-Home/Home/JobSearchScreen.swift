@@ -476,7 +476,7 @@ extension JobSearchScreen : UICollectionViewDelegate, UICollectionViewDataSource
         
         // Fetch company logo asynchronously
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
-        let companyLogoURLString = baseURLString + (job.company?.logo ?? "")
+        let companyLogoURLString = baseURLString + (job.companyLogo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {

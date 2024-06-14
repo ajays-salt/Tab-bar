@@ -216,6 +216,8 @@ class CompaniesCell: UICollectionViewCell {
     }
     
     
+    let viewJobs = UILabel()
+    
     func setupViewJobs() {
         let view = UIView()
         view.layer.borderColor = UIColor(hex: "#2563EB").cgColor
@@ -224,7 +226,7 @@ class CompaniesCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(view)
         
-        let viewJobs = UILabel()
+        
         viewJobs.text = "View Jobs"
         viewJobs.font = .boldSystemFont(ofSize: 14)
         viewJobs.textColor = UIColor(hex: "#2563EB")
@@ -235,7 +237,7 @@ class CompaniesCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             view.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
             view.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            view.widthAnchor.constraint(equalToConstant: 100),
+            view.widthAnchor.constraint(equalToConstant: 120),
             view.heightAnchor.constraint(equalToConstant: 30),
             
             viewJobs.centerXAnchor.constraint(equalTo: view.centerXAnchor),

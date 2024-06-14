@@ -525,7 +525,8 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             uploadedFileView.heightAnchor.constraint(equalToConstant: 40),
             
             fileNameLabel.centerXAnchor.constraint(equalTo: uploadedFileView.centerXAnchor),
-            fileNameLabel.centerYAnchor.constraint(equalTo: uploadedFileView.centerYAnchor)
+            fileNameLabel.centerYAnchor.constraint(equalTo: uploadedFileView.centerYAnchor),
+            fileNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: view.frame.width - 84)
         ])
         
         

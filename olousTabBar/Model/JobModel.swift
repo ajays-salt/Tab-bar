@@ -24,7 +24,7 @@ struct Job: Codable {
     let version: Int?
     let title: String
     let location: Location?
-    let company: Company?
+    let company: String?
     let status: String
     let preferredQualification: [String]?
     let sectors: [String]
@@ -78,7 +78,7 @@ struct Job: Codable {
         version = try container.decodeIfPresent(Int.self, forKey: .version)
         title = try container.decode(String.self, forKey: .title)
         location = try container.decodeIfPresent(Location.self, forKey: .location)
-        company = try container.decodeIfPresent(Company.self, forKey: .company)
+        company = try container.decodeIfPresent(String.self, forKey: .company)
         status = try container.decode(String.self, forKey: .status)
         preferredQualification = try container.decodeIfPresent([String].self, forKey: .preferredQualification)
         sectors = try container.decode([String].self, forKey: .sectors)
