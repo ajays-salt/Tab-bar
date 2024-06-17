@@ -25,6 +25,23 @@ extension UITextView {
     }
 }
 
+extension UITextField {
+    func addDoneButtonOnKeyboard() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        
+        toolbar.setItems([flexSpace, doneButton], animated: false)
+        self.inputAccessoryView = toolbar
+    }
+    
+    @objc private func doneButtonTapped() {
+        self.resignFirstResponder()
+    }
+}
+
 struct SoftwaresResponse: Codable {
     let softwares: String
 }

@@ -409,8 +409,8 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
         
         // Calculate content size
-        let contentHeight = view.bounds.height + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        let contentHeight = view.bounds.height + extraSpaceHeight
+//        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     
     func setupUI() {
@@ -502,6 +502,9 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
         // Calculate the content size
         addedSkillsView.layoutIfNeeded()
         let contentSize = addedSkillsView.collectionViewLayout.collectionViewContentSize
+        let contentSize2 = suggestedSkillsView.collectionViewLayout.collectionViewContentSize
+        
+        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentSize.height + contentSize2.height + 100)
         
         // Update the height constraint based on content size
         addedSkillsViewHeightConstraint.constant = contentSize.height
@@ -548,10 +551,13 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
             
         // Calculate the content size
         suggestedSkillsView.layoutIfNeeded()
-        let contentSize = suggestedSkillsView.collectionViewLayout.collectionViewContentSize
+        let contentSize = addedSkillsView.collectionViewLayout.collectionViewContentSize
+        let contentSize2 = suggestedSkillsView.collectionViewLayout.collectionViewContentSize
+        
+        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentSize.height + contentSize2.height + 100)
         
         // Update the height constraint based on content size
-        suggestedSkillsViewHeightConstraint.constant = contentSize.height
+        suggestedSkillsViewHeightConstraint.constant = contentSize2.height
         
         // Update constraints
         UIView.animate(withDuration: 0.3) {
@@ -656,6 +662,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
+        skillsTableView.isHidden = true
         textField.resignFirstResponder()
         return true
     }

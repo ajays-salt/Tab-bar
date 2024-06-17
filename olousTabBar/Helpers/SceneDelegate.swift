@@ -38,15 +38,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 DispatchQueue.main.async {
                     if hasCompletedOnboarding {
                         // User has completed onboarding, navigate to the home screen
-                        let viewController = ViewController()
-                        viewController.modalPresentationStyle = .overFullScreen
-                        window.rootViewController = viewController
+//                        let viewController = ViewController()
+//                        viewController.modalPresentationStyle = .overFullScreen
+//                        window.rootViewController = viewController
                         
-//                        let vc = PreviewVC()
-//                        let navVC = UINavigationController(rootViewController: vc)
-//                        navVC.modalPresentationStyle = .overFullScreen
-//                        navVC.navigationBar.isHidden = true
-//                        window.rootViewController = navVC
+                        let vc = PreferencesVC()
+                        let navVC = UINavigationController(rootViewController: vc)
+                        navVC.modalPresentationStyle = .overFullScreen
+                        navVC.navigationBar.isHidden = true
+                        window.rootViewController = navVC
                     } else {
                         // User has not completed onboarding, navigate to the onboarding screen
                         let vc = BasicDetails1()
@@ -60,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         } else {
             // No access token, navigate to the registration screen
-            let registrationVC = RegistrationVC()
+            let registrationVC = RegisterOtpVC()
             let navVC = UINavigationController(rootViewController: registrationVC)
             navVC.modalPresentationStyle = .fullScreen
             navVC.navigationBar.isHidden = true

@@ -56,8 +56,6 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         return textView
     }()
     
-    var saveProjectButton : UIButton!
-    
     var bottomView : UIView!
     
     
@@ -124,10 +122,11 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         setupScrollView()
         
         setupProjectsView()
-        setupAddProject()
+        setupAddProjectButton()
         
         setupBottomView()
         
+        setupAddProjectView()
         setupEditViewComponents()
         setupLoader2()
     }
@@ -457,14 +456,14 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 300
+        let extraSpaceHeight: CGFloat = 100
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
         
         // Calculate content size
-        let contentHeight = view.bounds.height + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        let contentHeight = view.bounds.height + extraSpaceHeight
+//        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     
     func setupProjectsView() {
@@ -496,39 +495,40 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         // Calculate the content size
         employmentsCV.layoutIfNeeded()
         let contentSize = employmentsCV.collectionViewLayout.collectionViewContentSize
+        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentSize.height + 100)
         
         // Update the height constraint based on content size
         employmentsCVHeightConstraint.constant = contentSize.height
 //        print("Content Size ", contentSize.height)
         
-        if contentSize.height > 500 {
-            let extraSpaceHeight: CGFloat = 400
-//            print(extraSpaceHeight)
-            
-            // Add extra space at the bottom
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
-            
-            // Calculate content size
-            let contentHeight = view.bounds.height + extraSpaceHeight
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
-        
-        if contentSize.height > 1000 {
-            var extraSpaceHeight: CGFloat = 800
-            if contentSize.height < 1200 {
-                extraSpaceHeight = 600
-            }
-            if contentSize.height > 1500 {
-                extraSpaceHeight = 1000
-            }
-            
-            // Add extra space at the bottom
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
-            
-            // Calculate content size
-            let contentHeight = view.bounds.height + extraSpaceHeight
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
+//        if contentSize.height > 500 {
+//            let extraSpaceHeight: CGFloat = 400
+////            print(extraSpaceHeight)
+//            
+//            // Add extra space at the bottom
+//            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
+//            
+//            // Calculate content size
+//            let contentHeight = view.bounds.height + extraSpaceHeight
+//            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
+//        
+//        if contentSize.height > 1000 {
+//            var extraSpaceHeight: CGFloat = 800
+//            if contentSize.height < 1200 {
+//                extraSpaceHeight = 600
+//            }
+//            if contentSize.height > 1500 {
+//                extraSpaceHeight = 1000
+//            }
+//            
+//            // Add extra space at the bottom
+//            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
+//            
+//            // Calculate content size
+//            let contentHeight = view.bounds.height + extraSpaceHeight
+//            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
         
         
         
@@ -539,7 +539,20 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         }
     }
     
-    func setupAddProject() {
+    
+    var addExpContainer = UIView()
+    func setupAddProjectButton() {
+        
+        let box : UIView = {
+            let views = UIView()
+            views.backgroundColor = UIColor(hex: "#F9FAFB")
+            views.layer.borderWidth = 1 // Add border to the container
+            views.layer.cornerRadius = 8 // Add corner radius for rounded corners
+            views.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set border color
+            views.translatesAutoresizingMaskIntoConstraints = false
+            return views
+        }()
+        scrollView.addSubview(box)
         
         let addNewProjectLabel : UILabel = {
             let label = UILabel()
@@ -549,7 +562,47 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        scrollView.addSubview(addNewProjectLabel)
+        box.addSubview(addNewProjectLabel)
+        
+        let addExpButton : UIButton = {
+            let button = UIButton()
+            button.setImage(UIImage(systemName: "plus.circle"), for: .normal)
+            button.tintColor = UIColor(hex: "#344054")
+            button.translatesAutoresizingMaskIntoConstraints = false
+            return button
+        }()
+        addExpButton.addTarget(self, action: #selector(didTapAddExperience), for: .touchUpInside)
+        box.addSubview(addExpButton)
+        
+        NSLayoutConstraint.activate([
+            box.topAnchor.constraint(equalTo: employmentsCV.bottomAnchor, constant: 50),
+            box.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            box.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            box.heightAnchor.constraint(equalToConstant: 50),
+            
+            addNewProjectLabel.topAnchor.constraint(equalTo: box.topAnchor, constant: 15),
+            addNewProjectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            
+            addExpButton.centerYAnchor.constraint(equalTo: box.centerYAnchor),
+            addExpButton.trailingAnchor.constraint(equalTo: box.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    func setupAddProjectView() {
+        addExpContainer.backgroundColor = .white
+        addExpContainer.layer.cornerRadius = 12
+        addExpContainer.layer.shadowOpacity = 0.25
+        addExpContainer.layer.shadowRadius = 5
+        addExpContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
+        addExpContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(addExpContainer)
+        
+        NSLayoutConstraint.activate([
+            addExpContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            addExpContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            addExpContainer.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            addExpContainer.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)
+        ])
         
         let projectLabel = UILabel()
         projectLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -559,7 +612,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         projectLabel.attributedText = attributedText2
         projectLabel.font = .boldSystemFont(ofSize: 16)
         projectLabel.textColor = UIColor(hex: "#344054")
-        scrollView.addSubview(projectLabel)
+        addExpContainer.addSubview(projectLabel)
         
         // company TextField
         nameTextField = UITextField()
@@ -567,7 +620,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         nameTextField.borderStyle = .roundedRect
         nameTextField.placeholder = "E.g. Salt Technologies"
         nameTextField.delegate = self // Set delegate for this text field
-        scrollView.addSubview(nameTextField)
+        addExpContainer.addSubview(nameTextField)
         
         let roleLabel = UILabel()
         roleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -577,7 +630,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         roleLabel.attributedText = attributedText3
         roleLabel.font = .boldSystemFont(ofSize: 16)
         roleLabel.textColor = UIColor(hex: "#344054")
-        scrollView.addSubview(roleLabel)
+        addExpContainer.addSubview(roleLabel)
         
         // jobTitle TextField
         roleTextField = UITextField()
@@ -585,13 +638,11 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         roleTextField.borderStyle = .roundedRect
         roleTextField.placeholder = "E.g. Civil Engineer"
         roleTextField.delegate = self // Set delegate for this text field
-        scrollView.addSubview(roleTextField)
+        addExpContainer.addSubview(roleTextField)
         
         NSLayoutConstraint.activate([
-            addNewProjectLabel.topAnchor.constraint(equalTo: employmentsCV.bottomAnchor, constant: 30),
-            addNewProjectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            projectLabel.topAnchor.constraint(equalTo: addNewProjectLabel.bottomAnchor, constant: 15),
+            projectLabel.topAnchor.constraint(equalTo: addExpContainer.topAnchor, constant: 20),
             projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             nameTextField.topAnchor.constraint(equalTo: projectLabel.bottomAnchor, constant: 10),
@@ -617,9 +668,10 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         descriptionLabel.attributedText = attributedText4
         descriptionLabel.font = .boldSystemFont(ofSize: 16)
         descriptionLabel.textColor = UIColor(hex: "#344054")
-        scrollView.addSubview(descriptionLabel)
+        addExpContainer.addSubview(descriptionLabel)
         
-        scrollView.addSubview(descriptionTextView)
+        descriptionTextView.addDoneButtonOnKeyboard()
+        addExpContainer.addSubview(descriptionTextView)
         
         let responsibilityLabel = UILabel()
         responsibilityLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -629,11 +681,12 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         responsibilityLabel.attributedText = attributedText5
         responsibilityLabel.font = .boldSystemFont(ofSize: 16)
         responsibilityLabel.textColor = UIColor(hex: "#344054")
-        scrollView.addSubview(responsibilityLabel)
+        addExpContainer.addSubview(responsibilityLabel)
         
-        scrollView.addSubview(responsibilityTextView)
+        responsibilityTextView.addDoneButtonOnKeyboard()
+        addExpContainer.addSubview(responsibilityTextView)
         
-        saveProjectButton = UIButton()
+        let saveProjectButton = UIButton()
         saveProjectButton.setTitle("Save", for: .normal)
         saveProjectButton.titleLabel?.font = .systemFont(ofSize: 20)
         saveProjectButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
@@ -642,7 +695,19 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         saveProjectButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         
         saveProjectButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(saveProjectButton)
+        addExpContainer.addSubview(saveProjectButton)
+        
+        let cancelEducationButton = UIButton(type: .system)
+        cancelEducationButton.setTitle("Cancel", for: .normal)
+        cancelEducationButton.titleLabel?.font = .systemFont(ofSize: 20)
+        cancelEducationButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        cancelEducationButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        cancelEducationButton.layer.borderWidth = 1
+        cancelEducationButton.layer.cornerRadius = 8
+        cancelEducationButton.addTarget(self, action: #selector(cancelAddButtonTapped), for: .touchUpInside)
+        
+        cancelEducationButton.translatesAutoresizingMaskIntoConstraints = false
+        addExpContainer.addSubview(cancelEducationButton)
         
         
         NSLayoutConstraint.activate([
@@ -662,11 +727,25 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             responsibilityTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             responsibilityTextView.heightAnchor.constraint(equalToConstant: 100),
             
-            saveProjectButton.topAnchor.constraint(equalTo: responsibilityTextView.bottomAnchor, constant: 20),
+            saveProjectButton.bottomAnchor.constraint(equalTo: addExpContainer.bottomAnchor, constant: -60),
             saveProjectButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             saveProjectButton.widthAnchor.constraint(equalToConstant: 80),
             saveProjectButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            cancelEducationButton.bottomAnchor.constraint(equalTo: saveProjectButton.bottomAnchor),
+            cancelEducationButton.leadingAnchor.constraint(equalTo: addExpContainer.leadingAnchor, constant: 16),
+            cancelEducationButton.widthAnchor.constraint(equalToConstant: 100),
+            cancelEducationButton.heightAnchor.constraint(equalToConstant: 40),
         ])
+    }
+    
+    
+    @objc func didTapAddExperience() {
+        UIView.animate(withDuration: 0.3) {
+            self.addExpContainer.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 118)  // Move up by 300 points
+        }
+        
+        addExpContainer.isUserInteractionEnabled = true
     }
     
     @objc func saveButtonTapped() {
@@ -694,7 +773,6 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
             return
         }
         
-//        let project = Project1(name: cText, role: jobText, responsibility: start, description: pass)
         let project = Project(projectName: cText, role: jobText, responsibility: start, description: pass)
         dataArray.append(project)
         
@@ -703,23 +781,55 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         descriptionTextView.text = ""
         responsibilityTextView.text = ""
         
+        UIView.animate(withDuration: 0.3) {
+            self.addExpContainer.transform = .identity
+        }
+        
         reloadCollectionView()
-        
-        
+    }
+    
+    @objc func cancelAddButtonTapped() {
+        UIView.animate(withDuration: 0.3) {
+            self.addExpContainer.transform = .identity
+        }
     }
     
     @objc func deleteCell(_ sender : UIButton) {
-        print(#function)
         guard let cell = sender.superview as? ProjectCell, // Adjust the number of superviews according to your cell's hierarchy
             let indexPath = employmentsCV.indexPath(for: cell)
         else {
             return
         }
         
-        dataArray.remove(at: indexPath.row)
-        reloadCollectionView()
+        askUserConfirmation(title: "Delete Project", message: "Are you sure you want to delete this item?") {
+            // This closure is executed if the user confirms
+            self.dataArray.remove(at: indexPath.row)
+            
+            // Perform batch updates for animation
+            self.employmentsCV.performBatchUpdates({
+                self.employmentsCV.deleteItems(at: [indexPath])
+            }, completion: { _ in
+                self.reloadCollectionView()
+            })
+        }
     }
     
+    func askUserConfirmation(title: String, message: String, confirmedAction: @escaping () -> Void) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        // 'Yes' action
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            confirmedAction()  // Perform the action passed in the closure
+        }
+        
+        // 'No' action
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+
+        present(alertController, animated: true)
+    }
     
     
     let backButton = UIButton()

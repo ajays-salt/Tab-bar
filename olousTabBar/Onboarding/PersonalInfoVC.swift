@@ -184,7 +184,7 @@ class PersonalInfoVC: UIViewController {
         setupHeaderView2()
         setupScrollView()
         
-        setupResumeUploadView()
+        setupProfileUploadView()
         setupUI()
         setupUI2()
         setupUI3()
@@ -507,7 +507,7 @@ class PersonalInfoVC: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 450
+        let extraSpaceHeight: CGFloat = 300
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -517,7 +517,7 @@ class PersonalInfoVC: UIViewController {
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
 
-    func setupResumeUploadView() {
+    func setupProfileUploadView() {
         let uploadProfilePicLabel = UILabel()
         uploadProfilePicLabel.translatesAutoresizingMaskIntoConstraints = false
         let attributedText2 = NSMutableAttributedString(string: "Upload Profile Picture")
@@ -1069,25 +1069,15 @@ class PersonalInfoVC: UIViewController {
         languageCV.layoutIfNeeded()
         let contentSize = languageCV.collectionViewLayout.collectionViewContentSize
         
+        var height  = scrollView.contentSize.height
+        scrollView.contentSize = CGSize(width: view.bounds.width, height: height + 65)
+        
         // Update the height constraint based on content size
         languageCVHeightConstraint.constant = contentSize.height
-        print(contentSize)
-        if contentSize.height > 300 {
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height + 600)
-        }
         
         // Update constraints
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
-            if contentSize.height > 250 && contentSize.height < 450 {
-                self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: self.view.bounds.height + 600)
-            }
-            if contentSize.height > 450 {
-                self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: self.view.bounds.height + 800)
-            }
-            if contentSize.height < 250 {
-                self.scrollView.contentSize = CGSize(width: self.view.bounds.width, height: self.view.bounds.height + 450)
-            }
         }
     }
     
@@ -1105,6 +1095,9 @@ class PersonalInfoVC: UIViewController {
         // Create a new LanguageInfo object and append it to the array
         let newEntry = Language(language: language, fluencyLevel: fluencyTextField.text!, read: true, write: true, speak: true)
         languageArray.append(newEntry)
+        
+//        languageTextField.text = ""
+//        fluencyTextField.text = ""
         
         // Reload the collection view to display the new entry
         reloadCollectionView()

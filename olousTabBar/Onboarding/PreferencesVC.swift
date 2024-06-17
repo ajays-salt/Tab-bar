@@ -501,7 +501,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
         
         // Calculate content size
-        let contentHeight = view.bounds.height + extraSpaceHeight
+        let contentHeight = view.bounds.height - 250
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     

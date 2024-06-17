@@ -52,7 +52,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     
     var selectedEmploymentTypeOption : UIButton?
     
-    var saveEducationButton : UIButton!
+    
     
     var bottomView : UIView!
     
@@ -99,9 +99,13 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         
                 
         setupEmploymentsView()
-        setupAddEmployment()
+        setupAddEmploymentButton()
+        
         
         setupBottomView()
+        
+        setupAddEmploymentView()
+        
         setupEditViewComponents()
     }
     
@@ -429,14 +433,15 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
         ])
         
-        let extraSpaceHeight: CGFloat = 50
+        let extraSpaceHeight: CGFloat = 150
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
         
-        // Calculate content size
-        let contentHeight = view.bounds.height + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        // Calculate content size
+//        let contentHeight = view.bounds.height - extraSpaceHeight
+//        let height = scrollView.contentSize.height
+//        scrollView.contentSize = CGSize(width: view.bounds.width, height: height + 100)
     }
     
     func setupEmploymentsView() {
@@ -469,6 +474,8 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         employmentsCV.layoutIfNeeded()
         let contentSize = employmentsCV.collectionViewLayout.collectionViewContentSize
         
+        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentSize.height + 50)
+        
         // Update the height constraint based on content size
         employmentsCVHeightConstraint.constant = contentSize.height
         
@@ -478,7 +485,19 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         }
     }
     
-    func setupAddEmployment() {
+    var addExpContainer = UIView()
+    func setupAddEmploymentButton() {
+        
+        let box : UIView = {
+            let views = UIView()
+            views.backgroundColor = UIColor(hex: "#F9FAFB")
+            views.layer.borderWidth = 1 // Add border to the container
+            views.layer.cornerRadius = 8 // Add corner radius for rounded corners
+            views.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor // Set border color
+            views.translatesAutoresizingMaskIntoConstraints = false
+            return views
+        }()
+        scrollView.addSubview(box)
         
         let addNewExpLabel : UILabel = {
             let label = UILabel()
@@ -488,17 +507,62 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        scrollView.addSubview(addNewExpLabel)
+        box.addSubview(addNewExpLabel)
         
-        let companyLabel = UILabel()
-        companyLabel.translatesAutoresizingMaskIntoConstraints = false
-        let attributedText2 = NSMutableAttributedString(string: "Education name ")
-        let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-        attributedText2.append(asterisk2)
-        companyLabel.attributedText = attributedText2
-        companyLabel.font = .boldSystemFont(ofSize: 16)
-        companyLabel.textColor = UIColor(hex: "#344054")
-        scrollView.addSubview(companyLabel)
+        let addExpButton : UIButton = {
+            let button = UIButton()
+            button.setImage(UIImage(systemName: "plus.circle"), for: .normal)
+            button.tintColor = UIColor(hex: "#344054")
+            button.translatesAutoresizingMaskIntoConstraints = false
+            return button
+        }()
+        addExpButton.addTarget(self, action: #selector(didTapAddExperience), for: .touchUpInside)
+        box.addSubview(addExpButton)
+        
+        NSLayoutConstraint.activate([
+            box.topAnchor.constraint(equalTo: employmentsCV.bottomAnchor, constant: 50),
+            box.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            box.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            box.heightAnchor.constraint(equalToConstant: 50),
+            
+            addNewExpLabel.topAnchor.constraint(equalTo: box.topAnchor, constant: 15),
+            addNewExpLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            
+            addExpButton.centerYAnchor.constraint(equalTo: box.centerYAnchor),
+            addExpButton.trailingAnchor.constraint(equalTo: box.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    func setupAddEmploymentView() {
+        addExpContainer.backgroundColor = .white
+        addExpContainer.layer.cornerRadius = 12
+        addExpContainer.layer.shadowOpacity = 0.25
+        addExpContainer.layer.shadowRadius = 5
+        addExpContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
+        addExpContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(addExpContainer)
+        
+        NSLayoutConstraint.activate([
+            addExpContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            addExpContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            addExpContainer.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            addExpContainer.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)
+        ])
+        
+        
+        
+        let companyLabel : UILabel = {
+            let companyLabel = UILabel()
+            companyLabel.translatesAutoresizingMaskIntoConstraints = false
+            let attributedText2 = NSMutableAttributedString(string: "Education name ")
+            let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+            attributedText2.append(asterisk2)
+            companyLabel.attributedText = attributedText2
+            companyLabel.font = .boldSystemFont(ofSize: 16)
+            companyLabel.textColor = UIColor(hex: "#344054")
+            return companyLabel
+        }()
+        addExpContainer.addSubview(companyLabel)
         
         // company TextField
         educationTextField = UITextField()
@@ -506,17 +570,20 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         educationTextField.borderStyle = .roundedRect
         educationTextField.placeholder = "E.g. B.Tech Civil"
         educationTextField.delegate = self // Set delegate for this text field
-        scrollView.addSubview(educationTextField)
+        addExpContainer.addSubview(educationTextField)
         
-        let jobTitleLabel = UILabel()
-        jobTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        let attributedText3 = NSMutableAttributedString(string: "Board/University ")
-        let asterisk3 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-        attributedText3.append(asterisk3)
-        jobTitleLabel.attributedText = attributedText3
-        jobTitleLabel.font = .boldSystemFont(ofSize: 16)
-        jobTitleLabel.textColor = UIColor(hex: "#344054")
-        scrollView.addSubview(jobTitleLabel)
+        let jobTitleLabel : UILabel = {
+            let jobTitleLabel = UILabel()
+            jobTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+            let attributedText3 = NSMutableAttributedString(string: "Board/University ")
+            let asterisk3 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+            attributedText3.append(asterisk3)
+            jobTitleLabel.attributedText = attributedText3
+            jobTitleLabel.font = .boldSystemFont(ofSize: 16)
+            jobTitleLabel.textColor = UIColor(hex: "#344054")
+            return jobTitleLabel
+        }()
+        addExpContainer.addSubview(jobTitleLabel)
         
         // jobTitle TextField
         collegeTextField = UITextField()
@@ -524,7 +591,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         collegeTextField.borderStyle = .roundedRect
         collegeTextField.placeholder = "E.g. IIT Bombay"
         collegeTextField.delegate = self // Set delegate for this text field
-        scrollView.addSubview(collegeTextField)
+        addExpContainer.addSubview(collegeTextField)
         
         
         let marksLabel : UILabel = {
@@ -538,15 +605,16 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        scrollView.addSubview(marksLabel)
+        addExpContainer.addSubview(marksLabel)
         
         marksTextField = UITextField()
+        marksTextField.addDoneButtonOnKeyboard()
         marksTextField.translatesAutoresizingMaskIntoConstraints = false
         marksTextField.borderStyle = .roundedRect
         marksTextField.placeholder = "9.5 cgpa Or 95 %"
         marksTextField.keyboardType = .decimalPad
         marksTextField.delegate = self // Set delegate for this text field
-        scrollView.addSubview(marksTextField)
+        addExpContainer.addSubview(marksTextField)
         
         
         // passing year UI
@@ -561,7 +629,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        scrollView.addSubview(passYearLabel)
+        addExpContainer.addSubview(passYearLabel)
         
         let container2 : UIView = {
             let views = UIView()
@@ -572,7 +640,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             
             return views
         }()
-        scrollView.addSubview(container2)
+        addExpContainer.addSubview(container2)
         
         passYearPlaceholder.translatesAutoresizingMaskIntoConstraints = false
         container2.addSubview(passYearPlaceholder)
@@ -588,7 +656,8 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         passTableView.delegate = self
         passTableView.dataSource = self
         passTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(passTableView)
+        addExpContainer.addSubview(passTableView)
+        
         
         
         let jobTypeLabel : UILabel = {
@@ -602,7 +671,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        scrollView.addSubview(jobTypeLabel)
+        addExpContainer.addSubview(jobTypeLabel)
         
         let jobTypeOptions = ["Full-Time", "Part-Time", "Distance Learning"]
         
@@ -610,7 +679,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         jobStackView.axis = .horizontal
         jobStackView.spacing = 12
         jobStackView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(jobStackView)
+        addExpContainer.addSubview(jobStackView)
         
         // Add options buttons to the stack view
         for option in jobTypeOptions {
@@ -634,25 +703,40 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             }
         }
         
-        saveEducationButton = UIButton()
+        
+        let saveEducationButton = UIButton()
         saveEducationButton.setTitle("Save", for: .normal)
         saveEducationButton.titleLabel?.font = .systemFont(ofSize: 20)
         saveEducationButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
         saveEducationButton.backgroundColor = UIColor(hex: "#0079C4")
         saveEducationButton.layer.cornerRadius = 8
-        saveEducationButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        saveEducationButton.addTarget(self, action: #selector(saveAddButtonTapped), for: .touchUpInside)
         
         saveEducationButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(saveEducationButton)
+        addExpContainer.addSubview(saveEducationButton)
+        
+        let cancelEducationButton = UIButton(type: .system)
+        cancelEducationButton.setTitle("Cancel", for: .normal)
+        cancelEducationButton.titleLabel?.font = .systemFont(ofSize: 20)
+        cancelEducationButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
+        cancelEducationButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        cancelEducationButton.layer.borderWidth = 1
+        cancelEducationButton.layer.cornerRadius = 8
+        cancelEducationButton.addTarget(self, action: #selector(cancelAddButtonTapped), for: .touchUpInside)
+        
+        cancelEducationButton.translatesAutoresizingMaskIntoConstraints = false
+        addExpContainer.addSubview(cancelEducationButton)
+        
+        
+        
+        
+        addExpContainer.bringSubviewToFront(passTableView)
         
         let width = (view.frame.width - 52) / 2
         
         NSLayoutConstraint.activate([
             
-            addNewExpLabel.topAnchor.constraint(equalTo: employmentsCV.bottomAnchor, constant: 30),
-            addNewExpLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            companyLabel.topAnchor.constraint(equalTo: addNewExpLabel.bottomAnchor, constant: 15),
+            companyLabel.topAnchor.constraint(equalTo: addExpContainer.topAnchor, constant: 20),
             companyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             educationTextField.topAnchor.constraint(equalTo: companyLabel.bottomAnchor, constant: 10),
@@ -694,7 +778,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             passTableView.topAnchor.constraint(equalTo: container2.bottomAnchor),
             passTableView.leadingAnchor.constraint(equalTo: container2.leadingAnchor),
             passTableView.widthAnchor.constraint(equalToConstant: width),
-            passTableView.heightAnchor.constraint(equalToConstant: 100),
+            passTableView.heightAnchor.constraint(equalToConstant: 150),
             
             jobTypeLabel.topAnchor.constraint(equalTo: container2.bottomAnchor, constant: 20),
             jobTypeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -702,13 +786,25 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             jobStackView.topAnchor.constraint(equalTo: jobTypeLabel.bottomAnchor, constant: 10),
             jobStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            saveEducationButton.topAnchor.constraint(equalTo: jobStackView.bottomAnchor, constant: 20),
+            saveEducationButton.bottomAnchor.constraint(equalTo: addExpContainer.bottomAnchor, constant: -60),
             saveEducationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             saveEducationButton.widthAnchor.constraint(equalToConstant: 80),
             saveEducationButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            cancelEducationButton.bottomAnchor.constraint(equalTo: saveEducationButton.bottomAnchor),
+            cancelEducationButton.leadingAnchor.constraint(equalTo: addExpContainer.leadingAnchor, constant: 16),
+            cancelEducationButton.widthAnchor.constraint(equalToConstant: 100),
+            cancelEducationButton.heightAnchor.constraint(equalToConstant: 40),
+            
         ])
+    }
+    
+    @objc func didTapAddExperience() {
+        UIView.animate(withDuration: 0.3) {
+            self.addExpContainer.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 118)  // Move up by 300 points
+        }
         
-        
+        addExpContainer.isUserInteractionEnabled = true
     }
     
     @objc func passDropdownButtonTapped(_ sender : UIButton) {
@@ -738,7 +834,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         selectedEmploymentTypeOption = sender
     }
     
-    @objc func saveButtonTapped() {
+    @objc func saveAddButtonTapped() {
         let educationText = educationTextField.text
         let collegeText = collegeTextField.text
         let marks = marksTextField.text
@@ -748,7 +844,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         var isEmpty = false
         
         [educationText, collegeText, marks, pass, courseType].forEach { x in
-            if x == "" {
+            if x == "" || x == "Select Year" {
                 isEmpty = true
                 let alertController = UIAlertController(title: "Alert!", message: "Fill in all the details", preferredStyle: .alert)
                 
@@ -778,24 +874,56 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         educationTextField.text = ""
         collegeTextField.text = ""
         marksTextField.text = ""
-        passYearPlaceholder.text = ""
+        passYearPlaceholder.text = "Select Year"
         
+        UIView.animate(withDuration: 0.3) {
+            self.addExpContainer.transform = .identity
+        }
         
         reloadCollectionView()
-        
-        
+    }
+    
+    @objc func cancelAddButtonTapped() {
+        UIView.animate(withDuration: 0.3) {
+            self.addExpContainer.transform = .identity
+        }
     }
     
     @objc func deleteCell(_ sender : UIButton) {
-        print(#function)
         guard let cell = sender.superview as? EducationCell, // Adjust the number of superviews according to your cell's hierarchy
             let indexPath = employmentsCV.indexPath(for: cell)
         else {
             return
         }
         
-        dataArray.remove(at: indexPath.row)
-        reloadCollectionView()
+        askUserConfirmation(title: "Delete Education", message: "Are you sure you want to delete this item?") {
+            // This closure is executed if the user confirms
+            self.dataArray.remove(at: indexPath.row)
+            
+            // Perform batch updates for animation
+            self.employmentsCV.performBatchUpdates({
+                self.employmentsCV.deleteItems(at: [indexPath])
+            }, completion: { _ in
+                self.reloadCollectionView()
+            })
+        }
+    }
+    
+    func askUserConfirmation(title: String, message: String, confirmedAction: @escaping () -> Void) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        // 'Yes' action
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            confirmedAction()  // Perform the action passed in the closure
+        }
+        
+        // 'No' action
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+
+        present(alertController, animated: true)
     }
     
     
@@ -864,17 +992,6 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         uploadEducationData()
         let vc = EmploymentsVC()
         navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // Dismiss the keyboard when the return key is tapped
-        textField.resignFirstResponder()
-        return true
-    }
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Dismiss the keyboard when the user taps outside of the text field
-        view.endEditing(true)
     }
     
     
@@ -1018,6 +1135,17 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         self.present(alert, animated: true)
     }
     
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
+    }
 }
 
 extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource {
@@ -1030,6 +1158,7 @@ extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionVie
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
         cell.textLabel?.text = passArray[indexPath.row]
         cell.selectionStyle = .none
+        cell.backgroundColor = .white
         return cell
     }
     
