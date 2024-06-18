@@ -61,7 +61,7 @@ class ForgotPassword1: UIViewController, UITextFieldDelegate {
         
         // Set attributed title for button
         button.setAttributedTitle(attributedString, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 20)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
         button.titleLabel?.textColor = UIColor(hex: "#475467")
         
         button.addTarget(self, action: #selector(didTapBackToLogin), for: .touchUpInside)

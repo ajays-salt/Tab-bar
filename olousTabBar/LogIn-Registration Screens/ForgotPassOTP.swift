@@ -191,8 +191,12 @@ class ForgotPassOTP: UIViewController, BackspaceDetectingTextFieldDelegate {
             textField.textAlignment = .center
             textField.font = UIFont.systemFont(ofSize: 24)
             textField.keyboardType = .numberPad
+            textField.layer.borderColor = UIColor(hex: "#667085").cgColor
+            textField.layer.borderWidth = 2
+            textField.layer.cornerRadius = 8
             textField.borderStyle = .roundedRect
             textField.tag = i
+            textField.addDoneButtonOnKeyboard()
             otpTextFields.append(textField)
             stackView.addArrangedSubview(textField)
         }

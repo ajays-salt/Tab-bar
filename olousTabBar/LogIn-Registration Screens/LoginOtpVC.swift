@@ -49,7 +49,7 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
         
         // Set attributed title for button
         button.setAttributedTitle(attributedString, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 20)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
         button.titleLabel?.textColor = UIColor(hex: "#475467")
         
         button.addTarget(self, action: #selector(didTapBackToLogin), for: .touchUpInside)
@@ -59,7 +59,7 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
     let resendOtpLabel: UILabel = {
         let label = UILabel()
         label.text = "Resend OTP in"
-        label.font = .systemFont(ofSize: 20)
+        label.font = .systemFont(ofSize: 18)
         label.textColor = UIColor(hex: "#475467")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -67,16 +67,16 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
     let timeLabel: UILabel = {
         let label = UILabel()
         label.text = "2:00"
-        label.font = .systemFont(ofSize: 20)
-        label.textColor = UIColor(hex: "#475467")
+        label.font = .systemFont(ofSize: 18)
+        label.textColor = UIColor(hex: "#0056E2")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     let resendOtp: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Click here to Resend", for: .normal)
-        button.setTitleColor(UIColor(hex: "#475467"), for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 20)
+        button.setTitleColor(UIColor(hex: "#0056E2"), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 18)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
         button.addTarget(self, action: #selector(didTapResendOtp), for: .touchUpInside)
@@ -177,7 +177,7 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
         
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 15),
+            stackView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
             stackView.widthAnchor.constraint(equalToConstant: 200),
             stackView.heightAnchor.constraint(equalToConstant: 50)
         ])
@@ -194,6 +194,7 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
             textField.layer.cornerRadius = 8
             textField.borderStyle = .roundedRect
             textField.tag = i
+            textField.addDoneButtonOnKeyboard()
             otpTextFields.append(textField)
             stackView.addArrangedSubview(textField)
         }
@@ -387,7 +388,7 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
         view.addSubview(resendOtp)
         
         NSLayoutConstraint.activate([
-            resendOtpLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 25),
+            resendOtpLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 40),
             resendOtpLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -20),
             
             timeLabel.centerYAnchor.constraint(equalTo: resendOtpLabel.centerYAnchor),
@@ -477,7 +478,7 @@ class LoginOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
         backToLogin.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backToLogin)
         NSLayoutConstraint.activate([
-            backToLogin.topAnchor.constraint(equalTo: resendOtp.bottomAnchor, constant: 16),
+            backToLogin.topAnchor.constraint(equalTo: resendOtp.bottomAnchor, constant: 30),
             backToLogin.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
