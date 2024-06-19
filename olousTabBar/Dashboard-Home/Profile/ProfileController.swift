@@ -9,6 +9,8 @@ import UIKit
 
 class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
+    let scrollView = UIScrollView()
+    
     
     var headerView = UIView()
     
@@ -38,19 +40,13 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         return label
     }()
     
-    let profileEditButton : UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "pencil"), for: .normal)
-        button.adjustsImageSizeForAccessibilityContentSizeCategory = true
-        button.tintColor = UIColor(hex: "#667085")
-        button.backgroundColor = .systemBackground
-        button.layer.cornerRadius = 20
-        button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        button.layer.borderWidth = 1
-        return button
-    }()
     
-    let scrollView = UIScrollView()
+    
+    
+    var contactInfoView = UIView()
+    var emailLabel : UILabel!
+    var mobileLabel : UILabel!
+    
     
     var preferenceEditButton : UIButton = {
         let btn = UIButton()
@@ -62,7 +58,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }()
     
     
-    let separatorLine0 = UIView()
     let separatorLine1 = UIView()
     let separatorLine2 = UIView()
     let separatorLine3 = UIView()
@@ -143,12 +138,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func setupViews() {
         setupScrollView()
+        
         setupHeaderView()
-        setupProfileEditButton()
         
-        setupProfileCircleView()
-        
-        setupSeparatorLine0()
+        setupContactInfo()
         
         setupPersonalInfoView()
         
@@ -211,7 +204,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     func setupHeaderView() {
-//        headerView.backgroundColor = UIColor(hex: "#F0F9FF")
         headerView.layer.borderWidth = 1
         headerView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         headerView.layer.cornerRadius = 12
@@ -223,9 +215,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             headerView.heightAnchor.constraint(equalToConstant: 200)
         ])
-    }
-
-    func setupProfileCircleView() {
+        
         profileCircle.backgroundColor = UIColor(hex: "#D7F0FF")
         profileCircle.layer.cornerRadius = 50
         
@@ -264,7 +254,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             button.layer.cornerRadius = 12
             return button
         }()
-        editProfileButton.addTarget(self, action: #selector(didTapProfileEditButton), for: .touchUpInside)
+        editProfileButton.addTarget(self, action: #selector(didTapEditProfileButton), for: .touchUpInside)
         
         [userNameLabel, jobTitleLabel, locationLabel, editProfileButton].forEach { v in
             v.translatesAutoresizingMaskIntoConstraints = false
@@ -292,39 +282,110 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         ])
     }
     
-    func setupProfileEditButton() {
-        profileEditButton.isHidden = true
-        profileEditButton.addTarget(self, action: #selector(didTapProfileEditButton), for: .touchUpInside)
-        profileEditButton.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(profileEditButton)
-        
-        NSLayoutConstraint.activate([
-            profileEditButton.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 6),
-            profileEditButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            profileEditButton.widthAnchor.constraint(equalToConstant: 36),
-            profileEditButton.heightAnchor.constraint(equalToConstant: 36)
-        ])
-    }
-    
-    @objc func didTapProfileEditButton(gesture: UITapGestureRecognizer) {
+    @objc func didTapEditProfileButton() {
         let vc = EditProfileVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     
     
-    func setupSeparatorLine0(){
-        separatorLine0.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine0.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine0)
+    func setupContactInfo() {
+        contactInfoView.layer.borderWidth = 1
+        contactInfoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        contactInfoView.layer.cornerRadius = 12
+        
+        contactInfoView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contactInfoView)
+        
+        let profileEditButton : UIButton = {
+            let button = UIButton()
+            button.setImage(UIImage(systemName: "pencil"), for: .normal)
+            button.adjustsImageSizeForAccessibilityContentSizeCategory = true
+            button.tintColor = UIColor(hex: "#667085")
+            button.backgroundColor = .systemBackground
+            button.layer.cornerRadius = 20
+            button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+            button.layer.borderWidth = 1
+            return button
+        }()
+        profileEditButton.addTarget(self, action: #selector(didTapEditProfileButton), for: .touchUpInside)
+        profileEditButton.translatesAutoresizingMaskIntoConstraints = false
+        contactInfoView.addSubview(profileEditButton)
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "Contact Info"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        contactInfoView.addSubview(label)
+        
+        let mailIcon : UIImageView = UIImageView()
+        mailIcon.image = UIImage(systemName: "envelope")
+        mailIcon.tintColor = UIColor(hex: "#98A2B3")
+        mailIcon.translatesAutoresizingMaskIntoConstraints = false
+        contactInfoView.addSubview(mailIcon)
+        
+        let email = createStaticLabel()
+        email.text = "Email"
+        contactInfoView.addSubview(email)
+        emailLabel = createDynamicLabel()
+        emailLabel.numberOfLines = 2
+        contactInfoView.addSubview(emailLabel)
+        
+        let phoneIcon : UIImageView = UIImageView()
+        phoneIcon.image = UIImage(systemName: "phone")
+        phoneIcon.tintColor = UIColor(hex: "#98A2B3")
+        phoneIcon.translatesAutoresizingMaskIntoConstraints = false
+        contactInfoView.addSubview(phoneIcon)
+        
+        let mobile = createStaticLabel()
+        mobile.text = "Phone"
+        contactInfoView.addSubview(mobile)
+        mobileLabel = createDynamicLabel()
+        contactInfoView.addSubview(mobileLabel)
         
         NSLayoutConstraint.activate([
-            separatorLine0.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
-            separatorLine0.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine0.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine0.heightAnchor.constraint(equalToConstant: 1)
+            contactInfoView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            contactInfoView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            contactInfoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            contactInfoView.heightAnchor.constraint(equalToConstant: 200),
+            
+            profileEditButton.topAnchor.constraint(equalTo: contactInfoView.topAnchor, constant: 10),
+            profileEditButton.trailingAnchor.constraint(equalTo: contactInfoView.trailingAnchor, constant: -16),
+            profileEditButton.widthAnchor.constraint(equalToConstant: 36),
+            profileEditButton.heightAnchor.constraint(equalToConstant: 36),
+            
+            label.topAnchor.constraint(equalTo: contactInfoView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: contactInfoView.leadingAnchor, constant: 20),
+            
+            mailIcon.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            mailIcon.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+            
+            email.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            email.leadingAnchor.constraint(equalTo: mailIcon.trailingAnchor, constant: 10),
+            
+            emailLabel.topAnchor.constraint(equalTo: email.bottomAnchor, constant: 10),
+            emailLabel.leadingAnchor.constraint(equalTo: email.leadingAnchor),
+            emailLabel.trailingAnchor.constraint(equalTo: contactInfoView.trailingAnchor, constant: -10),
+            
+            phoneIcon.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 20),
+            phoneIcon.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+            
+            mobile.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 20),
+            mobile.leadingAnchor.constraint(equalTo: phoneIcon.trailingAnchor, constant: 10),
+            
+            mobileLabel.topAnchor.constraint(equalTo: mobile.bottomAnchor, constant: 10),
+            mobileLabel.leadingAnchor.constraint(equalTo: mobile.leadingAnchor),
+            mobileLabel.trailingAnchor.constraint(equalTo: contactInfoView.trailingAnchor, constant: -10),
         ])
     }
     
+    
+    var personalInfoView = UIView()
     
     var dobLabel : UILabel!
     var nationalityLabel : UILabel!
@@ -339,132 +400,122 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var pancardLabel : UILabel!
     var languageLabel : UILabel!
     
-    
     func setupPersonalInfoView() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
+        personalInfoView.layer.borderWidth = 1
+        personalInfoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        personalInfoView.layer.cornerRadius = 12
         
-        let personalInfoLabel : UILabel = {
-            let label = UILabel()
-            label.text = "Personal Information"
-            label.textColor = .white
-            label.font = .boldSystemFont(ofSize: 20)
-            return label
-        }()
-        personalInfoLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(personalInfoLabel)
+        personalInfoView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(personalInfoView)
+        
         
         let editButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Edit", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
+            let button = UIButton()
+            button.setImage(UIImage(systemName: "pencil"), for: .normal)
+            button.adjustsImageSizeForAccessibilityContentSizeCategory = true
+            button.tintColor = UIColor(hex: "#667085")
+            button.backgroundColor = .systemBackground
+            button.layer.cornerRadius = 20
+            button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+            button.layer.borderWidth = 1
+            button.translatesAutoresizingMaskIntoConstraints = false
+            return button
         }()
-        editButton.addTarget(self, action: #selector(didTapProfileEditButton), for: .touchUpInside)
+        editButton.addTarget(self, action: #selector(didTapPersonalInfoEditButton), for: .touchUpInside)
         
-        scrollView.addSubview(editButton)
-        editButton.translatesAutoresizingMaskIntoConstraints = false
+        personalInfoView.addSubview(editButton)
         
         NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine0.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
+            personalInfoView.topAnchor.constraint(equalTo: contactInfoView.bottomAnchor, constant: 20),
+            personalInfoView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            personalInfoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            personalInfoLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            personalInfoLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            editButton.topAnchor.constraint(equalTo: separatorLine0.bottomAnchor, constant: 5),
-            editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            editButton.widthAnchor.constraint(equalToConstant: 70),
-            editButton.heightAnchor.constraint(equalToConstant: 30),
+            editButton.topAnchor.constraint(equalTo: personalInfoView.topAnchor, constant: 10),
+            editButton.trailingAnchor.constraint(equalTo: personalInfoView.trailingAnchor, constant: -20),
+            editButton.widthAnchor.constraint(equalToConstant: 36),
+            editButton.heightAnchor.constraint(equalToConstant: 36),
         ])
         
         var dob = createStaticLabel()
         dob.text = "Date of Birth"
-        scrollView.addSubview(dob)
+        personalInfoView.addSubview(dob)
         dobLabel = createDynamicLabel()
-        scrollView.addSubview(dobLabel)
+        personalInfoView.addSubview(dobLabel)
         
         var nationality = createStaticLabel()
         nationality.text = "Nationality"
-        scrollView.addSubview(nationality)
+        personalInfoView.addSubview(nationality)
         nationalityLabel = createDynamicLabel()
-        scrollView.addSubview(nationalityLabel)
+        personalInfoView.addSubview(nationalityLabel)
         
         var gender = createStaticLabel()
         gender.text = "Gender"
-        scrollView.addSubview(gender)
+        personalInfoView.addSubview(gender)
         genderLabel = createDynamicLabel()
-        scrollView.addSubview(genderLabel)
+        personalInfoView.addSubview(genderLabel)
         
         var permanent = createStaticLabel()
         permanent.text = "Permanent Address"
-        scrollView.addSubview(permanent)
+        personalInfoView.addSubview(permanent)
         permanentAddressLabel = createDynamicLabel()
         permanentAddressLabel.numberOfLines = 0
-        scrollView.addSubview(permanentAddressLabel)
+        personalInfoView.addSubview(permanentAddressLabel)
         
         var current = createStaticLabel()
         current.text = "Current Address"
-        scrollView.addSubview(current)
+        personalInfoView.addSubview(current)
         currentAddressLabel = createDynamicLabel()
         currentAddressLabel.numberOfLines = 0
-        scrollView.addSubview(currentAddressLabel)
+        personalInfoView.addSubview(currentAddressLabel)
         
         var state = createStaticLabel()
         state.text = "State"
-        scrollView.addSubview(state)
+        personalInfoView.addSubview(state)
         stateLabel = createDynamicLabel()
         stateLabel.numberOfLines = 0
-        scrollView.addSubview(stateLabel)
+        personalInfoView.addSubview(stateLabel)
         
         var city = createStaticLabel()
         city.text = "City"
-        scrollView.addSubview(city)
+        personalInfoView.addSubview(city)
         cityLabel = createDynamicLabel()
-        scrollView.addSubview(cityLabel)
+        personalInfoView.addSubview(cityLabel)
         
         var pin = createStaticLabel()
         pin.text = "Pin Code"
-        scrollView.addSubview(pin)
+        personalInfoView.addSubview(pin)
         pincodeLabel = createDynamicLabel()
-        scrollView.addSubview(pincodeLabel)
+        personalInfoView.addSubview(pincodeLabel)
         
         var uid = createStaticLabel()
         uid.text = "UID Number"
-        scrollView.addSubview(uid)
+        personalInfoView.addSubview(uid)
         uidLabel = createDynamicLabel()
-        scrollView.addSubview(uidLabel)
+        personalInfoView.addSubview(uidLabel)
         
         var passport = createStaticLabel()
         passport.text = "Passport Number"
-        scrollView.addSubview(passport)
+        personalInfoView.addSubview(passport)
         passportLabel = createDynamicLabel()
-        scrollView.addSubview(passportLabel)
+        personalInfoView.addSubview(passportLabel)
         
         var pan = createStaticLabel()
         pan.text = "PanCard Number"
-        scrollView.addSubview(pan)
+        personalInfoView.addSubview(pan)
         pancardLabel = createDynamicLabel()
-        scrollView.addSubview(pancardLabel)
+        personalInfoView.addSubview(pancardLabel)
         
         var lang = createStaticLabel()
         lang.text = "Languages"
-        scrollView.addSubview(lang)
+        personalInfoView.addSubview(lang)
         languageLabel = createDynamicLabel()
         languageLabel.numberOfLines = 0
-        scrollView.addSubview(languageLabel)
+        personalInfoView.addSubview(languageLabel)
         
         
         NSLayoutConstraint.activate([
-            dob.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
-            dob.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            dob.topAnchor.constraint(equalTo: personalInfoView.topAnchor, constant: 20),
+            dob.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 36),
             dob.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             dobLabel.topAnchor.constraint(equalTo: dob.bottomAnchor, constant: 10),
             dobLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
@@ -525,8 +576,15 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             lang.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
             languageLabel.topAnchor.constraint(equalTo: lang.bottomAnchor, constant: 10),
             languageLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
-            languageLabel.trailingAnchor.constraint(equalTo: dob.trailingAnchor)
+            languageLabel.trailingAnchor.constraint(equalTo: dob.trailingAnchor),
+            
+            personalInfoView.bottomAnchor.constraint(equalTo: languageLabel.bottomAnchor, constant: 20)
         ])
+    }
+    
+    @objc func didTapPersonalInfoEditButton(gesture: UITapGestureRecognizer) {
+        let vc = EditPersonalInfoVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     
@@ -536,7 +594,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         scrollView.addSubview(separatorLine1)
         
         NSLayoutConstraint.activate([
-            separatorLine1.topAnchor.constraint(equalTo: languageLabel.bottomAnchor, constant: 20),
+            separatorLine1.topAnchor.constraint(equalTo: personalInfoView.bottomAnchor, constant: 20),
             separatorLine1.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             separatorLine1.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             separatorLine1.heightAnchor.constraint(equalToConstant: 1)
@@ -1700,17 +1758,17 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func createStaticLabel() -> UILabel {
         var label = UILabel()
-        label.font = .boldSystemFont(ofSize: 18)
+        label.font =  .systemFont(ofSize: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(hex: "#344054")
+        label.textColor = UIColor(hex: "#667085")
         return label
     }
     
     func createDynamicLabel() -> UILabel {
         var label = UILabel()
-        label.font = .systemFont(ofSize: 16)
+        label.font = .boldSystemFont(ofSize: 18)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(hex: "#667085")
+        label.textColor = UIColor(hex: "#344054")
         return label
     }
     
@@ -2794,6 +2852,9 @@ extension ProfileController { // Extension for APIs
                     self.locationLabel.text = user.currentAddress?.city ?? "cityNil"
                     
                     self.fetchProfilePicture(size: "m", userID: user._id)
+                    
+                    self.emailLabel.text = user.email
+                    self.mobileLabel.text = user.mobile
                     
                     self.dobLabel.text = user.dateOfBirth
                     self.nationalityLabel.text = user.nationality

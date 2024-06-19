@@ -73,6 +73,22 @@ struct UserPersonalInfo: Codable {
     var profilePicData: Data? // For the resume/profilePic
 }
 
+struct PersonalInfoEditStruct: Codable {
+    var panNo: String // "Pan no" in the JavaScript code
+    var dateOfBirth: String
+    var nationality: String
+    var passportNo: String
+    var uidNumber: String
+    var permanentAddress: String
+    var gender: String
+}
+
+struct ProfileEditStruct: Codable {
+    var name: String
+    var mobile: String
+    var profilePicData: Data? // For the resume/profilePic
+}
+
 struct Address: Codable {
     let address: String
     let state: String?

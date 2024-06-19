@@ -19,12 +19,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Launch_Background" translatesAutoresizingMaskIntoConstraints="NO" id="ffS-kV-uyC">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pic1Launch" translatesAutoresizingMaskIntoConstraints="NO" id="raS-kd-1yU">
-                                <rect key="frame" x="63" y="278" width="288" height="288"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="launch.gif" translatesAutoresizingMaskIntoConstraints="NO" id="raS-kd-1yU">
+                                <rect key="frame" x="32" y="116" width="351" height="665"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="288" id="JXr-Mf-jsV"/>
                                     <constraint firstAttribute="height" constant="288" id="tHK-Vd-EhW"/>
@@ -33,8 +29,8 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="raS-kd-1yU" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="0xS-Z2-szm"/>
-                            <constraint firstItem="raS-kd-1yU" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-26" id="kFN-5U-7uG"/>
+                            <constraint firstItem="raS-kd-1yU" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" constant="0.5" id="SFp-Rv-yof"/>
+                            <constraint firstItem="raS-kd-1yU" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="0.5" id="v5c-gX-dCv"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -77,13 +73,6 @@ Network</string>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchimage" translatesAutoresizingMaskIntoConstraints="NO" id="MVu-K5-pOi">
-                                        <rect key="frame" x="63" y="132" width="288" height="288"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="288" id="g8A-n9-YCa"/>
-                                            <constraint firstAttribute="width" constant="288" id="vKb-d9-U3D"/>
-                                        </constraints>
-                                    </imageView>
                                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xOb-55-jqk">
                                         <rect key="frame" x="28" y="-10" width="414" height="68"/>
                                         <constraints>
@@ -95,9 +84,29 @@ Network</string>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V7i-Fz-rIz">
+                                        <rect key="frame" x="-67" y="-172" width="414" height="552"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchimage" translatesAutoresizingMaskIntoConstraints="NO" id="MVu-K5-pOi">
+                                                <rect key="frame" x="126" y="440" width="288" height="288"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="288" id="g8A-n9-YCa"/>
+                                                    <constraint firstAttribute="width" constant="288" id="vKb-d9-U3D"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="MVu-K5-pOi" firstAttribute="centerX" secondItem="V7i-Fz-rIz" secondAttribute="centerX" constant="63" id="QEN-a3-hM3"/>
+                                            <constraint firstItem="MVu-K5-pOi" firstAttribute="centerY" secondItem="V7i-Fz-rIz" secondAttribute="centerY" constant="308" id="Zv4-Qv-FTp"/>
+                                            <constraint firstAttribute="height" constant="552" id="wA4-Mk-4fu"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="V7i-Fz-rIz" firstAttribute="leading" secondItem="4Co-hn-8EZ" secondAttribute="leading" constant="-67" id="1I1-n1-hec"/>
+                                    <constraint firstItem="V7i-Fz-rIz" firstAttribute="centerY" secondItem="4Co-hn-8EZ" secondAttribute="centerY" constant="-172" id="1wi-Fp-LmO"/>
                                     <constraint firstItem="7PG-Qz-GIC" firstAttribute="top" secondItem="4Co-hn-8EZ" secondAttribute="top" id="3ul-oM-8lp"/>
                                     <constraint firstItem="e75-Tl-RCh" firstAttribute="top" secondItem="7PG-Qz-GIC" secondAttribute="bottom" id="Br6-lg-8Tc"/>
                                     <constraint firstAttribute="height" constant="552" id="K49-Nt-DbG"/>
@@ -106,9 +115,8 @@ Network</string>
                                     <constraint firstItem="xOb-55-jqk" firstAttribute="leading" secondItem="4Co-hn-8EZ" secondAttribute="leading" constant="-63" id="X2P-tG-n8O"/>
                                     <constraint firstAttribute="trailing" secondItem="e75-Tl-RCh" secondAttribute="trailing" id="fZY-7i-y8a"/>
                                     <constraint firstAttribute="trailing" secondItem="xOb-55-jqk" secondAttribute="trailing" constant="63" id="hZq-0V-mlY"/>
-                                    <constraint firstItem="MVu-K5-pOi" firstAttribute="centerY" secondItem="4Co-hn-8EZ" secondAttribute="centerY" id="jB2-ln-Luc"/>
-                                    <constraint firstItem="MVu-K5-pOi" firstAttribute="centerX" secondItem="4Co-hn-8EZ" secondAttribute="centerX" id="nte-wT-oVj"/>
                                     <constraint firstAttribute="trailing" secondItem="7PG-Qz-GIC" secondAttribute="trailing" id="v7W-gJ-UPR"/>
+                                    <constraint firstAttribute="trailing" secondItem="V7i-Fz-rIz" secondAttribute="trailing" constant="67" id="wgv-nW-Dgn"/>
                                 </constraints>
                             </view>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Olous" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Azp-TI-TA9">
@@ -120,22 +128,16 @@ Network</string>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V7i-Fz-rIz">
-                                <rect key="frame" x="-67" y="0.0" width="414" height="552"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="552" id="wA4-Mk-4fu"/>
-                                </constraints>
-                            </view>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Launch_Background" translatesAutoresizingMaskIntoConstraints="NO" id="ffS-kV-uyC">
+                                <rect key="frame" x="20" y="228" width="414" height="896"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="Azp-TI-TA9" secondAttribute="trailing" constant="-20" id="1jQ-y1-uxJ"/>
-                            <constraint firstAttribute="trailing" secondItem="V7i-Fz-rIz" secondAttribute="trailing" constant="67" id="D64-ez-sJ7"/>
                             <constraint firstItem="4Co-hn-8EZ" firstAttribute="leading" secondItem="tfC-QK-Oyy" secondAttribute="leading" id="PAt-9x-wCD"/>
                             <constraint firstAttribute="trailing" secondItem="4Co-hn-8EZ" secondAttribute="trailing" id="QPU-UQ-47f"/>
-                            <constraint firstItem="V7i-Fz-rIz" firstAttribute="centerY" secondItem="tfC-QK-Oyy" secondAttribute="centerY" constant="-172" id="SAP-cO-7mc"/>
-                            <constraint firstItem="V7i-Fz-rIz" firstAttribute="leading" secondItem="tfC-QK-Oyy" secondAttribute="leading" constant="-67" id="r5N-M5-T9E"/>
                             <constraint firstItem="4Co-hn-8EZ" firstAttribute="centerY" secondItem="tfC-QK-Oyy" secondAttribute="centerY" id="shM-xu-Xb2"/>
                             <constraint firstItem="Azp-TI-TA9" firstAttribute="top" secondItem="tfC-QK-Oyy" secondAttribute="top" constant="48" id="zJ2-TN-g4D"/>
                             <constraint firstItem="Azp-TI-TA9" firstAttribute="leading" secondItem="tfC-QK-Oyy" secondAttribute="leading" constant="20" id="zKz-a5-DyJ"/>
@@ -144,12 +146,12 @@ Network</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dFm-ec-Xsw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="561" y="374"/>
+            <point key="canvasLocation" x="577" y="403"/>
         </scene>
     </scenes>
     <resources>
         <image name="Launch_Background" width="393" height="852"/>
+        <image name="launch.gif" width="1000" height="1000"/>
         <image name="launchimage" width="1000" height="1000"/>
-        <image name="pic1Launch" width="301" height="94"/>
     </resources>
 </document>

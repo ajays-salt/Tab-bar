@@ -206,6 +206,7 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         let placeholderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         companyNameTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
         
+        companyNameTextField.delegate = self
         companyNameTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         companyNameTextField.translatesAutoresizingMaskIntoConstraints = false
         searchCompanyInnerSection.addSubview(companyNameTextField)
@@ -246,6 +247,7 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         let placeholderText2 = "City, state or zip code"
         let placeholderColor2 = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         locationTextField.attributedPlaceholder = NSAttributedString(string: placeholderText2, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor2])
+        locationTextField.delegate = self
         locationTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
         jobSearchIS2.addSubview(locationTextField)
