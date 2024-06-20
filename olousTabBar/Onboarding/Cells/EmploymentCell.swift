@@ -15,15 +15,15 @@ class EmploymentCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "iOS Developer"
         label.textColor = UIColor(hex: "#101828")
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.systemFont(ofSize: 18)
         return label
     }()
     
     let companyNameLabel: UILabel = {
         let label = UILabel()
         label.text = "Salt Technologies"
-        label.textColor = UIColor(hex: "#101828")
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.textColor = UIColor(hex: "#475467")
+        label.font = UIFont.systemFont(ofSize: 17)
         return label
     }()
     
@@ -43,12 +43,22 @@ class EmploymentCell: UICollectionViewCell {
         return label
     }()
     
+    let editButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "pencil"), for: .normal)
+        button.tintColor = UIColor(hex: "#667085")
+        return button
+    }()
+    
     let deleteButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "trash"), for: .normal)
         button.tintColor = UIColor(hex: "#667085")
         return button
     }()
+    
+    let separator = UIView()
+    
     
     // MARK: - Initializers
     
@@ -65,32 +75,43 @@ class EmploymentCell: UICollectionViewCell {
     // MARK: - UI Setup
     
     private func setupUI() {
+        separator.backgroundColor = UIColor(hex: "#EAECF0")
         
-        [titleLabel, companyNameLabel, noOfYearsLabel, jobTypeLabel, deleteButton].forEach { v in
+        [titleLabel, companyNameLabel, noOfYearsLabel, jobTypeLabel, editButton, deleteButton, separator].forEach { v in
             v.translatesAutoresizingMaskIntoConstraints = false
             addSubview(v)
         }
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            titleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 160),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -40),
             
-            companyNameLabel.topAnchor.constraint(equalTo: titleLabel.topAnchor),
-            companyNameLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 4),
-            companyNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 140),
+            companyNameLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            companyNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            companyNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -40),
             
-            noOfYearsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            noOfYearsLabel.topAnchor.constraint(equalTo: companyNameLabel.bottomAnchor, constant: 10),
             noOfYearsLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             
             jobTypeLabel.topAnchor.constraint(equalTo: noOfYearsLabel.topAnchor),
             jobTypeLabel.leadingAnchor.constraint(equalTo: noOfYearsLabel.trailingAnchor, constant: 10),
             
+            editButton.topAnchor.constraint(equalTo: topAnchor, constant: -8),
+            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 12),
+            editButton.widthAnchor.constraint(equalToConstant: 40),
+            editButton.heightAnchor.constraint(equalToConstant: 40),
+            
 //            deleteButton.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            deleteButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-            deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            deleteButton.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 10),
+            deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 12),
             deleteButton.widthAnchor.constraint(equalToConstant: 40),
             deleteButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            separator.leadingAnchor.constraint(equalTo: leadingAnchor),
+            separator.trailingAnchor.constraint(equalTo: trailingAnchor),
+            separator.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1),
+            separator.heightAnchor.constraint(equalToConstant: 1)
         ])
     }
     

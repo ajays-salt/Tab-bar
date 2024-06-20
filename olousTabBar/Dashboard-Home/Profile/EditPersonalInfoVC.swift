@@ -153,7 +153,7 @@ class EditPersonalInfoVC: UIViewController {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
 
-        navigationItem.title = "Edit Profile"
+        navigationItem.title = "Edit Personal Info"
         navigationItem.hidesBackButton = true
         
         let backButtonImage = UIImage(systemName: "xmark") // Change "xmark" to any system image you prefer
