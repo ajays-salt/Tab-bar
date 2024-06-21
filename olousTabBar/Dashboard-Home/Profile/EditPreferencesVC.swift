@@ -1,19 +1,22 @@
 //
-//  PreferencesVC.swift
+//  EditPreferencesVC.swift
 //  olousTabBar
 //
-//  Created by Salt Technologies on 17/04/24.
+//  Created by Salt Technologies on 21/06/24.
 //
 
 import UIKit
 
-class PreferencesVC: UIViewController, UITextFieldDelegate {
+class EditPreferencesVC: UIViewController, UITextFieldDelegate {
     
-    var headerView : UIView!
-    var headerHeightConstraint: NSLayoutConstraint?
-    var circleContainerView : UIView!
+    var portfolioString : String!
+    var currCtcString : String!
+    var expCtcString : String!
+    var noticeString : String!
+    var relocateString : String!
+    var employedString : String!
+    var workTypeString : String!
     
-    var scrollView : UIScrollView!
     
     let portfolioTextField : UITextField = {
         let textField = UITextField()
@@ -31,18 +34,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Create a toolbar
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        // Adding flexible space
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        // Adding Done button on the toolbar
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonAction))
-        toolbar.setItems([flexibleSpace, doneButton], animated: false)
-        // Assigning the toolbar as UITextField's inputAccessoryView
-        textField.inputAccessoryView = toolbar
-        
+        textField.addDoneButtonOnKeyboard()
         
         return textField
     }()
@@ -54,17 +46,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         textField.keyboardType = .decimalPad // Numeric keypad
         
         textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Create a toolbar
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        // Adding flexible space
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        // Adding Done button on the toolbar
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonAction))
-        toolbar.setItems([flexibleSpace, doneButton], animated: false)
-        // Assigning the toolbar as UITextField's inputAccessoryView
-        textField.inputAccessoryView = toolbar
+        textField.addDoneButtonOnKeyboard()
         
         return textField
     }()
@@ -77,337 +59,35 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     var workTypeScrollView = UIScrollView()
     
     var selectedNoticeOptionsButton : UIButton?
-    var selectedGenderButton : UIButton?
     var selectedRelocateButton : UIButton?
     var selectedEmployedButton : UIButton?
     var selectedWorkTypeButton : UIButton?
     
     var workTypeScrollViewBottomAnchor: NSLayoutYAxisAnchor?
     
-    let permanentTextField : UITextField = {
-        let textField = UITextField()
-        
-        textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g Hinjewadi, Pune"
-        
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
-    let permanentPinTextField : UITextField = {
-        let textField = UITextField()
-        
-        textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 431504"
-        textField.keyboardType = .numberPad // Numeric keypad
-        
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Create a toolbar
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        // Adding flexible space
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        // Adding Done button on the toolbar
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonAction))
-        toolbar.setItems([flexibleSpace, doneButton], animated: false)
-        // Assigning the toolbar as UITextField's inputAccessoryView
-        textField.inputAccessoryView = toolbar
-        
-        
-        return textField
-    }()
-    let currentTextField : UITextField = {
-        let textField = UITextField()
-        
-        textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g Hinjewadi, Pune"
-        
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
-    let currentPinTextField : UITextField = {
-        let textField = UITextField()
-        
-        textField.borderStyle = .roundedRect
-        textField.placeholder = "E.g. 411057"
-        textField.keyboardType = .numberPad // Numeric keypad
-        
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Create a toolbar
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        // Adding flexible space
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        // Adding Done button on the toolbar
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonAction))
-        toolbar.setItems([flexibleSpace, doneButton], animated: false)
-        // Assigning the toolbar as UITextField's inputAccessoryView
-        textField.inputAccessoryView = toolbar
-        
-        
-        return textField
-    }()
-    
-    
-    var bottomView : UIView!
-    var bottomHeightConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+
+        navigationItem.title = "Edit Personal Info"
+        navigationItem.hidesBackButton = true
         
+        let backButtonImage = UIImage(systemName: "xmark") // Change "xmark" to any system image you prefer
+        let backButton = UIBarButtonItem(image: backButtonImage, style: .plain, target: self, action: #selector(backButtonPressed))
+        navigationItem.leftBarButtonItem = backButton
         
-        setupViews()
-    }
-    
-    func setupViews() {
-        setDelegates()
-        setupHeaderView()
-        
-        setupScrollView()
         setupUI1()
         setupUI2()
         
-        setupBottomView()
-    }
-    
-    func setDelegates() {
+        setupSaveButton()
+        
         portfolioTextField.delegate = self
         currentCtcTextField.delegate = self
         expectedCtcTextField.delegate = self
     }
-    
-    func setupHeaderView() {
-        headerView = UIView()
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(headerView)
-        
-        var stepsLabel = UILabel()
-        stepsLabel.text = "Steps"
-        stepsLabel.textColor = UIColor(hex: "#1D2026")
-        stepsLabel.font = .boldSystemFont(ofSize: 24)
-        stepsLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(stepsLabel)
-        
-        var stepsScrollView = UIScrollView()
-        stepsScrollView.showsHorizontalScrollIndicator = false
-        stepsScrollView.contentSize = CGSize(width: view.frame.width * 3, height: 300)
-        stepsScrollView.contentOffset = CGPoint(x: 600, y: 0)
-        stepsScrollView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(stepsScrollView)
-
-        NSLayoutConstraint.activate([
-            stepsLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
-            stepsLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            
-            stepsScrollView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 36),
-            stepsScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stepsScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stepsScrollView.heightAnchor.constraint(equalToConstant: 70)
-        ])
-
-        // Create step views
-        let currentStepColor = UIColor(hex: "#2563EB")
-        let completedStepColor = UIColor(hex: "#0B945B") // Green color for completed steps
-        let upcomingStepColor = UIColor(hex: "#D0D5DD") // Gray color for upcoming steps
-
-        let steps = [
-            ("Add Basics", "Resume and Qualification"),
-            ("Experience", "Experience and Software"),
-            ("Projects", "Projects and Skills"),
-            ("Personal Information", "Personal Details"),
-            ("Preferences", "Preferences and Headline"),
-            ("Preview", "Preview and Publish")
-        ]
-
-        var currentStepIndex = 4
-        var completedStepIndex = 3
-        var previousStepView: UIView?
-        
-        for (index, step) in steps.enumerated() {
-            let isActive = index == currentStepIndex // Assuming you have the index of the current step
-            
-            let color: UIColor
-            if isActive {
-                color = currentStepColor
-            } else if index <= completedStepIndex {
-                color = completedStepColor
-            } else {
-                color = upcomingStepColor
-            }
-            
-            let stepView = createStepView(title: step.0, subtitle: step.1, color: color)
-            stepView.translatesAutoresizingMaskIntoConstraints = false
-            stepsScrollView.addSubview(stepView)
-            
-            // Set constraints for stepView
-            NSLayoutConstraint.activate([
-                stepView.topAnchor.constraint(equalTo: stepsScrollView.topAnchor, constant: 0),
-                stepView.widthAnchor.constraint(equalToConstant: 160),
-                stepView.heightAnchor.constraint(equalToConstant: 260),
-            ])
-            
-            // Align stepView horizontally to the previous stepView or to the scrollView's leading anchor
-            if let previousStepView = previousStepView {
-                stepView.leadingAnchor.constraint(equalTo: previousStepView.trailingAnchor, constant: 4).isActive = true
-            } else {
-                stepView.leadingAnchor.constraint(equalTo: stepsScrollView.leadingAnchor, constant: 16).isActive = true
-            }
-            
-            previousStepView = stepView
-        }
-        
-        // Add trailing constraint to scrollView's content view to ensure scrolling works correctly
-        if let previousStepView = previousStepView {
-            stepsScrollView.trailingAnchor.constraint(equalTo: previousStepView.trailingAnchor, constant: 16).isActive = true
-        }
-        
-        // Create and configure the current step label
-        let currentStepLabel = UILabel()
-        currentStepLabel.text = "STEP 8 OF 10"
-        currentStepLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        currentStepLabel.textColor = .gray
-        headerView.addSubview(currentStepLabel)
-        currentStepLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Create and configure the main step title
-        let mainStepTitleLabel = UILabel()
-        mainStepTitleLabel.text = "ADD PREFERENCES"
-        mainStepTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        headerView.addSubview(mainStepTitleLabel)
-        mainStepTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Create and configure the progress view
-        let progressView = UIProgressView(progressViewStyle: .default)
-        progressView.progressTintColor = UIColor(hex: "#2563EB")
-        progressView.trackTintColor = UIColor(hex: "#E5E7EB")
-        progressView.setProgress(0.8, animated: true)
-        headerView.addSubview(progressView)
-        progressView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Create and configure the progress label
-        let progressLabel = UILabel()
-        progressLabel.text = "80%"
-        progressLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        progressLabel.textColor = .gray
-        headerView.addSubview(progressLabel)
-        progressLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Set up constraints
-        NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            currentStepLabel.topAnchor.constraint(equalTo: stepsScrollView.bottomAnchor, constant: 20),
-            currentStepLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            
-            mainStepTitleLabel.topAnchor.constraint(equalTo: currentStepLabel.bottomAnchor, constant: 8),
-            mainStepTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            
-            progressView.topAnchor.constraint(equalTo: mainStepTitleLabel.bottomAnchor, constant: 16),
-            progressView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            progressView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -52),
-            
-            progressLabel.centerYAnchor.constraint(equalTo: progressView.centerYAnchor),
-            progressLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            
-            headerView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 16)
-        ])
-    }
-    
-    func createStepView(title: String, subtitle: String, color: UIColor) -> UIView {
-        let stepView = UIView()
-        stepView.translatesAutoresizingMaskIntoConstraints = false
-        
-        var circle1 = UIView()
-        circle1.layer.cornerRadius = 4
-        circle1.backgroundColor = color
-        circle1.translatesAutoresizingMaskIntoConstraints = false
-        var circle2 = UIView()
-        circle2.layer.cornerRadius = 8
-        circle2.backgroundColor = color.withAlphaComponent(0.5)
-        circle2.translatesAutoresizingMaskIntoConstraints = false
-        
-        var line = UIView()
-        line.backgroundColor = color
-        line.translatesAutoresizingMaskIntoConstraints = false
-        stepView.addSubview(line)
-        
-        
-        stepView.addSubview(circle2)
-        stepView.addSubview(circle1)
-        NSLayoutConstraint.activate([
-            circle2.topAnchor.constraint(equalTo: stepView.topAnchor, constant: 8),
-            circle2.leadingAnchor.constraint(equalTo: stepView.leadingAnchor, constant: 8),
-            circle2.widthAnchor.constraint(equalToConstant: 16),
-            circle2.heightAnchor.constraint(equalToConstant: 16),
-            
-            circle1.centerXAnchor.constraint(equalTo: circle2.centerXAnchor),
-            circle1.centerYAnchor.constraint(equalTo: circle2.centerYAnchor),
-            circle1.widthAnchor.constraint(equalToConstant: 8),
-            circle1.heightAnchor.constraint(equalToConstant: 8),
-            
-            line.topAnchor.constraint(equalTo: stepView.topAnchor, constant: 15),
-            line.leadingAnchor.constraint(equalTo: circle2.trailingAnchor, constant: 10),
-            line.heightAnchor.constraint(equalToConstant: 2),
-            line.widthAnchor.constraint(equalToConstant: 120),
-        ])
-        
-        
-        let titleLabel = UILabel()
-        titleLabel.text = title
-        titleLabel.font = .boldSystemFont(ofSize: 14)
-        titleLabel.textColor = UIColor(hex: "#344054") // White text color for better visibility
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        let subtitleLabel = UILabel()
-        subtitleLabel.text = subtitle
-        subtitleLabel.font = .systemFont(ofSize: 12)
-        subtitleLabel.textColor = UIColor(hex: "#475467") // White text color for better visibility
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        stepView.addSubview(titleLabel)
-        stepView.addSubview(subtitleLabel)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: stepView.topAnchor, constant: 32),
-            titleLabel.leadingAnchor.constraint(equalTo: stepView.leadingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: stepView.trailingAnchor, constant: 0),
-            
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            subtitleLabel.leadingAnchor.constraint(equalTo: stepView.leadingAnchor, constant: 8),
-            subtitleLabel.trailingAnchor.constraint(equalTo: stepView.trailingAnchor, constant: 0),
-        ])
-        
-        return stepView
-    }
-    
-    
-    func setupScrollView() {
-        scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(scrollView)
-        
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
-        ])
-        
-        let extraSpaceHeight: CGFloat = 50
-        
-        // Add extra space at the bottom
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
-        
-        // Calculate content size
-        let contentHeight = view.bounds.height - 250
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-    }
-    
     
     func setupUI1() {
         let portfolioLabel : UILabel = {
@@ -448,11 +128,15 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         
         
         [portfolioLabel,portfolioTextField, currentCtcLabel, currentCtcTextField, expectedCtcLabel, expectedCtcTextField].forEach { v in
-            scrollView.addSubview(v)
+            view.addSubview(v)
         }
         
+        portfolioTextField.text = portfolioString
+        currentCtcTextField.text = currCtcString
+        expectedCtcTextField.text = expCtcString
+        
         NSLayoutConstraint.activate([
-            portfolioLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
+            portfolioLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             portfolioLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             portfolioTextField.topAnchor.constraint(equalTo: portfolioLabel.bottomAnchor, constant: 10),
@@ -479,6 +163,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     }
     
     func setupUI2() {
+        
         let noticePLabel : UILabel = {
             let label = UILabel()
             
@@ -492,8 +177,6 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        
-                
         
         noticeOptionsScrollView.showsHorizontalScrollIndicator = false
         noticeOptionsScrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -516,7 +199,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             optionButton.titleLabel?.font = .systemFont(ofSize: 18)
             optionButton.setTitleColor(.black, for: .normal)
             optionButton.addTarget(self, action: #selector(noticeOptionButtonTapped(_:)), for: .touchUpInside)
-            if i == 1 {
+            if noticePeriodOptions[i-1] == noticeString {
                 selectedNoticeOptionsButton = optionButton
                 selectedNoticeOptionsButton?.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
                 selectedNoticeOptionsButton?.layer.borderColor = UIColor(hex: "#0079C4").cgColor
@@ -526,8 +209,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             noticeOptionsStackView.addArrangedSubview(optionButton)
         }
         
-        scrollView.addSubview(noticePLabel)
-        scrollView.addSubview(noticeOptionsScrollView)
+        view.addSubview(noticePLabel)
+        view.addSubview(noticeOptionsScrollView)
         
         let relocateLabel : UILabel = {
             let label = UILabel()
@@ -559,7 +242,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             button.titleLabel?.font = .systemFont(ofSize: 18)
             button.setTitleColor(.black, for: .normal)
             
-            if i == 1 {
+            if relocateOptions[i-1] == relocateString {
                 selectedRelocateButton = button
                 selectedRelocateButton?.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
                 selectedRelocateButton?.layer.borderColor = UIColor(hex: "#0079C4").cgColor
@@ -572,8 +255,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             relocateStackView.addArrangedSubview(button)
         }
         
-        scrollView.addSubview(relocateLabel)
-        scrollView.addSubview(relocateStackView)
+        view.addSubview(relocateLabel)
+        view.addSubview(relocateStackView)
         
         
         let employedLabel : UILabel = {
@@ -606,7 +289,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             button.titleLabel?.font = .systemFont(ofSize: 18)
             button.setTitleColor(.black, for: .normal)
             
-            if i == 1 {
+            if employedOptions[i-1] == employedString {
                 selectedEmployedButton = button
                 selectedEmployedButton?.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
                 selectedEmployedButton?.layer.borderColor = UIColor(hex: "#0079C4").cgColor
@@ -619,8 +302,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             employedStackView.addArrangedSubview(button)
         }
         
-        scrollView.addSubview(employedLabel)
-        scrollView.addSubview(employedStackView)
+        view.addSubview(employedLabel)
+        view.addSubview(employedStackView)
         
         let workTypeLabel : UILabel = {
             let label = UILabel()
@@ -660,7 +343,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             optionButton.titleLabel?.font = .systemFont(ofSize: 18)
             optionButton.setTitleColor(.black, for: .normal)
             optionButton.addTarget(self, action: #selector(workTypeOptionSelected(_:)), for: .touchUpInside)
-            if i == 1 {
+            if workTypeOptions[i-1] == workTypeString {
                 selectedWorkTypeButton = optionButton
                 selectedWorkTypeButton?.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
                 selectedWorkTypeButton?.layer.borderColor = UIColor(hex: "#0079C4").cgColor
@@ -670,8 +353,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
             workTypeStackView.addArrangedSubview(optionButton)
         }
         
-        scrollView.addSubview(workTypeLabel)
-        scrollView.addSubview(workTypeScrollView)
+        view.addSubview(workTypeLabel)
+        view.addSubview(workTypeScrollView)
         
         
         NSLayoutConstraint.activate([
@@ -756,75 +439,51 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
     
     
     
-    func setupBottomView() {
-        bottomView = UIView()
-        bottomView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bottomView)
+    func setupSaveButton() {
+        let saveButton = UIButton(type: .system)
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.titleLabel?.font = .systemFont(ofSize: 24)
+        saveButton.layer.borderWidth = 1
+        saveButton.layer.borderColor = UIColor(hex: "#0079C4").cgColor
+        saveButton.layer.cornerRadius = 10
+        saveButton.tintColor = .white
+        saveButton.backgroundColor = UIColor(hex: "#0079C4")
+        saveButton.addTarget(self, action: #selector(didTapSaveButton), for: .touchUpInside)
         
-        let nextButton = UIButton()
-        nextButton.setTitle("Next", for: .normal)
-        nextButton.titleLabel?.font = .systemFont(ofSize: 20)
-        nextButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
-        nextButton.backgroundColor = UIColor(hex: "#0079C4")
-        nextButton.layer.cornerRadius = 8
-        
-        nextButton.addTarget(self, action: #selector(didTapNextButton), for: .touchUpInside)
-        
-        nextButton.translatesAutoresizingMaskIntoConstraints = false
-        bottomView.addSubview(nextButton)
-        
-        let backButton = UIButton()
-        backButton.setTitle("Back", for: .normal)
-        backButton.titleLabel?.font = .systemFont(ofSize: 20)
-        backButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
-        backButton.backgroundColor = UIColor(hex: "#FFFFFF")
-        backButton.layer.cornerRadius = 8
-        backButton.layer.borderWidth = 1
-        backButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-        
-        backButton.isUserInteractionEnabled = true
-        
-        backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
-        
-        backButton.translatesAutoresizingMaskIntoConstraints = false
-        bottomView.addSubview(backButton)
-        
-        
+        view.addSubview(saveButton)
         NSLayoutConstraint.activate([
-            bottomView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
-            bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            backButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 15),
-            backButton.leadingAnchor.constraint(equalTo: bottomView.leadingAnchor, constant: 16),
-            backButton.heightAnchor.constraint(equalToConstant: 50),
-            backButton.widthAnchor.constraint(equalToConstant: 100),
-            
-            nextButton.topAnchor.constraint(equalTo: bottomView.topAnchor, constant: 15),
-            nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            nextButton.heightAnchor.constraint(equalToConstant: 50),
-            nextButton.widthAnchor.constraint(equalToConstant: 100),
+            saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            saveButton.widthAnchor.constraint(equalToConstant: view.frame.width - 36),
+            saveButton.heightAnchor.constraint(equalToConstant: 60)
         ])
-        
-        bottomHeightConstraint = bottomView.heightAnchor.constraint(equalToConstant: 100)
-        bottomHeightConstraint?.isActive = true
     }
     
-    @objc func didTapBackButton() {
-        navigationController?.popViewController(animated: true)
-    }
-    
-    @objc func didTapNextButton() {
+    @objc func didTapSaveButton() {
         uploadUserProfile()
     }
     
     
-    @objc func doneButtonAction() {
-        // Dismiss the keyboard when Done is tapped
-        currentCtcTextField.resignFirstResponder()
-        expectedCtcTextField.resignFirstResponder()
-        permanentPinTextField.resignFirstResponder()
-        currentPinTextField.resignFirstResponder()
+    
+    private func showAlert(withTitle title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
+    
+    @objc func backButtonPressed() {
+        let alertController = UIAlertController(title: "Warning", message: "Do you want to proceed without editing Profile?", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let proceedAction = UIAlertAction(title: "Proceed", style: .destructive) { _ in
+            self.navigationController?.popViewController(animated: true) // Pop to previous view controller
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(proceedAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -836,11 +495,25 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        view.backgroundColor = .systemBackground
+        
+        tabBarController?.tabBar.isHidden = true
+        navigationController?.navigationBar.isHidden = false
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        tabBarController?.tabBar.isHidden = false
+        navigationController?.navigationBar.isHidden = true
+    }
 }
 
 
-
-extension PreferencesVC {
+extension EditPreferencesVC {
+    
     func uploadUserProfile() {
         guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
             print("Invalid URL")
@@ -853,9 +526,9 @@ extension PreferencesVC {
               let noticePeriod = selectedNoticeOptionsButton?.titleLabel?.text,
               let willingToRelocate = selectedRelocateButton?.titleLabel?.text,
               let currentlyEmployed = selectedEmployedButton?.titleLabel?.text,
-              let preferredWorkType = selectedWorkTypeButton?.titleLabel?.text 
+              let preferredWorkType = selectedWorkTypeButton?.titleLabel?.text
         else {
-            showAlert()
+            showAlert(withTitle: "Missing Information", message: "Please fill in all the details.")
             return
         }
         
@@ -906,18 +579,12 @@ extension PreferencesVC {
             } else {
                 print("User Preferences successfully uploaded.")
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 loader.stopAnimating()
                 loader.removeFromSuperview()
-                let vc = HeadlineAndSummary()
-                self.navigationController?.pushViewController(vc, animated: true)
+                self.navigationController?.popViewController(animated: true)
             }
         }.resume()
     }
     
-    func showAlert() {
-        let alert = UIAlertController(title: "Missing Information", message: "Please fill in all the details.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true, completion: nil)
-    }
 }

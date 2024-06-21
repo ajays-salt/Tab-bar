@@ -546,7 +546,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         ])
         
         let label = UILabel()
-        label.text = "Recommended Jobs"
+        label.text = "Recent Jobs"
         label.font = .boldSystemFont(ofSize: 20)
         
         label.translatesAutoresizingMaskIntoConstraints = false

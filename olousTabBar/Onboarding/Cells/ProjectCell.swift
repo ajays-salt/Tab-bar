@@ -44,19 +44,20 @@ class ProjectCell: UICollectionViewCell {
     
     let editButton: UIButton = {
         let button = UIButton()
-        if let image = UIImage(named: "pencil")?.buttonImageResized(to: CGSize(width: 22, height: 22)) { // Adjust the size as needed
+        if let image = UIImage(named: "pencil")?.buttonImageResized(to: CGSize(width: 20, height: 20)) { // Adjust the size as needed
             button.setImage(image, for: .normal)
         }
-//        button.setImage(UIImage(named: "pencil"), for: .normal)
-        button.tintColor = UIColor(hex: "#667085")
+        button.tintColor = UIColor(hex: "#98A2B3")
         
         return button
     }()
     
     let deleteButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "trash"), for: .normal)
-        button.tintColor = UIColor(hex: "#667085")
+        if let image = UIImage(systemName: "trash")?.buttonImageResized(to: CGSize(width: 20, height: 20)) { // Adjust the size as needed
+            button.setImage(image, for: .normal)
+        }
+        button.tintColor = UIColor(hex: "#98A2B3")
         return button
     }()
     
@@ -135,15 +136,15 @@ class ProjectCell: UICollectionViewCell {
             projectResponsibility.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             projectResponsibility.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
             
-            editButton.topAnchor.constraint(equalTo: projectName.topAnchor, constant: -10),
-            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 12),
-            editButton.widthAnchor.constraint(equalToConstant: 40),
-            editButton.heightAnchor.constraint(equalToConstant: 40),
+            editButton.topAnchor.constraint(equalTo: projectName.topAnchor, constant: 0),
+            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            editButton.widthAnchor.constraint(equalToConstant: 20),
+            editButton.heightAnchor.constraint(equalToConstant: 20),
             
-            deleteButton.topAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 10),
-            deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 12),
-            deleteButton.widthAnchor.constraint(equalToConstant: 40),
-            deleteButton.heightAnchor.constraint(equalToConstant: 40),
+            deleteButton.topAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 20),
+            deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            deleteButton.widthAnchor.constraint(equalToConstant: 20),
+            deleteButton.heightAnchor.constraint(equalToConstant: 20),
             
             separator.leadingAnchor.constraint(equalTo: leadingAnchor),
             separator.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -161,6 +162,6 @@ extension UIImage {
         draw(in: CGRect(origin: .zero, size: size))
         let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return resizedImage
+        return resizedImage?.withRenderingMode(.alwaysTemplate)
     }
 }
