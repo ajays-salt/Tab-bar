@@ -117,7 +117,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
         
-        fetchUserProfile()
+//        fetchUserProfile()
         fetchRecommendedJobs()
         fetchTotalAppliedJobIDs()
         fetchSavedJobIDs()
@@ -763,6 +763,10 @@ class HomeController: UIViewController, UITextFieldDelegate {
     }
     
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        fetchUserProfile()
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped

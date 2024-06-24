@@ -377,7 +377,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
         layout.scrollDirection = .vertical
         
         employmentsCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        employmentsCV.register(ProjectCell.self, forCellWithReuseIdentifier: "project")
+        employmentsCV.register(OnboardingProjectCell.self, forCellWithReuseIdentifier: "project")
         employmentsCV.delegate = self
         employmentsCV.dataSource = self
         
@@ -668,7 +668,7 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     }
     
     @objc func deleteCell(_ sender : UIButton) {
-        guard let cell = sender.superview as? ProjectCell, // Adjust the number of superviews according to your cell's hierarchy
+        guard let cell = sender.superview as? OnboardingProjectCell, // Adjust the number of superviews according to your cell's hierarchy
             let indexPath = employmentsCV.indexPath(for: cell)
         else {
             return
@@ -1094,7 +1094,7 @@ extension ProjectsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataS
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "project", for: indexPath) as! ProjectCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "project", for: indexPath) as! OnboardingProjectCell
         let project = dataArray[indexPath.row]
         
         cell.projectName.text = project.projectName
@@ -1102,6 +1102,7 @@ extension ProjectsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataS
         cell.projectDescription.text = project.description
         cell.projectResponsibility.text = project.responsibility
         
+        cell.editButton.isUserInteractionEnabled = false
         cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
         
         cell.layer.borderWidth = 1
@@ -1132,7 +1133,7 @@ extension ProjectsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataS
         // Calculate total height
         let totalHeight = descriptionHeight + responsibilityHeight + (fixedHeight * 2) + (padding * 3) // Adjust number of paddings as needed
 
-        return CGSize(width: view.frame.width - 32, height: totalHeight + 30)
+        return CGSize(width: view.frame.width - 32, height: totalHeight + 100)
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

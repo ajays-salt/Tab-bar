@@ -2542,7 +2542,7 @@ extension ProfileController { // Extension for APIs
                 DispatchQueue.main.async {
                     self.userNameLabel.text = "\(userName)"
                     self.jobTitleLabel.text = user.designation
-                    self.locationLabel.text = user.currentAddress?.city ?? "cityNil"
+                    self.locationLabel.text = "\(user.currentAddress?.city ?? ""), \(user.currentAddress?.state ?? "")"
                     
                     self.fetchProfilePicture(size: "m", userID: user._id)
                     

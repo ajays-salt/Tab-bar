@@ -76,6 +76,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setupGeneratingContentView()
         
         loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
 //        loader.center = view.center
@@ -91,6 +92,104 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
             loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
         ])
     }
+    
+    
+    let generateContentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 16
+        view.layer.masksToBounds = true
+        return view
+    }()
+    
+    func setupGeneratingContentView() {
+        generateContentView.isHidden = true
+//        addGradientBorder(to: generateContentView, colors: [UIColor.red.cgColor, UIColor.blue.cgColor], width: 2)
+        generateContentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(generateContentView)
+        
+        
+        let iconImageView: UIImageView = {
+            let imageView = UIImageView()
+            imageView.image = UIImage(systemName: "sparkles") // Use appropriate image
+            imageView.tintColor = .purple
+            return imageView
+        }()
+
+        let messageLabel: UILabel = {
+            let label = UILabel()
+            label.text = "AI is generating content"
+            label.font = .systemFont(ofSize: 16, weight: .medium)
+            label.textColor = .black
+            return label
+        }()
+
+        let progressLabel: UILabel = {
+            let label = UILabel()
+            label.text = "77%"
+            label.font = .systemFont(ofSize: 16, weight: .medium)
+            label.textColor = .black
+            return label
+        }()
+        
+        [iconImageView, messageLabel, progressLabel].forEach { view in
+            view.translatesAutoresizingMaskIntoConstraints = false
+            generateContentView.addSubview(view)
+        }
+
+        NSLayoutConstraint.activate([
+            generateContentView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            generateContentView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            generateContentView.heightAnchor.constraint(equalToConstant: 100),
+            generateContentView.widthAnchor.constraint(equalToConstant: view.frame.width - 40),
+            
+            iconImageView.leadingAnchor.constraint(equalTo: generateContentView.leadingAnchor, constant: 16),
+            iconImageView.centerYAnchor.constraint(equalTo: generateContentView.centerYAnchor),
+            iconImageView.widthAnchor.constraint(equalToConstant: 24),
+            iconImageView.heightAnchor.constraint(equalToConstant: 24),
+            
+            messageLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 8),
+            messageLabel.centerYAnchor.constraint(equalTo: generateContentView.centerYAnchor),
+            
+            progressLabel.trailingAnchor.constraint(equalTo: generateContentView.trailingAnchor, constant: -16),
+            progressLabel.centerYAnchor.constraint(equalTo: generateContentView.centerYAnchor)
+        ])
+        
+        view.layoutIfNeeded()
+        addGradientBorder(to: generateContentView, colors: [UIColor.red.cgColor, UIColor.blue.cgColor], width: 4)
+    }
+    
+    func addGradientBorder(to view: UIView, colors: [CGColor], width: CGFloat) {
+        let gradient = CAGradientLayer()
+        gradient.frame = view.bounds.insetBy(dx: -width, dy: -width)
+        gradient.colors = colors
+        gradient.startPoint = CGPoint(x: 0, y: 0)
+        gradient.endPoint = CGPoint(x: 1, y: 1)
+        
+        let shape = CAShapeLayer()
+        shape.lineWidth = width
+        shape.path = UIBezierPath(roundedRect: view.bounds, cornerRadius: view.layer.cornerRadius).cgPath
+        shape.fillColor = UIColor.clear.cgColor
+        shape.strokeColor = UIColor.black.cgColor
+        gradient.mask = shape
+        
+        view.layer.addSublayer(gradient)
+        
+        let animation = CABasicAnimation(keyPath: "startPoint")
+        animation.fromValue = NSValue(cgPoint: CGPoint(x: 0, y: 0))
+        animation.toValue = NSValue(cgPoint: CGPoint(x: 1, y: 1))
+        animation.duration = 2.0
+        animation.repeatCount = .infinity
+        
+        gradient.add(animation, forKey: "borderAnimation")
+    }
+
+
+
+    
+
+    
+    
     
     func setupViews() {
         setupHeaderView()
@@ -356,7 +455,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         layout.scrollDirection = .vertical
         
         employmentsCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        employmentsCV.register(EducationCell.self, forCellWithReuseIdentifier: "edu")
+        employmentsCV.register(OnboardingEduCell.self, forCellWithReuseIdentifier: "edu")
         employmentsCV.delegate = self
         employmentsCV.dataSource = self
         
@@ -797,7 +896,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func deleteCell(_ sender : UIButton) {
-        guard let cell = sender.superview as? EducationCell, // Adjust the number of superviews according to your cell's hierarchy
+        guard let cell = sender.superview as? OnboardingEduCell, // Adjust the number of superviews according to your cell's hierarchy
             let indexPath = employmentsCV.indexPath(for: cell)
         else {
             return
@@ -1090,13 +1189,13 @@ extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "edu", for: indexPath) as! EducationCell
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "edu", for: indexPath) as! OnboardingEduCell
         
         let edu = dataArray[indexPath.row]
-        print(edu)
         
         cell.educationLabel.text = edu.educationName
-        cell.collegeLabel.text = "l  \(edu.boardOrUniversity ?? "nil")"
+        cell.collegeLabel.text = edu.boardOrUniversity ?? "nil"
         cell.passYearLabel.text = "\(edu.yearOfPassing ?? "nil"),"
         let m = edu.marksObtained ?? ""
         if m.hasSuffix("%") {
@@ -1106,17 +1205,18 @@ extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionVie
             cell.courseTypeLabel.text = "\(m)%"
         }
         
+        cell.editButton.isUserInteractionEnabled = false
         cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
         
         cell.layer.borderWidth = 1
         cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
         cell.layer.cornerRadius = 12
-    
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width - 32, height: 80)
+        return CGSize(width: view.frame.width - 32, height: 95)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -1152,6 +1252,7 @@ extension QualificationsVC { // extension to fetch API
         DispatchQueue.main.async {
             self.scrollView.alpha = 0
             self.loader.startAnimating()
+            self.generateContentView.isHidden = false
             print("Loader should be visible now")
         }
         
@@ -1206,6 +1307,8 @@ extension QualificationsVC { // extension to fetch API
                 self.backButton.isUserInteractionEnabled = true
                 self.nextButton.isUserInteractionEnabled = true
                 self.bottomView.alpha = 1
+                
+//                self.generateContentView.isHidden = true
             }
         }.resume()
     }

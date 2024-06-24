@@ -10,24 +10,21 @@ import UIKit
 
 class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
+    var topHeaderView = UIView()
+    
+    let scrollView = UIScrollView()
+    
     var headerView = UIView()
-    var topView = UIView()
     
     let profileCircle = UIView()
-    let profileCircleLabel : UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.textColor = UIColor(hex: "#0079C4")
-        label.font = .boldSystemFont(ofSize: 48)
-        return label
-    }()
     var profileImageView : UIImageView!
     
     let userNameLabel : UILabel = {
         let label = UILabel()
         label.text = "Ajay Sarkate"
         label.textColor = UIColor(hex: "#101828")
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = 2
         return label
     }()
     let jobTitleLabel : UILabel = {
@@ -45,37 +42,50 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         return label
     }()
     
-    let profileEditButton : UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "pencil"), for: .normal)
-        button.adjustsImageSizeForAccessibilityContentSizeCategory = true
-        button.tintColor = UIColor(hex: "#667085")
-        button.backgroundColor = .systemBackground
-        button.layer.cornerRadius = 20
-        button.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
-        button.layer.borderWidth = 1
-        return button
+    
+    var contactInfoView = UIView()
+    var emailLabel : UILabel!
+    var mobileLabel : UILabel!
+    
+    
+    var headlineView = UIView()
+    let headlineLabel : UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.textColor = UIColor(hex: "#475467")
+        label.font = .systemFont(ofSize: 16)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    let summaryLabel : UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.textColor = UIColor(hex: "#475467")
+        label.font = .systemFont(ofSize: 16)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
-    let scrollView = UIScrollView()
     
-    var preferenceEditButton : UIButton = {
-        let btn = UIButton()
-        btn.setTitle("Edit", for: .normal)
-        btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-        btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        return btn
-    }()
+    var empView = UIView()
     
-    let separatorLine0 = UIView()
-    let separatorLine1 = UIView()
-    let separatorLine2 = UIView()
-    let separatorLine3 = UIView()
-    let separatorLine4 = UIView()
-    let separatorLine5 = UIView()
-    let separatorLine6 = UIView()
-    let separatorLine7 = UIView()
+    
+    var projectView = UIView()
+    
+    
+    var educationView = UIView()
+    
+    
+    var softwareView = UIView()
+    
+    
+    var skillsView = UIView()
+    
+    
+    var personalInfoView = UIView()
+    
+    
+    var preferenceView = UIView()
     
     
 //   *************************************************  New changes in this controller ******************************************************
@@ -124,65 +134,57 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
     
     func setupViews() {
-        setupHeaderView()
+        setupTopHeaderView()
         
         setupScrollView()
-        setuptopView()
-        setupProfileEditButton()
         
-        setupProfileCircleView()
+        setupHeaderView()
         
-        setupSeparatorLine0()
-        setupPersonalInfoView()
+        setupContactInfo()
         
-        setupSeparatorLine1()
-        setupEmploymentsView()
+        setupHeadline()
         
-        setupSeparatorLine2()
-        setupEducationView()
+        setupEmploymentView()
         
-        setupSeparatorLine3()
         setupProjectView()
         
-        setupSeparatorLine4()
-        setupPreferencesView()
+        setupEducationView()
         
-        setupSeparatorLine5()
-        setupHeadlineAndSummary()
-        
-        setupSeparatorLine6()
         setupSoftwares()
         
-        setupSeparatorLine7()
         setupSkills()
+        
+        setupPersonalInfoView()
+        
+        setupPreferencesView()
         
         setupBottomView()
     }
     
-    func setupHeaderView() {
-        headerView = UIView()
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(headerView)
+    func setupTopHeaderView() {
+        topHeaderView = UIView()
+        topHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(topHeaderView)
         
         var stepsLabel = UILabel()
         stepsLabel.text = "Steps"
         stepsLabel.textColor = UIColor(hex: "#1D2026")
         stepsLabel.font = .boldSystemFont(ofSize: 24)
         stepsLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(stepsLabel)
+        topHeaderView.addSubview(stepsLabel)
         
         var stepsScrollView = UIScrollView()
         stepsScrollView.showsHorizontalScrollIndicator = false
         stepsScrollView.contentSize = CGSize(width: view.frame.width * 3, height: 300)
         stepsScrollView.contentOffset = CGPoint(x: 600, y: 0)
         stepsScrollView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(stepsScrollView)
+        topHeaderView.addSubview(stepsScrollView)
 
         NSLayoutConstraint.activate([
-            stepsLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
-            stepsLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            stepsLabel.topAnchor.constraint(equalTo: topHeaderView.topAnchor, constant: 0),
+            stepsLabel.leadingAnchor.constraint(equalTo: topHeaderView.leadingAnchor, constant: 16),
             
-            stepsScrollView.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 36),
+            stepsScrollView.topAnchor.constraint(equalTo: topHeaderView.topAnchor, constant: 36),
             stepsScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             stepsScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             stepsScrollView.heightAnchor.constraint(equalToConstant: 70)
@@ -249,14 +251,14 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         currentStepLabel.text = "STEP 10 OF 10"
         currentStepLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         currentStepLabel.textColor = .gray
-        headerView.addSubview(currentStepLabel)
+        topHeaderView.addSubview(currentStepLabel)
         currentStepLabel.translatesAutoresizingMaskIntoConstraints = false
         
         // Create and configure the main step title
         let mainStepTitleLabel = UILabel()
         mainStepTitleLabel.text = "PREVIEW AND PUBLISH"
         mainStepTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        headerView.addSubview(mainStepTitleLabel)
+        topHeaderView.addSubview(mainStepTitleLabel)
         mainStepTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         // Create and configure the progress view
@@ -264,7 +266,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         progressView.progressTintColor = UIColor(hex: "#0B945B")
         progressView.trackTintColor = UIColor(hex: "#E5E7EB")
         progressView.setProgress(0.99, animated: true)
-        headerView.addSubview(progressView)
+        topHeaderView.addSubview(progressView)
         progressView.translatesAutoresizingMaskIntoConstraints = false
         
         // Create and configure the progress label
@@ -272,29 +274,29 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         progressLabel.text = "99%"
         progressLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         progressLabel.textColor = .gray
-        headerView.addSubview(progressLabel)
+        topHeaderView.addSubview(progressLabel)
         progressLabel.translatesAutoresizingMaskIntoConstraints = false
         
         // Set up constraints
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            topHeaderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topHeaderView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
             currentStepLabel.topAnchor.constraint(equalTo: stepsScrollView.bottomAnchor, constant: 20),
-            currentStepLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            currentStepLabel.leadingAnchor.constraint(equalTo: topHeaderView.leadingAnchor, constant: 16),
             
             mainStepTitleLabel.topAnchor.constraint(equalTo: currentStepLabel.bottomAnchor, constant: 8),
-            mainStepTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            mainStepTitleLabel.leadingAnchor.constraint(equalTo: topHeaderView.leadingAnchor, constant: 16),
             
             progressView.topAnchor.constraint(equalTo: mainStepTitleLabel.bottomAnchor, constant: 16),
-            progressView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            progressView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -52),
+            progressView.leadingAnchor.constraint(equalTo: topHeaderView.leadingAnchor, constant: 16),
+            progressView.trailingAnchor.constraint(equalTo: topHeaderView.trailingAnchor, constant: -52),
             
             progressLabel.centerYAnchor.constraint(equalTo: progressView.centerYAnchor),
-            progressLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            progressLabel.trailingAnchor.constraint(equalTo: topHeaderView.trailingAnchor, constant: -16),
             
-            headerView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 16)
+            topHeaderView.bottomAnchor.constraint(equalTo: progressView.bottomAnchor, constant: 16)
         ])
     }
     
@@ -366,19 +368,6 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     }
     
     
-    func setupProfileEditButton() {
-        profileEditButton.isHidden = true
-        profileEditButton.translatesAutoresizingMaskIntoConstraints = false
-        topView.addSubview(profileEditButton)
-        
-        NSLayoutConstraint.activate([
-            profileEditButton.topAnchor.constraint(equalTo: topView.topAnchor, constant: 6),
-            profileEditButton.trailingAnchor.constraint(equalTo: topView.trailingAnchor, constant: -16),
-            profileEditButton.widthAnchor.constraint(equalToConstant: 36),
-            profileEditButton.heightAnchor.constraint(equalToConstant: 36)
-        ])
-    }
-    
     func setupScrollView() {
         scrollView.delegate = self
         scrollView.alwaysBounceVertical = true
@@ -386,13 +375,13 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 10),
+            scrollView.topAnchor.constraint(equalTo: topHeaderView.bottomAnchor, constant: 10),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 1800
+        let extraSpaceHeight: CGFloat = 2500
         
         // Add extra space at the bottom
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
@@ -402,53 +391,38 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     
-    func setuptopView() {
-        topView.backgroundColor = UIColor(hex: "#F0F9FF")
-        topView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(topView)
+    
+    func setupHeaderView() {
+        headerView.layer.borderWidth = 1
+        headerView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        headerView.layer.cornerRadius = 12
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(headerView)
         NSLayoutConstraint.activate([
-            topView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
-            topView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            topView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topView.heightAnchor.constraint(equalToConstant: 160)
+            headerView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            headerView.heightAnchor.constraint(equalToConstant: 140)
         ])
-    }
-
-    func setupProfileCircleView() {
+        
         profileCircle.backgroundColor = UIColor(hex: "#D7F0FF")
-        profileCircle.layer.cornerRadius = 60
+        profileCircle.layer.cornerRadius = 50
         
         profileCircle.translatesAutoresizingMaskIntoConstraints = false
-        topView.addSubview(profileCircle)
+        headerView.addSubview(profileCircle)
         NSLayoutConstraint.activate([
-//            profileCircle.topAnchor.constraint(equalTo: headerView.top, constant: 30),
-            profileCircle.centerYAnchor.constraint(equalTo: topView.centerYAnchor),
-            profileCircle.leadingAnchor.constraint(equalTo: topView.leadingAnchor, constant: 20),
-            profileCircle.widthAnchor.constraint(equalToConstant: 120),
-            profileCircle.heightAnchor.constraint(equalToConstant: 120)
+            profileCircle.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20),
+            profileCircle.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            profileCircle.widthAnchor.constraint(equalToConstant: 100),
+            profileCircle.heightAnchor.constraint(equalToConstant: 100)
         ])
-        
-        // Calculate initials
-        let arr = userNameLabel.text!.components(separatedBy: " ")
-        let initials = "\(arr[0].first ?? "A")\(arr[1].first ?? "B")".uppercased()
-        
-        
-        profileCircleLabel.text = initials
-        profileCircleLabel.isHidden = true
-        profileCircleLabel.translatesAutoresizingMaskIntoConstraints = false
-        profileCircle.addSubview(profileCircleLabel)
-        NSLayoutConstraint.activate([
-            profileCircleLabel.centerXAnchor.constraint(equalTo: profileCircle.centerXAnchor),
-            profileCircleLabel.centerYAnchor.constraint(equalTo: profileCircle.centerYAnchor)
-        ])
-        
         
         
         profileImageView = UIImageView()
 //        profileImageView.isHidden = true
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.clipsToBounds = true
-        profileImageView.layer.cornerRadius = 60
+        profileImageView.layer.cornerRadius = 50
         
         // Add the selected image view to the profile circle
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -461,39 +435,567 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
             profileImageView.bottomAnchor.constraint(equalTo: profileCircle.bottomAnchor)
         ])
         
+        
         [userNameLabel, jobTitleLabel, locationLabel].forEach { v in
             v.translatesAutoresizingMaskIntoConstraints = false
-            topView.addSubview(v)
+            headerView.addSubview(v)
         }
         
         NSLayoutConstraint.activate([
-            userNameLabel.topAnchor.constraint(equalTo: profileCircle.topAnchor, constant: 16),
+            userNameLabel.topAnchor.constraint(equalTo: profileCircle.topAnchor, constant: 0),
             userNameLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
-            userNameLabel.heightAnchor.constraint(equalToConstant: 24),
+//            userNameLabel.heightAnchor.constraint(equalToConstant: 24),
+            userNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             jobTitleLabel.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 12),
             jobTitleLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
             jobTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 6),
+            locationLabel.topAnchor.constraint(equalTo: jobTitleLabel.bottomAnchor, constant: 10),
             locationLabel.leadingAnchor.constraint(equalTo: profileCircle.trailingAnchor, constant: 16),
-            locationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            locationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
     
     
-    func setupSeparatorLine0(){
-        separatorLine0.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine0.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine0)
+    func setupContactInfo() {
+        contactInfoView.layer.borderWidth = 1
+        contactInfoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        contactInfoView.layer.cornerRadius = 12
+        
+        contactInfoView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contactInfoView)
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "Contact Info"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        contactInfoView.addSubview(label)
+        
+        let mailIcon : UIImageView = UIImageView()
+        mailIcon.image = UIImage(systemName: "envelope")
+        mailIcon.tintColor = UIColor(hex: "#98A2B3")
+        mailIcon.translatesAutoresizingMaskIntoConstraints = false
+        contactInfoView.addSubview(mailIcon)
+        
+        let email = createStaticLabel()
+        email.text = "Email"
+        contactInfoView.addSubview(email)
+        emailLabel = createDynamicLabel()
+        emailLabel.numberOfLines = 2
+        contactInfoView.addSubview(emailLabel)
+        
+        let phoneIcon : UIImageView = UIImageView()
+        phoneIcon.image = UIImage(systemName: "phone")
+        phoneIcon.tintColor = UIColor(hex: "#98A2B3")
+        phoneIcon.translatesAutoresizingMaskIntoConstraints = false
+        contactInfoView.addSubview(phoneIcon)
+        
+        let mobile = createStaticLabel()
+        mobile.text = "Phone"
+        contactInfoView.addSubview(mobile)
+        mobileLabel = createDynamicLabel()
+        contactInfoView.addSubview(mobileLabel)
         
         NSLayoutConstraint.activate([
-            separatorLine0.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: -10),
-            separatorLine0.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine0.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine0.heightAnchor.constraint(equalToConstant: 1)
+            contactInfoView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            contactInfoView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            contactInfoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            contactInfoView.heightAnchor.constraint(equalToConstant: 200),
+            
+            label.topAnchor.constraint(equalTo: contactInfoView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: contactInfoView.leadingAnchor, constant: 20),
+            
+            mailIcon.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            mailIcon.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+            
+            email.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            email.leadingAnchor.constraint(equalTo: mailIcon.trailingAnchor, constant: 10),
+            
+            emailLabel.topAnchor.constraint(equalTo: email.bottomAnchor, constant: 10),
+            emailLabel.leadingAnchor.constraint(equalTo: email.leadingAnchor),
+            emailLabel.trailingAnchor.constraint(equalTo: contactInfoView.trailingAnchor, constant: -10),
+            
+            phoneIcon.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 20),
+            phoneIcon.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+            
+            mobile.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 20),
+            mobile.leadingAnchor.constraint(equalTo: phoneIcon.trailingAnchor, constant: 10),
+            
+            mobileLabel.topAnchor.constraint(equalTo: mobile.bottomAnchor, constant: 10),
+            mobileLabel.leadingAnchor.constraint(equalTo: mobile.leadingAnchor),
+            mobileLabel.trailingAnchor.constraint(equalTo: contactInfoView.trailingAnchor, constant: -10),
         ])
     }
+    
+    
+    func setupHeadline() {
+        headlineView.layer.borderWidth = 1
+        headlineView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        headlineView.layer.cornerRadius = 12
+        
+        headlineView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(headlineView)
+        
+        
+        let headline : UILabel = {
+            let label = UILabel()
+            label.text = "Headline"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        headlineView.addSubview(headline)
+        
+        headlineView.addSubview(headlineLabel)
+        
+        let summary : UILabel = {
+            let label = UILabel()
+            label.text = "Summary"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        headlineView.addSubview(summary)
+        
+        headlineView.addSubview(summaryLabel)
+        
+        
+        NSLayoutConstraint.activate([
+            headlineView.topAnchor.constraint(equalTo: contactInfoView.bottomAnchor, constant: 20),
+            headlineView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            headlineView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            headline.topAnchor.constraint(equalTo: headlineView.topAnchor, constant: 20),
+            headline.leadingAnchor.constraint(equalTo: headlineView.leadingAnchor, constant: 20),
+            
+            headlineLabel.topAnchor.constraint(equalTo: headline.bottomAnchor, constant: 10),
+            headlineLabel.leadingAnchor.constraint(equalTo: headline.leadingAnchor),
+            headlineLabel.trailingAnchor.constraint(equalTo: headlineView.trailingAnchor, constant: -10),
+            
+            summary.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20),
+            summary.leadingAnchor.constraint(equalTo: headlineView.leadingAnchor, constant: 20),
+            
+            summaryLabel.topAnchor.constraint(equalTo: summary.bottomAnchor, constant: 10),
+            summaryLabel.leadingAnchor.constraint(equalTo: summary.leadingAnchor),
+            summaryLabel.trailingAnchor.constraint(equalTo: headlineView.trailingAnchor, constant: -10),
+            
+            headlineView.bottomAnchor.constraint(equalTo: summaryLabel.bottomAnchor, constant: 10)
+        ])
+        
+        
+    }
+    
+    
+    func setupEmploymentView() {
+        empView.layer.borderWidth = 1
+        empView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        empView.layer.cornerRadius = 12
+        
+        empView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(empView)
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "Employment"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        empView.addSubview(label)
+        
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        
+        employmentCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        employmentCV.register(EmploymentCell.self, forCellWithReuseIdentifier: "exp")
+        employmentCV.delegate = self
+        employmentCV.dataSource = self
+        
+        employmentCV.translatesAutoresizingMaskIntoConstraints = false
+        empView.addSubview(employmentCV)
+        
+        employmentCVHeightConstraint = employmentCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        employmentCVHeightConstraint.isActive = true
+        
+        NSLayoutConstraint.activate([
+            empView.topAnchor.constraint(equalTo: headlineView.bottomAnchor, constant: 20),
+            empView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            empView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            label.topAnchor.constraint(equalTo: empView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: empView.leadingAnchor, constant: 20),
+            
+            employmentCV.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            employmentCV.leadingAnchor.constraint(equalTo: empView.leadingAnchor, constant: 20),
+            employmentCV.trailingAnchor.constraint(equalTo: empView.trailingAnchor, constant: -20),
+            
+            empView.bottomAnchor.constraint(equalTo: employmentCV.bottomAnchor, constant: 20)
+        ])
+    }
+    
+    func reloadEmploymentsCollectionView() {
+        employmentCV.reloadData()
+            
+        // Calculate the content size
+        employmentCV.layoutIfNeeded()
+        let contentSize = employmentCV.collectionViewLayout.collectionViewContentSize
+        employmentCVHeightConstraint.constant = contentSize.height
+        
+        updateScrollViewContentSize()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    
+    var totalExperience : Double!
+    
+    
+    func setupProjectView() {
+        projectView.layer.borderWidth = 1
+        projectView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        projectView.layer.cornerRadius = 12
+        
+        projectView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(projectView)
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "Project"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        projectView.addSubview(label)
+        
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        
+        projectCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        projectCV.register(ProjectCell.self, forCellWithReuseIdentifier: "project")
+        projectCV.delegate = self
+        projectCV.dataSource = self
+        
+        projectCV.translatesAutoresizingMaskIntoConstraints = false
+        projectView.addSubview(projectCV)
+        
+        NSLayoutConstraint.activate([
+            projectView.topAnchor.constraint(equalTo: empView.bottomAnchor, constant: 20),
+            projectView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            projectView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            label.topAnchor.constraint(equalTo: projectView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: projectView.leadingAnchor, constant: 20),
+            
+            projectCV.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            projectCV.leadingAnchor.constraint(equalTo: projectView.leadingAnchor, constant: 20),
+            projectCV.trailingAnchor.constraint(equalTo: projectView.trailingAnchor, constant: -20),
+            
+            projectView.bottomAnchor.constraint(equalTo: projectCV.bottomAnchor, constant: 20)
+        ])
+        
+        projectCVHeightConstraint = projectCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        projectCVHeightConstraint.isActive = true
+    }
+    
+    func reloadProjectCollectionView() {
+        projectCV.reloadData()
+        projectCV.layoutIfNeeded()
+        
+        let contentSize = projectCV.collectionViewLayout.collectionViewContentSize
+        projectCVHeightConstraint.constant = contentSize.height
+        
+        updateScrollViewContentSize()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    
+    
+    func setupEducationView() {
+        educationView.layer.borderWidth = 1
+        educationView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        educationView.layer.cornerRadius = 12
+        
+        educationView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(educationView)
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "Education"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        educationView.addSubview(label)
+        
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        
+        educationCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        educationCV.register(EducationCell.self, forCellWithReuseIdentifier: "edu")
+        educationCV.delegate = self
+        educationCV.dataSource = self
+        
+        educationCV.translatesAutoresizingMaskIntoConstraints = false
+        educationView.addSubview(educationCV)
+        
+        NSLayoutConstraint.activate([
+            educationView.topAnchor.constraint(equalTo: projectView.bottomAnchor, constant: 20),
+            educationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            educationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            label.topAnchor.constraint(equalTo: educationView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: educationView.leadingAnchor, constant: 20),
+            
+            educationCV.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            educationCV.leadingAnchor.constraint(equalTo: educationView.leadingAnchor, constant: 20),
+            educationCV.trailingAnchor.constraint(equalTo: educationView.trailingAnchor, constant: -20),
+            
+            educationView.bottomAnchor.constraint(equalTo: educationCV.bottomAnchor, constant: 20)
+        ])
+        
+        educationCVHeightConstraint = educationCV.heightAnchor.constraint(equalToConstant: 0) // Initial height
+        educationCVHeightConstraint.isActive = true
+    }
+    
+    func reloadEducationCollectionView() {
+        educationCV.reloadData()
+        educationCV.layoutIfNeeded()
+        
+        let contentSize = educationCV.collectionViewLayout.collectionViewContentSize
+        educationCVHeightConstraint.constant = contentSize.height
+        
+        updateScrollViewContentSize()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    
+    
+    
+    
+    func setupSoftwares() {
+        softwareView.layer.borderWidth = 1
+        softwareView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        softwareView.layer.cornerRadius = 12
+        
+        softwareView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(softwareView)
+        
+        NSLayoutConstraint.activate([
+            softwareView.topAnchor.constraint(equalTo: educationView.bottomAnchor, constant: 20),
+            softwareView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            softwareView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    func addLabelsInSoftwares() {
+        if let existingHeightConstraint = softwareView.constraints.first(where: { $0.firstAttribute == .height }) {
+            existingHeightConstraint.isActive = false
+        }
+        for subview in softwareView.subviews {
+            subview.removeFromSuperview()
+        }
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "Softwares"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        softwareView.addSubview(label)
+        
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: softwareView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: softwareView.leadingAnchor, constant: 20)
+        ])
+        
+        
+        var currentX: CGFloat = 20
+        var currentY: CGFloat = 60
+        let spacing: CGFloat = 10
+        let maxWidth: CGFloat = view.bounds.width - 72  // Adjust for left and right padding
+        
+        for string in softwaresArray {
+            let label = PaddedLabel()
+            label.text = string
+            label.font = .systemFont(ofSize: 16)
+            label.backgroundColor = .white
+            label.textColor = UIColor(hex: "#475467")
+            label.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+            label.layer.borderWidth = 1
+            label.layer.cornerRadius = 8
+            label.clipsToBounds = true
+            
+            // Ensure the label fits the text with padding
+            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
+            
+            // Check if the label fits in the current line
+            if currentX + labelSize.width > maxWidth {
+                // Move to the next line
+                currentX = 20
+                currentY += labelSize.height + spacing
+            }
+            
+            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
+            softwareView.addSubview(label)
+            
+            // Update currentX to the next position
+            currentX += labelSize.width + spacing
+        }
+        // Calculate new height
+        let newHeight = currentY + 28
+        
+        // Create and activate the new height constraint
+        let newHeightConstraint = softwareView.heightAnchor.constraint(equalToConstant: newHeight + 20)
+        newHeightConstraint.isActive = true
+        
+        softwareView.setNeedsLayout()
+        softwareView.layoutIfNeeded()
+        
+        if newHeight > 250 {
+            let contentHeight = scrollView.contentSize.height + 200
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+        if newHeight > 500 {
+            let contentHeight = scrollView.contentSize.height + 500
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+    }
+    
+    
+    
+    func setupSkills() {
+        skillsView.layer.borderWidth = 1
+        skillsView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        skillsView.layer.cornerRadius = 12
+        
+        skillsView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(skillsView)
+        
+        NSLayoutConstraint.activate([
+            skillsView.topAnchor.constraint(equalTo: softwareView.bottomAnchor, constant: 20),
+            skillsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            skillsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    func addLabelsInSkills() {
+        
+        if let existingHeightConstraint = skillsView.constraints.first(where: { $0.firstAttribute == .height }) {
+            existingHeightConstraint.isActive = false
+        }
+        for subview in skillsView.subviews {
+            subview.removeFromSuperview()
+        }
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "Skills"
+            label.textColor = UIColor(hex: "#101828")
+            label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        skillsView.addSubview(label)
+        
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: skillsView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: skillsView.leadingAnchor, constant: 20)
+        ])
+        
+        
+        var currentX: CGFloat = 20
+        var currentY: CGFloat = 60
+        let spacing: CGFloat = 10
+        let maxWidth: CGFloat = view.bounds.width - 32  // Adjust for left and right padding
+        
+        for string in skillsArray {
+            let label = PaddedLabel()
+            label.text = string
+            label.font = .systemFont(ofSize: 16)
+            label.backgroundColor = .white
+            label.textColor = UIColor(hex: "#475467")
+            label.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+            label.layer.borderWidth = 1
+            label.layer.cornerRadius = 8
+            label.clipsToBounds = true
+            
+            // Ensure the label fits the text with padding
+            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
+            
+            // Check if the label fits in the current line
+            if currentX + labelSize.width > maxWidth {
+                // Move to the next line
+                currentX = 20
+                currentY += labelSize.height + spacing
+            }
+            
+            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
+            skillsView.addSubview(label)
+            
+            // Update currentX to the next position
+            currentX += labelSize.width + spacing
+        }
+        
+        // Calculate new height
+        let newHeight = currentY + 28
+        
+        // Create and activate the new height constraint
+        let newHeightConstraint = skillsView.heightAnchor.constraint(equalToConstant: newHeight + 20)
+        newHeightConstraint.isActive = true
+        
+        skillsView.setNeedsLayout()
+        skillsView.layoutIfNeeded()
+        
+//        print("New Height : " , newHeight)
+        if newHeight > 250 {
+            let contentHeight = scrollView.contentSize.height + 200
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+        if newHeight > 500 {
+            let contentHeight = scrollView.contentSize.height + 500
+            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        }
+    }
+    
+    
+    
+    
+    
     
     var dobLabel : UILabel!
     var nationalityLabel : UILabel!
@@ -508,132 +1010,115 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     var pancardLabel : UILabel!
     var languageLabel : UILabel!
     
-    
     func setupPersonalInfoView() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
+        personalInfoView.layer.borderWidth = 1
+        personalInfoView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        personalInfoView.layer.cornerRadius = 12
         
-        let personalInfoLabel : UILabel = {
+        personalInfoView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(personalInfoView)
+        
+        let label : UILabel = {
             let label = UILabel()
-            label.text = "Personal Information"
-            label.textColor = .white
+            label.text = "Personal Info"
+            label.textColor = UIColor(hex: "#101828")
             label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        personalInfoLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(personalInfoLabel)
+        personalInfoView.addSubview(label)
         
-        let editButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Edit", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
-        }()
-        editButton.isHidden = true
-        
-        scrollView.addSubview(editButton)
-        editButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine0.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
+            personalInfoView.topAnchor.constraint(equalTo: skillsView.bottomAnchor, constant: 20),
+            personalInfoView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            personalInfoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            personalInfoLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            personalInfoLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            editButton.topAnchor.constraint(equalTo: separatorLine0.bottomAnchor, constant: 5),
-            editButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            editButton.widthAnchor.constraint(equalToConstant: 70),
-            editButton.heightAnchor.constraint(equalToConstant: 30),
+            label.topAnchor.constraint(equalTo: personalInfoView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: personalInfoView.leadingAnchor, constant: 20)
         ])
         
         var dob = createStaticLabel()
         dob.text = "Date of Birth"
-        scrollView.addSubview(dob)
+        personalInfoView.addSubview(dob)
         dobLabel = createDynamicLabel()
-        scrollView.addSubview(dobLabel)
+        personalInfoView.addSubview(dobLabel)
         
         var nationality = createStaticLabel()
         nationality.text = "Nationality"
-        scrollView.addSubview(nationality)
+        personalInfoView.addSubview(nationality)
         nationalityLabel = createDynamicLabel()
-        scrollView.addSubview(nationalityLabel)
+        personalInfoView.addSubview(nationalityLabel)
         
         var gender = createStaticLabel()
         gender.text = "Gender"
-        scrollView.addSubview(gender)
+        personalInfoView.addSubview(gender)
         genderLabel = createDynamicLabel()
-        scrollView.addSubview(genderLabel)
+        personalInfoView.addSubview(genderLabel)
         
         var permanent = createStaticLabel()
         permanent.text = "Permanent Address"
-        scrollView.addSubview(permanent)
+        personalInfoView.addSubview(permanent)
         permanentAddressLabel = createDynamicLabel()
         permanentAddressLabel.numberOfLines = 0
-        scrollView.addSubview(permanentAddressLabel)
+        personalInfoView.addSubview(permanentAddressLabel)
         
         var current = createStaticLabel()
         current.text = "Current Address"
-        scrollView.addSubview(current)
+        personalInfoView.addSubview(current)
         currentAddressLabel = createDynamicLabel()
         currentAddressLabel.numberOfLines = 0
-        scrollView.addSubview(currentAddressLabel)
+        personalInfoView.addSubview(currentAddressLabel)
         
         var state = createStaticLabel()
         state.text = "State"
-        scrollView.addSubview(state)
+        personalInfoView.addSubview(state)
         stateLabel = createDynamicLabel()
         stateLabel.numberOfLines = 0
-        scrollView.addSubview(stateLabel)
+        personalInfoView.addSubview(stateLabel)
         
         var city = createStaticLabel()
         city.text = "City"
-        scrollView.addSubview(city)
+        personalInfoView.addSubview(city)
         cityLabel = createDynamicLabel()
-        scrollView.addSubview(cityLabel)
+        personalInfoView.addSubview(cityLabel)
         
         var pin = createStaticLabel()
         pin.text = "Pin Code"
-        scrollView.addSubview(pin)
+        personalInfoView.addSubview(pin)
         pincodeLabel = createDynamicLabel()
-        scrollView.addSubview(pincodeLabel)
+        personalInfoView.addSubview(pincodeLabel)
         
         var uid = createStaticLabel()
         uid.text = "UID Number"
-        scrollView.addSubview(uid)
+        personalInfoView.addSubview(uid)
         uidLabel = createDynamicLabel()
-        scrollView.addSubview(uidLabel)
+        personalInfoView.addSubview(uidLabel)
         
         var passport = createStaticLabel()
         passport.text = "Passport Number"
-        scrollView.addSubview(passport)
+        personalInfoView.addSubview(passport)
         passportLabel = createDynamicLabel()
-        scrollView.addSubview(passportLabel)
+        personalInfoView.addSubview(passportLabel)
         
         var pan = createStaticLabel()
         pan.text = "PanCard Number"
-        scrollView.addSubview(pan)
+        personalInfoView.addSubview(pan)
         pancardLabel = createDynamicLabel()
-        scrollView.addSubview(pancardLabel)
+        personalInfoView.addSubview(pancardLabel)
         
         var lang = createStaticLabel()
         lang.text = "Languages"
-        scrollView.addSubview(lang)
+        personalInfoView.addSubview(lang)
         languageLabel = createDynamicLabel()
         languageLabel.numberOfLines = 0
-        scrollView.addSubview(languageLabel)
+        personalInfoView.addSubview(languageLabel)
         
         
         NSLayoutConstraint.activate([
-            dob.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
-            dob.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            dob.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            dob.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 36),
             dob.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             dobLabel.topAnchor.constraint(equalTo: dob.bottomAnchor, constant: 10),
             dobLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
@@ -694,324 +1179,16 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
             lang.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
             languageLabel.topAnchor.constraint(equalTo: lang.bottomAnchor, constant: 10),
             languageLabel.leadingAnchor.constraint(equalTo: dob.leadingAnchor),
-            languageLabel.trailingAnchor.constraint(equalTo: dob.trailingAnchor)
-        ])
-    }
-    
-    
-    func setupSeparatorLine1() {
-        separatorLine1.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine1.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine1)
-        
-        NSLayoutConstraint.activate([
-            separatorLine1.topAnchor.constraint(equalTo: languageLabel.bottomAnchor, constant: 20),
-            separatorLine1.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine1.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine1.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
-    
-    
-    func setupEmploymentsView() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
-        
-        let employmentLabel : UILabel = {
-            let label = UILabel()
-            label.text = "Employments"
-            label.textColor = .white
-            label.font = .boldSystemFont(ofSize: 20)
-            return label
-        }()
-        employmentLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(employmentLabel)
-        
-        let addButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Add", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
-        }()
-        addButton.isHidden = true
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(addButton)
-        
-        NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
+            languageLabel.trailingAnchor.constraint(equalTo: dob.trailingAnchor),
             
-            employmentLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            employmentLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            addButton.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor, constant: 5),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addButton.widthAnchor.constraint(equalToConstant: 70),
-            addButton.heightAnchor.constraint(equalToConstant: 30),
-        ])
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        
-        employmentCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        employmentCV.register(EmploymentCell.self, forCellWithReuseIdentifier: "exp")
-        employmentCV.delegate = self
-        employmentCV.dataSource = self
-        
-        employmentCV.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(employmentCV)
-        NSLayoutConstraint.activate([
-            employmentCV.topAnchor.constraint(equalTo: employmentLabel.bottomAnchor, constant: 30),
-            employmentCV.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            employmentCV.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        ])
-        
-        employmentCVHeightConstraint = employmentCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
-        employmentCVHeightConstraint.isActive = true
-        
-        
-//        reloadEmploymentsCollectionView()
-    }
-    func reloadEmploymentsCollectionView() {
-        employmentCV.reloadData()
-            
-        // Calculate the content size
-        employmentCV.layoutIfNeeded()
-        let contentSize = employmentCV.collectionViewLayout.collectionViewContentSize
-        employmentCVHeightConstraint.constant = contentSize.height
-        
-        updateScrollViewContentSize()
-        
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
-        
-    
-    func setupSeparatorLine2() {
-        separatorLine2.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine2.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine2)
-        
-        NSLayoutConstraint.activate([
-            separatorLine2.topAnchor.constraint(equalTo: employmentCV.bottomAnchor, constant: 20),
-            separatorLine2.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine2.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine2.heightAnchor.constraint(equalToConstant: 1)
+            personalInfoView.bottomAnchor.constraint(equalTo: languageLabel.bottomAnchor, constant: 20)
         ])
     }
     
     
-    func setupEducationView() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
-        
-        let educationLabel : UILabel = {
-            let label = UILabel()
-            label.text = "Education"
-            label.textColor = .white
-            label.font = .boldSystemFont(ofSize: 20)
-            return label
-        }()
-        educationLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(educationLabel)
-        
-        let addButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Add", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
-        }()
-        addButton.isHidden = true
-        scrollView.addSubview(addButton)
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
-            
-            educationLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            educationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            addButton.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor, constant: 5),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addButton.widthAnchor.constraint(equalToConstant: 70),
-            addButton.heightAnchor.constraint(equalToConstant: 30),
-        ])
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        
-        educationCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        educationCV.register(EducationCell.self, forCellWithReuseIdentifier: "edu")
-        educationCV.delegate = self
-        educationCV.dataSource = self
-        
-        educationCV.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(educationCV)
-        NSLayoutConstraint.activate([
-            educationCV.topAnchor.constraint(equalTo: educationLabel.bottomAnchor, constant: 30),
-            educationCV.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            educationCV.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        ])
-        
-        educationCVHeightConstraint = educationCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
-        educationCVHeightConstraint.isActive = true
-        
-//        reloadCollectionView()
-    }
-    func reloadEducationCollectionView() {
-        educationCV.reloadData()
-        educationCV.layoutIfNeeded()
-        
-        let contentSize = educationCV.collectionViewLayout.collectionViewContentSize
-        educationCVHeightConstraint.constant = contentSize.height
-        
-        updateScrollViewContentSize()
-        
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
-    
-    
-    func setupSeparatorLine3() {
-        separatorLine3.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine3.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine3)
-        
-        NSLayoutConstraint.activate([
-            separatorLine3.topAnchor.constraint(equalTo: educationCV.bottomAnchor, constant: 20),
-            separatorLine3.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine3.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine3.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
-    
-    
-    func setupProjectView() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
-        
-        let projectLabel : UILabel = {
-            let label = UILabel()
-            label.text = "Projects"
-            label.textColor = .white
-            label.font = .boldSystemFont(ofSize: 20)
-            return label
-        }()
-        projectLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(projectLabel)
-        
-        let addButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Add", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
-        }()
-        addButton.isHidden = true
-//        addButton.addTarget(self, action: #selector(didTapAddProject), for: .touchUpInside)
-        
-        scrollView.addSubview(addButton)
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
-            
-            projectLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            projectLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            addButton.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor, constant: 5),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addButton.widthAnchor.constraint(equalToConstant: 70),
-            addButton.heightAnchor.constraint(equalToConstant: 30),
-        ])
-        
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        
-        projectCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        projectCV.register(ProjectCell.self, forCellWithReuseIdentifier: "project")
-        projectCV.delegate = self
-        projectCV.dataSource = self
-        
-        projectCV.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(projectCV)
-        NSLayoutConstraint.activate([
-            projectCV.topAnchor.constraint(equalTo: projectLabel.bottomAnchor, constant: 30),
-            projectCV.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            projectCV.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        ])
-        
-        projectCVHeightConstraint = projectCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
-        projectCVHeightConstraint.isActive = true
-    }
-    func reloadProjectCollectionView() {
-        projectCV.reloadData()
-        projectCV.layoutIfNeeded()
-        
-        let contentSize = projectCV.collectionViewLayout.collectionViewContentSize
-        projectCVHeightConstraint.constant = contentSize.height
-        
-        updateScrollViewContentSize()
-        
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
-    
-    
-    func setupSeparatorLine4() {
-        separatorLine4.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine4.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine4)
-        
-        NSLayoutConstraint.activate([
-            separatorLine4.topAnchor.constraint(equalTo: projectCV.bottomAnchor, constant: 20),
-            separatorLine4.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine4.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine4.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
 
     
-    func createStaticLabel() -> UILabel {
-        var label = UILabel()
-        label.font = .boldSystemFont(ofSize: 18)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(hex: "#344054")
-        return label
-    }
     
-    func createDynamicLabel() -> UILabel {
-        var label = UILabel()
-        label.font = .systemFont(ofSize: 16)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(hex: "#667085")
-        return label
-    }
     
     var portfolioLabel : UILabel!
     var currCtcLabel : UILabel!
@@ -1021,106 +1198,85 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     var currentlyEmployed : UILabel!
     var worktypeLabel : UILabel!
     
-    var preferencesSaveButton: UIButton!
-    var preferencesCancelButton: UIButton!
-    
-    
     func setupPreferencesView() {
+        preferenceView.layer.borderWidth = 1
+        preferenceView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        preferenceView.layer.cornerRadius = 12
         
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
+        preferenceView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(preferenceView)
         
-        let preferencesTitleLabel : UILabel = {
+        let label : UILabel = {
             let label = UILabel()
             label.text = "Preferences"
-            label.textColor = .white
+            label.textColor = UIColor(hex: "#101828")
             label.font = .boldSystemFont(ofSize: 20)
+            label.numberOfLines = 1
+            label.translatesAutoresizingMaskIntoConstraints = false
             return label
         }()
-        preferencesTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(preferencesTitleLabel)
-        
-        let addButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Edit", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
-        }()
-        addButton.isHidden = true
-        
-        scrollView.addSubview(addButton)
-        addButton.translatesAutoresizingMaskIntoConstraints = false
+        preferenceView.addSubview(label)
         
         NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
+            preferenceView.topAnchor.constraint(equalTo: personalInfoView.bottomAnchor, constant: 20),
+            preferenceView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            preferenceView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            preferencesTitleLabel.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            preferencesTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            addButton.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 5),
-            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addButton.widthAnchor.constraint(equalToConstant: 70),
-            addButton.heightAnchor.constraint(equalToConstant: 30),
+            label.topAnchor.constraint(equalTo: preferenceView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: preferenceView.leadingAnchor, constant: 20)
         ])
         
-        let pfLabel = createStaticLabel()
+        
+        var pfLabel = createStaticLabel()
         pfLabel.text = "Portfolio Link"
-        scrollView.addSubview(pfLabel)
+        preferenceView.addSubview(pfLabel)
         
         portfolioLabel = createDynamicLabel()
         portfolioLabel.numberOfLines = 0
-        scrollView.addSubview(portfolioLabel)
+        preferenceView.addSubview(portfolioLabel)
         
         var ccLabel = createStaticLabel()
         ccLabel.text = "Current CTC"
-        scrollView.addSubview(ccLabel)
+        preferenceView.addSubview(ccLabel)
         
         currCtcLabel = createDynamicLabel()
         scrollView.addSubview(currCtcLabel)
         
         var ecLabel = createStaticLabel()
         ecLabel.text = "Expected CTC"
-        scrollView.addSubview(ecLabel)
+        preferenceView.addSubview(ecLabel)
         
         expectedCtcLabel = createDynamicLabel()
-        scrollView.addSubview(expectedCtcLabel)
+        preferenceView.addSubview(expectedCtcLabel)
         
         var npLabel = createStaticLabel()
         npLabel.text = "Notice Period"
-        scrollView.addSubview(npLabel)
+        preferenceView.addSubview(npLabel)
         noticePeriodLabel = createDynamicLabel()
-        scrollView.addSubview(noticePeriodLabel)
+        preferenceView.addSubview(noticePeriodLabel)
         
         
         var wtrLabel = createStaticLabel()
         wtrLabel.text = "Willing to Relocate"
-        scrollView.addSubview(wtrLabel)
+        preferenceView.addSubview(wtrLabel)
         willingToRelocate = createDynamicLabel()
-        scrollView.addSubview(willingToRelocate)
+        preferenceView.addSubview(willingToRelocate)
         
         var ceLabel = createStaticLabel()
         ceLabel.text = "Currently Employed"
-        scrollView.addSubview(ceLabel)
+        preferenceView.addSubview(ceLabel)
         currentlyEmployed = createDynamicLabel()
-        scrollView.addSubview(currentlyEmployed)
+        preferenceView.addSubview(currentlyEmployed)
         
         var pwtLabel = createStaticLabel()
         pwtLabel.text = "Preferred Work Type"
-        scrollView.addSubview(pwtLabel)
+        preferenceView.addSubview(pwtLabel)
         worktypeLabel = createDynamicLabel()
-        scrollView.addSubview(worktypeLabel)
+        preferenceView.addSubview(worktypeLabel)
         
         NSLayoutConstraint.activate([
-            pfLabel.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
-            pfLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            pfLabel.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            pfLabel.leadingAnchor.constraint(equalTo: preferenceView.leadingAnchor, constant: 20),
             portfolioLabel.topAnchor.constraint(equalTo: pfLabel.bottomAnchor, constant: 10),
             portfolioLabel.leadingAnchor.constraint(equalTo: pfLabel.leadingAnchor),
             portfolioLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -1154,474 +1310,13 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
             pwtLabel.leadingAnchor.constraint(equalTo: ceLabel.leadingAnchor),
             worktypeLabel.topAnchor.constraint(equalTo: pwtLabel.bottomAnchor, constant: 10),
             worktypeLabel.leadingAnchor.constraint(equalTo: pwtLabel.leadingAnchor),
-        ])
-        
-        
-        
-    }
-    
-    
-    func setupSeparatorLine5() {
-        separatorLine5.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine5.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine5)
-        NSLayoutConstraint.activate([
-            separatorLine5.topAnchor.constraint(equalTo: worktypeLabel.bottomAnchor, constant: 20),
-            separatorLine5.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine5.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine5.heightAnchor.constraint(equalToConstant: 1)
+            
+            preferenceView.bottomAnchor.constraint(equalTo: worktypeLabel.bottomAnchor, constant: 20)
         ])
     }
     
     
-    // Headline and Summary :
-    var headlineEditButton : UIButton = {
-        let btn = UIButton()
-        btn.setTitle("Edit", for: .normal)
-        btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-        btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        btn.backgroundColor = .white
-        btn.layer.cornerRadius = 8
-        btn.isHidden = true
-        return btn
-    }()
-    var headlineSaveButton : UIButton!
     
-    func setupHeadlineAndSummary() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
-        
-        let prefer = UILabel()
-        prefer.text = "Headline and Summary"
-        prefer.font = .boldSystemFont(ofSize: 20)
-        prefer.textColor = .white
-        prefer.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(prefer)
-        
-        headlineEditButton.addTarget(self, action: #selector(didTapEditHeadline), for: .touchUpInside)
-        scrollView.addSubview(headlineEditButton)
-        headlineEditButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
-            
-            prefer.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            prefer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                
-            headlineEditButton.topAnchor.constraint(equalTo: separatorLine5.bottomAnchor, constant: 5),
-            headlineEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            headlineEditButton.widthAnchor.constraint(equalToConstant: 70),
-            headlineEditButton.heightAnchor.constraint(equalToConstant: 30),
-        ])
-        
-        
-        
-        let tempView = headlineVC.view!
-        view.backgroundColor = .systemBackground
-        
-        headlineVC.headerHeightConstraint?.constant = 0
-        headlineVC.headerHeightConstraint?.isActive = true
-        headlineVC.headerView.isHidden = true
-        
-        headlineVC.bottomHeightConstraint?.constant = 0
-        headlineVC.bottomHeightConstraint?.isActive = true
-        headlineVC.bottomView.isHidden = true
-        
-        headlineVC.generateResume.isHidden = true
-        headlineVC.generateSummary.isHidden = true
-        headlineVC.resumeTextView.isEditable = false
-        headlineVC.summaryTextView.isEditable = false
-        headlineVC.resumeTextView.inputAccessoryView = nil
-        headlineVC.summaryTextView.inputAccessoryView = nil
-        
-        tempView.layoutIfNeeded()
-        
-        let contentHeight = view.bounds.height - 300
-        headlineVC.scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        headlineVC.scrollView.isScrollEnabled = false
-        tempView.layoutIfNeeded()
-        
-        tempView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(tempView)
-        addChild(headlineVC)
-        headlineVC.didMove(toParent: self)
-        
-        overrideUserInterfaceStyle = .light
-        
-        
-        headlineSaveButton = UIButton(type: .system)
-        headlineSaveButton.setTitle("Save", for: .normal)
-        headlineSaveButton.titleLabel?.font = .systemFont(ofSize: 20)
-        headlineSaveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
-        headlineSaveButton.backgroundColor = UIColor(hex: "#0079C4")
-        headlineSaveButton.layer.cornerRadius = 8
-        headlineSaveButton.addTarget(self, action: #selector(saveHeadlineChanges), for: .touchUpInside)
-        headlineSaveButton.isHidden = true
-        
-        headlineSaveButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(headlineSaveButton)
-        
-        
-        
-        NSLayoutConstraint.activate([
-            tempView.topAnchor.constraint(equalTo: prefer.bottomAnchor, constant: 10),
-            tempView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tempView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tempView.heightAnchor.constraint(equalToConstant: 700),
-            
-            headlineSaveButton.bottomAnchor.constraint(equalTo: tempView.bottomAnchor, constant: -180),
-            headlineSaveButton.trailingAnchor.constraint(equalTo: tempView.trailingAnchor, constant: -20),
-            headlineSaveButton.widthAnchor.constraint(equalToConstant: 80),
-            headlineSaveButton.heightAnchor.constraint(equalToConstant: 40),
-        ])
-    }
-    
-    @objc func didTapEditHeadline() {
-        if headlineEditButton.titleLabel?.text == "Edit" {
-            headlineEditButton.setTitle("Cancel", for: .normal)
-            headlineSaveButton.isHidden = false
-            headlineVC.generateResume.isHidden = false
-            headlineVC.generateSummary.isHidden = false
-            
-            headlineVC.resumeTextView.isEditable = true
-            headlineVC.summaryTextView.isEditable = true
-            
-            headlineVC.resumeTextView.addDoneButtonOnKeyboard()
-            headlineVC.summaryTextView.addDoneButtonOnKeyboard()
-        }
-        else {
-            headlineEditButton.setTitle("Edit", for: .normal)
-            headlineSaveButton.isHidden = true
-            headlineVC.generateResume.isHidden = true
-            headlineVC.generateSummary.isHidden = true
-            
-            headlineVC.resumeTextView.isEditable = false
-            headlineVC.summaryTextView.isEditable = false
-            
-            headlineVC.resumeTextView.inputAccessoryView = nil
-            headlineVC.summaryTextView.inputAccessoryView = nil
-            
-            fetchUserProfile()
-        }
-    }
-    @objc func saveHeadlineChanges() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
-            print("Invalid URL")
-            return
-        }
-        
-
-        guard let headline = headlineVC.resumeTextView.text, !headline.isEmpty,
-              let summary = headlineVC.summaryTextView.text, !summary.isEmpty
-        else {
-            
-            let alert = UIAlertController(title: "Missing Information", message: "Fill all the details", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-
-        let resumeData = ResumeData(headline: headline, summary: summary)
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-
-        do {
-            let jsonData = try JSONEncoder().encode(resumeData)
-            request.httpBody = jsonData
-        } catch {
-            print("Failed to encode resume data: \(error)")
-            return
-        }
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("No response from server: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            
-            if httpResponse.statusCode == 200 {
-                print("Data successfully uploaded")
-                if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                    print("Server response: \(responseString)")
-                }
-            } else {
-                print("Failed to upload data, status code: \(httpResponse.statusCode)")
-            }
-            
-            if let error = error {
-                print("Error uploading data: \(error.localizedDescription)")
-                self.fetchUserProfile()
-            }
-        }.resume()
-        
-        headlineEditButton.setTitle("Edit", for: .normal)
-        headlineSaveButton.isHidden = true
-        headlineVC.generateResume.isHidden = true
-        headlineVC.generateSummary.isHidden = true
-        
-        headlineVC.resumeTextView.isEditable = false
-        headlineVC.summaryTextView.isEditable = false
-        
-        headlineVC.resumeTextView.inputAccessoryView = nil
-        headlineVC.summaryTextView.inputAccessoryView = nil
-    }
-    
-    
-    func setupSeparatorLine6() {
-        separatorLine6.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine6.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine6)
-        NSLayoutConstraint.activate([
-            separatorLine6.topAnchor.constraint(equalTo: headlineSaveButton.bottomAnchor, constant: -30),
-            separatorLine6.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine6.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine6.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
-    
-    
-    var softwaresContainerView = UIView()
-    
-    func setupSoftwares() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
-        
-        let title = UILabel()
-        title.text = "Softwares"
-        title.font = .boldSystemFont(ofSize: 20)
-        title.textColor = .white
-        title.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(title)
-        
-        let softwareEditButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Edit", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
-        }()
-        softwareEditButton.isHidden = true
-        scrollView.addSubview(softwareEditButton)
-        softwareEditButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        softwaresContainerView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(softwaresContainerView)
-        NSLayoutConstraint.activate([
-            softwaresContainerView.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
-            softwaresContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            softwaresContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        ])
-        
-        NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine6.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
-            
-            title.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                
-            softwareEditButton.topAnchor.constraint(equalTo: separatorLine6.bottomAnchor, constant: 5),
-            softwareEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            softwareEditButton.widthAnchor.constraint(equalToConstant: 70),
-            softwareEditButton.heightAnchor.constraint(equalToConstant: 30),
-        ])
-        
-    }
-    
-    func addLabelsInSoftwares() {
-        var currentX: CGFloat = 0
-        var currentY: CGFloat = 0
-        let spacing: CGFloat = 10
-        let maxWidth: CGFloat = view.bounds.width - 32  // Adjust for left and right padding
-        
-        for string in softwaresArray {
-            let label = PaddedLabel()
-            label.text = string
-            label.font = .boldSystemFont(ofSize: 16)
-            label.backgroundColor = .white
-            label.textColor = .black
-            label.layer.borderColor = UIColor.lightGray.cgColor
-            label.layer.borderWidth = 1
-            label.layer.cornerRadius = 8
-            label.clipsToBounds = true
-            
-            // Ensure the label fits the text with padding
-            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
-            
-            // Check if the label fits in the current line
-            if currentX + labelSize.width > maxWidth {
-                // Move to the next line
-                currentX = 0
-                currentY += labelSize.height + spacing
-            }
-            
-            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
-            softwaresContainerView.addSubview(label)
-            
-            // Update currentX to the next position
-            currentX += labelSize.width + spacing
-        }
-        
-        softwaresContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
-    }
-    
-    
-    func setupSeparatorLine7() {
-        separatorLine7.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine7.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine7)
-        NSLayoutConstraint.activate([
-            separatorLine7.topAnchor.constraint(equalTo: softwaresContainerView.bottomAnchor, constant: 40),
-            separatorLine7.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine7.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine7.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
-    
-    
-    var skillsContainerView = UIView()
-    
-    func setupSkills() {
-        let bgView = UIView()
-        bgView.backgroundColor = UIColor(hex: "#1E293B")
-        bgView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(bgView)
-        
-        let title = UILabel()
-        title.text = "Skills"
-        title.font = .boldSystemFont(ofSize: 20)
-        title.textColor = .white
-        title.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(title)
-        
-        var skillsEditButton : UIButton = {
-            let btn = UIButton()
-            btn.setTitle("Edit", for: .normal)
-            btn.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
-            btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
-            btn.backgroundColor = .white
-            btn.layer.cornerRadius = 8
-            return btn
-        }()
-        skillsEditButton.isHidden = true
-        scrollView.addSubview(skillsEditButton)
-        skillsEditButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        
-        skillsContainerView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(skillsContainerView)
-        NSLayoutConstraint.activate([
-            skillsContainerView.topAnchor.constraint(equalTo: bgView.bottomAnchor, constant: 20),
-            skillsContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            skillsContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        ])
-        
-        NSLayoutConstraint.activate([
-            bgView.topAnchor.constraint(equalTo: separatorLine7.bottomAnchor),
-            bgView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bgView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bgView.heightAnchor.constraint(equalToConstant: 40),
-            
-            title.centerYAnchor.constraint(equalTo: bgView.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                
-            skillsEditButton.topAnchor.constraint(equalTo: separatorLine7.bottomAnchor, constant: 5),
-            skillsEditButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            skillsEditButton.widthAnchor.constraint(equalToConstant: 70),
-            skillsEditButton.heightAnchor.constraint(equalToConstant: 30),
-        ])
-        
-    }
-    
-    func addLabelsInSkills() {
-        var currentX: CGFloat = 0
-        var currentY: CGFloat = 0
-        let spacing: CGFloat = 10
-        let maxWidth: CGFloat = view.bounds.width - 32  // Adjust for left and right padding
-        
-        for string in skillsArray {
-            let label = PaddedLabel()
-            label.text = string
-            label.font = .boldSystemFont(ofSize: 16)
-            label.backgroundColor = .white
-            label.textColor = .black
-            label.layer.borderColor = UIColor.lightGray.cgColor
-            label.layer.borderWidth = 1
-            label.layer.cornerRadius = 8
-            label.clipsToBounds = true
-            
-            // Ensure the label fits the text with padding
-            let labelSize = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
-            
-            // Check if the label fits in the current line
-            if currentX + labelSize.width > maxWidth {
-                // Move to the next line
-                currentX = 0
-                currentY += labelSize.height + spacing
-            }
-            
-            label.frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: labelSize)
-            skillsContainerView.addSubview(label)
-            
-            // Update currentX to the next position
-            currentX += labelSize.width + spacing
-        }
-        
-        skillsContainerView.heightAnchor.constraint(equalToConstant: currentY + 28).isActive = true
-    }
-    
-    
-    
-    // ******************* Common Methods ***********************************
-    
-    
-    func updateScrollViewContentSize() {
-        let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
-        // Add other collection view heights if there are more
-        let extraSpaceHeight: CGFloat = 1000 // Change this if you need more space at the bottom
-        
-        let totalContentHeight = combinedContentHeight + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight)
-    }
-    private func showAlert(withTitle title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true)
-    }
-    func askUserConfirmation(title: String, message: String, confirmedAction: @escaping () -> Void) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-
-        // 'Yes' action
-        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
-            confirmedAction()  // Perform the action passed in the closure
-        }
-        
-        // 'No' action
-        let noAction = UIAlertAction(title: "No", style: .cancel)
-
-        alertController.addAction(yesAction)
-        alertController.addAction(noAction)
-
-        present(alertController, animated: true)
-    }
-    
-    
-    // *********************************************************************************************************
     
     
     func setupBottomView() {
@@ -1684,6 +1379,58 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     }
     
     
+    
+    
+    
+    // ******************* Common Methods ***********************************
+    
+    
+    func updateScrollViewContentSize() {
+        let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
+        // Add other collection view heights if there are more
+        let extraSpaceHeight: CGFloat = 1000 // Change this if you need more space at the bottom
+        
+        let totalContentHeight = combinedContentHeight + extraSpaceHeight
+        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight)
+    }
+    private func showAlert(withTitle title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
+    }
+    func askUserConfirmation(title: String, message: String, confirmedAction: @escaping () -> Void) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        // 'Yes' action
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            confirmedAction()  // Perform the action passed in the closure
+        }
+        
+        // 'No' action
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+
+        present(alertController, animated: true)
+    }
+    
+    func createStaticLabel() -> UILabel {
+        var label = UILabel()
+        label.font =  .systemFont(ofSize: 16)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor(hex: "#667085")
+        return label
+    }
+    
+    func createDynamicLabel() -> UILabel {
+        var label = UILabel()
+        label.font = .boldSystemFont(ofSize: 18)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor(hex: "#344054")
+        return label
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
         textField.resignFirstResponder()
@@ -1720,15 +1467,16 @@ extension PreviewVC : UICollectionViewDelegateFlowLayout, UICollectionViewDelega
             let exp = empDataArray[indexPath.row]
             
             cell.titleLabel.text = exp.employmentDesignation
-            cell.companyNameLabel.text = "l  \(exp.companyName)"
+            cell.companyNameLabel.text = exp.companyName
             cell.noOfYearsLabel.text = "\(exp.yearsOfExperience),"
             cell.jobTypeLabel.text = exp.employmentPeriod
             
+            cell.editButton.isHidden = true
             cell.deleteButton.isHidden = true
             
-            cell.layer.borderWidth = 1
-            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-            cell.layer.cornerRadius = 12
+//            cell.layer.borderWidth = 1
+//            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+//            cell.layer.cornerRadius = 12
             
             return cell
         }
@@ -1738,7 +1486,7 @@ extension PreviewVC : UICollectionViewDelegateFlowLayout, UICollectionViewDelega
             let edu = eduDataArray[indexPath.row]
             
             cell.educationLabel.text = edu.educationName
-            cell.collegeLabel.text = "l  \(edu.boardOrUniversity ?? "nil")"
+            cell.collegeLabel.text = edu.boardOrUniversity ?? "nil"
             cell.passYearLabel.text = "\(edu.yearOfPassing ?? "nil"),"
             let m = edu.marksObtained ?? ""
             if m.hasSuffix("%") {
@@ -1748,11 +1496,12 @@ extension PreviewVC : UICollectionViewDelegateFlowLayout, UICollectionViewDelega
                 cell.courseTypeLabel.text = "\(m)%"
             }
             
+            cell.editButton.isHidden = true
             cell.deleteButton.isHidden = true
             
-            cell.layer.borderWidth = 1
-            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-            cell.layer.cornerRadius = 12
+//            cell.layer.borderWidth = 1
+//            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+//            cell.layer.cornerRadius = 12
         
             return cell
         }
@@ -1766,10 +1515,11 @@ extension PreviewVC : UICollectionViewDelegateFlowLayout, UICollectionViewDelega
             cell.projectResponsibility.text = project.responsibility
             
             cell.deleteButton.isHidden = true
+            cell.editButton.isHidden = true
             
-            cell.layer.borderWidth = 1
-            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
-            cell.layer.cornerRadius = 12
+//            cell.layer.borderWidth = 1
+//            cell.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+//            cell.layer.cornerRadius = 12
         
             return cell
         }
@@ -1797,15 +1547,15 @@ extension PreviewVC : UICollectionViewDelegateFlowLayout, UICollectionViewDelega
             // Calculate total height
             let totalHeight = descriptionHeight + responsibilityHeight + (fixedHeight * 2) + (padding * 3) // Adjust number of paddings as needed
 
-            return CGSize(width: view.frame.width - 32, height: totalHeight + 30)
+            return CGSize(width: view.frame.width - 72, height: totalHeight + 90)
+        }
+        else if collectionView == employmentCV {
+            return CGSize(width: view.frame.width - 72, height: 100)
         }
         else {
-            return CGSize(width: view.frame.width - 32, height: 80)
+            return CGSize(width: view.frame.width - 72, height: 90)
         }
     }
-    
-    
-    
 }
 
 // Extension for APIs
@@ -1844,12 +1594,17 @@ extension PreviewVC {
                 let userName = user.name ?? ""
                 
                 DispatchQueue.main.async {
-                    self.profileCircleLabel.text = initialsOfName
                     self.userNameLabel.text = "\(userName)"
                     self.jobTitleLabel.text = user.designation
                     self.locationLabel.text = user.currentAddress?.city ?? "cityNil"
                     
                     self.fetchProfilePicture(size: "m", userID: user._id)
+                    
+                    self.emailLabel.text = user.email
+                    self.mobileLabel.text = user.mobile
+                    
+                    self.headlineLabel.text = user.headline
+                    self.summaryLabel.text = user.summary
                     
                     self.dobLabel.text = user.dateOfBirth
                     self.nationalityLabel.text = user.nationality
@@ -1884,8 +1639,6 @@ extension PreviewVC {
                     self.preferencesVC.currentCtcTextField.text = user.currentCtc
                     self.preferencesVC.expectedCtcTextField.text = user.expectedCtc
                     
-                    self.headlineVC.resumeTextView.text = user.headline
-                    self.headlineVC.summaryTextView.text = user.summary
                     
                     
                     self.portfolioLabel.text = user.portfolio
@@ -1901,15 +1654,11 @@ extension PreviewVC {
 //                        self.softwaresArray.append(s)
 //                    }
                     
-                    for subview in self.softwaresContainerView.subviews {
-                        subview.removeFromSuperview()
-                    }
+                   
                     self.softwaresArray = user.softwares!
                     self.addLabelsInSoftwares()
                     
-                    for subview in self.skillsContainerView.subviews {
-                        subview.removeFromSuperview()
-                    }
+                    
                     self.skillsArray = user.skills!
                     self.addLabelsInSkills()
                 }

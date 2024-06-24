@@ -14,8 +14,6 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     var headerView : UIView!
     var circleContainerView : UIView!
     
-    var fullNameTextField : UITextField!
-    var mobileNumberTextField : UITextField!
     
     var isResumeUploaded = false
     
@@ -23,6 +21,18 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     var uploadLogoView : UIView!
     var clickToUploadLabel : UILabel!
     var uploadedFileView : UIView!
+    
+    var selectedFileURL : URL!
+    
+    let deleteButton: UIButton = {
+        let button = UIButton()
+        if let image = UIImage(systemName: "trash")?.buttonImageResized(to: CGSize(width: 20, height: 20)) { // Adjust the size as needed
+            button.setImage(image, for: .normal)
+        }
+        button.tintColor = UIColor(hex: "#98A2B3")
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,8 +49,8 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     
     func setupViews() {
         setupHeaderView()
-//        setupTextFields()
         setupResumeUploadView()
+        setupUploadedFileView()
         setupNextButton()
         setupBackButton()
     }
@@ -254,83 +264,6 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     
     
     
-    func setupTextFields() {
-        let fullNameLabel = UILabel()
-        fullNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        let attributedText = NSMutableAttributedString(string: "Full Name")
-        let asterisk = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-        attributedText.append(asterisk)
-        fullNameLabel.attributedText = attributedText
-        view.addSubview(fullNameLabel)
-        
-        // Full Name TextField
-        fullNameTextField = UITextField()
-        fullNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        fullNameTextField.borderStyle = .roundedRect
-        fullNameTextField.placeholder = "Enter Full Name"
-        view.addSubview(fullNameTextField)
-        
-        // Mobile Number Label
-        let mobileNumberLabel = UILabel()
-        mobileNumberLabel.translatesAutoresizingMaskIntoConstraints = false
-        let attributedText2 = NSMutableAttributedString(string: "Mobile Number")
-        let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-        attributedText2.append(asterisk2)
-        mobileNumberLabel.attributedText = attributedText2
-        view.addSubview(mobileNumberLabel)
-        
-        // Mobile Number TextField
-        mobileNumberTextField = UITextField()
-        mobileNumberTextField.translatesAutoresizingMaskIntoConstraints = false
-        mobileNumberTextField.borderStyle = .roundedRect
-        mobileNumberTextField.placeholder = "Enter Mobile Number"
-        mobileNumberTextField.keyboardType = .decimalPad // Numeric keypad
-        mobileNumberTextField.delegate = self // Set delegate for this text field
-        view.addSubview(mobileNumberTextField)
-        
-        // Total Experience Label
-//        let totalExperienceLabel = UILabel()
-//        totalExperienceLabel.translatesAutoresizingMaskIntoConstraints = false
-//        let attributedText3 = NSMutableAttributedString(string: "Total experience (years)")
-//        let asterisk3 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-//        attributedText3.append(asterisk3)
-//        totalExperienceLabel.attributedText = attributedText3
-//        view.addSubview(totalExperienceLabel)
-        
-        // Total Experience TextField
-//        let totalExperienceTextField = UITextField()
-//        totalExperienceTextField.translatesAutoresizingMaskIntoConstraints = false
-//        totalExperienceTextField.borderStyle = .roundedRect
-//        totalExperienceTextField.placeholder = "Enter Total Experience"
-//        totalExperienceTextField.keyboardType = .decimalPad // Numeric keypad
-//        totalExperienceTextField.delegate = self // Set delegate for this text field
-//        view.addSubview(totalExperienceTextField)
-        
-        // Constraints
-        NSLayoutConstraint.activate([
-            fullNameLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 30),
-            fullNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            fullNameTextField.topAnchor.constraint(equalTo: fullNameLabel.bottomAnchor, constant: 8),
-            fullNameTextField.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
-            fullNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            
-            mobileNumberLabel.topAnchor.constraint(equalTo: fullNameTextField.bottomAnchor, constant: 16),
-            mobileNumberLabel.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
-            
-            mobileNumberTextField.topAnchor.constraint(equalTo: mobileNumberLabel.bottomAnchor, constant: 8),
-            mobileNumberTextField.leadingAnchor.constraint(equalTo: mobileNumberLabel.leadingAnchor),
-            mobileNumberTextField.trailingAnchor.constraint(equalTo: fullNameTextField.trailingAnchor),
-            
-//            totalExperienceLabel.topAnchor.constraint(equalTo: mobileNumberTextField.bottomAnchor, constant: 16),
-//            totalExperienceLabel.leadingAnchor.constraint(equalTo: fullNameLabel.leadingAnchor),
-//            
-//            totalExperienceTextField.topAnchor.constraint(equalTo: totalExperienceLabel.bottomAnchor, constant: 8),
-//            totalExperienceTextField.leadingAnchor.constraint(equalTo: totalExperienceLabel.leadingAnchor),
-//            totalExperienceTextField.trailingAnchor.constraint(equalTo: fullNameTextField.trailingAnchor)
-        ])
-    }
-    
     func setupResumeUploadView() {
         let uploadResumeLabel = UILabel()
         uploadResumeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -383,19 +316,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         formatLabel.translatesAutoresizingMaskIntoConstraints = false
         resumeContainer.addSubview(formatLabel)
         
-        uploadedFileView = UIView()
         
-        uploadedFileView.isHidden = true // Initially hidden
-        uploadedFileView.backgroundColor = UIColor(hex: "#EAECF0")
-        uploadedFileView.layer.cornerRadius = 8
-        uploadedFileView.translatesAutoresizingMaskIntoConstraints = false
-        resumeContainer.addSubview(uploadedFileView)
-        
-        let fileNameLabel = UILabel()
-        fileNameLabel.text = "file"
-        fileNameLabel.font = .boldSystemFont(ofSize: 18)
-        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        uploadedFileView.addSubview(fileNameLabel)
         
         
         NSLayoutConstraint.activate([
@@ -405,7 +326,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             resumeContainer.topAnchor.constraint(equalTo: uploadResumeLabel.bottomAnchor, constant: 8),
             resumeContainer.leadingAnchor.constraint(equalTo: uploadResumeLabel.leadingAnchor),
             resumeContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            resumeContainer.heightAnchor.constraint(equalToConstant: 220), // Adjust height as needed
+            resumeContainer.heightAnchor.constraint(equalToConstant: 150), // Adjust height as needed
             
             uploadLogoView.centerXAnchor.constraint(equalTo: resumeContainer.centerXAnchor),
             uploadLogoView.topAnchor.constraint(equalTo: resumeContainer.topAnchor, constant: 20),
@@ -424,20 +345,55 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             dragLabel.leadingAnchor.constraint(equalTo: clickToUploadLabel.trailingAnchor, constant: 6),
             
             formatLabel.topAnchor.constraint(equalTo: clickToUploadLabel.bottomAnchor, constant: 10),
-            formatLabel.centerXAnchor.constraint(equalTo: resumeContainer.centerXAnchor),
-            
-            uploadedFileView.topAnchor.constraint(equalTo: formatLabel.bottomAnchor, constant: 20),
-            uploadedFileView.leadingAnchor.constraint(equalTo: resumeContainer.leadingAnchor, constant: 16),
-            uploadedFileView.trailingAnchor.constraint(equalTo: resumeContainer.trailingAnchor, constant: -16),
+            formatLabel.centerXAnchor.constraint(equalTo: resumeContainer.centerXAnchor)
+        ])
+    }
+    
+    
+    func setupUploadedFileView() {
+        uploadedFileView = UIView()
+        
+        uploadedFileView.isHidden = true // Initially hidden
+        uploadedFileView.layer.cornerRadius = 8
+        uploadedFileView.layer.borderWidth = 1
+        uploadedFileView.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        uploadedFileView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(uploadedFileView)
+        
+        let fileNameLabel = UILabel()
+        fileNameLabel.text = "file"
+        fileNameLabel.font = .boldSystemFont(ofSize: 16)
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        uploadedFileView.addSubview(fileNameLabel)
+        
+        uploadedFileView.addSubview(deleteButton)
+        deleteButton.addTarget(self, action: #selector(didTapDeleteResume), for: .touchUpInside)
+        
+        NSLayoutConstraint.activate([
+            uploadedFileView.topAnchor.constraint(equalTo: resumeContainer.bottomAnchor, constant: 20),
+            uploadedFileView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            uploadedFileView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             uploadedFileView.heightAnchor.constraint(equalToConstant: 40),
             
-            fileNameLabel.centerXAnchor.constraint(equalTo: uploadedFileView.centerXAnchor),
+            fileNameLabel.leadingAnchor.constraint(equalTo: uploadedFileView.leadingAnchor, constant: 20),
+//            fileNameLabel.centerXAnchor.constraint(equalTo: uploadedFileView.centerXAnchor),
             fileNameLabel.centerYAnchor.constraint(equalTo: uploadedFileView.centerYAnchor),
-            fileNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: view.frame.width - 84)
+            fileNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: view.frame.width - 100),
+            
+            deleteButton.centerYAnchor.constraint(equalTo: uploadedFileView.centerYAnchor),
+            deleteButton.trailingAnchor.constraint(equalTo: uploadedFileView.trailingAnchor, constant: -10),
+            deleteButton.widthAnchor.constraint(equalToConstant: 20),
+            deleteButton.heightAnchor.constraint(equalToConstant: 20)
         ])
-        
-        
     }
+    
+    @objc func didTapDeleteResume() {
+        isResumeUploaded = false
+        selectedFileURL = nil
+        uploadedFileView.isHidden = true
+    }
+    
+    
     
     func setupNextButton() {
         let nextButton = UIButton()
@@ -452,12 +408,13 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         nextButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nextButton)
         NSLayoutConstraint.activate([
-            nextButton.topAnchor.constraint(equalTo: resumeContainer.bottomAnchor, constant: 20),
+            nextButton.topAnchor.constraint(equalTo: uploadedFileView.bottomAnchor, constant: 20),
             nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nextButton.heightAnchor.constraint(equalToConstant: 50),
             nextButton.widthAnchor.constraint(equalToConstant: 100)
         ])
     }
+    
     @objc func didTapNextButton() {
         if isResumeUploaded == false {
             // Handle validation failure
@@ -468,9 +425,9 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let vc = QualificationsVC()
-        navigationController?.pushViewController(vc, animated: true)
+        uploadFileToServer(fileURL: selectedFileURL)
     }
+    
     
     func setupBackButton() {
         let backButton = UIButton()
@@ -493,7 +450,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         
         // Set attributed title for button
         backButton.setAttributedTitle(attributedString, for: .normal)
-        backButton.titleLabel?.font = .systemFont(ofSize: 20)
+        backButton.titleLabel?.font = .systemFont(ofSize: 18)
         backButton.titleLabel?.textColor = UIColor(hex: "#475467")
         
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
@@ -501,13 +458,13 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backButton)
         NSLayoutConstraint.activate([
-            backButton.topAnchor.constraint(equalTo: resumeContainer.bottomAnchor, constant: 100),
+            backButton.topAnchor.constraint(equalTo: uploadedFileView.bottomAnchor, constant: 80),
             backButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             backButton.heightAnchor.constraint(equalToConstant: 50),
             backButton.widthAnchor.constraint(equalToConstant: 200)
         ])
     }
-    
+
     @objc func didTapBackButton() {
         let vc = LoginVC()
         let navVC = UINavigationController(rootViewController: vc)
@@ -530,6 +487,7 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
     
     
     
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
         textField.resignFirstResponder()
@@ -542,10 +500,13 @@ class BasicDetails1: UIViewController, UITextFieldDelegate {
 }
 
 extension BasicDetails1: UIDocumentPickerDelegate {
+    
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         // Handle the selected document here
-        guard let selectedFileURL = urls.first else { return }
-        print("Selected file URL: \(selectedFileURL)")
+        guard let selectedURL = urls.first else { return }
+        print("Selected file URL: \(selectedURL)")
+        
+        selectedFileURL = selectedURL
         
         // Extract file name from the URL
         let fileName = selectedFileURL.lastPathComponent
@@ -560,8 +521,7 @@ extension BasicDetails1: UIDocumentPickerDelegate {
         
         // Make the uploadedFileView visible
         uploadedFileView.isHidden = false
-        
-        uploadFileToServer(fileURL: selectedFileURL)
+        isResumeUploaded = true
     }
     
     func uploadFileToServer(fileURL: URL) {
@@ -607,10 +567,7 @@ extension BasicDetails1: UIDocumentPickerDelegate {
 
         // Create URLSessionUploadTask using the corrected method
         URLSession.shared.uploadTask(with: request, from: body) { (data, response, error) in
-            DispatchQueue.main.async {
-                spinner.stopAnimating()
-                spinner.removeFromSuperview()
-            }
+            
             
             if let error = error {
                 print("Error: \(error)")
@@ -628,8 +585,16 @@ extension BasicDetails1: UIDocumentPickerDelegate {
             }
 
             print("File uploaded successfully")
-            self.isResumeUploaded = true
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                spinner.stopAnimating()
+                spinner.removeFromSuperview()
+                
+                let vc = QualificationsVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            
         }.resume()
     }
-
+    
 }

@@ -369,7 +369,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
         layout.scrollDirection = .vertical
         
         employmentsCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        employmentsCV.register(EmploymentCell.self, forCellWithReuseIdentifier: "exp")
+        employmentsCV.register(OnboardingEmpCell.self, forCellWithReuseIdentifier: "exp")
         employmentsCV.delegate = self
         employmentsCV.dataSource = self
         
@@ -876,7 +876,7 @@ class EmploymentsVC: UIViewController, UITextFieldDelegate {
     }
     
     @objc func deleteCell(_ sender : UIButton) {
-        guard let cell = sender.superview as? EmploymentCell, // Adjust the number of superviews according to your cell's hierarchy
+        guard let cell = sender.superview as? OnboardingEmpCell, // Adjust the number of superviews according to your cell's hierarchy
             let indexPath = employmentsCV.indexPath(for: cell)
         else {
             return
@@ -1184,15 +1184,16 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "exp", for: indexPath) as! EmploymentCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "exp", for: indexPath) as! OnboardingEmpCell
         let exp = dataArray[indexPath.row]
         
         cell.titleLabel.text = exp.employmentDesignation
-        cell.companyNameLabel.text = "l  \(exp.companyName)"
+        cell.companyNameLabel.text = exp.companyName
         cell.noOfYearsLabel.text = "\(exp.yearsOfExperience),"
         cell.jobTypeLabel.text = exp.employmentPeriod
 //        exp.employmentPeriod
         
+        cell.editButton.isUserInteractionEnabled = false
         cell.deleteButton.addTarget(self, action: #selector(deleteCell(_:)), for: .touchUpInside)
         
         cell.layer.borderWidth = 1
@@ -1203,7 +1204,7 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width - 32, height: 80)
+        return CGSize(width: view.frame.width - 32, height: 100)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
