@@ -133,7 +133,7 @@ class JobFilterVC: UIViewController, UITextFieldDelegate {
         view.addSubview(bgView)
         
         let clearButton = UIButton(type: .system)
-        clearButton.setTitle("Clear Filters", for: .normal)
+        clearButton.setTitle("Clear all filters", for: .normal)
         clearButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
         clearButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
         clearButton.backgroundColor = UIColor(hex: "#FFFFFF")
@@ -147,7 +147,7 @@ class JobFilterVC: UIViewController, UITextFieldDelegate {
         view.addSubview(clearButton)
         
         let saveButton = UIButton(type: .system)
-        saveButton.setTitle("Save", for: .normal)
+        saveButton.setTitle("Apply filters", for: .normal)
         saveButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
         saveButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
         saveButton.backgroundColor = UIColor(hex: "#0079C4")
@@ -166,12 +166,12 @@ class JobFilterVC: UIViewController, UITextFieldDelegate {
             
             clearButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             clearButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 8),
-            clearButton.widthAnchor.constraint(equalToConstant: 120),
+            clearButton.widthAnchor.constraint(equalToConstant: 140),
             clearButton.heightAnchor.constraint(equalToConstant: 36),
             
             saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 10),
-            saveButton.widthAnchor.constraint(equalToConstant: 70),
+            saveButton.widthAnchor.constraint(equalToConstant: 120),
             saveButton.heightAnchor.constraint(equalToConstant: 36),
         ])
     }

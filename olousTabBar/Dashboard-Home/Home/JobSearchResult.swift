@@ -148,6 +148,7 @@ class JobSearchResult: UIViewController, JobFiltersDelegate, CompanyFiltersDeleg
     func setupViews() {
         setupJobsCountLabel()
         setupJobsCollectionView()
+        setupNoJobsView()
     }
     
     
@@ -189,6 +190,63 @@ class JobSearchResult: UIViewController, JobFiltersDelegate, CompanyFiltersDeleg
             jobsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             jobsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             jobsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    
+    let noJobsView = UIView()
+    private func setupNoJobsView() {
+        noJobsView.isHidden = true
+        noJobsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noJobsView)
+        
+        
+        let noJobsIcon = UIImageView()
+        noJobsIcon.image = UIImage(named: "NoJobIcon")
+        
+        noJobsIcon.translatesAutoresizingMaskIntoConstraints = false
+        noJobsView.addSubview(noJobsIcon)
+        
+        let title : UILabel = {
+            let label = UILabel()
+            label.text = "No Jobs found"
+            label.font = .boldSystemFont(ofSize: 18)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(title)
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "We couldn’t find any job matching your search, please try searching for something else."
+            label.font = .systemFont(ofSize: 16)
+            label.textColor = UIColor(hex: "#344054")
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(label)
+        
+
+        NSLayoutConstraint.activate([
+            noJobsView.topAnchor.constraint(equalTo: jobsCountLabel.bottomAnchor, constant: 50),
+            noJobsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noJobsView.widthAnchor.constraint(lessThanOrEqualToConstant: view.frame.width - 100),
+            noJobsView.heightAnchor.constraint(equalToConstant: 400),
+            
+            noJobsIcon.topAnchor.constraint(equalTo: noJobsView.topAnchor, constant: 20),
+            noJobsIcon.centerXAnchor.constraint(equalTo: noJobsView.centerXAnchor),
+            noJobsIcon.widthAnchor.constraint(equalToConstant: 60),
+            noJobsIcon.heightAnchor.constraint(equalToConstant: 60),
+            
+            title.topAnchor.constraint(equalTo: noJobsIcon.bottomAnchor, constant: 10),
+            title.centerXAnchor.constraint(equalTo: noJobsView.centerXAnchor),
+            
+            label.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 10),
+            label.leadingAnchor.constraint(equalTo: noJobsView.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: noJobsView.trailingAnchor),
         ])
     }
     
@@ -530,9 +588,9 @@ extension JobSearchResult { // extension for API
                 return
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                 let jobResponse = try JSONDecoder().decode(JobResponse.self, from: data)
@@ -547,6 +605,20 @@ extension JobSearchResult { // extension for API
                 DispatchQueue.main.async {
                     print("Decoding error: \(error)")
                     self.isLoadingData = false
+                    if self.jobs.isEmpty {
+                        self.noJobsView.isHidden = false
+                    }
+                    else {
+                        self.noJobsView.isHidden = true
+                    }
+                }
+            }
+            DispatchQueue.main.async {
+                if self.jobs.isEmpty {
+                    self.noJobsView.isHidden = false
+                }
+                else {
+                    self.noJobsView.isHidden = true
                 }
             }
         }.resume()

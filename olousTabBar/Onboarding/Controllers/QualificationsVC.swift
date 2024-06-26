@@ -76,7 +76,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setupGeneratingContentView()
+//        setupGeneratingContentView()
         
         loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
 //        loader.center = view.center

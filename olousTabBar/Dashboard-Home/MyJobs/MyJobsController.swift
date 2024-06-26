@@ -65,7 +65,7 @@ class MyJobsController: UIViewController {
     var jobsCollectionView : UICollectionView!
     
     
-    var noJobsImageView = UIImageView()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,7 +91,7 @@ class MyJobsController: UIViewController {
         setupLineView()
         setupJobsCountLabel()
         setupJobsCollectionView()
-        setupNoJobsImageView()
+        setupNoJobsView()
     }
     
     
@@ -204,6 +204,7 @@ class MyJobsController: UIViewController {
     
     @objc func didTapRecentButton() {
         if isSelected != "Recent" {
+            jobs.removeAll()
             fetchRecentJobs()
             isSelected = "Recent"
             recentButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
@@ -223,6 +224,7 @@ class MyJobsController: UIViewController {
     
     @objc func didTapAppliedButton() {
         if isSelected != "Applied" {
+            jobs.removeAll()
             fetchTotalAppliedJobs()
             isSelected = "Applied"
             appliedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
@@ -242,6 +244,7 @@ class MyJobsController: UIViewController {
     
     @objc func didTapSavedButton() {
         if isSelected != "Saved" {
+            jobs.removeAll()
             fetchTotalSavedJobs()
             isSelected = "Saved"
             savedButton.setTitleColor(UIColor(hex: "#0079C4"), for: .normal)
@@ -259,20 +262,59 @@ class MyJobsController: UIViewController {
 //        jobsCountLabel.text = "\(savedJobs.count) saved jobs"
     }
     
-    
-    private func setupNoJobsImageView() {
-        noJobsImageView = UIImageView()
-        noJobsImageView.image = UIImage(named: "no-jobs")  // Ensure you have this image in your assets
+    let noJobsView = UIView()
+    private func setupNoJobsView() {
+        noJobsView.isHidden = true
+        noJobsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noJobsView)
         
-        noJobsImageView.translatesAutoresizingMaskIntoConstraints = false
-        noJobsImageView.isHidden = true  // Hide it by default
-        view.addSubview(noJobsImageView)
+        
+        let noJobsIcon = UIImageView()
+        noJobsIcon.image = UIImage(named: "NoJobIcon")
+        
+        noJobsIcon.translatesAutoresizingMaskIntoConstraints = false
+        noJobsView.addSubview(noJobsIcon)
+        
+        let title : UILabel = {
+            let label = UILabel()
+            label.text = "No Jobs found"
+            label.font = .boldSystemFont(ofSize: 18)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(title)
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "We couldn’t find any job matching your search, please try searching for something else."
+            label.font = .systemFont(ofSize: 16)
+            label.textColor = UIColor(hex: "#344054")
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(label)
+        
 
         NSLayoutConstraint.activate([
-            noJobsImageView.topAnchor.constraint(equalTo: jobsCountLabel.bottomAnchor, constant: 50),
-            noJobsImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            noJobsImageView.widthAnchor.constraint(equalToConstant: 300),
-            noJobsImageView.heightAnchor.constraint(equalToConstant: 200)
+            noJobsView.topAnchor.constraint(equalTo: jobsCountLabel.bottomAnchor, constant: 50),
+            noJobsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noJobsView.widthAnchor.constraint(lessThanOrEqualToConstant: view.frame.width - 100),
+            noJobsView.heightAnchor.constraint(equalToConstant: 400),
+            
+            noJobsIcon.topAnchor.constraint(equalTo: noJobsView.topAnchor, constant: 20),
+            noJobsIcon.centerXAnchor.constraint(equalTo: noJobsView.centerXAnchor),
+            noJobsIcon.widthAnchor.constraint(equalToConstant: 60),
+            noJobsIcon.heightAnchor.constraint(equalToConstant: 60),
+            
+            title.topAnchor.constraint(equalTo: noJobsIcon.bottomAnchor, constant: 10),
+            title.centerXAnchor.constraint(equalTo: noJobsView.centerXAnchor),
+            
+            label.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 10),
+            label.leadingAnchor.constraint(equalTo: noJobsView.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: noJobsView.trailingAnchor),
         ])
     }
     
@@ -571,10 +613,10 @@ extension MyJobsController {
                 DispatchQueue.main.async {
                     self.jobs = jobResponse.jobs
                     if self.jobs.count == 0 {
-                        self.noJobsImageView.isHidden = false
+                        self.noJobsView.isHidden = false
                     }
                     else {
-                        self.noJobsImageView.isHidden = true
+                        self.noJobsView.isHidden = true
                     }
                     self.jobsCountLabel.text = "\(min(self.jobs.count, 5)) recent jobs"
                     self.jobsCollectionView.reloadData()
@@ -584,7 +626,7 @@ extension MyJobsController {
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
-                    self.noJobsImageView.isHidden = false
+                    self.noJobsView.isHidden = false
                 }
             }
         }
@@ -632,10 +674,10 @@ extension MyJobsController {
                         self.jobs.removeAll()
                         self.jobs = jobs
                         if jobs.count == 0 {
-                            self.noJobsImageView.isHidden = false
+                            self.noJobsView.isHidden = false
                         }
                         else {
-                            self.noJobsImageView.isHidden = true
+                            self.noJobsView.isHidden = true
                         }
                         self.jobsCountLabel.text = "\(jobs.count) applied jobs"
                         self.jobsCollectionView.reloadData()
@@ -649,7 +691,7 @@ extension MyJobsController {
             }
             DispatchQueue.main.async {
                 if self.jobs.count == 0 {
-                    self.noJobsImageView.isHidden = false
+                    self.noJobsView.isHidden = false
                     self.jobsCollectionView.reloadData()
                 }
             }
@@ -740,7 +782,7 @@ extension MyJobsController {
                 // Update the jobs array on the main thread
                 DispatchQueue.main.async {
                     self.jobs = jobs
-                    self.noJobsImageView.isHidden = !jobs.isEmpty
+                    self.noJobsView.isHidden = !jobs.isEmpty
                     self.jobsCountLabel.text = "\(jobs.count) saved jobs"
                     self.jobsCollectionView.reloadData()
                 }
@@ -748,9 +790,14 @@ extension MyJobsController {
                 print("Failed to decode Saved JSON: \(error)")
                 DispatchQueue.main.async {
                     self.jobs.removeAll()
-                    self.noJobsImageView.isHidden = false
+                    self.noJobsView.isHidden = false
                     self.jobsCountLabel.text = "No saved jobs"
                     self.jobsCollectionView.reloadData()
+                }
+            }
+            DispatchQueue.main.async {
+                if self.jobs.count == 0 {
+                    self.noJobsView.isHidden = false
                 }
             }
         }

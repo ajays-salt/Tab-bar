@@ -105,6 +105,9 @@ class HomeController: UIViewController, UITextFieldDelegate {
         return button
     }()
     
+    var companyURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company?page=1"
+    var companiesArray: [Company] = []
+    
     
     var appliedJobs : [String] = []
     var savedJobs2 : [String] = []
@@ -118,6 +121,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         view.backgroundColor = .systemBackground
         
 //        fetchUserProfile()
+        fetchCompanies()
         fetchRecommendedJobs()
         fetchTotalAppliedJobIDs()
         fetchSavedJobIDs()
@@ -785,7 +789,7 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == companiesCollectionVC {
-            return 10
+            return min(companiesArray.count, 5)
         }
         return min(jobs.count, 5)
     }
@@ -793,9 +797,38 @@ extension HomeController : UICollectionViewDelegate, UICollectionViewDataSource,
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == companiesCollectionVC {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "id", for: indexPath) as! CompaniesCell
-            cell.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+            let company = companiesArray[indexPath.row]
+            
+            cell.companyName.text = company.name
+            if let firstCharacter = company.name.first, !firstCharacter.isUppercase {
+                cell.companyName.text = company.name.prefix(1).uppercased() + company.name.dropFirst()
+            }
+            
+            cell.jobLocationLabel.text = company.location ?? "No Location"
+            
+            cell.categoryLabel.text = company.who
+            cell.sectorLabel.text = company.sector?.joined(separator: ", ") ?? ""
+            cell.fieldLabel.text = company.field
+            
+            // Fetch company logo
+            let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+            let companyLogoURLString = baseURLString + (company.logo ?? "")
+            if let companyLogoURL = URL(string: companyLogoURLString) {
+                URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
+                    if let data = data, let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            cell.companyLogo.image = image
+                        }
+                    }
+                }.resume()
+            }
+            
+            cell.viewJobs.text = "View jobs(\(company.jobCount ?? 0))"
+            
+            cell.layer.borderColor = UIColor(hex: "#E2E8F0").cgColor
             cell.layer.borderWidth = 1
             cell.layer.cornerRadius = 12
+            
             return cell
         }
         else {
@@ -1239,6 +1272,62 @@ extension HomeController {
         task.resume()
         
     }
+    
+    
+    func fetchCompanies() {
+        guard let url = URL(string: companyURL) else {
+            print("Invalid URL")
+            return
+        }
+        
+        // Prepare the request
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        // Retrieve the accessToken and set the Authorization header
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            // Ensure flag is reset after operation
+            
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+
+            do {
+                let response = try JSONDecoder().decode(CompanyResponse.self, from: data)
+                DispatchQueue.main.async {
+                    // Now you have a populated CompanyResponse object
+                    // You can use it to update your UI or perform other actions
+                    print("Current Page: \(response.currentPage)")
+                    print("Total Pages: \(response.totalPages)")
+                    
+                    self.companiesArray.append(contentsOf: response.companies)
+                    self.companiesCollectionVC.reloadData()
+                    print(self.companiesArray.count)
+                }
+                DispatchQueue.main.async {
+                    self.companiesCollectionVC.reloadSections(IndexSet(integer: 0))
+                }
+            } catch {
+                print("Failed to decode JSON: \(error)")
+            }
+        }
+
+        task.resume()
+    }
+    
 }
 
 // dimag kam nhi kr rha bc
