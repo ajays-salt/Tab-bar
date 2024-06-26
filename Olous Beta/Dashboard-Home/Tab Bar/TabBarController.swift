@@ -19,17 +19,14 @@ class TabBarController: UITabBarController {
         homeController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
         
         let myJobsController = MyJobsController()
-//        myJobsController.view.backgroundColor = .systemBackground
         let myJobsNavigationController = UINavigationController(rootViewController: myJobsController)
         myJobsController.tabBarItem = UITabBarItem(title: "My Jobs", image: UIImage(systemName: "briefcase.fill"), tag: 1)
         
         let companyController = CompanyController()
         let companyNavigationController = UINavigationController(rootViewController: companyController)
-//        companyController.view.backgroundColor = .systemBackground
         companyController.tabBarItem = UITabBarItem(title: "Companies", image: UIImage(named: "appartment"), tag: 2)
         
         let profileController = ProfileController()
-//        profileController.view.backgroundColor = .systemBackground
         let profileNavigationController = UINavigationController(rootViewController: profileController)
         profileController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"), tag: 3)
         
@@ -38,7 +35,7 @@ class TabBarController: UITabBarController {
         
           
         tabBar.frame = CGRect(x: tabBar.frame.origin.x,
-                              y: tabBar.frame.origin.y - 1, // Adjusting the y-coordinate by -1
+                              y: tabBar.frame.origin.y - 20, // Adjusting the y-coordinate by -1
                               width: tabBar.frame.size.width,
                               height: tabBar.frame.size.height)
         tabBar.backgroundColor = UIColor(hex: "#F7F8F9")
