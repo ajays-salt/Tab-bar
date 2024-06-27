@@ -42,7 +42,7 @@ class OnboardingEduCell: UICollectionViewCell {
     
     let editButton: UIButton = {
         let button = UIButton()
-        if let image = UIImage(named: "pencil")?.buttonImageResized(to: CGSize(width: 17, height: 17)) { // Adjust the size as needed
+        if let image = UIImage(named: "pencil")?.buttonImageResized(to: CGSize(width: 20, height: 20)) { // Adjust the size as needed
             button.setImage(image, for: .normal)
         }
         button.tintColor = UIColor(hex: "#98A2B3")
@@ -52,7 +52,7 @@ class OnboardingEduCell: UICollectionViewCell {
     
     let deleteButton: UIButton = {
         let button = UIButton()
-        if let image = UIImage(systemName: "trash")?.buttonImageResized(to: CGSize(width: 20, height: 20)) { // Adjust the size as needed
+        if let image = UIImage(systemName: "trash")?.buttonImageResized(to: CGSize(width: 24, height: 24)) { // Adjust the size as needed
             button.setImage(image, for: .normal)
         }
         button.tintColor = UIColor(hex: "#98A2B3")
@@ -87,12 +87,11 @@ class OnboardingEduCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             educationLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             educationLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            educationLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -30),
+            educationLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -35),
             
             collegeLabel.topAnchor.constraint(equalTo: educationLabel.bottomAnchor, constant: 8),
             collegeLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-//            collegeLabel.widthAnchor.constraint(equalToConstant: 150),
-            collegeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -30),
+            collegeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -35),
             
             passYearLabel.topAnchor.constraint(equalTo: collegeLabel.bottomAnchor, constant: 8),
             passYearLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
@@ -101,14 +100,14 @@ class OnboardingEduCell: UICollectionViewCell {
             courseTypeLabel.leadingAnchor.constraint(equalTo: passYearLabel.trailingAnchor, constant: 6),
             
             editButton.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            editButton.widthAnchor.constraint(equalToConstant: 17),
-            editButton.heightAnchor.constraint(equalToConstant: 17),
+            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -13),
+            editButton.widthAnchor.constraint(equalToConstant: 20),
+            editButton.heightAnchor.constraint(equalToConstant: 20),
             
             deleteButton.topAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 20),
             deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            deleteButton.widthAnchor.constraint(equalToConstant: 20),
-            deleteButton.heightAnchor.constraint(equalToConstant: 20),
+            deleteButton.widthAnchor.constraint(equalToConstant: 24),
+            deleteButton.heightAnchor.constraint(equalToConstant: 24),
             
 //            separator.leadingAnchor.constraint(equalTo: leadingAnchor),
 //            separator.trailingAnchor.constraint(equalTo: trailingAnchor),

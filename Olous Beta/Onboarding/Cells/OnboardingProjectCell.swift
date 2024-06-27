@@ -53,7 +53,7 @@ class OnboardingProjectCell: UICollectionViewCell {
     
     let deleteButton: UIButton = {
         let button = UIButton()
-        if let image = UIImage(systemName: "trash")?.buttonImageResized(to: CGSize(width: 20, height: 20)) { // Adjust the size as needed
+        if let image = UIImage(systemName: "trash")?.buttonImageResized(to: CGSize(width: 24, height: 24)) { // Adjust the size as needed
             button.setImage(image, for: .normal)
         }
         button.tintColor = UIColor(hex: "#98A2B3")
@@ -110,14 +110,14 @@ class OnboardingProjectCell: UICollectionViewCell {
             projectName.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             projectName.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
 //            projectName.heightAnchor.constraint(equalToConstant: 20),
-            projectName.widthAnchor.constraint(lessThanOrEqualToConstant: 280),
+            projectName.widthAnchor.constraint(lessThanOrEqualToConstant: 310),
             
             role.topAnchor.constraint(equalTo: projectName.bottomAnchor, constant: 10),
             role.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             
             projectRole.topAnchor.constraint(equalTo: role.bottomAnchor, constant: 6),
             projectRole.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            projectRole.widthAnchor.constraint(lessThanOrEqualToConstant: 280),
+            projectRole.widthAnchor.constraint(lessThanOrEqualToConstant: 310),
             
             desc.topAnchor.constraint(equalTo: projectRole.bottomAnchor, constant: 10),
             desc.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
@@ -136,14 +136,14 @@ class OnboardingProjectCell: UICollectionViewCell {
             projectResponsibility.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
             
             editButton.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            editButton.widthAnchor.constraint(equalToConstant: 17),
-            editButton.heightAnchor.constraint(equalToConstant: 17),
+            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -13),
+            editButton.widthAnchor.constraint(equalToConstant: 20),
+            editButton.heightAnchor.constraint(equalToConstant: 20),
             
             deleteButton.topAnchor.constraint(equalTo: editButton.bottomAnchor, constant: 20),
             deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            deleteButton.widthAnchor.constraint(equalToConstant: 20),
-            deleteButton.heightAnchor.constraint(equalToConstant: 20)
+            deleteButton.widthAnchor.constraint(equalToConstant: 24),
+            deleteButton.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
 }

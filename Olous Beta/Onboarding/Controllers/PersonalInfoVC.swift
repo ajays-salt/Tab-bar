@@ -144,7 +144,7 @@ class PersonalInfoVC: UIViewController {
     }()
     let fluencyTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Select Fluency Level"
+        textField.placeholder = "Select Fluency"
         textField.borderStyle = .roundedRect
         return textField
     }()
@@ -427,8 +427,8 @@ class PersonalInfoVC: UIViewController {
         let uploadProfilePicLabel = UILabel()
         uploadProfilePicLabel.translatesAutoresizingMaskIntoConstraints = false
         let attributedText2 = NSMutableAttributedString(string: "Upload Profile Picture")
-        let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
-        attributedText2.append(asterisk2)
+//        let asterisk2 = NSAttributedString(string: "*", attributes: [NSAttributedString.Key.baselineOffset: -1]) // Adjust baseline offset as needed
+//        attributedText2.append(asterisk2)
         uploadProfilePicLabel.attributedText = attributedText2
         scrollView.addSubview(uploadProfilePicLabel)
         
@@ -931,6 +931,8 @@ class PersonalInfoVC: UIViewController {
         addLangLabel.translatesAutoresizingMaskIntoConstraints = false
         addLanguageContainer.addSubview(addLangLabel)
         
+        languageTextField.delegate = self
+        
         addLanguageContainer.addSubview(languageTextField)
         addLanguageContainer.addSubview(fluencyTextField)
         
@@ -1002,8 +1004,8 @@ class PersonalInfoVC: UIViewController {
         let newEntry = Language(language: language, fluencyLevel: fluencyTextField.text!, read: true, write: true, speak: true)
         languageArray.append(newEntry)
         
-//        languageTextField.text = ""
-//        fluencyTextField.text = ""
+        languageTextField.text = ""
+        fluencyTextField.text = ""
         
         // Reload the collection view to display the new entry
         reloadCollectionView()

@@ -2303,7 +2303,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     func updateScrollViewContentSize() {
         let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
         // Add other collection view heights if there are more
-        let extraSpaceHeight: CGFloat = 1000 // Change this if you need more space at the bottom
+        let extraSpaceHeight: CGFloat = 850 // Change this if you need more space at the bottom
         
         let totalContentHeight = combinedContentHeight + extraSpaceHeight
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight)

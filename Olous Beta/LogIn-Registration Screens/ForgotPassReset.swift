@@ -113,7 +113,7 @@ class ForgotPassReset: UIViewController, UITextFieldDelegate {
         NSLayoutConstraint.activate([
             olousLogo.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 10),
             olousLogo.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            olousLogo.widthAnchor.constraint(equalToConstant: 140),
+            olousLogo.widthAnchor.constraint(equalToConstant: 160),
             olousLogo.heightAnchor.constraint(equalToConstant: 26)
         ])
         

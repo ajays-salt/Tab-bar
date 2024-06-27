@@ -77,9 +77,11 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
     
     var softwareView = UIView()
+    var softwareHeightConstraint: NSLayoutConstraint!
     
     
     var skillsView = UIView()
+    var skillHeightConstraint: NSLayoutConstraint!
     
     
     var personalInfoView = UIView()
@@ -159,6 +161,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         setupPreferencesView()
         
         setupBottomView()
+//        updateScrollSize()
     }
     
     func setupTopHeaderView() {
@@ -381,15 +384,16 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 2500
-        
-        // Add extra space at the bottom
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
-        
-        // Calculate content size
-        let contentHeight = view.bounds.height + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        let extraSpaceHeight: CGFloat = 2500
+//        
+//        // Add extra space at the bottom
+//        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
+//        
+//        // Calculate content size
+//        let contentHeight = view.bounds.height + extraSpaceHeight
+//        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
+    
     
     
     func setupHeaderView() {
@@ -592,8 +596,6 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
             
             headlineView.bottomAnchor.constraint(equalTo: summaryLabel.bottomAnchor, constant: 10)
         ])
-        
-        
     }
     
     
@@ -628,7 +630,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         employmentCV.translatesAutoresizingMaskIntoConstraints = false
         empView.addSubview(employmentCV)
         
-        employmentCVHeightConstraint = employmentCV.heightAnchor.constraint(equalToConstant: 0) // Initial height set to 10
+        employmentCVHeightConstraint = employmentCV.heightAnchor.constraint(equalToConstant: 0)
         employmentCVHeightConstraint.isActive = true
         
         NSLayoutConstraint.activate([
@@ -654,8 +656,6 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         employmentCV.layoutIfNeeded()
         let contentSize = employmentCV.collectionViewLayout.collectionViewContentSize
         employmentCVHeightConstraint.constant = contentSize.height
-        
-        updateScrollViewContentSize()
         
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
@@ -723,8 +723,6 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         let contentSize = projectCV.collectionViewLayout.collectionViewContentSize
         projectCVHeightConstraint.constant = contentSize.height
         
-        updateScrollViewContentSize()
-        
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
@@ -788,8 +786,6 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         
         let contentSize = educationCV.collectionViewLayout.collectionViewContentSize
         educationCVHeightConstraint.constant = contentSize.height
-        
-        updateScrollViewContentSize()
         
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
@@ -880,17 +876,20 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         let newHeightConstraint = softwareView.heightAnchor.constraint(equalToConstant: newHeight + 20)
         newHeightConstraint.isActive = true
         
+        softwareHeightConstraint = newHeightConstraint
+        softwareHeightConstraint.isActive = true
+        
         softwareView.setNeedsLayout()
         softwareView.layoutIfNeeded()
         
-        if newHeight > 250 {
-            let contentHeight = scrollView.contentSize.height + 200
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
-        if newHeight > 500 {
-            let contentHeight = scrollView.contentSize.height + 500
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
+//        if newHeight > 250 {
+//            let contentHeight = scrollView.contentSize.height + 200
+//            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
+//        if newHeight > 500 {
+//            let contentHeight = scrollView.contentSize.height + 500
+//            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
     }
     
     
@@ -978,18 +977,20 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
         let newHeightConstraint = skillsView.heightAnchor.constraint(equalToConstant: newHeight + 20)
         newHeightConstraint.isActive = true
         
+        skillHeightConstraint = newHeightConstraint
+        skillHeightConstraint.isActive = true
+        
         skillsView.setNeedsLayout()
         skillsView.layoutIfNeeded()
         
-//        print("New Height : " , newHeight)
-        if newHeight > 250 {
-            let contentHeight = scrollView.contentSize.height + 200
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
-        if newHeight > 500 {
-            let contentHeight = scrollView.contentSize.height + 500
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
+//        if newHeight > 250 {
+//            let contentHeight = scrollView.contentSize.height + 200
+//            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
+//        if newHeight > 500 {
+//            let contentHeight = scrollView.contentSize.height + 500
+//            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
     }
     
     
@@ -1183,6 +1184,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
             
             personalInfoView.bottomAnchor.constraint(equalTo: languageLabel.bottomAnchor, constant: 20)
         ])
+        personalInfoView.layoutIfNeeded()
     }
     
     
@@ -1313,6 +1315,7 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
             
             preferenceView.bottomAnchor.constraint(equalTo: worktypeLabel.bottomAnchor, constant: 20)
         ])
+        preferenceView.layoutIfNeeded()
     }
     
     
@@ -1384,20 +1387,20 @@ class PreviewVC: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
     // ******************* Common Methods ***********************************
     
-    
-    func updateScrollViewContentSize() {
-        let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
-        // Add other collection view heights if there are more
-        let extraSpaceHeight: CGFloat = 1000 // Change this if you need more space at the bottom
+    func updateScrollSize() {
+        let h = headerView.frame.height + contactInfoView.frame.height + headlineView.frame.height + empView.frame.height + projectView.frame.height + educationView.frame.height + softwareView.frame.height + skillsView.frame.height + personalInfoView.frame.height + preferenceView.frame.height
         
-        let totalContentHeight = combinedContentHeight + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight)
+        let h3 : CGFloat = h + 200
+        
+        scrollView.contentSize = CGSize(width: view.frame.width, height: h3 + 180)
     }
+    
     private func showAlert(withTitle title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         self.present(alert, animated: true)
     }
+    
     func askUserConfirmation(title: String, message: String, confirmedAction: @escaping () -> Void) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
@@ -1661,6 +1664,8 @@ extension PreviewVC {
                     
                     self.skillsArray = user.skills!
                     self.addLabelsInSkills()
+                    
+                    self.updateScrollSize()
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")

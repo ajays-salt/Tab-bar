@@ -1059,8 +1059,10 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         editCollegeTF = textFields[1]
         editCollegeTF.delegate = self
         editPassYearTF = textFields[2]
+        editPassYearTF.addDoneButtonOnKeyboard()
         editPassYearTF.keyboardType = .numberPad
         editMarksTF = textFields[3]
+        editMarksTF.addDoneButtonOnKeyboard()
         editMarksTF.keyboardType = .decimalPad
         
         // Setup buttons
