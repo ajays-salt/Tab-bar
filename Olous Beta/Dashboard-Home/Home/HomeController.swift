@@ -52,7 +52,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
     let percentLabel : UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.text = "75%"
+        label.text = "0%"
         label.textColor = UIColor(hex: "#219653")
         label.font = .boldSystemFont(ofSize: 16)
         return label
@@ -113,6 +113,9 @@ class HomeController: UIViewController, UITextFieldDelegate {
     var savedJobs2 : [String] = []
     
     
+    var isProfileFetched : Bool = false
+    
+    
 // *********************** View Did Load ***************************************************
     
     override func viewDidLoad() {
@@ -149,6 +152,8 @@ class HomeController: UIViewController, UITextFieldDelegate {
         setupTopCompaniesView()
         
         setupProfileInfoView()
+        
+        setupPercentLabel()
     }
     
     
@@ -362,8 +367,10 @@ class HomeController: UIViewController, UITextFieldDelegate {
         
     }
     
+    var circleContainerView : UIView!
+    
     func setupProfileInfoView() {
-        let circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
+        circleContainerView = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
         circleContainerView.backgroundColor = UIColor(hex: "#D7F0FF")
         circleContainerView.layer.cornerRadius = 50
         
@@ -403,6 +410,61 @@ class HomeController: UIViewController, UITextFieldDelegate {
         
         
         
+        // ************************************ right side info of circleView **********************************************
+        
+
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 14
+
+        // Add subviews to stack view
+        stackView.addArrangedSubview(userNameLabel)
+        stackView.addArrangedSubview(designationLabel)
+        stackView.addArrangedSubview(locationLabel)
+
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        userProfileView.addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: userProfileView.topAnchor, constant: 22),
+            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+        
+        
+        let buttonContainerView = UIView()
+        buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
+        userProfileView.addSubview(buttonContainerView)
+        
+        let updateProfilButton: UIButton = {
+            let button = UIButton()
+            let title = NSAttributedString(string: " Complete my profile ",
+                                           attributes: [.font: UIFont.systemFont(ofSize: 18),
+                                                        .foregroundColor: UIColor(hex: "#FFFFFF")])
+            button.setAttributedTitle(title, for: .normal)
+            button.backgroundColor = UIColor(hex: "#2563EB")
+            button.layer.cornerRadius = 12
+            button.addTarget(self, action: #selector(didTapUpdateProfile), for: .touchUpInside)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            return button
+        }()
+        buttonContainerView.addSubview(updateProfilButton)
+
+        // Apply constraints to updateProfilButton within the container view
+        NSLayoutConstraint.activate([
+            buttonContainerView.heightAnchor.constraint(equalToConstant: 44),
+            buttonContainerView.bottomAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: -16),
+            buttonContainerView.leadingAnchor.constraint(equalTo: userProfileView.leadingAnchor, constant: 20),
+            buttonContainerView.widthAnchor.constraint(equalToConstant: view.frame.width - 72),
+            
+            updateProfilButton.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor),
+            updateProfilButton.centerYAnchor.constraint(equalTo: buttonContainerView.centerYAnchor),
+            updateProfilButton.widthAnchor.constraint(equalToConstant: view.frame.width - 72),
+            updateProfilButton.heightAnchor.constraint(equalToConstant: 44),
+        ])
+        
+    }
+    
+    func setupPercentLabel() {
         let percentView = UIView()
         percentView.backgroundColor = UIColor(hex: "#E2FFEE")
         percentView.layer.cornerRadius = 14
@@ -472,63 +534,6 @@ class HomeController: UIViewController, UITextFieldDelegate {
             return normalBorderLayer
         }()
         circleContainerView.layer.addSublayer(normalBorderLayer)
-        
-        
-        // ************************************ right side info of circleView **********************************************
-        
-        
-
-        
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 14
-
-        // Add subviews to stack view
-        stackView.addArrangedSubview(userNameLabel)
-        stackView.addArrangedSubview(designationLabel)
-        stackView.addArrangedSubview(locationLabel)
-
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        userProfileView.addSubview(stackView)
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: userProfileView.topAnchor, constant: 22),
-            stackView.leadingAnchor.constraint(equalTo: circleContainerView.trailingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-        ])
-        
-        
-        let buttonContainerView = UIView()
-        buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
-        userProfileView.addSubview(buttonContainerView)
-        
-        let updateProfilButton: UIButton = {
-            let button = UIButton()
-            let title = NSAttributedString(string: " Complete my profile ",
-                                           attributes: [.font: UIFont.systemFont(ofSize: 18),
-                                                        .foregroundColor: UIColor(hex: "#FFFFFF")])
-            button.setAttributedTitle(title, for: .normal)
-            button.backgroundColor = UIColor(hex: "#2563EB")
-            button.layer.cornerRadius = 12
-            button.addTarget(self, action: #selector(didTapUpdateProfile), for: .touchUpInside)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            return button
-        }()
-        buttonContainerView.addSubview(updateProfilButton)
-
-        // Apply constraints to updateProfilButton within the container view
-        NSLayoutConstraint.activate([
-            buttonContainerView.heightAnchor.constraint(equalToConstant: 44),
-            buttonContainerView.bottomAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: -16),
-            buttonContainerView.leadingAnchor.constraint(equalTo: userProfileView.leadingAnchor, constant: 20),
-            buttonContainerView.widthAnchor.constraint(equalToConstant: view.frame.width - 72),
-            
-            updateProfilButton.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor),
-            updateProfilButton.centerYAnchor.constraint(equalTo: buttonContainerView.centerYAnchor),
-            updateProfilButton.widthAnchor.constraint(equalToConstant: view.frame.width - 72),
-            updateProfilButton.heightAnchor.constraint(equalToConstant: 44),
-        ])
-        
     }
 
     @objc func didTapUpdateProfile() {
@@ -1052,6 +1057,8 @@ extension HomeController {
                     self.designationLabel.text = "\(user.designation!)"
                     self.locationLabel.text = "\(user.currentAddress?.city ?? ""), \(user.currentAddress?.state ?? "")"
                     self.fetchProfilePicture(size: "m", userID: user._id)
+                    
+                    self.setupPercentLabel()
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")
@@ -1072,28 +1079,128 @@ extension HomeController {
         var totalCount = 0
         var filledCount = 0
 
-        // Reflecting over User properties
-        let mirror = Mirror(reflecting: user)
-
-        for child in mirror.children {
+        // List all properties to check for completion
+        let propertiesToCheck = [
+            user.email,
+            user.name,
+            user.password,
+            user.role,
+            user.designation,
+            user.profilePic,
+            user.currentCtc,
+            user.expectedCtc,
+            user.noticePeriod,
+            user.gender,
+            user.willingToRelocate,
+            user.currentlyEmployed,
+            user.preferredWorkType,
+            user.headline,
+            user.portfolio,
+            user.summary,
+            user.permanentAddress,
+            user.currentAddress?.address,
+            user.currentAddress?.pincode,
+            user.mobile,
+            user.panNo,
+            user.dateOfBirth,
+            user.nationality,
+            user.passportNo,
+            user.uidNumber
+        ]
+        
+        if let education = user.education, !education.isEmpty {
             totalCount += 1
-            if let value = child.value as? String, !value.isEmpty {
-                filledCount += 1
-            } else if let array = child.value as? [Any], !array.isEmpty {
-                filledCount += 1
-            } else if let array = child.value as? [Language], !array.isEmpty {
-                filledCount += 1
-            } else if let address = child.value as? Address, address.address != nil && !address.address.isEmpty, address.pincode != nil && !address.pincode.isEmpty {
-                filledCount += 1
-            } else if let boolValue = child.value as? Bool {
-                if boolValue {
-                    filledCount += 1
-                }
-            } else if let intValue = child.value as? Int, intValue != 0 {
+            filledCount += 1
+//            print("education ", filledCount, " ", totalCount)
+        } else {
+            totalCount += 1
+        }
+        
+        if let experience = user.experience, !experience.isEmpty {
+            totalCount += 1
+            filledCount += 1
+//            print("experience ", filledCount, " ", totalCount)
+        } else {
+            totalCount += 1
+        }
+        
+        if let softwares = user.softwares, !softwares.isEmpty {
+            totalCount += 1
+            filledCount += 1
+//            print("softwares ", filledCount, " ", totalCount)
+        } else {
+            totalCount += 1
+        }
+        
+        if let projects = user.projects, !projects.isEmpty {
+            totalCount += 1
+            filledCount += 1
+//            print("Projects ", filledCount, " ", totalCount)
+        } else {
+            totalCount += 1
+        }
+        
+        if let skills = user.skills, !skills.isEmpty {
+            totalCount += 1
+            filledCount += 1
+//            print("skills ", filledCount, " ", totalCount)
+        } else {
+            totalCount += 1
+        }
+        
+        if let additionalCertificates = user.additionalCertificates, !additionalCertificates.isEmpty {
+            totalCount += 1
+            filledCount += 1
+//            print("additionalCertificates ", filledCount, " ", totalCount)
+        } else {
+            totalCount += 1
+        }
+        
+        if let language = user.language, !language.isEmpty {
+            totalCount += 1
+            filledCount += 1
+//            print("language ", filledCount, " ", totalCount)
+        } else {
+            totalCount += 1
+        }
+        
+        // Add all boolean properties
+        let booleanPropertiesToCheck = [
+            user.hasCompletedOnboarding,
+            user.emailVerified
+        ]
+        
+        // Check if the properties are filled
+        for property in propertiesToCheck {
+            totalCount += 1
+            if let value = property, !value.isEmpty {
                 filledCount += 1
             }
+//            print(property, " ", filledCount, " ", totalCount)
         }
-
+        
+        
+        // Check if boolean properties are true
+        for booleanProperty in booleanPropertiesToCheck {
+            // above 2 boolean values will be true if user is in dashboard.
+            totalCount += 1
+            filledCount += 1
+//            print(booleanProperty, " ", filledCount, " ", totalCount)
+        }
+        
+        // Check if totalExperience is set
+        totalCount += 1
+        if let totalExperience = user.totalExperience, totalExperience != 0 {
+            filledCount += 1
+//            print(totalExperience, " ", filledCount, " ", totalCount)
+        }
+        
+//        print(filledCount, " ", totalCount)
+        print(isProfileFetched)
+        if isProfileFetched {
+            filledCount += 1
+        }
+        
         let completionPercentage = (filledCount * 100) / totalCount
         return completionPercentage
     }
@@ -1120,6 +1227,7 @@ extension HomeController {
                 if let image = UIImage(data: data) {
                     // Use the image in your app, e.g., assign it to an UIImageView
                     self.profileImageView.image = image
+//                    self.isProfileFetched = true
 //                    print("Image Fetched Successfully")
                 } else {
                     print("Failed to decode image")
@@ -1165,7 +1273,7 @@ extension HomeController {
                 // Update the jobs array on the main thread
                 DispatchQueue.main.async {
                     self.jobs = jobResponse.jobs
-                    print(self.jobs.count)
+//                    print(self.jobs.count)
                     if self.jobs.count == 0 {
                         self.noJobsImageView.isHidden = false
                     }
@@ -1217,7 +1325,7 @@ extension HomeController {
                 let responseDict = try JSONDecoder().decode([String: [String]].self, from: data)
                 
                 if let jobIds = responseDict["jobIds"] {
-                    print("Job IDs: \(jobIds)")
+//                    print("Job IDs: \(jobIds)")
                     
                     // Process the job IDs as needed
                     DispatchQueue.main.async {
@@ -1310,12 +1418,12 @@ extension HomeController {
                 DispatchQueue.main.async {
                     // Now you have a populated CompanyResponse object
                     // You can use it to update your UI or perform other actions
-                    print("Current Page: \(response.currentPage)")
-                    print("Total Pages: \(response.totalPages)")
+//                    print("Current Page: \(response.currentPage)")
+//                    print("Total Pages: \(response.totalPages)")
                     
                     self.companiesArray.append(contentsOf: response.companies)
                     self.companiesCollectionVC.reloadData()
-                    print(self.companiesArray.count)
+//                    print(self.companiesArray.count)
                 }
                 DispatchQueue.main.async {
                     self.companiesCollectionVC.reloadSections(IndexSet(integer: 0))
@@ -1330,7 +1438,7 @@ extension HomeController {
     
 }
 
-// dimag kam nhi kr rha bc
+// dimag kaam nhi kr rha bc
 
 extension UIColor {
     convenience init(hex: String) {

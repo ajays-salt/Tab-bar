@@ -56,25 +56,38 @@ class JobDetailScreen: UIViewController {
     let saveButton = UIButton(type: .system)
     let applyButton = UIButton(type: .system)
     
-    let separatorLine1 = UIView()
+    
+    let companyDescView = UIView()
+    let companyDescLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Nil"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
+    
     
     let responsibilityView = UIView()
-//    var jobDescriptionItems = [
-//        "Assist in creating marketing materials such as brochures, flyers, and social media posts.",
-//        "Conduct market research to identify trends and opportunities for brand expansion.",
-//        "Support the marketing team in organizing events and promotional campaigns.",
-//        "Collaborate with designers and content creators to develop engaging content for various platforms."
-//    ]
     var jobResponsibilityItems : [String] = []
     let descriptionStackView = UIStackView()
     
-    let separatorLine2 = UIView()
     
     let requirementsView = UIView()
     var jobRequirementItems : [String] = []
     let requirementsStackView = UIStackView()
     
-    let separatorLine3 = UIView()
+    
+    let qualificationView = UIView()
+    let qualificationsLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Nil"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
+    
     
     let moreJobInfo = UIView()
     let sectorLabel : UILabel = {
@@ -125,17 +138,6 @@ class JobDetailScreen: UIViewController {
         label.numberOfLines = 0
         return label
     }()
-    
-    let separatorLine4 = UIView()
-    
-    let qualificationsLabel : UILabel = {
-        let label = UILabel()
-        label.text = "Nil"
-        label.font = .systemFont(ofSize: 16)
-        label.textColor = UIColor(hex: "#344054")
-        label.numberOfLines = 0
-        return label
-    }()
     let softwaresLabel : UILabel = {
         let label = UILabel()
         label.text = "Nil"
@@ -144,6 +146,7 @@ class JobDetailScreen: UIViewController {
         label.numberOfLines = 0
         return label
     }()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -159,7 +162,6 @@ class JobDetailScreen: UIViewController {
         let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonTapped))
         shareButton.image = UIImage(systemName: "")
         navigationItem.rightBarButtonItem = shareButton
-        
     }
     
     func assignValues() {
@@ -168,6 +170,8 @@ class JobDetailScreen: UIViewController {
         jobLocationLabel.text = "\(selectedJob.location?.city ?? "NA"), \(selectedJob.location?.state ?? "NA")"
         let expText = attributedStringForExperience("\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")")
         jobExperienceLabel.attributedText = expText
+        
+        companyDescLabel.text = selectedJob.jobSummary
         
         if let responsibilities = selectedJob.keyResponsibilities {
             for responsibility in responsibilities {
@@ -211,7 +215,6 @@ class JobDetailScreen: UIViewController {
             workmodeLabel.text = selectedJob.workPlace
         }
         
-        print("Preferred Qualifications : ", selectedJob.preferredQualification)
         let qualificationTitle = selectedJob.preferredQualification.map { $0 }
         let qString = qualificationTitle?.joined(separator: ", ") ?? ""
         qualificationsLabel.text = qString
@@ -220,9 +223,7 @@ class JobDetailScreen: UIViewController {
         let softwares = softwareItems.joined(separator: ", ")
         softwaresLabel.text = softwares
         
-        DispatchQueue.main.async {
-            self.updateScrollViewHeight()
-        }
+        
         
         let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (selectedJob.companyLogo ?? "")
@@ -243,14 +244,24 @@ class JobDetailScreen: UIViewController {
     
     func setupViews() {
         setupHeaderView()
-        setupSeparatorLine1()
+        
+        setupCompanyDescView()
+        
         setupResponsibilityView()
-        setupSeparatorLine2()
+        
         setupRequirementsView()
-        setupSeparatorLine3()
+        
+        setupQualificationView()
+        
         setupMoreJobInfo()
-        setupSeparatorLine4()
+        
         additionalJobInfo()
+        
+        view.layoutIfNeeded()
+        scrollView.layoutIfNeeded()
+        DispatchQueue.main.async {
+            self.updateScrollViewHeight()
+        }
     }
     
     func setupScrollView() {
@@ -272,27 +283,17 @@ class JobDetailScreen: UIViewController {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
         
         // Calculate content size
-        let contentHeight = view.bounds.height + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        let contentHeight = view.bounds.height - 300
+//        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     func updateScrollViewHeight() {
-        // Calculate total height of all subviews
-        var totalHeight: CGFloat = 0
-        for subview in scrollView.subviews {
-            for s in subview.subviews {
-                totalHeight += s.frame.height
-            }
-        }
-
-        // Add extra space if needed
-        totalHeight += 100
-
-        // Update content size of scrollView
-        scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: totalHeight)
+        let h = moreJobInfo.frame.origin.y + moreJobInfo.frame.height
+        scrollView.contentSize = CGSize(width: view.frame.width, height: h)
     }
 
     func setupHeaderView() {
         headerView = UIView()
+        headerView.backgroundColor = UIColor(hex: "#F9FAFB")
         headerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(headerView)
         
@@ -300,7 +301,7 @@ class JobDetailScreen: UIViewController {
             headerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 150)
+            headerView.heightAnchor.constraint(equalToConstant: 170)
         ])
         
         companyLogo.translatesAutoresizingMaskIntoConstraints = false
@@ -313,19 +314,19 @@ class JobDetailScreen: UIViewController {
         headerView.addSubview(companyName)
         
         NSLayoutConstraint.activate([
-            companyLogo.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            companyLogo.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20),
             companyLogo.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             companyLogo.widthAnchor.constraint(equalToConstant: 48),
             companyLogo.heightAnchor.constraint(equalToConstant: 46),
             
-            jobTitle.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 0),
+            jobTitle.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 20),
             jobTitle.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16),
-            jobTitle.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 0),
+            jobTitle.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
             jobTitle.heightAnchor.constraint(equalToConstant: 24),
             
             companyName.topAnchor.constraint(equalTo: jobTitle.bottomAnchor, constant: 4),
             companyName.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16),
-            companyName.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 0),
+            companyName.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
             companyName.heightAnchor.constraint(equalToConstant: 18)
         ])
         
@@ -443,18 +444,17 @@ class JobDetailScreen: UIViewController {
                 return
             }
 
-            if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                print("Response from server: \(responseString)")
-            }
+//            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+//                print("Response from server: \(responseString)")
+//            }
 
             if httpResponse.statusCode == 200 {
                 if let data = data,
                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                    let msg = json["msg"] as? String, msg == "not applied" {
-                    print("Job is not applied")
-                    // Update UI or perform any other action
+//                    print("Job is not applied")
                 } else {
-                    print("Job is already applied")
+//                    print("Job is already applied")
                     DispatchQueue.main.async {
                         self.applyButton.setTitle("Applied", for: .normal)
                         self.applyButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
@@ -516,9 +516,9 @@ class JobDetailScreen: UIViewController {
                 return
             }
             
-            if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                print("Response from server: \(responseString)")
-            }
+//            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+//                print("Response from server: \(responseString)")
+//            }
             
             if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
                 print("Job application successful")
@@ -548,29 +548,54 @@ class JobDetailScreen: UIViewController {
     }
 
     
-    func setupSeparatorLine1() {
-        separatorLine1.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine1.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine1)
+    func setupCompanyDescView() {
+        companyDescView.layer.borderWidth = 1
+        companyDescView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        companyDescView.layer.cornerRadius = 12
+        companyDescView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(companyDescView)
+        
+        
+        let description = UILabel()
+        description.text = "Company Description :"
+        description.font = .boldSystemFont(ofSize: 16)
+        description.tintColor = UIColor(hex: "#101828")
+        
+        description.translatesAutoresizingMaskIntoConstraints = false
+        companyDescView.addSubview(description)
+        
+        companyDescLabel.translatesAutoresizingMaskIntoConstraints = false
+        companyDescView.addSubview(companyDescLabel)
         
         NSLayoutConstraint.activate([
-            separatorLine1.topAnchor.constraint(equalTo: headerView.bottomAnchor),
-            separatorLine1.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine1.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine1.heightAnchor.constraint(equalToConstant: 1)
+            companyDescView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            companyDescView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            companyDescView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            description.topAnchor.constraint(equalTo: companyDescView.topAnchor, constant: 20),
+            description.leadingAnchor.constraint(equalTo: companyDescView.leadingAnchor, constant: 16),
+            description.heightAnchor.constraint(equalToConstant: 18),
+            
+            companyDescLabel.topAnchor.constraint(equalTo: description.bottomAnchor, constant: 6),
+            companyDescLabel.leadingAnchor.constraint(equalTo: companyDescView.leadingAnchor, constant: 16),
+            companyDescLabel.trailingAnchor.constraint(equalTo: companyDescView.trailingAnchor, constant: -16),
+            
+            companyDescView.bottomAnchor.constraint(equalTo: companyDescLabel.bottomAnchor, constant: 20)
         ])
     }
     
+    
     func setupResponsibilityView() {
-        
+        responsibilityView.layer.borderWidth = 1
+        responsibilityView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        responsibilityView.layer.cornerRadius = 12
         responsibilityView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(responsibilityView)
         
         NSLayoutConstraint.activate([
-            responsibilityView.topAnchor.constraint(equalTo: separatorLine1.bottomAnchor),
-            responsibilityView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            responsibilityView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            descriptionView.heightAnchor.constraint(equalToConstant: 254)
+            responsibilityView.topAnchor.constraint(equalTo: companyDescView.bottomAnchor, constant: 20),
+            responsibilityView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            responsibilityView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
         
         let rolesLabel = UILabel()
@@ -612,33 +637,24 @@ class JobDetailScreen: UIViewController {
             descriptionStackView.topAnchor.constraint(equalTo: rolesLabel.bottomAnchor, constant: 10),
             descriptionStackView.leadingAnchor.constraint(equalTo: responsibilityView.leadingAnchor, constant: 16),
             descriptionStackView.trailingAnchor.constraint(equalTo: responsibilityView.trailingAnchor, constant: -16),
-            descriptionStackView.bottomAnchor.constraint(equalTo: responsibilityView.bottomAnchor, constant: 0)
+            descriptionStackView.bottomAnchor.constraint(equalTo: responsibilityView.bottomAnchor, constant: 0),
+            
+            responsibilityView.bottomAnchor.constraint(equalTo: descriptionStackView.bottomAnchor, constant: 20)
         ])
     }
     
-    func setupSeparatorLine2() {
-        separatorLine2.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine2.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine2)
-        
-        NSLayoutConstraint.activate([
-            separatorLine2.topAnchor.constraint(equalTo: responsibilityView.bottomAnchor, constant: 16),
-            separatorLine2.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine2.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine2.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
     
     func setupRequirementsView() {
-        
+        requirementsView.layer.borderWidth = 1
+        requirementsView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        requirementsView.layer.cornerRadius = 12
         requirementsView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(requirementsView)
         
         NSLayoutConstraint.activate([
-            requirementsView.topAnchor.constraint(equalTo: separatorLine2.bottomAnchor),
-            requirementsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            requirementsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
+            requirementsView.topAnchor.constraint(equalTo: responsibilityView.bottomAnchor, constant: 20),
+            requirementsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            requirementsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
         
         let requirementsLabel = UILabel()
@@ -680,31 +696,61 @@ class JobDetailScreen: UIViewController {
             requirementsStackView.topAnchor.constraint(equalTo: requirementsLabel.bottomAnchor, constant: 10),
             requirementsStackView.leadingAnchor.constraint(equalTo: requirementsView.leadingAnchor, constant: 16),
             requirementsStackView.trailingAnchor.constraint(equalTo: requirementsView.trailingAnchor, constant: -16),
-            requirementsStackView.bottomAnchor.constraint(equalTo: requirementsView.bottomAnchor, constant: 0)
+            requirementsStackView.bottomAnchor.constraint(equalTo: requirementsView.bottomAnchor, constant: 0),
+            
+            requirementsView.bottomAnchor.constraint(equalTo: requirementsStackView.bottomAnchor, constant: 20)
         ])
     }
     
-    func setupSeparatorLine3() {
-        separatorLine3.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine3.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(separatorLine3)
+    
+    func setupQualificationView() {
+        qualificationView.layer.borderWidth = 1
+        qualificationView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        qualificationView.layer.cornerRadius = 12
+        qualificationView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(qualificationView)
+        
+        
+        let qualifications = UILabel()
+        qualifications.text = "Qualifications :"
+        qualifications.font = .boldSystemFont(ofSize: 16)
+        qualifications.tintColor = UIColor(hex: "#101828")
+        
+        qualifications.translatesAutoresizingMaskIntoConstraints = false
+        qualificationView.addSubview(qualifications)
+        
+        qualificationsLabel.translatesAutoresizingMaskIntoConstraints = false
+        qualificationView.addSubview(qualificationsLabel)
         
         NSLayoutConstraint.activate([
-            separatorLine3.topAnchor.constraint(equalTo: requirementsView.bottomAnchor, constant: 16),
-            separatorLine3.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine3.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine3.heightAnchor.constraint(equalToConstant: 1)
+            qualificationView.topAnchor.constraint(equalTo: requirementsView.bottomAnchor, constant: 20),
+            qualificationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            qualificationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            qualifications.topAnchor.constraint(equalTo: qualificationView.topAnchor, constant: 20),
+            qualifications.leadingAnchor.constraint(equalTo: qualificationView.leadingAnchor, constant: 16),
+            qualifications.heightAnchor.constraint(equalToConstant: 18),
+            
+            qualificationsLabel.topAnchor.constraint(equalTo: qualifications.bottomAnchor, constant: 6),
+            qualificationsLabel.leadingAnchor.constraint(equalTo: qualificationView.leadingAnchor, constant: 16),
+            qualificationsLabel.trailingAnchor.constraint(equalTo: qualificationView.trailingAnchor, constant: -16),
+            
+            qualificationView.bottomAnchor.constraint(equalTo: qualificationsLabel.bottomAnchor, constant: 20)
         ])
     }
     
+    
     func setupMoreJobInfo() {
+        moreJobInfo.layer.borderWidth = 1
+        moreJobInfo.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        moreJobInfo.layer.cornerRadius = 12
         moreJobInfo.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(moreJobInfo)
         
         NSLayoutConstraint.activate([
-            moreJobInfo.topAnchor.constraint(equalTo: separatorLine3.bottomAnchor),
-            moreJobInfo.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            moreJobInfo.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            moreJobInfo.topAnchor.constraint(equalTo: qualificationView.bottomAnchor, constant: 20),
+            moreJobInfo.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            moreJobInfo.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
         
         let sector = UILabel()
@@ -770,6 +816,7 @@ class JobDetailScreen: UIViewController {
         NSLayoutConstraint.activate([
             location.topAnchor.constraint(equalTo: jobType.bottomAnchor, constant: 16),
             location.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
+            location.widthAnchor.constraint(equalToConstant: 80),
             location.heightAnchor.constraint(equalToConstant: 18),
             
             locationLabel.topAnchor.constraint(equalTo: location.topAnchor),
@@ -841,41 +888,7 @@ class JobDetailScreen: UIViewController {
         ])
     }
     
-    func setupSeparatorLine4() {
-        separatorLine4.backgroundColor = UIColor(hex: "#EAECF0")
-        separatorLine4.translatesAutoresizingMaskIntoConstraints = false
-        moreJobInfo.addSubview(separatorLine4)
-        
-        NSLayoutConstraint.activate([
-            separatorLine4.topAnchor.constraint(equalTo: workmodeLabel.bottomAnchor, constant: 16),
-            separatorLine4.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            separatorLine4.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            separatorLine4.heightAnchor.constraint(equalToConstant: 1)
-        ])
-    }
-    
     func additionalJobInfo() {
-        let qualifications = UILabel()
-        qualifications.text = "Qualifications :"
-        qualifications.font = .boldSystemFont(ofSize: 16)
-        qualifications.tintColor = UIColor(hex: "#101828")
-        
-        qualifications.translatesAutoresizingMaskIntoConstraints = false
-        moreJobInfo.addSubview(qualifications)
-        
-        qualificationsLabel.translatesAutoresizingMaskIntoConstraints = false
-        moreJobInfo.addSubview(qualificationsLabel)
-        
-        NSLayoutConstraint.activate([
-            qualifications.topAnchor.constraint(equalTo: separatorLine4.bottomAnchor, constant: 16),
-            qualifications.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            qualifications.heightAnchor.constraint(equalToConstant: 18),
-            
-            qualificationsLabel.topAnchor.constraint(equalTo: qualifications.bottomAnchor, constant: 6),
-            qualificationsLabel.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            qualificationsLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
-        ])
-        
         let softwares = UILabel()
         softwares.text = "Softwares :"
         softwares.font = .boldSystemFont(ofSize: 16)
@@ -888,15 +901,18 @@ class JobDetailScreen: UIViewController {
         moreJobInfo.addSubview(softwaresLabel)
         
         NSLayoutConstraint.activate([
-            softwares.topAnchor.constraint(equalTo: qualificationsLabel.bottomAnchor, constant: 16),
+            softwares.topAnchor.constraint(equalTo: workmodeLabel.bottomAnchor, constant: 16),
             softwares.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
             softwares.heightAnchor.constraint(equalToConstant: 18),
             
             softwaresLabel.topAnchor.constraint(equalTo: softwares.bottomAnchor, constant: 6),
             softwaresLabel.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            softwaresLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
+            softwaresLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16),
+            
+            moreJobInfo.bottomAnchor.constraint(equalTo: softwaresLabel.bottomAnchor, constant: 20)
         ])
     }
+    
     
     func attributedStringForExperience(_ experience: String) -> NSAttributedString {
         // Create a mutable attributed string

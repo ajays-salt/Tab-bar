@@ -77,7 +77,7 @@ struct Job: Codable {
         id = try container.decode(String.self, forKey: .id)
         version = try container.decodeIfPresent(Int.self, forKey: .version)
         title = try container.decode(String.self, forKey: .title)
-        location = try container.decodeIfPresent(Location.self, forKey: .location)
+//        location = try container.decodeIfPresent(Location.self, forKey: .location)
         company = try container.decodeIfPresent(String.self, forKey: .company)
         status = try container.decode(String.self, forKey: .status)
         preferredQualification = try container.decodeIfPresent([String].self, forKey: .preferredQualification)
@@ -93,6 +93,14 @@ struct Job: Codable {
         noOfPeople = try container.decodeIfPresent(Int.self, forKey: .noOfPeople)
         whatWeOffer = try container.decodeIfPresent([String].self, forKey: .whatWeOffer)
         jobSummary = try container.decodeIfPresent(String.self, forKey: .jobSummary)
+        
+        if let locationValue = try? container.decode(Location.self, forKey: .location) {
+            location = locationValue
+        } else if let _ = try? container.decode(String.self, forKey: .location) {
+            location = nil
+        } else {
+            location = nil
+        }
         
         // Decode softwares which might be an array of strings or an array of dictionaries
         var softwareArray = [String]()

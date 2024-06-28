@@ -712,6 +712,9 @@ class EditPersonalInfoVC: UIViewController {
         let newEntry = Language(language: language, fluencyLevel: fluencyTextField.text!, read: true, write: true, speak: true)
         languageArray.append(newEntry)
         
+        languageTextField.text = ""
+        fluencyTextField.text = ""
+        
         // Reload the collection view to display the new entry
         reloadCollectionView()
     }
@@ -769,6 +772,7 @@ class EditPersonalInfoVC: UIViewController {
         submitPersonalInfo()
     }
 
+    
     func showAlert(withTitle title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default)
@@ -819,6 +823,7 @@ class EditPersonalInfoVC: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
 }
+
 
 extension EditPersonalInfoVC : UIImagePickerControllerDelegate & UINavigationControllerDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -874,6 +879,7 @@ extension EditPersonalInfoVC : UIImagePickerControllerDelegate & UINavigationCon
         }
     }
 }
+
 
 extension EditPersonalInfoVC {
     
