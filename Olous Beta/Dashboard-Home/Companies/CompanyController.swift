@@ -295,6 +295,10 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
 //            return
 //        }
         
+        
+        companyNameTextField.resignFirstResponder()
+        locationTextField.resignFirstResponder()
+        
         // Reset the company array and start fetching from the first page
         companiesArray = []
         currentPage = 1

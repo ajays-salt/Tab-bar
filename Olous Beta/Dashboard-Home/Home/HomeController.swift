@@ -336,11 +336,15 @@ class HomeController: UIViewController, UITextFieldDelegate {
     }
     @objc func didTapSearchJobs() {
         guard let jobTitle = jobsTextField.text, !jobTitle.isEmpty else {
-            let alert = UIAlertController(title: "Missing Information", message: "Fill all the details", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Missing Information!", message: "Please enter job title", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             present(alert, animated: true)
             return
         }
+        
+        jobsTextField.resignFirstResponder()
+        locationTextField.resignFirstResponder()
+        
         let jobResultVC = JobSearchResult()
         jobResultVC.jobTitle = jobTitle
         jobResultVC.jobLocation = locationTextField.text!

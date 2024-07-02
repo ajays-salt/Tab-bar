@@ -68,14 +68,25 @@ class JobDetailScreen: UIViewController {
     }()
     
     
+    let jobSummaryView = UIView()
+    let jobSummaryLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Nil"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    
     let responsibilityView = UIView()
     var jobResponsibilityItems : [String] = []
-    let descriptionStackView = UIStackView()
+    var jobResponsibilityItemsDesc : [String] = []
     
     
     let requirementsView = UIView()
     var jobRequirementItems : [String] = []
-    let requirementsStackView = UIStackView()
+    var jobRequirementItemsDesc : [String] = []
     
     
     let qualificationView = UIView()
@@ -87,6 +98,18 @@ class JobDetailScreen: UIViewController {
         label.numberOfLines = 0
         return label
     }()
+    
+    
+    let whatWeOfferView = UIView()
+    let whatWeOfferLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Nil"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#344054")
+        label.numberOfLines = 0
+        return label
+    }()
+    var whatWeOfferArray : [String] = []
     
     
     let moreJobInfo = UIView()
@@ -148,13 +171,27 @@ class JobDetailScreen: UIViewController {
     }()
     
     
+    
+    var savedJobs2 : [String] = []
+    
+    
+//    var selectedJob: Job! {
+//        didSet {
+//            DispatchQueue.main.async {
+//                self.assignValues()
+//                self.setupViews()
+//            }
+//        }
+//    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         overrideUserInterfaceStyle = .light
         view.backgroundColor = .systemBackground
+        print(selectedJob!)
         
-        setupScrollView()
+        
         checkIfJobIsApplied()
         assignValues()
         setupViews()
@@ -171,18 +208,29 @@ class JobDetailScreen: UIViewController {
         let expText = attributedStringForExperience("\(selectedJob.minExperience ?? "nil") - \(selectedJob.maxExperience ?? "nil")")
         jobExperienceLabel.attributedText = expText
         
-        companyDescLabel.text = selectedJob.jobSummary
+//        companyDescLabel.text = company?.description
         
+        jobSummaryLabel.text = selectedJob.jobSummary
+        
+        
+        jobResponsibilityItems.removeAll()
+        jobResponsibilityItemsDesc.removeAll()
         if let responsibilities = selectedJob.keyResponsibilities {
             for responsibility in responsibilities {
                 let title = String(responsibility.title.dropFirst(0))
+                let desc = responsibility.shortDescription
                 jobResponsibilityItems.append(title)
+                jobResponsibilityItemsDesc.append(desc)
             }
         }
         
+        jobRequirementItems.removeAll()
+        jobRequirementItemsDesc.removeAll()
         for requirement in selectedJob.requirements {
             let title = String(requirement.title.dropFirst(0))
+            let desc = requirement.shortDescription
             jobRequirementItems.append(title)
+            jobRequirementItemsDesc.append(desc)
         }
         
         let sectorTitles = selectedJob.sectors.map { $0 }
@@ -219,6 +267,16 @@ class JobDetailScreen: UIViewController {
         let qString = qualificationTitle?.joined(separator: ", ") ?? ""
         qualificationsLabel.text = qString
         
+        
+        whatWeOfferArray.removeAll()
+        if let whatWeOffer = selectedJob.whatWeOffer {
+            for item in whatWeOffer {
+                whatWeOfferArray.append(item)
+            }
+        }
+        
+        
+        
         let softwareItems = selectedJob.softwares.map { $0 }
         let softwares = softwareItems.joined(separator: ", ")
         softwaresLabel.text = softwares
@@ -238,14 +296,49 @@ class JobDetailScreen: UIViewController {
         }
     }
     
+    func assignValues2ForSavedJob() {
+        
+        jobSummaryLabel.text = selectedJob.jobSummary
+        
+        jobResponsibilityItems.removeAll()
+        jobResponsibilityItemsDesc.removeAll()
+        if let responsibilities = selectedJob.keyResponsibilities {
+            for responsibility in responsibilities {
+                let title = String(responsibility.title.dropFirst(0))
+                let desc = responsibility.shortDescription
+                jobResponsibilityItems.append(title)
+                jobResponsibilityItemsDesc.append(desc)
+            }
+        }
+        
+        jobRequirementItems.removeAll()
+        jobRequirementItemsDesc.removeAll()
+        for requirement in selectedJob.requirements {
+            let title = String(requirement.title.dropFirst(0))
+            let desc = requirement.shortDescription
+            jobRequirementItems.append(title)
+            jobRequirementItemsDesc.append(desc)
+        }
+        
+        whatWeOfferArray.removeAll()
+        if let whatWeOffer = selectedJob.whatWeOffer {
+            for item in whatWeOffer {
+                whatWeOfferArray.append(item)
+            }
+        }
+    }
+    
     @objc func shareButtonTapped() {
         print("Share button tapped")
     }
     
     func setupViews() {
+        setupScrollView()
         setupHeaderView()
         
         setupCompanyDescView()
+        
+        setupJobSummaryView()
         
         setupResponsibilityView()
         
@@ -253,12 +346,12 @@ class JobDetailScreen: UIViewController {
         
         setupQualificationView()
         
+        setupWhatWeOfferView()
+        
         setupMoreJobInfo()
-        
-        additionalJobInfo()
-        
-        view.layoutIfNeeded()
-        scrollView.layoutIfNeeded()
+                
+//        view.layoutIfNeeded()
+//        scrollView.layoutIfNeeded()
         DispatchQueue.main.async {
             self.updateScrollViewHeight()
         }
@@ -288,7 +381,7 @@ class JobDetailScreen: UIViewController {
     }
     func updateScrollViewHeight() {
         let h = moreJobInfo.frame.origin.y + moreJobInfo.frame.height
-        scrollView.contentSize = CGSize(width: view.frame.width, height: h)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: h + 40)
     }
 
     func setupHeaderView() {
@@ -370,7 +463,14 @@ class JobDetailScreen: UIViewController {
     }
     
     func setupSaveButton() {
-        saveButton.setTitle("Save", for: .normal)
+        
+//        print(savedJobs2)
+        if savedJobs2.contains(selectedJob.id) {
+            saveButton.setTitle("Saved", for: .normal)
+        }
+        else {
+            saveButton.setTitle("Save", for: .normal)
+        }
         saveButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
         saveButton.setTitleColor(UIColor(hex: "#344054"), for: .normal)
         saveButton.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
@@ -379,6 +479,7 @@ class JobDetailScreen: UIViewController {
         saveButton.clipsToBounds = true
         saveButton.titleLabel?.textAlignment = .center
         
+//        saveButton.addTarget(self, action: #selector(didTapSaveJob), for: .touchUpInside)
         saveButton.isHidden = true
         
         saveButton.translatesAutoresizingMaskIntoConstraints = false
@@ -485,7 +586,7 @@ class JobDetailScreen: UIViewController {
             return
         }
 
-        let jobId = selectedJob.id // Assuming selectedJob is accessible in this method
+        let jobId = selectedJob.id
 
         let requestData = ["jobId": jobId]
 
@@ -557,7 +658,7 @@ class JobDetailScreen: UIViewController {
         
         
         let description = UILabel()
-        description.text = "Company Description :"
+        description.text = "Company Overview"
         description.font = .boldSystemFont(ofSize: 16)
         description.tintColor = UIColor(hex: "#101828")
         
@@ -585,6 +686,43 @@ class JobDetailScreen: UIViewController {
     }
     
     
+    func setupJobSummaryView() {
+        jobSummaryView.layer.borderWidth = 1
+        jobSummaryView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        jobSummaryView.layer.cornerRadius = 12
+        jobSummaryView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(jobSummaryView)
+        
+        
+        let description = UILabel()
+        description.text = "Job Summary"
+        description.font = .boldSystemFont(ofSize: 16)
+        description.tintColor = UIColor(hex: "#101828")
+        
+        description.translatesAutoresizingMaskIntoConstraints = false
+        jobSummaryView.addSubview(description)
+        
+        jobSummaryLabel.translatesAutoresizingMaskIntoConstraints = false
+        jobSummaryView.addSubview(jobSummaryLabel)
+        
+        NSLayoutConstraint.activate([
+            jobSummaryView.topAnchor.constraint(equalTo: companyDescView.bottomAnchor, constant: 20),
+            jobSummaryView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            jobSummaryView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            description.topAnchor.constraint(equalTo: jobSummaryView.topAnchor, constant: 20),
+            description.leadingAnchor.constraint(equalTo: jobSummaryView.leadingAnchor, constant: 16),
+            description.heightAnchor.constraint(equalToConstant: 18),
+            
+            jobSummaryLabel.topAnchor.constraint(equalTo: description.bottomAnchor, constant: 6),
+            jobSummaryLabel.leadingAnchor.constraint(equalTo: jobSummaryView.leadingAnchor, constant: 16),
+            jobSummaryLabel.trailingAnchor.constraint(equalTo: jobSummaryView.trailingAnchor, constant: -16),
+            
+            jobSummaryView.bottomAnchor.constraint(equalTo: jobSummaryLabel.bottomAnchor, constant: 20)
+        ])
+    }
+    
+    
     func setupResponsibilityView() {
         responsibilityView.layer.borderWidth = 1
         responsibilityView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
@@ -593,7 +731,7 @@ class JobDetailScreen: UIViewController {
         scrollView.addSubview(responsibilityView)
         
         NSLayoutConstraint.activate([
-            responsibilityView.topAnchor.constraint(equalTo: companyDescView.bottomAnchor, constant: 20),
+            responsibilityView.topAnchor.constraint(equalTo: jobSummaryView.bottomAnchor, constant: 20),
             responsibilityView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             responsibilityView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
@@ -613,14 +751,15 @@ class JobDetailScreen: UIViewController {
             rolesLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
         
+        let descriptionStackView = UIStackView()
         descriptionStackView.axis = .vertical
         descriptionStackView.spacing = 0 // Adjust spacing between items
         
-        for item in jobResponsibilityItems {
+        for (index, item) in jobResponsibilityItems.enumerated() {
             let bulletLabelText = "\u{2022} " // Unicode bullet symbol with a space
             let attributedText = NSMutableAttributedString(string: bulletLabelText, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24), NSAttributedString.Key.foregroundColor: UIColor.black])
             
-            let text = NSAttributedString(string: item, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(hex: "#344054")])
+            let text = NSAttributedString(string: item, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(hex: "#101828")])
             
             attributedText.append(text)
             
@@ -628,7 +767,20 @@ class JobDetailScreen: UIViewController {
             bulletLabel.attributedText = attributedText
             bulletLabel.numberOfLines = 0 // Allow multiline text
             descriptionStackView.addArrangedSubview(bulletLabel)
+            
+            // Add the corresponding item from jobResponsibilityItemsDesc
+            if index < jobResponsibilityItemsDesc.count {
+                let descText = jobResponsibilityItemsDesc[index]
+                
+                let descLabel = UILabel()
+                descLabel.text = descText
+                descLabel.font = UIFont.systemFont(ofSize: 14)
+                descLabel.textColor = UIColor(hex: "#344054")
+                descLabel.numberOfLines = 0 // Allow multiline text
+                descriptionStackView.addArrangedSubview(descLabel)
+            }
         }
+
         
         descriptionStackView.translatesAutoresizingMaskIntoConstraints = false
         responsibilityView.addSubview(descriptionStackView)
@@ -672,14 +824,29 @@ class JobDetailScreen: UIViewController {
             requirementsLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
         
+        let requirementsStackView = UIStackView()
         requirementsStackView.axis = .vertical
         requirementsStackView.spacing = 0 // Adjust spacing between items
         
-        for item in jobRequirementItems {
+//        for item in jobRequirementItems {
+//            let bulletLabelText = "\u{2022} " // Unicode bullet symbol with a space
+//            let attributedText = NSMutableAttributedString(string: bulletLabelText, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24), NSAttributedString.Key.foregroundColor: UIColor.black])
+//            
+//            let text = NSAttributedString(string: item, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(hex: "#344054")])
+//            
+//            attributedText.append(text)
+//            
+//            let bulletLabel = UILabel()
+//            bulletLabel.attributedText = attributedText
+//            bulletLabel.numberOfLines = 0 // Allow multiline text
+//            requirementsStackView.addArrangedSubview(bulletLabel)
+//        }
+        
+        for (index, item) in jobRequirementItems.enumerated() {
             let bulletLabelText = "\u{2022} " // Unicode bullet symbol with a space
             let attributedText = NSMutableAttributedString(string: bulletLabelText, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24), NSAttributedString.Key.foregroundColor: UIColor.black])
             
-            let text = NSAttributedString(string: item, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(hex: "#344054")])
+            let text = NSAttributedString(string: item, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(hex: "#101828")])
             
             attributedText.append(text)
             
@@ -687,6 +854,18 @@ class JobDetailScreen: UIViewController {
             bulletLabel.attributedText = attributedText
             bulletLabel.numberOfLines = 0 // Allow multiline text
             requirementsStackView.addArrangedSubview(bulletLabel)
+            
+            // Add the corresponding item from jobResponsibilityItemsDesc
+            if index < jobRequirementItemsDesc.count {
+                let descText = jobRequirementItemsDesc[index]
+                
+                let descLabel = UILabel()
+                descLabel.text = descText
+                descLabel.font = UIFont.systemFont(ofSize: 14)
+                descLabel.textColor = UIColor(hex: "#344054")
+                descLabel.numberOfLines = 0 // Allow multiline text
+                requirementsStackView.addArrangedSubview(descLabel)
+            }
         }
         
         requirementsStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -740,6 +919,65 @@ class JobDetailScreen: UIViewController {
     }
     
     
+    func setupWhatWeOfferView() {
+        whatWeOfferView.layer.borderWidth = 1
+        whatWeOfferView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
+        whatWeOfferView.layer.cornerRadius = 12
+        whatWeOfferView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(whatWeOfferView)
+        
+        
+        let title = UILabel()
+        title.text = "What we offer :"
+        title.font = .boldSystemFont(ofSize: 16)
+        title.tintColor = UIColor(hex: "#101828")
+        
+        title.translatesAutoresizingMaskIntoConstraints = false
+        whatWeOfferView.addSubview(title)
+        
+        
+        NSLayoutConstraint.activate([
+            whatWeOfferView.topAnchor.constraint(equalTo: qualificationView.bottomAnchor, constant: 20),
+            whatWeOfferView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            whatWeOfferView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            title.topAnchor.constraint(equalTo: whatWeOfferView.topAnchor, constant: 20),
+            title.leadingAnchor.constraint(equalTo: whatWeOfferView.leadingAnchor, constant: 16),
+            title.heightAnchor.constraint(equalToConstant: 18)
+        ])
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 0
+        
+        for item in whatWeOfferArray {
+            let bulletLabelText = "\u{2022} " // Unicode bullet symbol with a space
+            let attributedText = NSMutableAttributedString(string: bulletLabelText, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24), NSAttributedString.Key.foregroundColor: UIColor.black])
+            
+            let text = NSAttributedString(string: item, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(hex: "#344054")])
+            
+            attributedText.append(text)
+            
+            let bulletLabel = UILabel()
+            bulletLabel.attributedText = attributedText
+            bulletLabel.numberOfLines = 0 // Allow multiline text
+            stackView.addArrangedSubview(bulletLabel)
+        }
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        whatWeOfferView.addSubview(stackView)
+        
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 10),
+            stackView.leadingAnchor.constraint(equalTo: whatWeOfferView.leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: whatWeOfferView.trailingAnchor, constant: -16),
+            stackView.bottomAnchor.constraint(equalTo: whatWeOfferView.bottomAnchor, constant: 0),
+            
+            whatWeOfferView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 20)
+        ])
+    }
+    
+    
     func setupMoreJobInfo() {
         moreJobInfo.layer.borderWidth = 1
         moreJobInfo.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
@@ -748,7 +986,7 @@ class JobDetailScreen: UIViewController {
         scrollView.addSubview(moreJobInfo)
         
         NSLayoutConstraint.activate([
-            moreJobInfo.topAnchor.constraint(equalTo: qualificationView.bottomAnchor, constant: 20),
+            moreJobInfo.topAnchor.constraint(equalTo: whatWeOfferView.bottomAnchor, constant: 20),
             moreJobInfo.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             moreJobInfo.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
@@ -884,33 +1122,78 @@ class JobDetailScreen: UIViewController {
             
             workmodeLabel.topAnchor.constraint(equalTo: workmode.topAnchor),
             workmodeLabel.leadingAnchor.constraint(equalTo: workmode.trailingAnchor, constant: 10),
-            workmodeLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16)
+            workmodeLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16),
+            
+            moreJobInfo.bottomAnchor.constraint(equalTo: workmodeLabel.bottomAnchor, constant: 20)
         ])
     }
     
-    func additionalJobInfo() {
-        let softwares = UILabel()
-        softwares.text = "Softwares :"
-        softwares.font = .boldSystemFont(ofSize: 16)
-        softwares.tintColor = UIColor(hex: "#101828")
+    
+    
+    
+
+    @objc func didTapSaveJob(_ sender : UIButton) {
+        let indexPath = IndexPath(row: sender.tag, section: 0)
         
-        softwares.translatesAutoresizingMaskIntoConstraints = false
-        moreJobInfo.addSubview(softwares)
+        let job = selectedJob
         
-        softwaresLabel.translatesAutoresizingMaskIntoConstraints = false
-        moreJobInfo.addSubview(softwaresLabel)
+        if savedJobs2.contains(selectedJob.id) {  // Already saved, remove it from saved jobs
+            let index = savedJobs2.firstIndex(of: selectedJob.id)
+            savedJobs2.remove(at: index!)
+            saveButton.setTitle("Save", for: .normal)
+            saveOrUnsaveJob(id: selectedJob.id)
+        }
         
-        NSLayoutConstraint.activate([
-            softwares.topAnchor.constraint(equalTo: workmodeLabel.bottomAnchor, constant: 16),
-            softwares.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            softwares.heightAnchor.constraint(equalToConstant: 18),
-            
-            softwaresLabel.topAnchor.constraint(equalTo: softwares.bottomAnchor, constant: 6),
-            softwaresLabel.leadingAnchor.constraint(equalTo: moreJobInfo.leadingAnchor, constant: 16),
-            softwaresLabel.trailingAnchor.constraint(equalTo: moreJobInfo.trailingAnchor, constant: -16),
-            
-            moreJobInfo.bottomAnchor.constraint(equalTo: softwaresLabel.bottomAnchor, constant: 20)
-        ])
+        else {  // Not saved, save this job
+            savedJobs2.append(selectedJob.id)
+            saveButton.setTitle("Saved", for: .normal)
+            saveOrUnsaveJob(id: selectedJob.id)
+        }
+    }
+    
+    func saveOrUnsaveJob(id: String) {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/save") else {
+            print("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+
+        let body: [String: Any] = ["jobId": id]
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+            request.httpBody = jsonData
+        } catch {
+            print("Failed to encode jobId: \(error)")
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Network request failed: \(error.localizedDescription)")
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                print("Server error")
+                return
+            }
+
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                print("Response: \(responseString)")
+            }
+        }.resume()
     }
     
     
@@ -939,10 +1222,13 @@ class JobDetailScreen: UIViewController {
     
     
     
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         view.backgroundColor = .systemBackground
+        
+//        fetchJob()
+        fetchCompany()
+//        fetchSavedJobIDs()
         
         tabBarController?.tabBar.isHidden = true
         navigationController?.navigationBar.isHidden = false
@@ -956,4 +1242,131 @@ class JobDetailScreen: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
     
+}
+
+
+extension JobDetailScreen {
+    
+    func fetchJob() {
+        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs/\(selectedJob.id)"
+        print("Url String to fetch: \(urlString)")
+
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard let data = data, error == nil else {
+                print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            do {
+                // Decode the raw JSON into a dictionary
+                if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let jobData = jsonObject["job"] {
+                    // Convert the jobData to JSON data
+                    let jobJSONData = try JSONSerialization.data(withJSONObject: jobData)
+                    // Decode the jobJSONData into a Job struct
+                    let job = try JSONDecoder().decode(Job.self, from: jobJSONData)
+                    DispatchQueue.main.async {
+//                        self.selectedJob = job
+//                        self.setupViews()
+//                        if self.savedJobs2.contains(self.selectedJob.id) {
+//                            self.assignValues2ForSavedJob()
+//                        }
+                        
+//                        self.assignValues()
+//                        print(job)
+                    }
+                } else {
+                    print("Invalid JSON structure")
+                }
+            } catch {
+                print("Decoding error: \(error)")
+            }
+        }.resume()
+    }
+
+    func fetchCompany() {
+        var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs/\(selectedJob.id)"
+
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
+        }
+
+
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            
+            guard let data = data, error == nil else {
+                print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+            
+            do {
+                if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let jobData = jsonObject["company"] {
+                    // Convert the jobData to JSON data
+                    let jobJSONData = try JSONSerialization.data(withJSONObject: jobData)
+                    // Decode the jobJSONData into a Job struct
+                    let company = try JSONDecoder().decode(Company.self, from: jobJSONData)
+                    DispatchQueue.main.async {
+                        self.companyDescLabel.text = company.description
+                    }
+                } else {
+                    print("Invalid JSON structure")
+                }
+            } catch {
+                print("Decoding error: \(error)")
+            }
+        }.resume()
+    }
+    
+    func fetchSavedJobIDs() {
+        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            print(accessToken, " access token")
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+        
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            do {
+                let response = try JSONDecoder().decode(SavedJobsResponse.self, from: data)
+                let jobIDs = response.savedJobs.savedJobs
+                
+                DispatchQueue.main.async {
+                    self.savedJobs2 = jobIDs
+//                    print(self.savedJobs2)
+                    print("Fetching done")
+                }
+                
+            } catch {
+                print("Failed to decode Saved IDs JSON: \(error)")
+            }
+        }
+        task.resume()
+        
+    }
 }

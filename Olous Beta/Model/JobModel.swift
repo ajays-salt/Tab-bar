@@ -24,7 +24,7 @@ struct Job: Codable {
     let version: Int?
     let title: String
     let location: Location?
-    let company: String?
+    let company: Company?
     let status: String
     let preferredQualification: [String]?
     let sectors: [String]
@@ -78,7 +78,7 @@ struct Job: Codable {
         version = try container.decodeIfPresent(Int.self, forKey: .version)
         title = try container.decode(String.self, forKey: .title)
 //        location = try container.decodeIfPresent(Location.self, forKey: .location)
-        company = try container.decodeIfPresent(String.self, forKey: .company)
+//        company = try container.decodeIfPresent(Company.self, forKey: .company)
         status = try container.decode(String.self, forKey: .status)
         preferredQualification = try container.decodeIfPresent([String].self, forKey: .preferredQualification)
         sectors = try container.decode([String].self, forKey: .sectors)
@@ -100,6 +100,14 @@ struct Job: Codable {
             location = nil
         } else {
             location = nil
+        }
+        
+        if let companyValue = try? container.decode(Company.self, forKey: .company) {
+            company = companyValue
+        } else if let _ = try? container.decode(String.self, forKey: .company) {
+            company = nil
+        } else {
+            company = nil
         }
         
         // Decode softwares which might be an array of strings or an array of dictionaries
@@ -185,10 +193,12 @@ struct ProjectExperience: Codable {
 
 struct Responsibility: Codable {
     let title: String
+    let shortDescription: String
 }
 
 struct Requirement: Codable {
     let title: String
+    let shortDescription: String
 }
 
 

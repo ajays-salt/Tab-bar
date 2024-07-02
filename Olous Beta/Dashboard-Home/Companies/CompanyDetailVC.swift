@@ -81,6 +81,10 @@ class CompanyDetailVC: UIViewController {
         setupSocialMediaView()
         
         setupJobsCollectionView()
+        
+        DispatchQueue.main.async {
+            self.updateScrollViewHeight()
+        }
     }
     
     func setupHeaderView() {
@@ -200,8 +204,8 @@ class CompanyDetailVC: UIViewController {
     
     
     private func setupAboutView() {
-        aboutView.contentSize = CGSize(width: view.bounds.width, height: 1300)
-        aboutView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 500, right: 0)
+//        aboutView.contentSize = CGSize(width: view.bounds.width, height: 1300)
+        aboutView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         aboutView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(aboutView)
 
@@ -211,6 +215,10 @@ class CompanyDetailVC: UIViewController {
             aboutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             aboutView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
+    }
+    func updateScrollViewHeight() {
+        let h = jobsCollectionView.frame.origin.y + jobsCollectionView.frame.height
+        aboutView.contentSize = CGSize(width: view.frame.width, height: h - 80)
     }
     
     var descView = UIView()
