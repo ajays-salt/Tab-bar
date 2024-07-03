@@ -147,7 +147,7 @@ class RegisterOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
         
         let secondLabel : UILabel = {
             let label = UILabel()
-            label.text = "Please enter OTP sent tooooo \(email)"
+            label.text = "Please enter OTP sent to \(email)"
             label.font = .systemFont(ofSize: 18)
             label.numberOfLines = 2
             label.textColor = UIColor(hex: "#475467")

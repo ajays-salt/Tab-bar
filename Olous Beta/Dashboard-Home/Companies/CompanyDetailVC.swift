@@ -205,7 +205,7 @@ class CompanyDetailVC: UIViewController {
     
     private func setupAboutView() {
 //        aboutView.contentSize = CGSize(width: view.bounds.width, height: 1300)
-        aboutView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
+//        aboutView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         aboutView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(aboutView)
 
@@ -217,8 +217,16 @@ class CompanyDetailVC: UIViewController {
         ])
     }
     func updateScrollViewHeight() {
-        let h = jobsCollectionView.frame.origin.y + jobsCollectionView.frame.height
-        aboutView.contentSize = CGSize(width: view.frame.width, height: h - 80)
+        var finalHeight = jobOpeningTitleLabel.frame.origin.y + jobOpeningTitleLabel.frame.height
+        if jobs.count != 0 {
+            finalHeight = finalHeight + 20 + 270 + 20 // height of collectionView + spacing
+        }
+        else {
+            finalHeight = finalHeight + 50
+        }
+        aboutView.contentSize = CGSize(width: view.frame.width, height: finalHeight)
+        aboutView.layoutIfNeeded()
+        view.layoutIfNeeded()
     }
     
     var descView = UIView()
@@ -408,18 +416,18 @@ class CompanyDetailVC: UIViewController {
     
     
     
-
+    let jobOpeningTitleLabel = UILabel()
     private func setupJobsCollectionView() {
-        let titleLabel = UILabel()
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 18)
-        titleLabel.textColor = UIColor(hex: "#101828")
-        titleLabel.text = "Job Openings(\(jobs.count))"
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        aboutView.addSubview(titleLabel)
+        
+        jobOpeningTitleLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        jobOpeningTitleLabel.textColor = UIColor(hex: "#101828")
+        jobOpeningTitleLabel.text = "Job Openings(\(jobs.count))"
+        jobOpeningTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        aboutView.addSubview(jobOpeningTitleLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: socialMediaView.bottomAnchor, constant: 30),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            jobOpeningTitleLabel.topAnchor.constraint(equalTo: socialMediaView.bottomAnchor, constant: 30),
+            jobOpeningTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
         ])
         
         
@@ -452,12 +460,12 @@ class CompanyDetailVC: UIViewController {
 
 
         NSLayoutConstraint.activate([
-            jobsCollectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            jobsCollectionView.topAnchor.constraint(equalTo: jobOpeningTitleLabel.bottomAnchor, constant: 10),
             jobsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             jobsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),  // Adjust based on your content
             jobsCollectionView.heightAnchor.constraint(equalToConstant: 270),
             
-            noJobsImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            noJobsImageView.topAnchor.constraint(equalTo: jobOpeningTitleLabel.bottomAnchor, constant: 20),
             noJobsImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             noJobsImageView.widthAnchor.constraint(equalToConstant: 300),
             noJobsImageView.heightAnchor.constraint(equalToConstant: 250)
@@ -565,8 +573,9 @@ class CompanyDetailVC: UIViewController {
             case .failure(let error):
                 print("Error fetching data: \(error)")
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
                 self.setupViews()
+                self.view.layoutIfNeeded()
             }
         }
         
@@ -758,12 +767,12 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
     }
 }
 
+
 extension CompanyDetailVC {
     
     func fetchData(completion: @escaping (Result<[Job], Error>) -> Void) {
         
         let urlStr = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/jobs/\(company.id)"
-        print("Company ID ",company.id)
         
         guard let url = URL(string: urlStr) else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
@@ -776,9 +785,9 @@ extension CompanyDetailVC {
                 return
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                    if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {

@@ -150,6 +150,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        isChangingFirstTime = false
         fetchUserProfile()
     }
     
@@ -558,17 +559,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func reloadEmploymentsCollectionView() {
         employmentCV.reloadData()
-            
-        // Calculate the content size
-        employmentCV.layoutIfNeeded()
+       
         let contentSize = employmentCV.collectionViewLayout.collectionViewContentSize
         employmentCVHeightConstraint.constant = contentSize.height
         
+        employmentCV.layoutIfNeeded()
         updateScrollViewContentSize()
         
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.layoutIfNeeded()
+//        }
     }
     @objc func deleteEmpCell(_ sender : UIButton) {
         guard let cell = sender.superview as? EmploymentCell, // Adjust the number of superviews according to your cell's hierarchy
@@ -586,6 +586,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.employmentCV.performBatchUpdates({
                 self.employmentCV.deleteItems(at: [indexPath])
             }, completion: { _ in
+                self.isChangingFirstTime = true
                 self.reloadEmploymentsCollectionView()
             })
             
@@ -721,6 +722,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             // Add new item to the data array
             empDataArray.append(newEmployment)
             employmentCV.insertItems(at: [IndexPath(row: empDataArray.count - 1, section: 0)])
+            isChangingFirstTime = true
             reloadEmploymentsCollectionView()
         }
         
@@ -886,16 +888,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func reloadProjectCollectionView() {
         projectCV.reloadData()
-        projectCV.layoutIfNeeded()
         
         let contentSize = projectCV.collectionViewLayout.collectionViewContentSize
         projectCVHeightConstraint.constant = contentSize.height
         
+        projectCV.layoutIfNeeded()
         updateScrollViewContentSize()
         
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.layoutIfNeeded()
+//        }
     }
     
     @objc func deleteProjectCell(_ sender : UIButton) {
@@ -911,6 +913,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.projectCV.performBatchUpdates({
                 self.projectCV.deleteItems(at: [indexPath])
             }, completion: { _ in
+                self.isChangingFirstTime = true
                 self.reloadProjectCollectionView()
             })
             self.uploadProjectDataArray()
@@ -1237,6 +1240,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             // Add new item to the data array
             projectDataArray.append(newProject)
             projectCV.insertItems(at: [IndexPath(row: projectDataArray.count - 1, section: 0)])
+            isChangingFirstTime = true
             reloadProjectCollectionView()
         }
         
@@ -1373,16 +1377,17 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func reloadEducationCollectionView() {
         educationCV.reloadData()
-        educationCV.layoutIfNeeded()
         
         let contentSize = educationCV.collectionViewLayout.collectionViewContentSize
         educationCVHeightConstraint.constant = contentSize.height
         
+        educationCV.layoutIfNeeded()
         updateScrollViewContentSize()
         
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
+//        UIView.animate(withDuration: 0.3) {
+//            self.scrollView.layoutIfNeeded()
+//            self.view.layoutIfNeeded()
+//        }
     }
     
     func setupEducationEditView() {
@@ -1444,8 +1449,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         editCollegeTF.delegate = self
         editPassYearTF = textFields[2]
         editPassYearTF.keyboardType = .numberPad
+        editPassYearTF.addDoneButtonOnKeyboard()
         editMarksTF = textFields[3]
         editMarksTF.keyboardType = .decimalPad
+        editMarksTF.addDoneButtonOnKeyboard()
         
         // Setup buttons
         eduSaveButton = UIButton(type: .system)
@@ -1512,6 +1519,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             // Add new item to the data array
             eduDataArray.append(newEducation)
             educationCV.insertItems(at: [IndexPath(row: eduDataArray.count - 1, section: 0)])
+            isChangingFirstTime = true
             reloadEducationCollectionView()
         }
         
@@ -1559,10 +1567,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             }
             
             if httpResponse.statusCode == 200 {
-                print("Data successfully uploaded")
-                if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                    print("Server response: \(responseString)")
-                }
+//                print("Data successfully uploaded")
+//                if let data = data, let responseString = String(data: data, encoding: .utf8) {
+//                    print("Server response: \(responseString)")
+//                }
             } else {
                 print("Failed to upload data, status code: \(httpResponse.statusCode)")
                 print(data , error)
@@ -1597,6 +1605,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.educationCV.performBatchUpdates({
                 self.educationCV.deleteItems(at: [indexPath])
             }, completion: { _ in
+                self.isChangingFirstTime = true
                 self.reloadEducationCollectionView()
             })
             
@@ -2300,13 +2309,29 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         return label
     }
     
+    
+    // when new cells are added or deleted in any of collectionView, then setting this true to handle scrollView contentSize.height
+    var isChangingFirstTime = false
+    
     func updateScrollViewContentSize() {
         let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
         // Add other collection view heights if there are more
-        let extraSpaceHeight: CGFloat = 850 // Change this if you need more space at the bottom
+        let extraSpaceHeight: CGFloat = 850
         
-        let totalContentHeight = combinedContentHeight + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight)
+        var totalContentHeight = combinedContentHeight + extraSpaceHeight
+        
+//        print("Total Height ", totalContentHeight)
+//        print("ScrollView height before setting contentSize ", scrollView.contentSize.height)
+//        print("Is button visible", isChangingFirstTime)
+        
+        if isChangingFirstTime == true {
+            scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight + 220)
+        }
+        else {
+            scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight + 20)
+        }
+        scrollView.layoutIfNeeded()
+        view.layoutIfNeeded()
     }
     
     private func showAlert(withTitle title: String, message: String) {
