@@ -9,6 +9,7 @@ import UIKit
 
 class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
+    let containerView = UIView()
     let scrollView = UIScrollView()
     
     
@@ -144,13 +145,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         navigationController?.navigationBar.isHidden = true
         
 //        fetchUserProfile()
-                
-        setupViews()
+//        DispatchQueue.main.async {
+//            self.setupViews()
+//        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        isChangingFirstTime = false
+        setupViews()
         fetchUserProfile()
     }
     
@@ -183,6 +185,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         setupPreferencesView()
         
         setupLogOut()
+        
+        DispatchQueue.main.async {
+            self.updateScrollViewContentSize()
+        }
     }
     
     func setupScrollView() {
@@ -198,14 +204,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
         ])
         
-        let extraSpaceHeight: CGFloat = 2200
-        
-        // Add extra space at the bottom
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: extraSpaceHeight, right: 0)
-        
-        // Calculate content size
-        let contentHeight = view.bounds.height + extraSpaceHeight
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(containerView)
+            
+        // Constraints for scrollView
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+        ])
     }
     
     func setupHeaderView() {
@@ -213,9 +221,9 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headerView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
         headerView.layer.cornerRadius = 12
         headerView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(headerView)
+        containerView.addSubview(headerView)
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
+            headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             headerView.heightAnchor.constraint(equalToConstant: 200)
@@ -299,7 +307,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         contactInfoView.layer.cornerRadius = 12
         
         contactInfoView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(contactInfoView)
+        containerView.addSubview(contactInfoView)
         
         let profileEditButton : UIButton = {
             let button = UIButton()
@@ -396,7 +404,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headlineView.layer.cornerRadius = 12
         
         headlineView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(headlineView)
+        containerView.addSubview(headlineView)
         
         let profileEditButton : UIButton = {
             let button = UIButton()
@@ -496,7 +504,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         empView.layer.cornerRadius = 12
         
         empView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(empView)
+        containerView.addSubview(empView)
         
         let label : UILabel = {
             let label = UILabel()
@@ -586,7 +594,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.employmentCV.performBatchUpdates({
                 self.employmentCV.deleteItems(at: [indexPath])
             }, completion: { _ in
-                self.isChangingFirstTime = true
                 self.reloadEmploymentsCollectionView()
             })
             
@@ -611,7 +618,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         NSLayoutConstraint.activate([
             empEditView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             empEditView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            empEditView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            empEditView.heightAnchor.constraint(equalToConstant: view.frame.height),
             empEditView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
         ])
 
@@ -722,7 +729,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             // Add new item to the data array
             empDataArray.append(newEmployment)
             employmentCV.insertItems(at: [IndexPath(row: empDataArray.count - 1, section: 0)])
-            isChangingFirstTime = true
             reloadEmploymentsCollectionView()
         }
         
@@ -806,12 +812,28 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         editExpPeriodTF.text = ""
         UIView.animate(withDuration: 0.3) {
             self.empEditView.transform = .identity
+            if let tabBar = self.tabBarController?.tabBar {
+                tabBar.frame = CGRect(
+                    x: tabBar.frame.origin.x,
+                    y: self.view.frame.size.height - tabBar.frame.size.height,
+                    width: tabBar.frame.size.width,
+                    height: tabBar.frame.size.height
+                )
+            }
         }
     }
     
     @objc func didTapAddEmployment() {
         UIView.animate(withDuration: 0.3) {
-            self.empEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+            self.empEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)
+            if let tabBar = self.tabBarController?.tabBar {
+                tabBar.frame = CGRect(
+                    x: tabBar.frame.origin.x,
+                    y: self.view.frame.size.height,
+                    width: tabBar.frame.size.width,
+                    height: tabBar.frame.size.height
+                )
+            }
         }
     }
     
@@ -825,7 +847,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         projectView.layer.cornerRadius = 12
         
         projectView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(projectView)
+        containerView.addSubview(projectView)
         
         let label : UILabel = {
             let label = UILabel()
@@ -913,7 +935,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.projectCV.performBatchUpdates({
                 self.projectCV.deleteItems(at: [indexPath])
             }, completion: { _ in
-                self.isChangingFirstTime = true
                 self.reloadProjectCollectionView()
             })
             self.uploadProjectDataArray()
@@ -922,7 +943,15 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     @objc func didTapAddProject() {
         UIView.animate(withDuration: 0.3) {
-            self.projectEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+            self.projectEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  
+            if let tabBar = self.tabBarController?.tabBar {
+                tabBar.frame = CGRect(
+                    x: tabBar.frame.origin.x,
+                    y: self.view.frame.size.height,
+                    width: tabBar.frame.size.width,
+                    height: tabBar.frame.size.height
+                )
+            }
         }
     }
     
@@ -943,7 +972,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         NSLayoutConstraint.activate([
             projectEditView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             projectEditView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            projectEditView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            projectEditView.heightAnchor.constraint(equalToConstant: view.frame.height),
             projectEditView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
         ])
 
@@ -1240,7 +1269,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             // Add new item to the data array
             projectDataArray.append(newProject)
             projectCV.insertItems(at: [IndexPath(row: projectDataArray.count - 1, section: 0)])
-            isChangingFirstTime = true
             reloadProjectCollectionView()
         }
         
@@ -1300,6 +1328,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         editProjectRespTF.text = ""
         UIView.animate(withDuration: 0.3) {
             self.projectEditView.transform = .identity
+            if let tabBar = self.tabBarController?.tabBar {
+                tabBar.frame = CGRect(
+                    x: tabBar.frame.origin.x,
+                    y: self.view.frame.size.height - tabBar.frame.size.height,
+                    width: tabBar.frame.size.width,
+                    height: tabBar.frame.size.height
+                )
+            }
         }
     }
     
@@ -1313,7 +1349,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         educationView.layer.cornerRadius = 12
         
         educationView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(educationView)
+        containerView.addSubview(educationView)
         
         let label : UILabel = {
             let label = UILabel()
@@ -1406,7 +1442,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         NSLayoutConstraint.activate([
             eduEditView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             eduEditView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            eduEditView.heightAnchor.constraint(equalToConstant: view.frame.height - 100),
+            eduEditView.heightAnchor.constraint(equalToConstant: view.frame.height),
             eduEditView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)  // Top of editView to the bottom of the main view
         ])
 
@@ -1519,7 +1555,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             // Add new item to the data array
             eduDataArray.append(newEducation)
             educationCV.insertItems(at: [IndexPath(row: eduDataArray.count - 1, section: 0)])
-            isChangingFirstTime = true
             reloadEducationCollectionView()
         }
         
@@ -1586,6 +1621,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         editMarksTF.text = ""
         UIView.animate(withDuration: 0.3) {
             self.eduEditView.transform = .identity
+            if let tabBar = self.tabBarController?.tabBar {
+                tabBar.frame = CGRect(
+                    x: tabBar.frame.origin.x,
+                    y: self.view.frame.size.height - tabBar.frame.size.height,
+                    width: tabBar.frame.size.width,
+                    height: tabBar.frame.size.height
+                )
+            }
         }
     }
     
@@ -1605,7 +1648,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             self.educationCV.performBatchUpdates({
                 self.educationCV.deleteItems(at: [indexPath])
             }, completion: { _ in
-                self.isChangingFirstTime = true
                 self.reloadEducationCollectionView()
             })
             
@@ -1616,7 +1658,15 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     @objc func didTapAddEducation() {
         UIView.animate(withDuration: 0.3) {
-            self.eduEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+            self.eduEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)
+            if let tabBar = self.tabBarController?.tabBar {
+                tabBar.frame = CGRect(
+                    x: tabBar.frame.origin.x,
+                    y: self.view.frame.size.height,
+                    width: tabBar.frame.size.width,
+                    height: tabBar.frame.size.height
+                )
+            }
         }
     }
     
@@ -1630,7 +1680,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         softwareView.layer.cornerRadius = 12
         
         softwareView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(softwareView)
+        containerView.addSubview(softwareView)
         
         NSLayoutConstraint.activate([
             softwareView.topAnchor.constraint(equalTo: educationView.bottomAnchor, constant: 20),
@@ -1724,14 +1774,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         softwareView.setNeedsLayout()
         softwareView.layoutIfNeeded()
         
-        if newHeight > 250 {
-            let contentHeight = scrollView.contentSize.height + 200
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
-        if newHeight > 500 {
-            let contentHeight = scrollView.contentSize.height + 500
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
+//        if newHeight > 250 {
+//            let contentHeight = containerView.contentSize.height + 200
+//            containerView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
+//        if newHeight > 500 {
+//            let contentHeight = containerView.contentSize.height + 500
+//            containerView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
     }
     
     @objc func didTapEditSoftwares() {
@@ -1747,7 +1797,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         skillsView.layer.cornerRadius = 12
         
         skillsView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(skillsView)
+        containerView.addSubview(skillsView)
         
         NSLayoutConstraint.activate([
             skillsView.topAnchor.constraint(equalTo: softwareView.bottomAnchor, constant: 20),
@@ -1845,14 +1895,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         skillsView.layoutIfNeeded()
         
 //        print("New Height : " , newHeight)
-        if newHeight > 250 {
-            let contentHeight = scrollView.contentSize.height + 200
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
-        if newHeight > 500 {
-            let contentHeight = scrollView.contentSize.height + 500
-            scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
-        }
+//        if newHeight > 250 {
+//            let contentHeight = containerView.contentSize.height + 200
+//            containerView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
+//        if newHeight > 500 {
+//            let contentHeight = containerView.contentSize.height + 500
+//            containerView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
+//        }
     }
     
     @objc func didTapEditSkills() {
@@ -1884,7 +1934,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         personalInfoView.layer.cornerRadius = 12
         
         personalInfoView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(personalInfoView)
+        containerView.addSubview(personalInfoView)
         
         let label : UILabel = {
             let label = UILabel()
@@ -2097,7 +2147,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         preferenceView.layer.cornerRadius = 12
         
         preferenceView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(preferenceView)
+        containerView.addSubview(preferenceView)
         
         let label : UILabel = {
             let label = UILabel()
@@ -2153,7 +2203,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         preferenceView.addSubview(ccLabel)
         
         currCtcLabel = createDynamicLabel()
-        scrollView.addSubview(currCtcLabel)
+        containerView.addSubview(currCtcLabel)
         
         var ecLabel = createStaticLabel()
         ecLabel.text = "Expected CTC"
@@ -2255,7 +2305,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         logOutButton.addTarget(self, action: #selector(didTapLogOut), for: .touchUpInside)
         
         logOutButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(logOutButton)
+        containerView.addSubview(logOutButton)
         
         NSLayoutConstraint.activate([
             logOutButton.topAnchor.constraint(equalTo: preferenceView.bottomAnchor, constant: 20),
@@ -2263,6 +2313,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             logOutButton.heightAnchor.constraint(equalToConstant: 60),
             logOutButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
         ])
+        
+        logOutButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20).isActive = true
     }
     
     @objc func didTapLogOut() {
@@ -2308,31 +2360,13 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         label.textColor = UIColor(hex: "#344054")
         return label
     }
-    
-    
-    // when new cells are added or deleted in any of collectionView, then setting this true to handle scrollView contentSize.height
-    var isChangingFirstTime = false
+
     
     func updateScrollViewContentSize() {
-        let combinedContentHeight = employmentCVHeightConstraint.constant + educationCVHeightConstraint.constant + projectCVHeightConstraint.constant
-        // Add other collection view heights if there are more
-        let extraSpaceHeight: CGFloat = 850
-        
-        var totalContentHeight = combinedContentHeight + extraSpaceHeight
-        
-//        print("Total Height ", totalContentHeight)
-//        print("ScrollView height before setting contentSize ", scrollView.contentSize.height)
-//        print("Is button visible", isChangingFirstTime)
-        
-        if isChangingFirstTime == true {
-            scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight + 220)
-        }
-        else {
-            scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: totalContentHeight + 20)
-        }
-        scrollView.layoutIfNeeded()
+        containerView.layoutIfNeeded()
         view.layoutIfNeeded()
     }
+    
     
     private func showAlert(withTitle title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -2500,7 +2534,15 @@ extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionVi
             editExpPeriodTF.text = exp.employmentPeriod
             
             UIView.animate(withDuration: 0.3) {
-                self.empEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+                self.empEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)
+                if let tabBar = self.tabBarController?.tabBar {
+                    tabBar.frame = CGRect(
+                        x: tabBar.frame.origin.x,
+                        y: self.view.frame.size.height,
+                        width: tabBar.frame.size.width,
+                        height: tabBar.frame.size.height
+                    )
+                }
             }
         }
         if collectionView == educationCV {
@@ -2511,7 +2553,15 @@ extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionVi
             editMarksTF.text = edu.marksObtained
             
             UIView.animate(withDuration: 0.3) {
-                self.eduEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+                self.eduEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)
+                if let tabBar = self.tabBarController?.tabBar {
+                    tabBar.frame = CGRect(
+                        x: tabBar.frame.origin.x,
+                        y: self.view.frame.size.height,
+                        width: tabBar.frame.size.width,
+                        height: tabBar.frame.size.height
+                    )
+                }
             }
         }
         if collectionView == projectCV {  // projectCV
@@ -2522,7 +2572,15 @@ extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionVi
             editProjectRespTF.text = project.responsibility
             
             UIView.animate(withDuration: 0.3) {
-                self.projectEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)  // Move up by 300 points
+                self.projectEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)
+                if let tabBar = self.tabBarController?.tabBar {
+                    tabBar.frame = CGRect(
+                        x: tabBar.frame.origin.x,
+                        y: self.view.frame.size.height,
+                        width: tabBar.frame.size.width,
+                        height: tabBar.frame.size.height
+                    )
+                }
             }
         }
     }
