@@ -75,8 +75,8 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     
     var searchCompanySection : UIView = UIView()
-    var searchCompanyInnerSection : UIView = UIView()
-    var jobSearchIS2 : UIView = UIView()
+    var companySearchIS : UIView = UIView()
+    var companySearchIS2 : UIView = UIView()
     
     var searchIcon : UIImageView = UIImageView()
     let companyNameTextField = UITextField()
@@ -177,7 +177,7 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             searchCompanySection.topAnchor.constraint(equalTo: companiesLabel.bottomAnchor, constant: 10),
             searchCompanySection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             searchCompanySection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchCompanySection.heightAnchor.constraint(equalToConstant: 232),
+            searchCompanySection.heightAnchor.constraint(equalToConstant: 178),
             
             ready.topAnchor.constraint(equalTo: searchCompanySection.topAnchor, constant: 16),
             ready.leadingAnchor.constraint(equalTo: searchCompanySection.leadingAnchor, constant: 16),
@@ -185,21 +185,21 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
         
     func setupCompanySearchInnerSection() {
-        searchCompanyInnerSection.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
-        searchCompanyInnerSection.layer.cornerRadius = 12
-        searchCompanyInnerSection.layer.borderWidth = 1
+        companySearchIS.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        companySearchIS.layer.cornerRadius = 12
+        companySearchIS.layer.borderWidth = 1
         let borderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
-        searchCompanyInnerSection.layer.borderColor = borderColor.cgColor
+        companySearchIS.layer.borderColor = borderColor.cgColor
         
-        searchCompanyInnerSection.translatesAutoresizingMaskIntoConstraints = false
-        searchCompanySection.addSubview(searchCompanyInnerSection)
+        companySearchIS.translatesAutoresizingMaskIntoConstraints = false
+        searchCompanySection.addSubview(companySearchIS)
         
         
         var searchIcon : UIImageView = UIImageView()
         searchIcon.image = UIImage(systemName: "magnifyingglass")
         searchIcon.tintColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.6)
         searchIcon.translatesAutoresizingMaskIntoConstraints = false
-        searchCompanyInnerSection.addSubview(searchIcon)
+        companySearchIS.addSubview(searchIcon)
         
         
         let placeholderText = "Enter Company name"
@@ -209,39 +209,41 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         companyNameTextField.delegate = self
         companyNameTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         companyNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        searchCompanyInnerSection.addSubview(companyNameTextField)
+        companySearchIS.addSubview(companyNameTextField)
         
         NSLayoutConstraint.activate([
-            searchCompanyInnerSection.topAnchor.constraint(equalTo:         searchCompanySection.topAnchor, constant: 56),
-            searchCompanyInnerSection.leadingAnchor.constraint(equalTo:         searchCompanySection.leadingAnchor, constant: 16),
-            searchCompanyInnerSection.trailingAnchor.constraint(equalTo:         searchCompanySection.trailingAnchor, constant: -16),
-            searchCompanyInnerSection.heightAnchor.constraint(equalToConstant: 45),
+            companySearchIS.topAnchor.constraint(equalTo:         searchCompanySection.topAnchor, constant: 56),
+            companySearchIS.leadingAnchor.constraint(equalTo:         searchCompanySection.leadingAnchor, constant: 16),
+            companySearchIS.trailingAnchor.constraint(equalTo:         searchCompanySection.trailingAnchor, constant: -16),
+            companySearchIS.heightAnchor.constraint(equalToConstant: 45),
             
-            searchIcon.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 12),
-            searchIcon.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor, constant: 16),
+            searchIcon.topAnchor.constraint(equalTo: companySearchIS.topAnchor, constant: 12),
+            searchIcon.leadingAnchor.constraint(equalTo: companySearchIS.leadingAnchor, constant: 16),
             searchIcon.widthAnchor.constraint(equalToConstant: 22),
             searchIcon.heightAnchor.constraint(equalToConstant: 22),
             
-            companyNameTextField.topAnchor.constraint(equalTo: searchCompanyInnerSection.topAnchor, constant: 10),
-            companyNameTextField.leadingAnchor.constraint(equalTo: searchCompanyInnerSection.leadingAnchor, constant: 46),
+            companyNameTextField.topAnchor.constraint(equalTo: companySearchIS.topAnchor, constant: 10),
+            companyNameTextField.leadingAnchor.constraint(equalTo: companySearchIS.leadingAnchor, constant: 46),
             companyNameTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
             companyNameTextField.heightAnchor.constraint(equalToConstant: 25)
         ])
         
         
-        jobSearchIS2.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
-        jobSearchIS2.layer.cornerRadius = 12
-        jobSearchIS2.layer.borderWidth = 1
-        jobSearchIS2.layer.borderColor = borderColor.cgColor
+        companySearchIS2.isHidden = true
         
-        jobSearchIS2.translatesAutoresizingMaskIntoConstraints = false
-                searchCompanySection.addSubview(jobSearchIS2)
+        companySearchIS2.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        companySearchIS2.layer.cornerRadius = 12
+        companySearchIS2.layer.borderWidth = 1
+        companySearchIS2.layer.borderColor = borderColor.cgColor
+        
+        companySearchIS2.translatesAutoresizingMaskIntoConstraints = false
+                searchCompanySection.addSubview(companySearchIS2)
         
         
         var locationIcon : UIImageView = UIImageView()
         locationIcon.image = UIImage(named: "location-dot")
         locationIcon.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchIS2.addSubview(locationIcon)
+        companySearchIS2.addSubview(locationIcon)
         
         
         let placeholderText2 = "City, state or zip code"
@@ -250,21 +252,21 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         locationTextField.delegate = self
         locationTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchIS2.addSubview(locationTextField)
+        companySearchIS2.addSubview(locationTextField)
         
         NSLayoutConstraint.activate([
-            jobSearchIS2.topAnchor.constraint(equalTo: searchCompanyInnerSection.bottomAnchor, constant: 10),
-            jobSearchIS2.leadingAnchor.constraint(equalTo:         searchCompanySection.leadingAnchor, constant: 16),
-            jobSearchIS2.trailingAnchor.constraint(equalTo:         searchCompanySection.trailingAnchor, constant: -16),
-            jobSearchIS2.heightAnchor.constraint(equalToConstant: 45),
+            companySearchIS2.topAnchor.constraint(equalTo: companySearchIS.bottomAnchor, constant: 10),
+            companySearchIS2.leadingAnchor.constraint(equalTo:         searchCompanySection.leadingAnchor, constant: 16),
+            companySearchIS2.trailingAnchor.constraint(equalTo:         searchCompanySection.trailingAnchor, constant: -16),
+            companySearchIS2.heightAnchor.constraint(equalToConstant: 45),
             
-            locationIcon.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 12),
-            locationIcon.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 18),
+            locationIcon.topAnchor.constraint(equalTo: companySearchIS2.topAnchor, constant: 12),
+            locationIcon.leadingAnchor.constraint(equalTo: companySearchIS2.leadingAnchor, constant: 18),
             locationIcon.widthAnchor.constraint(equalToConstant: 21),
             locationIcon.heightAnchor.constraint(equalToConstant: 26),
             
-            locationTextField.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 10),
-            locationTextField.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 47),
+            locationTextField.topAnchor.constraint(equalTo: companySearchIS2.topAnchor, constant: 10),
+            locationTextField.leadingAnchor.constraint(equalTo: companySearchIS2.leadingAnchor, constant: 47),
             locationTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
             locationTextField.heightAnchor.constraint(equalToConstant: 25)
         ])
@@ -280,7 +282,7 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         searchCompanySection.addSubview(searchCompanyButton)
         
         NSLayoutConstraint.activate([
-            searchCompanyButton.topAnchor.constraint(equalTo: jobSearchIS2.bottomAnchor, constant: 18),
+            searchCompanyButton.topAnchor.constraint(equalTo: companySearchIS.bottomAnchor, constant: 18),
             searchCompanyButton.leadingAnchor.constraint(equalTo: searchCompanySection.leadingAnchor, constant: 16),
             searchCompanyButton.trailingAnchor.constraint(equalTo: searchCompanySection.trailingAnchor, constant: -16),
             searchCompanyButton.heightAnchor.constraint(equalToConstant: 42)
@@ -443,12 +445,13 @@ extension CompanyController {
         else {
             urlString = "\(searchURL)?page=\(page)"
         }
-        print("Url String to fetch ", urlString)
         
         // Check if a search was performed and modify the URL accordingly
         if let companyName = companyNameTextField.text, !companyName.isEmpty {
             urlString += "&search=\(companyName)"
         }
+        
+        print("Url String to fetch ", urlString)
         
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
@@ -484,15 +487,13 @@ extension CompanyController {
             do {
                 let response = try JSONDecoder().decode(CompanyResponse.self, from: data)
                 DispatchQueue.main.async {
-                    // Now you have a populated CompanyResponse object
-                    // You can use it to update your UI or perform other actions
-                    print("Current Page: \(response.currentPage)")
-                    print("Total Pages: \(response.totalPages)")
+//                    print("Current Page: \(response.currentPage)")
+//                    print("Total Pages: \(response.totalPages)")
                     
                     self.totalPages = response.totalPages
                     self.companiesArray.append(contentsOf: response.companies)
                     self.companiesCollectionView.reloadData()
-                    print(self.companiesArray.count)
+//                    print(self.companiesArray.count)
                 }
                 DispatchQueue.main.async {
                     self.isLoadingData = false

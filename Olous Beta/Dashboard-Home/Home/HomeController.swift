@@ -1200,7 +1200,7 @@ extension HomeController {
         }
         
 //        print(filledCount, " ", totalCount)
-        print(isProfileFetched)
+//        print(isProfileFetched)
         if isProfileFetched {
             filledCount += 1
         }

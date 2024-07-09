@@ -95,7 +95,7 @@
 		FABCA2352C2297BE00E1D933 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
 		FAC251B92B9ECB5E0076DE75 /* JobDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobDetailScreen.swift; sourceTree = "<group>"; };
 		FAC2F96F2BFEF57800B66433 /* PreviewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewVC.swift; sourceTree = "<group>"; };
-		FAC3A1362B9191C500E17AFD /* olousTabBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = olousTabBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC3A1362B9191C500E17AFD /* Olous Beta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Olous Beta.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC3A1392B9191C500E17AFD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAC3A13B2B9191C600E17AFD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		FAC3A13D2B9191C600E17AFD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -246,7 +246,7 @@
 		FAC3A12D2B9191C500E17AFD = {
 			isa = PBXGroup;
 			children = (
-				FAC3A1382B9191C500E17AFD /* olousTabBar */,
+				FAC3A1382B9191C500E17AFD /* Olous Beta */,
 				FAC3A1372B9191C500E17AFD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -255,12 +255,12 @@
 		FAC3A1372B9191C500E17AFD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FAC3A1362B9191C500E17AFD /* olousTabBar.app */,
+				FAC3A1362B9191C500E17AFD /* Olous Beta.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FAC3A1382B9191C500E17AFD /* olousTabBar */ = {
+		FAC3A1382B9191C500E17AFD /* Olous Beta */ = {
 			isa = PBXGroup;
 			children = (
 				FAC3A1472B9191C700E17AFD /* Info.plist */,
@@ -270,7 +270,7 @@
 				FAE0A1EC2BB3D40900F07B29 /* Onboarding */,
 				FAC3A14D2B91925300E17AFD /* Dashboard-Home */,
 			);
-			path = olousTabBar;
+			path = "Olous Beta";
 			sourceTree = "<group>";
 		};
 		FAC3A14D2B91925300E17AFD /* Dashboard-Home */ = {
@@ -325,9 +325,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FAC3A1352B9191C500E17AFD /* olousTabBar */ = {
+		FAC3A1352B9191C500E17AFD /* Olous Beta */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FAC3A14A2B9191C700E17AFD /* Build configuration list for PBXNativeTarget "olousTabBar" */;
+			buildConfigurationList = FAC3A14A2B9191C700E17AFD /* Build configuration list for PBXNativeTarget "Olous Beta" */;
 			buildPhases = (
 				FAC3A1322B9191C500E17AFD /* Sources */,
 				FAC3A1332B9191C500E17AFD /* Frameworks */,
@@ -337,9 +337,9 @@
 			);
 			dependencies = (
 			);
-			name = olousTabBar;
+			name = "Olous Beta";
 			productName = olousTabBar;
-			productReference = FAC3A1362B9191C500E17AFD /* olousTabBar.app */;
+			productReference = FAC3A1362B9191C500E17AFD /* Olous Beta.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -357,7 +357,7 @@
 					};
 				};
 			};
-			buildConfigurationList = FAC3A1312B9191C500E17AFD /* Build configuration list for PBXProject "olousTabBar" */;
+			buildConfigurationList = FAC3A1312B9191C500E17AFD /* Build configuration list for PBXProject "Olous Beta" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -370,7 +370,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FAC3A1352B9191C500E17AFD /* olousTabBar */,
+				FAC3A1352B9191C500E17AFD /* Olous Beta */,
 			);
 		};
 /* End PBXProject section */
@@ -515,7 +515,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -572,7 +572,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -588,10 +588,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = M937Z35NWS;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 285MWHV7RJ;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = olousTabBar/Info.plist;
+				INFOPLIST_FILE = "Olous Beta/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Olous Beta";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -603,11 +603,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.com.olousTabBar;
+				PRODUCT_BUNDLE_IDENTIFIER = app.olous.OlousBeta001;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -617,10 +617,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = M937Z35NWS;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 285MWHV7RJ;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = olousTabBar/Info.plist;
+				INFOPLIST_FILE = "Olous Beta/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Olous Beta";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -632,18 +632,18 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.com.olousTabBar;
+				PRODUCT_BUNDLE_IDENTIFIER = app.olous.OlousBeta001;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FAC3A1312B9191C500E17AFD /* Build configuration list for PBXProject "olousTabBar" */ = {
+		FAC3A1312B9191C500E17AFD /* Build configuration list for PBXProject "Olous Beta" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FAC3A1482B9191C700E17AFD /* Debug */,
@@ -652,7 +652,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FAC3A14A2B9191C700E17AFD /* Build configuration list for PBXNativeTarget "olousTabBar" */ = {
+		FAC3A14A2B9191C700E17AFD /* Build configuration list for PBXNativeTarget "Olous Beta" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FAC3A14B2B9191C700E17AFD /* Debug */,
