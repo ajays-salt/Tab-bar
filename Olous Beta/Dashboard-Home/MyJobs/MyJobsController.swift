@@ -469,7 +469,7 @@ extension MyJobsController :  UICollectionViewDelegate, UICollectionViewDataSour
         
         cell.jobTypeLabel.text = job.jobType
         
-        let s = getTimeAgoString(from: job.createdAt ?? "")
+        let s = getTimeAgoString(from: (job.createdAt ?? job.updatedAt) ?? "")
         cell.jobPostedTime.text = s
         
         let expText = attributedStringForExperience("\(job.minExperience ?? "nil") - \(job.maxExperience ?? "nil")")
@@ -657,9 +657,9 @@ extension MyJobsController {
                 return
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Raw response data: \(responseString)")
-            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                 // Decode directly as an array of dictionaries
@@ -770,9 +770,9 @@ extension MyJobsController {
                 return
             }
             
-            //            if let responseString = String(data: data, encoding: .utf8) {
-            //                print("Raw response data: \(responseString)")
-            //            }
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
             
             do {
                 // Decode directly as an array of Job
