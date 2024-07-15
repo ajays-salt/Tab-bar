@@ -176,8 +176,6 @@ class PersonalInfoVC: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(uploadButtonTapped))
         clickToUploadLabel.addGestureRecognizer(tapGesture)
-        
-        
     }
     
     func setupViews() {
@@ -648,9 +646,9 @@ class PersonalInfoVC: UIViewController {
     @objc func openDatePicker() {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
-//        datePicker.preferredDatePickerStyle = .wheels
-        if #available(iOS 14, *) {
-            datePicker.preferredDatePickerStyle = .inline
+        
+        if #available(iOS 13.4, *) {
+            datePicker.preferredDatePickerStyle = .wheels
         }
 
         let toolbar = UIToolbar()
@@ -1120,6 +1118,12 @@ class PersonalInfoVC: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == dobTF {
+            openDatePicker()
+        }
     }
 }
 

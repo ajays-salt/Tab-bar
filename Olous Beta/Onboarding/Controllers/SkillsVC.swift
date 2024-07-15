@@ -12,7 +12,8 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
     var headerView : UIView!
     var circleContainerView : UIView!
     
-    var loader: UIActivityIndicatorView!
+    var loader: LoadingView!
+    var loader2: UIActivityIndicatorView!
     
     var scrollView : UIScrollView!
     
@@ -58,22 +59,94 @@ class SkillsVC: UIViewController, UITextFieldDelegate {
         setupViews()
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        loader = UIActivityIndicatorView(style: .large)
-//        loader.center = view.center
-        loader.hidesWhenStopped = true
+        loader2 = UIActivityIndicatorView(style: .large)
+        loader2.hidesWhenStopped = true
         
-        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        loader2.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loader2)
+        NSLayoutConstraint.activate([
+            loader2.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loader2.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loader2.widthAnchor.constraint(equalToConstant: 60),
+            loader2.heightAnchor.constraint(equalToConstant: 60)
+        ])
+        
+        
+        loader = LoadingView()
+        loader.isHidden = true
+        loader.backgroundColor = UIColor(hex: "#DB7F14").withAlphaComponent(0.05)
+        loader.layer.cornerRadius = 20
+        
+        loader.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loader)
+        
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "AISymbol")
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(imgView)
+        
+        let label = UILabel()
+        label.text = "Skills are being generated..."
+        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(label)
+        
         NSLayoutConstraint.activate([
             loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
-            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+            loader.widthAnchor.constraint(equalToConstant: 300),
+            loader.heightAnchor.constraint(equalToConstant: 80),
+            
+            imgView.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            imgView.leadingAnchor.constraint(equalTo: loader.leadingAnchor, constant: 16),
+            imgView.heightAnchor.constraint(equalToConstant: 40),
+            imgView.widthAnchor.constraint(equalToConstant: 40),
+            
+            label.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10),
+            label.trailingAnchor.constraint(equalTo: loader.trailingAnchor, constant: -16)
         ])
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = loader.frame
+
+        let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
+        let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
+        
+        gradientLayer.colors = [color1, color2]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        
+        let maskLayer = CAShapeLayer()
+        let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+        maskLayer.path = path.cgPath
+        
+        // Apply the mask to the gradient layer
+        gradientLayer.mask = maskLayer
+        
+        loader.layer.insertSublayer(gradientLayer, at: 0)
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Update gradient layer frame to match the loader's frame
+        if let gradientLayer = loader.layer.sublayers?.first(where: { $0 is CAGradientLayer }) as? CAGradientLayer {
+            gradientLayer.frame = loader.bounds
+            // Update the mask path as well
+            if let maskLayer = gradientLayer.mask as? CAShapeLayer {
+                let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+                maskLayer.path = path.cgPath
+            }
+        }
+    }
+    
+    
     
     func setupViews() {
         setupHeaderView()
@@ -710,8 +783,8 @@ extension SkillsVC {
         
         DispatchQueue.main.async {
             self.scrollView.alpha = 0
+            self.loader.isHidden = false
             self.loader.startAnimating()
-            print("Loader should be visible now")
         }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -722,15 +795,9 @@ extension SkillsVC {
             do {
                 // Decode the JSON into the SoftwareFetchResponse struct
                 let response = try JSONDecoder().decode(SkillsFetchResponse.self, from: data)
-                print("Software Suggestions: \(response.softwareSuggestions)")
-                print("Softwares: \(response.softwares)")
-                
-                print("Space")
                 
                 let processedSoftwares = self.processSoftwareString(softwareString: response.softwares)
-                print("Processed Softwares: \(processedSoftwares)")
                 let pss = self.processSoftwareString(softwareString: response.softwareSuggestions)
-                print("Processed Suggestions: \(pss)")
                 
                 self.addedSkillsArray = processedSoftwares
                 self.suggestedSkillsArray = pss
@@ -751,9 +818,9 @@ extension SkillsVC {
                 print("Failed to decode or process data: \(error)")
             }
             DispatchQueue.main.async {
+                self.loader.isHidden = true
                 self.loader.stopAnimating()
                 self.scrollView.alpha = 1
-                print("loader stopped")
                 
                 self.backButton.isUserInteractionEnabled = true
                 self.nextButton.isUserInteractionEnabled = true
@@ -805,7 +872,7 @@ extension SkillsVC {
     func uploadAddedSkills() {
         DispatchQueue.main.async {
             self.scrollView.alpha = 0
-            self.loader.startAnimating()
+            self.loader2.startAnimating()
             print("Loader should be visible now")
         }
         
@@ -854,7 +921,7 @@ extension SkillsVC {
                 print("Failed to parse response data: \(error)")
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.loader.stopAnimating()
+                self.loader2.stopAnimating()
                 self.scrollView.alpha = 1
                 print("loader stopped")
                 let vc = PersonalInfoVC()

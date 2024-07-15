@@ -42,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         viewController.modalPresentationStyle = .overFullScreen
                         window.rootViewController = viewController
                         
-//                        let vc = QualificationsVC()
+//                        let vc = BasicDetails1()
 //                        let navVC = UINavigationController(rootViewController: vc)
 //                        navVC.modalPresentationStyle = .overFullScreen
 //                        navVC.navigationBar.isHidden = true

@@ -20,7 +20,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         return label
     }()
     
-    var loader: UIActivityIndicatorView!
+    var loader: LoadingView!
     
     var scrollView : UIScrollView!
     
@@ -76,118 +76,75 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        setupGeneratingContentView()
+        loader = LoadingView()
+        loader.isHidden = true
+        loader.backgroundColor = UIColor(hex: "#DB7F14").withAlphaComponent(0.05)
+        loader.layer.cornerRadius = 20
         
-        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-//        loader.center = view.center
-        loader.style = UIActivityIndicatorView.Style.large
-        loader.hidesWhenStopped = true
-        
-        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        loader.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loader)
+        
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "AISymbol")
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(imgView)
+        
+        let label = UILabel()
+        label.text = "Qualifications are being generated..."
+        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(label)
+        
         NSLayoutConstraint.activate([
             loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
-            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+            loader.widthAnchor.constraint(equalToConstant: 300),
+            loader.heightAnchor.constraint(equalToConstant: 80),
+            
+            imgView.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            imgView.leadingAnchor.constraint(equalTo: loader.leadingAnchor, constant: 16),
+            imgView.heightAnchor.constraint(equalToConstant: 40),
+            imgView.widthAnchor.constraint(equalToConstant: 40),
+            
+            label.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10),
+            label.trailingAnchor.constraint(equalTo: loader.trailingAnchor, constant: -16)
         ])
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = loader.frame
+
+        let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
+        let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
+        
+        gradientLayer.colors = [color1, color2]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        
+        let maskLayer = CAShapeLayer()
+        let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+        maskLayer.path = path.cgPath
+        
+        // Apply the mask to the gradient layer
+        gradientLayer.mask = maskLayer
+        
+        loader.layer.insertSublayer(gradientLayer, at: 0)
     }
     
-    
-    let generateContentView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.layer.cornerRadius = 16
-        view.layer.masksToBounds = true
-        return view
-    }()
-    
-    func setupGeneratingContentView() {
-        generateContentView.isHidden = true
-//        addGradientBorder(to: generateContentView, colors: [UIColor.red.cgColor, UIColor.blue.cgColor], width: 2)
-        generateContentView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(generateContentView)
-        
-        
-        let iconImageView: UIImageView = {
-            let imageView = UIImageView()
-            imageView.image = UIImage(systemName: "sparkles") // Use appropriate image
-            imageView.tintColor = .purple
-            return imageView
-        }()
-
-        let messageLabel: UILabel = {
-            let label = UILabel()
-            label.text = "AI is generating content"
-            label.font = .systemFont(ofSize: 16, weight: .medium)
-            label.textColor = .black
-            return label
-        }()
-
-        let progressLabel: UILabel = {
-            let label = UILabel()
-            label.text = "77%"
-            label.font = .systemFont(ofSize: 16, weight: .medium)
-            label.textColor = .black
-            return label
-        }()
-        
-        [iconImageView, messageLabel, progressLabel].forEach { view in
-            view.translatesAutoresizingMaskIntoConstraints = false
-            generateContentView.addSubview(view)
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Update gradient layer frame to match the loader's frame
+        if let gradientLayer = loader.layer.sublayers?.first(where: { $0 is CAGradientLayer }) as? CAGradientLayer {
+            gradientLayer.frame = loader.bounds
+            // Update the mask path as well
+            if let maskLayer = gradientLayer.mask as? CAShapeLayer {
+                let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+                maskLayer.path = path.cgPath
+            }
         }
-
-        NSLayoutConstraint.activate([
-            generateContentView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            generateContentView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            generateContentView.heightAnchor.constraint(equalToConstant: 100),
-            generateContentView.widthAnchor.constraint(equalToConstant: view.frame.width - 40),
-            
-            iconImageView.leadingAnchor.constraint(equalTo: generateContentView.leadingAnchor, constant: 16),
-            iconImageView.centerYAnchor.constraint(equalTo: generateContentView.centerYAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 24),
-            iconImageView.heightAnchor.constraint(equalToConstant: 24),
-            
-            messageLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 8),
-            messageLabel.centerYAnchor.constraint(equalTo: generateContentView.centerYAnchor),
-            
-            progressLabel.trailingAnchor.constraint(equalTo: generateContentView.trailingAnchor, constant: -16),
-            progressLabel.centerYAnchor.constraint(equalTo: generateContentView.centerYAnchor)
-        ])
-        
-        view.layoutIfNeeded()
-        addGradientBorder(to: generateContentView, colors: [UIColor.red.cgColor, UIColor.blue.cgColor], width: 4)
     }
-    
-    func addGradientBorder(to view: UIView, colors: [CGColor], width: CGFloat) {
-        let gradient = CAGradientLayer()
-        gradient.frame = view.bounds.insetBy(dx: -width, dy: -width)
-        gradient.colors = colors
-        gradient.startPoint = CGPoint(x: 0, y: 0)
-        gradient.endPoint = CGPoint(x: 1, y: 1)
-        
-        let shape = CAShapeLayer()
-        shape.lineWidth = width
-        shape.path = UIBezierPath(roundedRect: view.bounds, cornerRadius: view.layer.cornerRadius).cgPath
-        shape.fillColor = UIColor.clear.cgColor
-        shape.strokeColor = UIColor.black.cgColor
-        gradient.mask = shape
-        
-        view.layer.addSublayer(gradient)
-        
-        let animation = CABasicAnimation(keyPath: "startPoint")
-        animation.fromValue = NSValue(cgPoint: CGPoint(x: 0, y: 0))
-        animation.toValue = NSValue(cgPoint: CGPoint(x: 1, y: 1))
-        animation.duration = 2.0
-        animation.repeatCount = .infinity
-        
-        gradient.add(animation, forKey: "borderAnimation")
-    }
-
-
-
-    
-
     
     
     
@@ -1253,8 +1210,8 @@ extension QualificationsVC { // extension to fetch API
         
         DispatchQueue.main.async {
             self.scrollView.alpha = 0
+            self.loader.isHidden = false
             self.loader.startAnimating()
-            self.generateContentView.isHidden = false
             print("Loader should be visible now")
         }
         
@@ -1286,7 +1243,7 @@ extension QualificationsVC { // extension to fetch API
                         do {
                             let decoder = JSONDecoder()
                             self.dataArray = try decoder.decode([Education].self, from: jsonData)
-                            print("Decoded data: \(self.dataArray)")
+//                            print("Decoded data: \(self.dataArray)")
                             DispatchQueue.main.async {
                                 self.reloadCollectionView()
                             }
@@ -1303,14 +1260,13 @@ extension QualificationsVC { // extension to fetch API
             }
             DispatchQueue.main.async {
                 self.loader.stopAnimating()
+                self.loader.isHidden = true
                 self.scrollView.alpha = 1
-                print("loader stopped")
+//                print("loader stopped")
                 
                 self.backButton.isUserInteractionEnabled = true
                 self.nextButton.isUserInteractionEnabled = true
                 self.bottomView.alpha = 1
-                
-//                self.generateContentView.isHidden = true
             }
         }.resume()
     }

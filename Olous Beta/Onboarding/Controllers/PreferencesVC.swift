@@ -43,6 +43,7 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         // Assigning the toolbar as UITextField's inputAccessoryView
         textField.inputAccessoryView = toolbar
         
+        textField.addTarget(self, action: #selector(limitTextFieldCharacters(_:)), for: .editingChanged)
         
         return textField
     }()
@@ -65,6 +66,8 @@ class PreferencesVC: UIViewController, UITextFieldDelegate {
         toolbar.setItems([flexibleSpace, doneButton], animated: false)
         // Assigning the toolbar as UITextField's inputAccessoryView
         textField.inputAccessoryView = toolbar
+        
+        textField.addTarget(self, action: #selector(limitTextFieldCharacters(_:)), for: .editingChanged)
         
         return textField
     }()
@@ -919,5 +922,20 @@ extension PreferencesVC {
         let alert = UIAlertController(title: "Missing Information", message: "Please fill in all the details.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    @objc func limitTextFieldCharacters(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        
+        let text2 = text.prefix(3)
+        
+        if text2.contains(".") && text.count >= 3 {
+            textField.text = String(text)
+            
+        } else {
+            if text.count > 3 {
+                textField.text = String(text.prefix(3))
+            }
+        }
     }
 }

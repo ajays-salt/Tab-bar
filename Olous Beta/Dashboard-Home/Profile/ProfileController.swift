@@ -9,6 +9,8 @@ import UIKit
 
 class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate {
     
+    var user : User!
+    
     let containerView = UIView()
     let scrollView = UIScrollView()
     
@@ -148,11 +150,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
 //        DispatchQueue.main.async {
 //            self.setupViews()
 //        }
+        setupViews()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setupViews()
         fetchUserProfile()
     }
     
@@ -2616,87 +2618,98 @@ extension ProfileController { // Extension for APIs
             }
 
             do {
-                let user = try JSONDecoder().decode(User.self, from: data)
+                self.user = try JSONDecoder().decode(User.self, from: data)
 //                print("User fetched: \(user)")
-                
-                let initialsOfName = self.extractInitials(from: user.name)
-                let userName = user.name ?? ""
-                
-                DispatchQueue.main.async {
-                    self.userNameLabel.text = "\(userName)"
-                    self.jobTitleLabel.text = user.designation
-                    self.locationLabel.text = "\(user.currentAddress?.city ?? ""), \(user.currentAddress?.state ?? "")"
-                    
-                    self.fetchProfilePicture(size: "m", userID: user._id)
-                    
-                    self.emailLabel.text = user.email
-                    self.mobileLabel.text = user.mobile
-                    
-                    self.headlineLabel.text = user.headline
-                    self.summaryLabel.text = user.summary
-                    
-                    self.dobLabel.text = user.dateOfBirth
-                    self.nationalityLabel.text = user.nationality
-                    self.genderLabel.text = user.gender?.trimmingCharacters(in: .whitespaces)
-                    self.permanentAddressLabel.text = user.permanentAddress
-                    self.currentAddressLabel.text = user.currentAddress?.address
-                    self.stateLabel.text = user.currentAddress?.state
-                    self.cityLabel.text = user.currentAddress?.city
-                    self.pincodeLabel.text = user.currentAddress?.pincode
-                    self.uidLabel.text = user.uidNumber ?? "UID nil"
-                    self.passportLabel.text = user.passportNo ?? "Passport nil"
-                    self.pancardLabel.text = user.panNo ?? "PAN nil"
-                    
-                    var a : [String] = []
-                    for s in user.language! {
-                        a.append(s.language)
-                    }
-                    self.languageLabel.text = a.joined(separator: ", ")
-                    
-                    
-                    self.empDataArray = user.experience!
-                    self.reloadEmploymentsCollectionView()
-                    
-                    self.eduDataArray = user.education!
-                    self.reloadEducationCollectionView()
-                    
-                    self.projectDataArray = user.projects!
-                    self.reloadProjectCollectionView()
-                    
-                    self.totalExperience = user.totalExperience
-                    
-                    
-                    self.portfolioLabel.text = user.portfolio
-                    self.currCtcLabel.text = user.currentCtc
-                    self.expectedCtcLabel.text = user.expectedCtc
-            
-                    self.noticePeriodLabel.text = user.noticePeriod?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.willingToRelocate.text = user.willingToRelocate?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.currentlyEmployed.text = user.currentlyEmployed?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.worktypeLabel.text = user.preferredWorkType?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    
-//                    for s in user.softwares! {
-//                        self.softwaresArray.append(s)
-//                    }
-                    
-                    for subview in self.softwareView.subviews {
-                        subview.removeFromSuperview()
-                    }
-                    self.softwaresArray = user.softwares!
-                    self.addLabelsInSoftwares()
-                    
-                    for subview in self.skillsView.subviews {
-                        subview.removeFromSuperview()
-                    }
-                    self.skillsArray = user.skills!
-                    self.addLabelsInSkills()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0) {
+                    self.assignValues(user: self.user)
                 }
+                
             } catch {
                 print("Failed to decode JSON: \(error)")
             }
         }
 
         task.resume()
+    }
+    
+    func assignValues(user : User) {
+        let initialsOfName = self.extractInitials(from: self.user.name)
+        let userName = self.user.name ?? ""
+        
+        DispatchQueue.main.async {
+            self.userNameLabel.text = "\(userName)"
+            self.jobTitleLabel.text = self.user.designation
+            self.locationLabel.text = "\(self.user.currentAddress?.city ?? ""), \(self.user.currentAddress?.state ?? "")"
+            
+            self.fetchProfilePicture(size: "m", userID: self.user._id)
+            
+            self.emailLabel.text = self.user.email
+            self.mobileLabel.text = self.user.mobile
+            
+            self.headlineLabel.text = self.user.headline
+            self.summaryLabel.text = self.user.summary
+            
+            self.dobLabel.text = self.user.dateOfBirth
+            self.nationalityLabel.text = self.user.nationality
+            self.genderLabel.text = self.user.gender?.trimmingCharacters(in: .whitespaces)
+            self.permanentAddressLabel.text = self.user.permanentAddress
+            self.currentAddressLabel.text = self.user.currentAddress?.address
+            self.stateLabel.text = self.user.currentAddress?.state
+            self.cityLabel.text = self.user.currentAddress?.city
+            self.pincodeLabel.text = self.user.currentAddress?.pincode
+            self.uidLabel.text = self.user.uidNumber ?? "UID nil"
+            self.passportLabel.text = self.user.passportNo ?? "Passport nil"
+            self.pancardLabel.text = self.user.panNo ?? "PAN nil"
+            
+            var a : [String] = []
+            for s in self.user.language! {
+                a.append(s.language)
+            }
+            self.languageLabel.text = a.joined(separator: ", ")
+            
+            
+            self.empDataArray = self.user.experience!
+            self.reloadEmploymentsCollectionView()
+            
+            self.eduDataArray = self.user.education!
+            self.reloadEducationCollectionView()
+            
+            self.projectDataArray = self.user.projects!
+            self.reloadProjectCollectionView()
+            
+            self.totalExperience = self.user.totalExperience
+            
+            
+            self.portfolioLabel.text = self.user.portfolio
+            self.currCtcLabel.text = self.user.currentCtc
+            self.expectedCtcLabel.text = self.user.expectedCtc
+            DispatchQueue.main.async {
+                self.noticePeriodLabel.text = self.user.noticePeriod?.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            self.willingToRelocate.text = self.user.willingToRelocate?.trimmingCharacters(in: .whitespacesAndNewlines)
+            self.currentlyEmployed.text = self.user.currentlyEmployed?.trimmingCharacters(in: .whitespacesAndNewlines)
+            self.worktypeLabel.text = self.user.preferredWorkType?.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            self.preferenceView.layoutIfNeeded()
+//                    for s in user.softwares! {
+//                        self.softwaresArray.append(s)
+//                    }
+            
+            for subview in self.softwareView.subviews {
+                subview.removeFromSuperview()
+            }
+            self.softwaresArray = self.user.softwares!
+            self.addLabelsInSoftwares()
+            
+            for subview in self.skillsView.subviews {
+                subview.removeFromSuperview()
+            }
+            self.skillsArray = self.user.skills!
+            self.addLabelsInSkills()
+            
+            self.scrollView.layoutIfNeeded()
+            self.view.layoutIfNeeded()
+        }
     }
     
     func fetchProfilePicture(size: String, userID: String) {

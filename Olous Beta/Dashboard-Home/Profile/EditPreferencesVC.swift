@@ -36,6 +36,8 @@ class EditPreferencesVC: UIViewController, UITextFieldDelegate {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addDoneButtonOnKeyboard()
         
+        textField.addTarget(self, action: #selector(limitTextFieldCharacters(_:)), for: .editingChanged)
+        
         return textField
     }()
     let expectedCtcTextField : UITextField = {
@@ -47,6 +49,8 @@ class EditPreferencesVC: UIViewController, UITextFieldDelegate {
         
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addDoneButtonOnKeyboard()
+        
+        textField.addTarget(self, action: #selector(limitTextFieldCharacters(_:)), for: .editingChanged)
         
         return textField
     }()
@@ -486,6 +490,7 @@ class EditPreferencesVC: UIViewController, UITextFieldDelegate {
         present(alertController, animated: true, completion: nil)
     }
     
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
         textField.resignFirstResponder()
@@ -495,6 +500,24 @@ class EditPreferencesVC: UIViewController, UITextFieldDelegate {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
+    @objc func limitTextFieldCharacters(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        
+        let text2 = text.prefix(3)
+        
+        if text2.contains(".") && text.count >= 3 {
+            textField.text = String(text)
+            
+        } else {
+            if text.count > 3 {
+                textField.text = String(text.prefix(3))
+            }
+        }
+    }
+
+
+
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

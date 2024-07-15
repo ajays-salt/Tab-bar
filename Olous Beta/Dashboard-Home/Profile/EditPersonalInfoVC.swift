@@ -353,9 +353,9 @@ class EditPersonalInfoVC: UIViewController {
     @objc func openDatePicker() {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
-//        datePicker.preferredDatePickerStyle = .wheels
-        if #available(iOS 14, *) {
-            datePicker.preferredDatePickerStyle = .inline
+        
+        if #available(iOS 13.4, *) {
+            datePicker.preferredDatePickerStyle = .wheels
         }
 
         let toolbar = UIToolbar()
@@ -808,6 +808,12 @@ class EditPersonalInfoVC: UIViewController {
         // Dismiss the keyboard when the user taps outside of the text field
         view.endEditing(true)
     }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == dobTF {
+            openDatePicker()
+        }
+    }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

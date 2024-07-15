@@ -15,7 +15,7 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     var headerView : UIView!
     var circleContainerView : UIView!
     
-    var loader: UIActivityIndicatorView!
+    var loader: LoadingView!
     
     var scrollView : UIScrollView!
     
@@ -63,21 +63,76 @@ class SoftwaresVC: UIViewController, UITextFieldDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        loader = LoadingView()
+        loader.isHidden = true
+        loader.backgroundColor = UIColor(hex: "#DB7F14").withAlphaComponent(0.05)
+        loader.layer.cornerRadius = 20
         
-        loader = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
-//        loader.center = view.center
-        loader.style = UIActivityIndicatorView.Style.large
-        loader.hidesWhenStopped = true
-        
-        loader.translatesAutoresizingMaskIntoConstraints = false // Disable autoresizing mask
+        loader.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loader)
+        
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "AISymbol")
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(imgView)
+        
+        let label = UILabel()
+        label.text = "Softwares are being generated..."
+        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(label)
+        
         NSLayoutConstraint.activate([
             loader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loader.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            loader.widthAnchor.constraint(equalToConstant: 60), // Set width to 40
-            loader.heightAnchor.constraint(equalToConstant: 60) // Set height to 40
+            loader.widthAnchor.constraint(equalToConstant: 300),
+            loader.heightAnchor.constraint(equalToConstant: 80),
+            
+            imgView.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            imgView.leadingAnchor.constraint(equalTo: loader.leadingAnchor, constant: 16),
+            imgView.heightAnchor.constraint(equalToConstant: 40),
+            imgView.widthAnchor.constraint(equalToConstant: 40),
+            
+            label.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10),
+            label.trailingAnchor.constraint(equalTo: loader.trailingAnchor, constant: -16)
         ])
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = loader.frame
+
+        let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
+        let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
+        
+        gradientLayer.colors = [color1, color2]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        
+        let maskLayer = CAShapeLayer()
+        let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+        maskLayer.path = path.cgPath
+        
+        // Apply the mask to the gradient layer
+        gradientLayer.mask = maskLayer
+        
+        loader.layer.insertSublayer(gradientLayer, at: 0)
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Update gradient layer frame to match the loader's frame
+        if let gradientLayer = loader.layer.sublayers?.first(where: { $0 is CAGradientLayer }) as? CAGradientLayer {
+            gradientLayer.frame = loader.bounds
+            // Update the mask path as well
+            if let maskLayer = gradientLayer.mask as? CAShapeLayer {
+                let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+                maskLayer.path = path.cgPath
+            }
+        }
+    }
+    
     
     func setupViews() {
         setupHeaderView()
@@ -710,6 +765,7 @@ extension SoftwaresVC {
         
         DispatchQueue.main.async {
             self.scrollView.alpha = 0
+            self.loader.isHidden = false
             self.loader.startAnimating()
             print("Loader should be visible now")
         }
@@ -722,15 +778,15 @@ extension SoftwaresVC {
             do {
                 // Decode the JSON into the SoftwareFetchResponse struct
                 let response = try JSONDecoder().decode(SoftwareFetchResponse.self, from: data)
-                print("Software Suggestions: \(response.softwareSuggestions)")
-                print("Softwares: \(response.softwares)")
-                
-                print("Space")
+//                print("Software Suggestions: \(response.softwareSuggestions)")
+//                print("Softwares: \(response.softwares)")
+//                
+//                print("Space")
                 
                 let processedSoftwares = self.processSoftwareString(softwareString: response.softwares)
-                print("Processed Softwares: \(processedSoftwares)")
+//                print("Processed Softwares: \(processedSoftwares)")
                 let pss = self.processSoftwareString(softwareString: response.softwareSuggestions)
-                print("Processed Suggestions: \(pss)")
+//                print("Processed Suggestions: \(pss)")
                 
                 self.addedSkillsArray = processedSoftwares
                 self.suggestedSkillsArray = pss
@@ -744,8 +800,9 @@ extension SoftwaresVC {
             }
             DispatchQueue.main.async {
                 self.loader.stopAnimating()
+                self.loader.isHidden = true
                 self.scrollView.alpha = 1
-                print("loader stopped")
+//                print("loader stopped")
                 
                 self.backButton.isUserInteractionEnabled = true
                 self.nextButton.isUserInteractionEnabled = true
