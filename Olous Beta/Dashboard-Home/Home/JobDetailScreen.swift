@@ -283,7 +283,7 @@ class JobDetailScreen: UIViewController {
         
         
         
-        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let baseURLString = "\(Config.serverURL)/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (selectedJob.companyLogo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
@@ -515,7 +515,7 @@ class JobDetailScreen: UIViewController {
     }
     
     func checkIfJobIsApplied() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/user-status") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/job/user-status") else {
             print("Invalid URL")
             return
         }
@@ -581,7 +581,7 @@ class JobDetailScreen: UIViewController {
 
     
     @objc func didTapApplyJobs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/application") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/application") else {
             print("Invalid URL")
             return
         }
@@ -1152,7 +1152,7 @@ class JobDetailScreen: UIViewController {
     }
     
     func saveOrUnsaveJob(id: String) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/save") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/save-job/save") else {
             print("Invalid URL")
             return
         }
@@ -1248,7 +1248,7 @@ class JobDetailScreen: UIViewController {
 extension JobDetailScreen {
     
     func fetchJob() {
-        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs/\(selectedJob.id)"
+        let urlString = "\(Config.serverURL)/api/v1/job/jobs/\(selectedJob.id)"
         print("Url String to fetch: \(urlString)")
 
         guard let url = URL(string: urlString) else {
@@ -1290,7 +1290,7 @@ extension JobDetailScreen {
     }
 
     func fetchCompany() {
-        var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs/\(selectedJob.id)"
+        var urlString = "\(Config.serverURL)/api/v1/job/jobs/\(selectedJob.id)"
 
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
@@ -1329,7 +1329,7 @@ extension JobDetailScreen {
     }
     
     func fetchSavedJobIDs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/save-job/get-saved-jobs") else {
             print("Invalid URL")
             return
         }

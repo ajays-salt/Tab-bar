@@ -432,7 +432,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let registrationURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/register")!
+        let registrationURL = URL(string: "\(Config.serverURL)/api/v1/auth/register")!
         
         // Create the request
         var request = URLRequest(url: registrationURL)

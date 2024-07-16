@@ -107,7 +107,7 @@ class CompanyDetailVC: UIViewController {
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(logoImageView)
         
-        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let baseURLString = "\(Config.serverURL)/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (company.logo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
@@ -505,7 +505,7 @@ class CompanyDetailVC: UIViewController {
     }
     
     func saveOrUnsaveJob(id: String) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/save") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/save-job/save") else {
             print("Invalid URL")
             return
         }
@@ -667,7 +667,7 @@ extension CompanyDetailVC : UICollectionViewDelegate, UICollectionViewDataSource
         cell.jobExperienceLabel.attributedText = expText
         
         // Fetch company logo asynchronously
-        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let baseURLString = "\(Config.serverURL)/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (company.logo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
@@ -772,7 +772,7 @@ extension CompanyDetailVC {
     
     func fetchData(completion: @escaping (Result<[Job], Error>) -> Void) {
         
-        let urlStr = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/jobs/\(company.id)"
+        let urlStr = "\(Config.serverURL)/api/v1/company/jobs/\(company.id)"
         
         guard let url = URL(string: urlStr) else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
@@ -809,7 +809,7 @@ extension CompanyDetailVC {
     }
     
     func fetchTotalAppliedJobs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/job/appliedJobs") else {
             print("Invalid URL")
             return
         }
@@ -861,7 +861,7 @@ extension CompanyDetailVC {
     }
     
     func fetchSavedJobIDs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/save-job/get-saved-jobs") else {
             print("Invalid URL")
             return
         }

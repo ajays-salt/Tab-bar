@@ -1278,7 +1278,7 @@ extension EmploymentsVC : UICollectionViewDelegateFlowLayout, UICollectionViewDa
 
 extension EmploymentsVC {
     func fetchAndParseExperience() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/experience") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/candidate/experience") else {
             print("Invalid URL")
             return
         }
@@ -1356,7 +1356,7 @@ extension EmploymentsVC {
     }
     
     func fetchTotalExperienceAndUploadData() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/totalExperience") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/candidate/totalExperience") else {
             print("Invalid URL for fetching total experience")
             return
         }
@@ -1394,7 +1394,7 @@ extension EmploymentsVC {
 
 
     func uploadEmploymentData(totalExperience: String) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL for updating resume")
             return
         }

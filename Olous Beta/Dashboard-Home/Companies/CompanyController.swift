@@ -67,9 +67,9 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     
     
-    var searchURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company"
+    var searchURL = "\(Config.serverURL)/api/v1/company"
     var urlWithFilters = ""
-    var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company"
+    var urlString = "\(Config.serverURL)/api/v1/company"
     var companiesArray: [Company] = []
     var companiesLabel: UILabel!
     
@@ -390,7 +390,7 @@ extension CompanyController: UICollectionViewDataSource, UICollectionViewDelegat
         cell.fieldLabel.text = company.field
         
         // Fetch company logo
-        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let baseURLString = "\(Config.serverURL)/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (company.logo ?? "")
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in

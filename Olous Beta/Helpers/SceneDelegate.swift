@@ -113,7 +113,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //    }
 
     func checkUserOnboardingStatus(accessToken: String, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/profile") else {
             print("Invalid URL")
             completion(false)
             return

@@ -538,7 +538,7 @@ class EditPreferencesVC: UIViewController, UITextFieldDelegate {
 extension EditPreferencesVC {
     
     func uploadUserProfile() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }

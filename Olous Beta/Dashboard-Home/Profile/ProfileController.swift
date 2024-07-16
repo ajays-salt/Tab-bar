@@ -741,7 +741,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var totalExperience : Double!
     
     func uploadEmploymentArray() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL for updating resume")
             return
         }
@@ -1130,14 +1130,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
 
     @objc func generateDescription() {
         if let text = editProjectDescTF.text {
-            fetchContentAndUpdateTextView(forURL: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/project-description",
+            fetchContentAndUpdateTextView(forURL: "\(Config.serverURL)/api/v1/user/candidate/project-description",
                                           withText: editProjectNameTF.text ?? "", updateTextView: editProjectDescTF)
         }
     }
 
     @objc func generateResponsibility() {
         if let text = editProjectRespTF.text {
-            fetchContentAndUpdateTextView(forURL: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/project-responsibility",
+            fetchContentAndUpdateTextView(forURL: "\(Config.serverURL)/api/v1/user/candidate/project-responsibility",
                                           withText: editProjectNameTF.text ?? "", updateTextView: editProjectRespTF)
         }
     }
@@ -1280,7 +1280,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     func uploadProjectDataArray() {
         // upload to server
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }
@@ -1565,7 +1565,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     func uploadEducationArray() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }
@@ -2593,7 +2593,7 @@ extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionVi
 extension ProfileController { // Extension for APIs
     
     func fetchUserProfile() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/profile") else {
             print("Invalid URL")
             return
         }
@@ -2713,7 +2713,7 @@ extension ProfileController { // Extension for APIs
     }
     
     func fetchProfilePicture(size: String, userID: String) {
-        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile/\(size)/\(userID)"
+        let urlString = "\(Config.serverURL)/api/v1/user/profile/\(size)/\(userID)"
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
             return

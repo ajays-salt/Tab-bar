@@ -77,10 +77,10 @@ class JobSearchResult: UIViewController, JobFiltersDelegate, CompanyFiltersDeleg
     
     var jobTitle: String?
     var jobLocation: String?
-    var baseURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
+    var baseURL = "\(Config.serverURL)/api/v1/job/jobs"
     var urlWithFilters = ""
-    var urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs"
-    var finalURL = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/jobs?sort=Newest"
+    var urlString = "\(Config.serverURL)/api/v1/job/jobs"
+    var finalURL = "\(Config.serverURL)/api/v1/job/jobs?sort=Newest"
     
     var jobLocationArray: [String] = []
     
@@ -310,7 +310,7 @@ class JobSearchResult: UIViewController, JobFiltersDelegate, CompanyFiltersDeleg
     }
     
     func saveOrUnsaveJob(id: String) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/save") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/save-job/save") else {
             print("Invalid URL")
             return
         }
@@ -449,7 +449,7 @@ extension JobSearchResult : UICollectionViewDelegate, UICollectionViewDataSource
         cell.jobExperienceLabel.attributedText = expText
         
         // Fetch company logo asynchronously
-        let baseURLString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/company-pic?logo="
+        let baseURLString = "\(Config.serverURL)/api/v1/company/company-pic?logo="
         let companyLogoURLString = baseURLString + (job.companyLogo ?? "" )
         if let companyLogoURL = URL(string: companyLogoURLString) {
             URLSession.shared.dataTask(with: companyLogoURL) { data, response, error in
@@ -625,7 +625,7 @@ extension JobSearchResult { // extension for API
     }
     
     func fetchTotalAppliedJobs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/appliedJobs") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/job/appliedJobs") else {
             print("Invalid URL")
             return
         }
@@ -674,7 +674,7 @@ extension JobSearchResult { // extension for API
     }
     
     func fetchSavedJobIDs() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/save-job/get-saved-jobs") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/save-job/get-saved-jobs") else {
             print("Invalid URL")
             return
         }

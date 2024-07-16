@@ -265,7 +265,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let loginURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/login")!
+        let loginURL = URL(string: "\(Config.serverURL)/api/v1/auth/login")!
         
         // Create the request
         var request = URLRequest(url: loginURL)

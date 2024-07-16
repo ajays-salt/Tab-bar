@@ -416,7 +416,7 @@ protocol CompanyFiltersDelegate: AnyObject {
 
 extension CompanyFilterVC {
     private func fetchFiltersData() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/company/filters") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/company/filters") else {
             print("Invalid URL")
             return
         }

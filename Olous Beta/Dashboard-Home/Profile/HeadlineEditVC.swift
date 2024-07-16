@@ -292,7 +292,7 @@ class HeadlineEditVC: UIViewController, UITextViewDelegate {
 extension HeadlineEditVC {
     
     func fetchHeadline() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/generate-headline") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/generate-headline") else {
             print("Invalid URL")
             return
         }
@@ -345,7 +345,7 @@ extension HeadlineEditVC {
     }
     
     func fetchProfileSummary() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile-summary") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/profile-summary") else {
             print("Invalid URL")
             return
         }
@@ -431,7 +431,7 @@ extension HeadlineEditVC {
     }
     
     func postResumeData() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }

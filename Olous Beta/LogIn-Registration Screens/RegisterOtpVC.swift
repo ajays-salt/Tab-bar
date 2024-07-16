@@ -259,7 +259,7 @@ class RegisterOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
     }
     
     func verifyOtp(otp: String, email: String) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/verify-otp") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/auth/verify-otp") else {
             print("Invalid URL")
             return
         }
@@ -361,7 +361,7 @@ class RegisterOtpVC: UIViewController, BackspaceDetectingTextFieldDelegate {
             return
         }
         
-        let loginURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/resend-otp")!
+        let loginURL = URL(string: "\(Config.serverURL)/api/v1/auth/resend-otp")!
         
         // Create the request
         var request = URLRequest(url: loginURL)

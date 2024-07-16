@@ -890,7 +890,7 @@ extension EditPersonalInfoVC : UIImagePickerControllerDelegate & UINavigationCon
 extension EditPersonalInfoVC {
     
     func fetchUserProfile() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/profile") else {
             print("Invalid URL")
             return
         }
@@ -991,7 +991,7 @@ extension EditPersonalInfoVC {
     }
     
     func uploadPersonalInfo(userInfo: PersonalInfoEditStruct) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-profile-pic") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-profile-pic") else {
             print("Invalid URL")
             return
         }
@@ -1059,7 +1059,7 @@ extension EditPersonalInfoVC {
     }
     
     func updateUserInfo() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }

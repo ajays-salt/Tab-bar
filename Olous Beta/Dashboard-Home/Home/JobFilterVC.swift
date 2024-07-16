@@ -493,7 +493,7 @@ protocol JobFiltersDelegate: AnyObject {
 extension JobFilterVC {
     
     private func fetchFiltersData() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/job/filters") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/job/filters") else {
             print("Invalid URL")
             return
         }

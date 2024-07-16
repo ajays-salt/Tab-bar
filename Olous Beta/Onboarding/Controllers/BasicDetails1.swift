@@ -530,7 +530,7 @@ extension BasicDetails1: UIDocumentPickerDelegate {
         spinner.startAnimating()
         view.addSubview(spinner)
         
-        let serverURL = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/onBoarding")!
+        let serverURL = URL(string: "\(Config.serverURL)/api/v1/user/onBoarding")!
         var request = URLRequest(url: serverURL)
         request.httpMethod = "POST"
 

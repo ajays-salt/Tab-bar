@@ -463,7 +463,7 @@ extension EditSoftwareVC {
     
     
     func fetchUserProfile() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/profile") else {
             print("Invalid URL")
             return
         }
@@ -504,7 +504,7 @@ extension EditSoftwareVC {
 
     // Fetch and process softwares from API
     func fetchAndProcessSoftwares() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/softwares") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/candidate/softwares") else {
             print("Invalid URL")
             return
         }
@@ -613,7 +613,7 @@ extension EditSoftwareVC {
         spinner.startAnimating()
         view.addSubview(spinner)
         
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }

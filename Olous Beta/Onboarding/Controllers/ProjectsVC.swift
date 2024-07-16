@@ -989,14 +989,14 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
 
     @objc func generateDescription() {
         if let text = editDescTF.text {
-            fetchContentAndUpdateTextView(forURL: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/project-description",
+            fetchContentAndUpdateTextView(forURL: "\(Config.serverURL)/api/v1/user/candidate/project-description",
                                           withText: editNameTF.text ?? "", updateTextView: editDescTF)
         }
     }
 
     @objc func generateResponsibility() {
         if let text = editRespTF.text {
-            fetchContentAndUpdateTextView(forURL: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/project-responsibility",
+            fetchContentAndUpdateTextView(forURL: "\(Config.serverURL)/api/v1/user/candidate/project-responsibility",
                                           withText: editNameTF.text ?? "", updateTextView: editRespTF)
         }
     }
@@ -1219,7 +1219,7 @@ extension ProjectsVC {
     
     
     func fetchProjects() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/projects") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/candidate/projects") else {
             print("Invalid URL")
             return
         }
@@ -1284,7 +1284,7 @@ extension ProjectsVC {
         spinner.startAnimating()
         view.addSubview(spinner)
         
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }

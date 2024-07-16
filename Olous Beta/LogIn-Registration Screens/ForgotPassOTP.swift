@@ -260,7 +260,7 @@ class ForgotPassOTP: UIViewController, BackspaceDetectingTextFieldDelegate {
     }
     
     func verifyOtp(otp: String, email: String) {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/verify-reset-otp") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/auth/verify-reset-otp") else {
             print("Invalid URL")
             return
         }

@@ -202,7 +202,7 @@ class ForgotPassword1: UIViewController, UITextFieldDelegate {
             return
         }
 
-        let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/send-reset-password-otp")!
+        let url = URL(string: "\(Config.serverURL)/api/v1/auth/send-reset-password-otp")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

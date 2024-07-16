@@ -254,7 +254,7 @@ class ForgotPassReset: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/auth/reset-password")!
+        let url = URL(string: "\(Config.serverURL)/api/v1/auth/reset-password")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

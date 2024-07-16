@@ -1194,7 +1194,7 @@ extension QualificationsVC : UICollectionViewDelegateFlowLayout, UICollectionVie
 extension QualificationsVC { // extension to fetch API
     
     func fetchAndParseEducation() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/candidate/qualifications") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/candidate/qualifications") else {
             print("Invalid URL")
             return
         }
@@ -1272,7 +1272,7 @@ extension QualificationsVC { // extension to fetch API
     }
     
     func uploadEducationData() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }

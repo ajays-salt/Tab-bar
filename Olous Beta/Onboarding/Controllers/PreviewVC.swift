@@ -1565,7 +1565,7 @@ extension PreviewVC : UICollectionViewDelegateFlowLayout, UICollectionViewDelega
 extension PreviewVC {
     
     func fetchUserProfile() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/profile") else {
             print("Invalid URL")
             return
         }
@@ -1676,7 +1676,7 @@ extension PreviewVC {
     }
     
     func fetchProfilePicture(size: String, userID: String) {
-        let urlString = "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/profile/\(size)/\(userID)"
+        let urlString = "\(Config.serverURL)/api/v1/user/profile/\(size)/\(userID)"
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
             return
@@ -1715,7 +1715,7 @@ extension PreviewVC {
     }
     
     func setOnboardingTrue() {
-        guard let url = URL(string: "https://king-prawn-app-kjp7q.ondigitalocean.app/api/v1/user/update-by-resume") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/update-by-resume") else {
             print("Invalid URL")
             return
         }
