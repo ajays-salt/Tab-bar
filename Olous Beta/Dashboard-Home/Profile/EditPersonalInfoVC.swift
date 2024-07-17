@@ -51,7 +51,6 @@ class EditPersonalInfoVC: UIViewController {
         tf.placeholder = "Enter Current Address"
         return tf
     }()
-    let states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"]
     let stateTF: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -74,25 +73,39 @@ class EditPersonalInfoVC: UIViewController {
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.borderStyle = .roundedRect
         tf.placeholder = "Enter City"
+        
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        button.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        button.addTarget(self, action: #selector(openCityPicker), for: .touchUpInside)
+        
+        tf.rightView = button
+        tf.rightViewMode = .always
+        
         return tf
     }()
+    let cityPickerView = UIPickerView()
     let pincodeTF: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.borderStyle = .roundedRect
         textField.placeholder = "Enter Pincode"
-        textField.keyboardType = .numberPad
         
-        // Add done button as input accessory view
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: textField, action: #selector(resignFirstResponder))
-        toolbar.setItems([flexSpace, doneButton], animated: false)
-        textField.inputAccessoryView = toolbar
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        button.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        button.addTarget(self, action: #selector(openPincodePicker), for: .touchUpInside)
+        
+        textField.rightView = button
+        textField.rightViewMode = .always
         
         return textField
     }()
+    let pincodePickerView = UIPickerView()
+    
+    let states = ["ANDAMAN AND NICOBAR ISLANDS","ANDHRA PRADESH","ARUNACHAL PRADESH","ASSAM","BIHAR","CHANDIGARH","CHHATTISGARH","DELHI","GOA","GUJARAT","HARYANA","HIMACHAL PRADESH","JAMMU AND KASHMIR","JHARKHAND","KARNATAKA","KERALA","LADAKH","LAKSHADWEEP","MADHYA PRADESH","MAHARASHTRA","MANIPUR","MEGHALAYA","MIZORAM","NAGALAND","ODISHA","PUDUCHERRY","PUNJAB","RAJASTHAN","SIKKIM","TAMIL NADU","TELANGANA","THE DADRA AND NAGAR HAVELI AND DAMAN AND DIU","TRIPURA","UTTAR PRADESH","UTTARAKHAND","WEST BENGAL"]
+    var cities : [String] = []
+    var pincodes : [String] = []
     
     
     var uidTF : UITextField = {
@@ -460,7 +473,14 @@ class EditPersonalInfoVC: UIViewController {
             return label
         }()
         scrollView.addSubview(cityLabel)
+        
+        cityTF.inputAccessoryView = toolbar
+        cityTF.inputView = cityPickerView
         cityTF.delegate = self
+        cityPickerView.delegate = self
+        cityPickerView.dataSource = self
+        cityPickerView.tag = 3
+        
         scrollView.addSubview(cityTF)
         
         
@@ -474,7 +494,14 @@ class EditPersonalInfoVC: UIViewController {
             return label
         }()
         scrollView.addSubview(pincodeLabel)
+        
+        pincodeTF.inputAccessoryView = toolbar
+        pincodeTF.inputView = pincodePickerView
         pincodeTF.delegate = self
+        pincodePickerView.delegate = self
+        pincodePickerView.dataSource = self
+        pincodePickerView.tag = 4
+        
         scrollView.addSubview(pincodeTF)
         
         
@@ -518,6 +545,12 @@ class EditPersonalInfoVC: UIViewController {
     
     @objc func openStatePicker() {
         stateTF.becomeFirstResponder()
+    }
+    @objc func openCityPicker() {
+        cityTF.becomeFirstResponder()
+    }
+    @objc func openPincodePicker() {
+        pincodeTF.becomeFirstResponder()
     }
     
     @objc func doneButtonTapped() {
@@ -861,6 +894,10 @@ extension EditPersonalInfoVC : UIImagePickerControllerDelegate & UINavigationCon
             return fluencyLevels.count
         } else if pickerView.tag == 2 {
             return states.count
+        } else if pickerView.tag == 3 {
+            return cities.count
+        } else if pickerView.tag == 4 {
+            return pincodes.count
         }
         return 0
     }
@@ -869,9 +906,17 @@ extension EditPersonalInfoVC : UIImagePickerControllerDelegate & UINavigationCon
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if pickerView.tag == 1 {
             return fluencyLevels[row]
-        } else if pickerView.tag == 2 {
+        }
+        else if pickerView.tag == 2 {
             return states[row]
         }
+        else if pickerView.tag == 3 {
+            return cities[row]
+        }
+        else if pickerView.tag == 4 {
+            return pincodes[row]
+        }
+        
         return nil
     }
     
@@ -879,9 +924,17 @@ extension EditPersonalInfoVC : UIImagePickerControllerDelegate & UINavigationCon
         if pickerView.tag == 1 {
             fluencyTextField.text = fluencyLevels[row]
             self.view.endEditing(true)
-        } else if pickerView.tag == 2 {
+        }
+        else if pickerView.tag == 2 {
             stateTF.text = states[row]
-            self.view.endEditing(true)
+            fetchCities()
+        }
+        else if pickerView.tag == 3 {
+            cityTF.text = cities[row]
+            fetchPincodes()
+        }
+        else if pickerView.tag == 4 {
+            pincodeTF.text = pincodes[row]
         }
     }
 }
@@ -916,7 +969,7 @@ extension EditPersonalInfoVC {
 
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
-                print(user)
+//                print(user)
                 
                 DispatchQueue.main.async {
                     
@@ -943,15 +996,101 @@ extension EditPersonalInfoVC {
                     
                     self.languageArray = user.language ?? []
                     self.reloadCollectionView()
+                    
+                    
+                    self.fetchCities()
+                    self.fetchPincodes()
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")
             }
         }
-
+        
         task.resume()
     }
     
+    func fetchCities() {
+        let state = stateTF.text?.uppercased() ?? ""
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/pincodes/districts/\(state)") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+        
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response data: \(responseString)")
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let response = try decoder.decode([String].self, from: data)
+                
+                self.cities = response
+                print(self.cities)
+            } catch {
+                print("Failed to decode Recent JSON: \(error)")
+            }
+        }
+        task.resume()
+    }
+    
+    func fetchPincodes() {
+        let city = cityTF.text?.uppercased() ?? ""
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/pincodes/state?city=\(city)") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Access Token not found")
+            return
+        }
+        
+        // Execute the network request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Network request failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Raw response data: \(responseString)")
+//            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let response = try decoder.decode([Int].self, from: data)
+                
+                response.forEach { x in
+                    self.pincodes.append("\(x)")
+                }
+            } catch {
+                print("Failed to decode Pincodes JSON: \(error)")
+            }
+        }
+        task.resume()
+    }
 }
 
 

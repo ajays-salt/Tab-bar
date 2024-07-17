@@ -96,7 +96,8 @@ class MyJobsController: UIViewController {
     
     
     func setupCategorySection() {
-        categorySection.backgroundColor = UIColor(hex: "#C7EAFF")
+//        categorySection.backgroundColor = UIColor(hex: "#C7EAFF")
+        categorySection.backgroundColor = UIColor(hex: "#F9FAFB")
         categorySection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(categorySection)
         

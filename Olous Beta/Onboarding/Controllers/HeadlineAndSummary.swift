@@ -15,13 +15,13 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
     
     var scrollView : UIScrollView!
     
-    var loader: UIActivityIndicatorView!
-    var loader2: UIActivityIndicatorView!
+    var loader: LoadingView!
+    var loader2: LoadingView!
     
     var resumeTextView : UITextView!
     let generateResume: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle(" Generate content", for: .normal)
+        button.setTitle(" Generate Headline", for: .normal)
         button.setImage(UIImage(named: "Vector"), for: .normal)
         button.tintColor = UIColor(hex: "#0079C4")
         button.titleLabel?.font = .systemFont(ofSize: 16)
@@ -35,7 +35,7 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
     var summaryTextView : UITextView!
     let generateSummary: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle(" Generate content", for: .normal)
+        button.setTitle(" Generate Summary", for: .normal)
         button.setImage(UIImage(named: "Vector"), for: .normal)
         button.tintColor = UIColor(hex: "#0079C4")
         button.titleLabel?.font = .systemFont(ofSize: 16)
@@ -116,26 +116,118 @@ class HeadlineAndSummary: UIViewController, UITextViewDelegate, UITextFieldDeleg
     
     
     private func setupLoader() {
-        loader = UIActivityIndicatorView(style: .large)
-        loader.center = view.center
+        loader = LoadingView()
+        loader.isHidden = true
+        loader.backgroundColor = UIColor(hex: "#DB7F14").withAlphaComponent(0.05)
+        loader.layer.cornerRadius = 20
+        
         loader.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loader)
         
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "AISymbol")
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(imgView)
+        
+        let label = UILabel()
+        label.text = "Generating resume headline"
+        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        loader.addSubview(label)
+        
         NSLayoutConstraint.activate([
             loader.centerXAnchor.constraint(equalTo: resumeTextView.centerXAnchor),
-            loader.centerYAnchor.constraint(equalTo: resumeTextView.centerYAnchor)
+            loader.centerYAnchor.constraint(equalTo: resumeTextView.centerYAnchor),
+            loader.widthAnchor.constraint(equalToConstant: 300),
+            loader.heightAnchor.constraint(equalToConstant: 80),
+            
+            imgView.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            imgView.leadingAnchor.constraint(equalTo: loader.leadingAnchor, constant: 16),
+            imgView.heightAnchor.constraint(equalToConstant: 40),
+            imgView.widthAnchor.constraint(equalToConstant: 40),
+            
+            label.centerYAnchor.constraint(equalTo: loader.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10),
+            label.trailingAnchor.constraint(equalTo: loader.trailingAnchor, constant: -16)
         ])
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = loader.frame
+
+        let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
+        let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
+        
+        gradientLayer.colors = [color1, color2]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        
+        let maskLayer = CAShapeLayer()
+        let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+        maskLayer.path = path.cgPath
+        
+        // Apply the mask to the gradient layer
+        gradientLayer.mask = maskLayer
+        
+        loader.layer.insertSublayer(gradientLayer, at: 0)
     }
     private func setupLoader2() {
-        loader2 = UIActivityIndicatorView(style: .large)
-        loader2.center = view.center
+        loader2 = LoadingView()
+        loader2.isHidden = true
+        loader2.backgroundColor = UIColor(hex: "#DB7F14").withAlphaComponent(0.05)
+        loader2.layer.cornerRadius = 20
+        
         loader2.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loader2)
         
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "AISymbol")
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        loader2.addSubview(imgView)
+        
+        let label = UILabel()
+        label.text = "Generating profile summary"
+        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        loader2.addSubview(label)
+        
         NSLayoutConstraint.activate([
             loader2.centerXAnchor.constraint(equalTo: summaryTextView.centerXAnchor),
-            loader2.centerYAnchor.constraint(equalTo: summaryTextView.centerYAnchor)
+            loader2.centerYAnchor.constraint(equalTo: summaryTextView.centerYAnchor),
+            loader2.widthAnchor.constraint(equalToConstant: 300),
+            loader2.heightAnchor.constraint(equalToConstant: 80),
+            
+            imgView.centerYAnchor.constraint(equalTo: loader2.centerYAnchor),
+            imgView.leadingAnchor.constraint(equalTo: loader2.leadingAnchor, constant: 16),
+            imgView.heightAnchor.constraint(equalToConstant: 40),
+            imgView.widthAnchor.constraint(equalToConstant: 40),
+            
+            label.centerYAnchor.constraint(equalTo: loader2.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10),
+            label.trailingAnchor.constraint(equalTo: loader2.trailingAnchor, constant: -16)
         ])
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = loader2.frame
+
+        let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
+        let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
+        
+        gradientLayer.colors = [color1, color2]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        
+        let maskLayer = CAShapeLayer()
+        let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+        maskLayer.path = path.cgPath
+        
+        // Apply the mask to the gradient layer
+        gradientLayer.mask = maskLayer
+        
+        loader2.layer.insertSublayer(gradientLayer, at: 0)
     }
     
     func setupViews() {
@@ -602,13 +694,18 @@ extension HeadlineAndSummary {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
         DispatchQueue.main.async {
-            self.loader.startAnimating()  // Start the loader before the request
+            self.resumeTextView.text = ""
+            self.loader.isHidden = false
+            self.loader.startAnimating()
+            self.generateResume.isUserInteractionEnabled = false
         }
         
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                self.loader.stopAnimating()  // Stop the loader when the request completes
+                self.loader.stopAnimating()
+                self.loader.isHidden = true
+                self.generateResume.isUserInteractionEnabled = true
             }
             
             guard let data = data, error == nil else {
@@ -655,13 +752,18 @@ extension HeadlineAndSummary {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
         DispatchQueue.main.async {
+            self.summaryTextView.text = ""
+            self.loader2.isHidden = false
             self.loader2.startAnimating()
+            self.generateSummary.isUserInteractionEnabled = false
         }
         
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.loader2.stopAnimating()
+                self.loader2.isHidden = true
+                self.generateSummary.isUserInteractionEnabled = true
             }
             
             guard let data = data, error == nil else {

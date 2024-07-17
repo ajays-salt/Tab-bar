@@ -140,11 +140,13 @@ class HomeController: UIViewController, UITextFieldDelegate {
     func setupViews() {
         
         setupScrollView()
+        
         setupWelcomeLabel()
-        setupJobSearchSection()
-        setupJobSearchInnerSection()
         
         setupUserProfileSection()
+        
+        setupJobSearchSection()
+        setupJobSearchInnerSection()
         
         setupRecommendedJobsView()
         setupNoJobsImageView()
@@ -181,6 +183,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         scrollView.contentSize = CGSize(width: view.bounds.width, height: contentHeight)
     }
     
+    
     func setupWelcomeLabel() {
         scrollView.addSubview(welcomeLabel)
         
@@ -199,158 +202,6 @@ class HomeController: UIViewController, UITextFieldDelegate {
             ready.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         ])
     }
-
-    func setupJobSearchSection() {
-        jobSearchSection.backgroundColor = UIColor(hex: "#1E293B")
-        jobSearchSection.layer.cornerRadius = 8
-        jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
-        
-        scrollView.addSubview(jobSearchSection)
-        
-        let ready = UILabel()
-        ready.text = "Let's find your dream job"
-        ready.textColor = UIColor(hex: "#FFFFFF")
-        ready.font = .boldSystemFont(ofSize: 20)
-        ready.translatesAutoresizingMaskIntoConstraints = false
-        
-        jobSearchSection.addSubview(ready)
-        
-        NSLayoutConstraint.activate([
-            jobSearchSection.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 50),
-            jobSearchSection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            jobSearchSection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            jobSearchSection.heightAnchor.constraint(equalToConstant: 232),
-            
-            ready.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 16),
-            ready.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
-        ])
-    }
-        
-    func setupJobSearchInnerSection() {
-        jobSearchInnerSection.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
-        jobSearchInnerSection.layer.cornerRadius = 12
-        jobSearchInnerSection.layer.borderWidth = 1
-        let borderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
-        jobSearchInnerSection.layer.borderColor = borderColor.cgColor
-        
-        jobSearchInnerSection.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchSection.addSubview(jobSearchInnerSection)
-        
-        
-        var searchIcon : UIImageView = UIImageView()
-        searchIcon.image = UIImage(systemName: "magnifyingglass")
-        searchIcon.tintColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.6)
-        searchIcon.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchInnerSection.addSubview(searchIcon)
-        
-        
-        let placeholderText = "Enter Job Title (Required)"
-        let placeholderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
-        jobsTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
-        
-        jobsTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
-        jobsTextField.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchInnerSection.addSubview(jobsTextField)
-        
-        NSLayoutConstraint.activate([
-            jobSearchInnerSection.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 56),
-            jobSearchInnerSection.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
-            jobSearchInnerSection.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
-            jobSearchInnerSection.heightAnchor.constraint(equalToConstant: 45),
-            
-            searchIcon.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 12),
-            searchIcon.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 16),
-            searchIcon.widthAnchor.constraint(equalToConstant: 22),
-            searchIcon.heightAnchor.constraint(equalToConstant: 22),
-            
-            jobsTextField.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 10),
-            jobsTextField.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 46),
-            jobsTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
-            jobsTextField.heightAnchor.constraint(equalToConstant: 25)
-        ])
-        
-        
-        jobSearchIS2.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
-        jobSearchIS2.layer.cornerRadius = 12
-        jobSearchIS2.layer.borderWidth = 1
-        jobSearchIS2.layer.borderColor = borderColor.cgColor
-        
-        jobSearchIS2.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchSection.addSubview(jobSearchIS2)
-        
-        
-        var locationIcon : UIImageView = UIImageView()
-        locationIcon.image = UIImage(named: "location-dot")
-        locationIcon.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchIS2.addSubview(locationIcon)
-        
-        
-        let placeholderText2 = "City, state or zip code"
-        let placeholderColor2 = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
-        locationTextField.attributedPlaceholder = NSAttributedString(string: placeholderText2, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor2])
-        locationTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
-        locationTextField.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchIS2.addSubview(locationTextField)
-        
-        NSLayoutConstraint.activate([
-            jobSearchIS2.topAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: 10),
-            jobSearchIS2.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
-            jobSearchIS2.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
-            jobSearchIS2.heightAnchor.constraint(equalToConstant: 45),
-            
-            locationIcon.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 12),
-            locationIcon.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 18),
-            locationIcon.widthAnchor.constraint(equalToConstant: 21),
-            locationIcon.heightAnchor.constraint(equalToConstant: 26),
-            
-            locationTextField.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 10),
-            locationTextField.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 47),
-            locationTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
-            locationTextField.heightAnchor.constraint(equalToConstant: 25)
-        ])
-        
-        
-        setupSearchJobsButton()
-    }
-    
-    var jobSearchButton : UIButton = {
-        let button = UIButton()
-        button.setTitle("Search Jobs", for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = UIColor(hex: "#2563EB")
-        button.layer.cornerRadius = 12
-        return button
-    }()
-    func setupSearchJobsButton() {
-        jobSearchButton.addTarget(self, action: #selector(didTapSearchJobs), for: .touchUpInside)
-        
-        jobSearchButton.translatesAutoresizingMaskIntoConstraints = false
-        jobSearchSection.addSubview(jobSearchButton)
-        
-        NSLayoutConstraint.activate([
-            jobSearchButton.topAnchor.constraint(equalTo: jobSearchIS2.bottomAnchor, constant: 18),
-            jobSearchButton.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
-            jobSearchButton.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
-            jobSearchButton.heightAnchor.constraint(equalToConstant: 42)
-        ])
-    }
-    @objc func didTapSearchJobs() {
-        guard let jobTitle = jobsTextField.text, !jobTitle.isEmpty else {
-            let alert = UIAlertController(title: "Missing Information!", message: "Please enter job title", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-        
-        jobsTextField.resignFirstResponder()
-        locationTextField.resignFirstResponder()
-        
-        let jobResultVC = JobSearchResult()
-        jobResultVC.jobTitle = jobTitle
-        jobResultVC.jobLocation = locationTextField.text!
-        
-        navigationController?.pushViewController(jobResultVC, animated: true)
-    }
     
     
     
@@ -363,7 +214,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         userProfileView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(userProfileView)
         NSLayoutConstraint.activate([
-            userProfileView.topAnchor.constraint(equalTo: jobSearchSection.bottomAnchor, constant: 20),
+            userProfileView.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 50),
             userProfileView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             userProfileView.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
             userProfileView.heightAnchor.constraint(equalToConstant: 210)
@@ -544,7 +395,161 @@ class HomeController: UIViewController, UITextFieldDelegate {
         tabBarController?.selectedIndex = 3
         UIView.transition(with: tabBarController!.view!, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
     }
+    
 
+    
+    func setupJobSearchSection() {
+        jobSearchSection.backgroundColor = UIColor(hex: "#1E293B")
+        jobSearchSection.layer.cornerRadius = 8
+        jobSearchSection.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollView.addSubview(jobSearchSection)
+        
+        let ready = UILabel()
+        ready.text = "Let's find your dream job"
+        ready.textColor = UIColor(hex: "#FFFFFF")
+        ready.font = .boldSystemFont(ofSize: 20)
+        ready.translatesAutoresizingMaskIntoConstraints = false
+        
+        jobSearchSection.addSubview(ready)
+        
+        NSLayoutConstraint.activate([
+            jobSearchSection.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 20),
+            jobSearchSection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            jobSearchSection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            jobSearchSection.heightAnchor.constraint(equalToConstant: 232),
+            
+            ready.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 16),
+            ready.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+        ])
+    }
+        
+    func setupJobSearchInnerSection() {
+        jobSearchInnerSection.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        jobSearchInnerSection.layer.cornerRadius = 12
+        jobSearchInnerSection.layer.borderWidth = 1
+        let borderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        jobSearchInnerSection.layer.borderColor = borderColor.cgColor
+        
+        jobSearchInnerSection.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchSection.addSubview(jobSearchInnerSection)
+        
+        
+        var searchIcon : UIImageView = UIImageView()
+        searchIcon.image = UIImage(systemName: "magnifyingglass")
+        searchIcon.tintColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.6)
+        searchIcon.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchInnerSection.addSubview(searchIcon)
+        
+        
+        let placeholderText = "Enter Job Title (Required)"
+        let placeholderColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        jobsTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
+        
+        jobsTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        jobsTextField.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchInnerSection.addSubview(jobsTextField)
+        
+        NSLayoutConstraint.activate([
+            jobSearchInnerSection.topAnchor.constraint(equalTo: jobSearchSection.topAnchor, constant: 56),
+            jobSearchInnerSection.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchInnerSection.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchInnerSection.heightAnchor.constraint(equalToConstant: 45),
+            
+            searchIcon.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 12),
+            searchIcon.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 16),
+            searchIcon.widthAnchor.constraint(equalToConstant: 22),
+            searchIcon.heightAnchor.constraint(equalToConstant: 22),
+            
+            jobsTextField.topAnchor.constraint(equalTo: jobSearchInnerSection.topAnchor, constant: 10),
+            jobsTextField.leadingAnchor.constraint(equalTo: jobSearchInnerSection.leadingAnchor, constant: 46),
+            jobsTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
+            jobsTextField.heightAnchor.constraint(equalToConstant: 25)
+        ])
+        
+        
+        jobSearchIS2.backgroundColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.06)
+        jobSearchIS2.layer.cornerRadius = 12
+        jobSearchIS2.layer.borderWidth = 1
+        jobSearchIS2.layer.borderColor = borderColor.cgColor
+        
+        jobSearchIS2.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchSection.addSubview(jobSearchIS2)
+        
+        
+        var locationIcon : UIImageView = UIImageView()
+        locationIcon.image = UIImage(named: "location-dot")
+        locationIcon.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchIS2.addSubview(locationIcon)
+        
+        
+        let placeholderText2 = "City, state or zip code"
+        let placeholderColor2 = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        locationTextField.attributedPlaceholder = NSAttributedString(string: placeholderText2, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor2])
+        locationTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
+        locationTextField.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchIS2.addSubview(locationTextField)
+        
+        NSLayoutConstraint.activate([
+            jobSearchIS2.topAnchor.constraint(equalTo: jobSearchInnerSection.bottomAnchor, constant: 10),
+            jobSearchIS2.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchIS2.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchIS2.heightAnchor.constraint(equalToConstant: 45),
+            
+            locationIcon.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 12),
+            locationIcon.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 18),
+            locationIcon.widthAnchor.constraint(equalToConstant: 21),
+            locationIcon.heightAnchor.constraint(equalToConstant: 26),
+            
+            locationTextField.topAnchor.constraint(equalTo: jobSearchIS2.topAnchor, constant: 10),
+            locationTextField.leadingAnchor.constraint(equalTo: jobSearchIS2.leadingAnchor, constant: 47),
+            locationTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
+            locationTextField.heightAnchor.constraint(equalToConstant: 25)
+        ])
+        
+        
+        setupSearchJobsButton()
+    }
+    
+    var jobSearchButton : UIButton = {
+        let button = UIButton()
+        button.setTitle("Search Jobs", for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = UIColor(hex: "#2563EB")
+        button.layer.cornerRadius = 12
+        return button
+    }()
+    func setupSearchJobsButton() {
+        jobSearchButton.addTarget(self, action: #selector(didTapSearchJobs), for: .touchUpInside)
+        
+        jobSearchButton.translatesAutoresizingMaskIntoConstraints = false
+        jobSearchSection.addSubview(jobSearchButton)
+        
+        NSLayoutConstraint.activate([
+            jobSearchButton.topAnchor.constraint(equalTo: jobSearchIS2.bottomAnchor, constant: 18),
+            jobSearchButton.leadingAnchor.constraint(equalTo: jobSearchSection.leadingAnchor, constant: 16),
+            jobSearchButton.trailingAnchor.constraint(equalTo: jobSearchSection.trailingAnchor, constant: -16),
+            jobSearchButton.heightAnchor.constraint(equalToConstant: 42)
+        ])
+    }
+    @objc func didTapSearchJobs() {
+        guard let jobTitle = jobsTextField.text, !jobTitle.isEmpty else {
+            let alert = UIAlertController(title: "Missing Information!", message: "Please enter job title", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        jobsTextField.resignFirstResponder()
+        locationTextField.resignFirstResponder()
+        
+        let jobResultVC = JobSearchResult()
+        jobResultVC.jobTitle = jobTitle
+        jobResultVC.jobLocation = locationTextField.text!
+        
+        navigationController?.pushViewController(jobResultVC, animated: true)
+    }
+    
     
     
     func setupRecommendedJobsView() {
@@ -552,7 +557,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         scrollView.addSubview(recommendedJobsView)
         
         NSLayoutConstraint.activate([
-            recommendedJobsView.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 20),
+            recommendedJobsView.topAnchor.constraint(equalTo: jobSearchSection.bottomAnchor, constant: 20),
             recommendedJobsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             recommendedJobsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             recommendedJobsView.heightAnchor.constraint(equalToConstant: 328)
