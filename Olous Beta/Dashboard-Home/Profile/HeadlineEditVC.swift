@@ -100,6 +100,7 @@ class HeadlineEditVC: UIViewController, UITextViewDelegate {
         }
     }
     
+    
     private func setupLoader() {
         loader = LoadingView()
         loader.isHidden = true
@@ -138,8 +139,9 @@ class HeadlineEditVC: UIViewController, UITextViewDelegate {
             label.trailingAnchor.constraint(equalTo: loader.trailingAnchor, constant: -16)
         ])
         
+        loader.layoutIfNeeded()
         let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = loader.frame
+        gradientLayer.frame = loader.bounds
 
         let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
         let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
@@ -195,8 +197,9 @@ class HeadlineEditVC: UIViewController, UITextViewDelegate {
             label.trailingAnchor.constraint(equalTo: loader2.trailingAnchor, constant: -16)
         ])
         
+        loader2.layoutIfNeeded()
         let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = loader2.frame
+        gradientLayer.frame = loader2.bounds
 
         let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
         let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
@@ -214,7 +217,6 @@ class HeadlineEditVC: UIViewController, UITextViewDelegate {
         
         loader2.layer.insertSublayer(gradientLayer, at: 0)
     }
-    
     
     
     
@@ -313,7 +315,7 @@ class HeadlineEditVC: UIViewController, UITextViewDelegate {
             summaryTextView.topAnchor.constraint(equalTo: summaryLabel.bottomAnchor, constant: 20),
             summaryTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             summaryTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            summaryTextView.heightAnchor.constraint(equalToConstant: 240),
+            summaryTextView.heightAnchor.constraint(equalToConstant: 300),
         ])
     }
     
@@ -426,7 +428,7 @@ extension HeadlineEditVC {
                             s = String(s.dropFirst().dropLast())
                         }
                         self.resumeTextView.text = s
-                        print("Headline set to resumeTextView: \(headlineResponse.headline)")
+//                        print("Headline set to resumeTextView: \(headlineResponse.headline)")
                     }
                 } catch {
                     DispatchQueue.main.async {
@@ -478,48 +480,26 @@ extension HeadlineEditVC {
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 if let summary = String(data: data, encoding: .utf8) {
                     DispatchQueue.main.async {
-                        let lines = summary.split(separator: "\n", omittingEmptySubsequences: false)
                         
-                        // Mapping each line to remove the leading "- " if it exists
-                        let processedLines = lines.map { line -> String in
-                            var modifiedLine = String(line)
-                            // Check if the line starts with "- " and remove it
-                            if modifiedLine.hasPrefix("- ") {
-                                modifiedLine = String(modifiedLine.dropFirst(2))
-                            }
-                            return modifiedLine
-                        }
-                        
-                        let cleanedSummary = processedLines.joined(separator: " ")
-                        
-                        var s = cleanedSummary
-                        s = String(s.dropFirst().dropLast())
-                        self.summaryTextView.text = s
-                        
-                        // Output to check
-                        let components = summary.split(separator: ".").map { line -> String in
+                        let components = summary.components(separatedBy: "\n-").map { line -> String in
                             let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
-                            return trimmedLine.hasPrefix("- ") ? String(trimmedLine.dropFirst(2)) : trimmedLine
+                            return trimmedLine.hasPrefix("---") ? String(trimmedLine.dropFirst(2)) : trimmedLine
                         }
-                        var cleanedArray: [String] = []
-                        
-                        for string in components {
-                            // Find the index of the first space
+
+                        let cleanedArray = components.map { string -> String in
                             if let index = string.firstIndex(of: " ") {
-                                // Create a substring from the first space to the end of the string
-                                let cleanedString = String(string[index...].dropFirst())
-                                cleanedArray.append(cleanedString)
+                                return String(string[index...].dropFirst())
                             } else {
-                                // If there is no space, append the original string
-                                cleanedArray.append(string)
+                                return string
                             }
                         }
+
+                        var finalString = cleanedArray.joined(separator: "")
                         
-                        let modifiedStrings = cleanedArray.map { $0 + "." }
+                        finalString = finalString.replacingOccurrences(of: "\\n-", with: "\n\n ") //•
+                        finalString = finalString.replacingOccurrences(of: "\\n", with: "\n  ")
+                        finalString = String(finalString.dropLast())
                         
-                        // Join all the modified strings into a single string, separating them by a space
-                        var finalString = modifiedStrings.joined(separator: " ")
-                        finalString = String(finalString.dropLast().dropLast())
                         
                         self.summaryTextView.text = finalString
                     }

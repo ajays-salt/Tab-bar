@@ -78,7 +78,7 @@ class QualificationsVC: UIViewController, UITextFieldDelegate {
         super.viewWillAppear(animated)
         loader = LoadingView()
         loader.isHidden = true
-        loader.backgroundColor = UIColor(hex: "#DB7F14").withAlphaComponent(0.05)
+//        loader.backgroundColor = UIColor(hex: "#DB7F14").withAlphaComponent(0.05)
         loader.layer.cornerRadius = 20
         
         loader.translatesAutoresizingMaskIntoConstraints = false

@@ -198,7 +198,7 @@ class JobDetailScreen: UIViewController {
 
         let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonTapped))
         shareButton.image = UIImage(systemName: "")
-        navigationItem.rightBarButtonItem = shareButton
+//        navigationItem.rightBarButtonItem = shareButton
     }
     
     func assignValues() {
