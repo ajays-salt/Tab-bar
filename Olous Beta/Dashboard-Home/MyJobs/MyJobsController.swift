@@ -90,6 +90,7 @@ class MyJobsController: UIViewController {
         setupCategorySection()
         setupLineView()
         setupJobsCountLabel()
+        setupApplicationStatusButton()
         setupJobsCollectionView()
         setupNoJobsView()
     }
@@ -102,10 +103,10 @@ class MyJobsController: UIViewController {
         view.addSubview(categorySection)
         
         NSLayoutConstraint.activate([
-            categorySection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            categorySection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             categorySection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             categorySection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            categorySection.heightAnchor.constraint(equalToConstant: 50)
+            categorySection.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         recentButton.addTarget(self, action: #selector(didTapRecentButton), for: .touchUpInside)
@@ -113,7 +114,7 @@ class MyJobsController: UIViewController {
         categorySection.addSubview(recentButton)
         
         NSLayoutConstraint.activate([
-            recentButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 15),
+            recentButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 8),
             recentButton.leadingAnchor.constraint(equalTo: categorySection.leadingAnchor, constant: 16),
             recentButton.widthAnchor.constraint(equalToConstant: 80),
             recentButton.heightAnchor.constraint(equalToConstant: 24)
@@ -124,7 +125,7 @@ class MyJobsController: UIViewController {
         categorySection.addSubview(appliedButton)
         
         NSLayoutConstraint.activate([
-            appliedButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 15),
+            appliedButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 8),
             appliedButton.leadingAnchor.constraint(equalTo: recentButton.trailingAnchor, constant: 36),
             appliedButton.widthAnchor.constraint(equalToConstant: 70),
             appliedButton.heightAnchor.constraint(equalToConstant: 24)
@@ -135,7 +136,7 @@ class MyJobsController: UIViewController {
         categorySection.addSubview(savedButton)
         
         NSLayoutConstraint.activate([
-            savedButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 15),
+            savedButton.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 8),
             savedButton.leadingAnchor.constraint(equalTo: appliedButton.trailingAnchor, constant: 36),
             savedButton.widthAnchor.constraint(equalToConstant: 70),
             savedButton.heightAnchor.constraint(equalToConstant: 24)
@@ -147,7 +148,7 @@ class MyJobsController: UIViewController {
         view.addSubview(lineView)
         lineView.backgroundColor = UIColor(hex: "#0079C4")
         
-        lineView.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 47).isActive = true
+        lineView.topAnchor.constraint(equalTo: categorySection.topAnchor, constant: 37).isActive = true
         leadingConstraint = lineView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 23)
         leadingConstraint.isActive = true
         widthConstraint = lineView.widthAnchor.constraint(equalToConstant: 70)
@@ -160,11 +161,59 @@ class MyJobsController: UIViewController {
         view.addSubview(jobsCountLabel)
         
         NSLayoutConstraint.activate([
-            jobsCountLabel.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 20),
+            jobsCountLabel.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 15),
             jobsCountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             jobsCountLabel.heightAnchor.constraint(equalToConstant: 16)
         ])
     }
+    
+    
+    let applicationStatusView = UIView()
+    func setupApplicationStatusButton() {
+        applicationStatusView.layer.borderColor = UIColor(hex: "#2563EB").cgColor
+        applicationStatusView.layer.borderWidth = 1
+        applicationStatusView.layer.cornerRadius = 8
+        applicationStatusView.translatesAutoresizingMaskIntoConstraints = false
+        applicationStatusView.isHidden = true
+        view.addSubview(applicationStatusView)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapApplicationStatus))
+        applicationStatusView.addGestureRecognizer(tap)
+        
+        let label = UILabel()
+        label.text = "View Application Status"
+        label.font = .boldSystemFont(ofSize: 14)
+        label.textColor = UIColor(hex: "#2563EB")
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        applicationStatusView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            applicationStatusView.topAnchor.constraint(equalTo: categorySection.bottomAnchor, constant: 10),
+            applicationStatusView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            applicationStatusView.widthAnchor.constraint(equalToConstant: 180),
+            applicationStatusView.heightAnchor.constraint(equalToConstant: 30),
+            
+            label.centerXAnchor.constraint(equalTo: applicationStatusView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: applicationStatusView.centerYAnchor),
+        ])
+    }
+    
+    func toggleVisibilityOfApclStatus() {
+        if isSelected == "Applied" {
+            applicationStatusView.isHidden = false
+        }
+        else {
+            applicationStatusView.isHidden = true
+        }
+        applicationStatusView.layoutIfNeeded()
+    }
+    
+    @objc func didTapApplicationStatus() {
+        let vc = ApplicationStatusVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     
     func setupJobsCollectionView() {
         let layout = UICollectionViewFlowLayout()
@@ -184,7 +233,6 @@ class MyJobsController: UIViewController {
             jobsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
     
     func getAttributedString(image: String, tintColor: UIColor, title : String) -> NSMutableAttributedString {
         let attributedString = NSMutableAttributedString()
@@ -203,6 +251,7 @@ class MyJobsController: UIViewController {
         return attributedString
     }
     
+    
     @objc func didTapRecentButton() {
         if isSelected != "Recent" {
             jobs.removeAll()
@@ -219,7 +268,7 @@ class MyJobsController: UIViewController {
             }
             collectionState = .recent
         }
-        
+        toggleVisibilityOfApclStatus()
 //        jobsCountLabel.text = "\(jobs.count) recommended jobs"
     }
     
@@ -239,7 +288,7 @@ class MyJobsController: UIViewController {
             }
             collectionState = .applied
         }
-        
+        toggleVisibilityOfApclStatus()
 //        jobsCountLabel.text = "\(jobs.count) applied jobs"
     }
     
@@ -259,9 +308,10 @@ class MyJobsController: UIViewController {
             }
             collectionState = .saved
         }
-        
+        toggleVisibilityOfApclStatus()
 //        jobsCountLabel.text = "\(savedJobs.count) saved jobs"
     }
+    
     
     let noJobsView = UIView()
     private func setupNoJobsView() {
@@ -318,6 +368,8 @@ class MyJobsController: UIViewController {
             label.trailingAnchor.constraint(equalTo: noJobsView.trailingAnchor),
         ])
     }
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
         fetchAppliedJobIDs()

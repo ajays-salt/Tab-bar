@@ -56,6 +56,8 @@ class EditProfileVC: UIViewController {
         mobileTF.placeholder = "Eg. Indian"
         mobileTF.keyboardType = .numberPad
         mobileTF.addDoneButtonOnKeyboard()
+        
+        mobileTF.addTarget(self, action: #selector(limitTextFieldCharacters(_:)), for: .editingChanged)
         return mobileTF
     }()
     
@@ -345,6 +347,14 @@ class EditProfileVC: UIViewController {
     
     
     
+    @objc func limitTextFieldCharacters(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        
+        let text2 = text.prefix(10)
+        
+        return textField.text = String(text2)
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Dismiss the keyboard when the return key is tapped
         textField.resignFirstResponder()
@@ -464,12 +474,17 @@ extension EditProfileVC {
             showAlert(withTitle: "Missing Information", message: "Please select a valid image before saving.")
             return
         }
+        
         guard let fullName = fullNameTF.text, !fullName.isEmpty,
-              let designation = designationTF.text, !designation.isEmpty,
-              let mobile = mobileTF.text, !mobile.isEmpty
+              let designation = designationTF.text, !designation.isEmpty
         else {
-            
             showAlert(withTitle: "Alert!", message: "Please fill all the details")
+            return
+        }
+        
+        guard let mobile = mobileTF.text, !mobile.isEmpty, mobile.isValidMobileNumber() 
+        else {
+            showAlert(withTitle: "Alert!", message: "Invalid Mobile Number")
             return
         }
         

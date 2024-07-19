@@ -125,13 +125,16 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     var projectEditView: UIScrollView!
     var editProjectNameTF: UITextField!
     var editProjectRoleTF: UITextField!
-    var editProjectDescTF: UITextView!
-    var editProjectRespTF: UITextView!
+    var editProjectDescTextview: UITextView!
+    var editProjectRespTextview: UITextView!
     var projectSaveButton: UIButton!
     var projectCancelButton: UIButton!
     
-    var projectDescLoader: UIActivityIndicatorView!
-    var projectRespLoader: UIActivityIndicatorView!
+    var projectDescLoader: LoadingView!
+    var projectRespLoader: LoadingView!
+    
+    var generateButton2 : UIButton!
+    var generateButton3 : UIButton!
     
     
     var softwaresArray : [String] = []
@@ -146,6 +149,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         navigationController?.navigationBar.isHidden = true
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+
+        
 //        fetchUserProfile()
 //        DispatchQueue.main.async {
 //            self.setupViews()
@@ -157,6 +164,38 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         super.viewWillAppear(animated)
         fetchUserProfile()
     }
+    
+    
+    deinit {
+        // Unregister from keyboard notifications
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let activeTextField = UIResponder.currentFirstResponder as? UITextView else {
+            return
+        }
+        
+        let keyboardHeight = keyboardFrame.height
+        let textFieldFrame = activeTextField.convert(activeTextField.bounds, to: self.view)
+        let textFieldBottomY = textFieldFrame.maxY
+        
+        let visibleHeight = self.view.frame.height - keyboardHeight
+        if textFieldBottomY > visibleHeight {
+            let offset = textFieldBottomY - visibleHeight + 20
+            self.view.frame.origin.y = -offset
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame.origin.y = 0
+        }
+    }
+    
     
     
     func setupViews() {
@@ -1018,16 +1057,17 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                     textView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
                     textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
                     textView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-                    textView.heightAnchor.constraint(equalToConstant: 120)  // Fixed height for UITextView
+//                    textView.heightAnchor.constraint(equalToConstant: 120)  // Fixed height for UITextView
                 ])
+                if index == 2 {
+                    textView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+                }
+                if index == 3 {
+                    textView.heightAnchor.constraint(equalToConstant: 180).isActive = true
+                }
                 lastBottomAnchor = textView.bottomAnchor
                 
                 let generateButton = createGenerateButton()
-                if index == 2 {
-                    generateButton.addTarget(self, action: #selector(generateDescription), for: .touchUpInside)
-                } else if index == 3 {
-                    generateButton.addTarget(self, action: #selector(generateResponsibility), for: .touchUpInside)
-                }
                 
                 projectEditView.addSubview(generateButton)
                 NSLayoutConstraint.activate([
@@ -1036,6 +1076,14 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                     generateButton.heightAnchor.constraint(equalToConstant: 36),
                     generateButton.widthAnchor.constraint(equalToConstant: 180),
                 ])
+                
+                if index == 2 {
+                    generateButton2 = generateButton
+                    generateButton2.addTarget(self, action: #selector(generateDescription), for: .touchUpInside)
+                } else if index == 3 {
+                    generateButton3 = generateButton
+                    generateButton3.addTarget(self, action: #selector(generateResponsibility), for: .touchUpInside)
+                }
             }
             
             if index == 0 {
@@ -1045,18 +1093,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 editProjectRoleTF = control as? UITextField
                 editProjectRoleTF.delegate = self
             } else if index == 2 {
-                editProjectDescTF = control as? UITextView
-                editProjectDescTF.addDoneButtonOnKeyboard()
+                editProjectDescTextview = control as? UITextView
+                editProjectDescTextview.addDoneButtonOnKeyboard()
             } else if index == 3 {
-                editProjectRespTF = control as? UITextView
-                editProjectRespTF.addDoneButtonOnKeyboard()
+                editProjectRespTextview = control as? UITextView
+                editProjectRespTextview.addDoneButtonOnKeyboard()
             }
         }
 
         setupSaveAndCancelButtons()  // A separate method for setting up buttons
     }
+    
     func setupSaveAndCancelButtons() {
-        // Assume saveButton and cancelButton are already initialized
         projectSaveButton = UIButton(type: .system)
         projectSaveButton.setTitle("Save", for: .normal)
         projectSaveButton.titleLabel?.font = .systemFont(ofSize: 20)
@@ -1083,7 +1131,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         projectEditView.addSubview(projectCancelButton)
         
         NSLayoutConstraint.activate([
-            projectSaveButton.bottomAnchor.constraint(equalTo: editProjectRespTF.bottomAnchor, constant: 60),
+            projectSaveButton.bottomAnchor.constraint(equalTo: editProjectRespTextview.bottomAnchor, constant: 60),
             projectSaveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             projectSaveButton.widthAnchor.constraint(equalToConstant: 80),
             projectSaveButton.heightAnchor.constraint(equalToConstant: 40),
@@ -1107,38 +1155,138 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         return button
     }
     private func setupLoaderForProjectEdit() {
-        projectDescLoader = UIActivityIndicatorView(style: .large)
-        projectDescLoader.center = view.center
+        projectDescLoader = LoadingView()
+        projectDescLoader.isHidden = true
+        projectDescLoader.layer.cornerRadius = 20
+        
         projectDescLoader.translatesAutoresizingMaskIntoConstraints = false
         projectEditView.addSubview(projectDescLoader)
         
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "AISymbol")
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        projectDescLoader.addSubview(imgView)
+        
+        let label = UILabel()
+        label.text = "Project description is being generated..."
+        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        projectDescLoader.addSubview(label)
+        
         NSLayoutConstraint.activate([
-            projectDescLoader.centerXAnchor.constraint(equalTo: editProjectDescTF.centerXAnchor),
-            projectDescLoader.centerYAnchor.constraint(equalTo: editProjectDescTF.centerYAnchor)
+            projectDescLoader.centerXAnchor.constraint(equalTo: editProjectDescTextview.centerXAnchor),
+            projectDescLoader.centerYAnchor.constraint(equalTo: editProjectDescTextview.centerYAnchor),
+            projectDescLoader.widthAnchor.constraint(equalToConstant: 300),
+            projectDescLoader.heightAnchor.constraint(equalToConstant: 80),
+            
+            imgView.centerYAnchor.constraint(equalTo: projectDescLoader.centerYAnchor),
+            imgView.leadingAnchor.constraint(equalTo: projectDescLoader.leadingAnchor, constant: 16),
+            imgView.heightAnchor.constraint(equalToConstant: 40),
+            imgView.widthAnchor.constraint(equalToConstant: 40),
+            
+            label.centerYAnchor.constraint(equalTo: projectDescLoader.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10),
+            label.trailingAnchor.constraint(equalTo: projectDescLoader.trailingAnchor, constant: -16)
         ])
         
-        projectRespLoader = UIActivityIndicatorView(style: .large)
-        projectRespLoader.center = view.center
+        projectDescLoader.layoutIfNeeded()
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = projectDescLoader.bounds
+
+        let color1 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
+        let color2 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
+        
+        gradientLayer.colors = [color1, color2]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        
+        let maskLayer = CAShapeLayer()
+        let path = UIBezierPath(roundedRect: gradientLayer.bounds, cornerRadius: 20)
+        maskLayer.path = path.cgPath
+        
+        // Apply the mask to the gradient layer
+        gradientLayer.mask = maskLayer
+        
+        projectDescLoader.layer.insertSublayer(gradientLayer, at: 0)
+        
+        
+        
+        projectRespLoader = LoadingView()
+        projectRespLoader.isHidden = true
+        projectRespLoader.layer.cornerRadius = 20
+        
         projectRespLoader.translatesAutoresizingMaskIntoConstraints = false
         projectEditView.addSubview(projectRespLoader)
         
+        let imgView2 = UIImageView()
+        imgView2.image = UIImage(named: "AISymbol")
+        imgView2.translatesAutoresizingMaskIntoConstraints = false
+        projectRespLoader.addSubview(imgView2)
+        
+        let label2 = UILabel()
+        label2.text = "Projects responsibility is being generated..."
+        label2.font = .boldSystemFont(ofSize: 20)
+        label2.numberOfLines = 2
+        label2.textAlignment = .center
+        label2.translatesAutoresizingMaskIntoConstraints = false
+        projectRespLoader.addSubview(label2)
+        
         NSLayoutConstraint.activate([
-            projectRespLoader.centerXAnchor.constraint(equalTo: editProjectRespTF.centerXAnchor),
-            projectRespLoader.centerYAnchor.constraint(equalTo: editProjectRespTF.centerYAnchor)
+            projectRespLoader.centerXAnchor.constraint(equalTo: editProjectRespTextview.centerXAnchor),
+            projectRespLoader.centerYAnchor.constraint(equalTo: editProjectRespTextview.centerYAnchor),
+            projectRespLoader.widthAnchor.constraint(equalToConstant: 300),
+            projectRespLoader.heightAnchor.constraint(equalToConstant: 80),
+            
+            imgView2.centerYAnchor.constraint(equalTo: projectRespLoader.centerYAnchor),
+            imgView2.leadingAnchor.constraint(equalTo: projectRespLoader.leadingAnchor, constant: 16),
+            imgView2.heightAnchor.constraint(equalToConstant: 40),
+            imgView2.widthAnchor.constraint(equalToConstant: 40),
+            
+            label2.centerYAnchor.constraint(equalTo: projectRespLoader.centerYAnchor),
+            label2.leadingAnchor.constraint(equalTo: imgView2.trailingAnchor, constant: 10),
+            label2.trailingAnchor.constraint(equalTo: projectRespLoader.trailingAnchor, constant: -16)
         ])
+        
+        projectRespLoader.layoutIfNeeded()
+        let gradientLayer2 = CAGradientLayer()
+        gradientLayer2.frame = projectRespLoader.bounds
+
+        let color12 = UIColor(hex: "#5825EB").withAlphaComponent(0.11).cgColor
+        let color22 = UIColor(hex: "#DB7F14").withAlphaComponent(0.11).cgColor
+        
+        gradientLayer2.colors = [color12, color22]
+        gradientLayer2.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer2.endPoint = CGPoint(x: 1, y: 0)
+        
+        let maskLayer2 = CAShapeLayer()
+        let path2 = UIBezierPath(roundedRect: gradientLayer2.bounds, cornerRadius: 20)
+        maskLayer2.path = path2.cgPath
+        
+        // Apply the mask to the gradient layer
+        gradientLayer2.mask = maskLayer2
+        
+        projectRespLoader.layer.insertSublayer(gradientLayer2, at: 0)
     }
 
     @objc func generateDescription() {
-        if let text = editProjectDescTF.text {
+        if let text = editProjectNameTF.text, let text2 = editProjectRoleTF.text, text != "", text2 != "" {
             fetchContentAndUpdateTextView(forURL: "\(Config.serverURL)/api/v1/user/candidate/project-description",
-                                          withText: editProjectNameTF.text ?? "", updateTextView: editProjectDescTF)
+                                          withText: text, updateTextView: editProjectDescTextview)
+        }
+        else {
+            showAlert(withTitle: "Missing Information", message: "Please add project name and role first")
         }
     }
 
     @objc func generateResponsibility() {
-        if let text = editProjectRespTF.text {
+        if let text = editProjectNameTF.text, let text2 = editProjectRoleTF.text, text != "", text2 != "" {
             fetchContentAndUpdateTextView(forURL: "\(Config.serverURL)/api/v1/user/candidate/project-responsibility",
-                                          withText: editProjectNameTF.text ?? "", updateTextView: editProjectRespTF)
+                                          withText: text, updateTextView: editProjectRespTextview)
+        }
+        else {
+            showAlert(withTitle: "Missing Information", message: "Please add project name and role first")
         }
     }
     
@@ -1147,13 +1295,19 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             print("Invalid URL")
             return
         }
-        if textView == editProjectDescTF {
+        if textView == editProjectDescTextview {
             DispatchQueue.main.async {
+                self.editProjectDescTextview.text = ""
+                self.generateButton2.isUserInteractionEnabled = false
+                self.projectDescLoader.isHidden = false
                 self.projectDescLoader.startAnimating()  // Start the loader before the request
             }
         }
-        if textView == editProjectRespTF {
+        if textView == editProjectRespTextview {
             DispatchQueue.main.async {
+                self.editProjectRespTextview.text = ""
+                self.generateButton3.isUserInteractionEnabled = false
+                self.projectRespLoader.isHidden = false
                 self.projectRespLoader.startAnimating()  // Start the loader before the request
             }
         }
@@ -1171,14 +1325,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
-            if textView == self.editProjectDescTF {
+            if textView == self.editProjectDescTextview {
                 DispatchQueue.main.async {
-                    self.projectDescLoader.stopAnimating()  // Start the loader before the request
+                    self.generateButton2.isUserInteractionEnabled = true
+                    self.projectDescLoader.isHidden = true
+                    self.projectDescLoader.stopAnimating()
                 }
             }
-            if textView == self.editProjectRespTF {
+            if textView == self.editProjectRespTextview {
                 DispatchQueue.main.async {
-                    self.projectRespLoader.stopAnimating()  // Start the loader before the request
+                    self.generateButton3.isUserInteractionEnabled = true
+                    self.projectRespLoader.isHidden = true
+                    self.projectRespLoader.stopAnimating()
                 }
             }
             guard let data = data, error == nil else {
@@ -1186,7 +1344,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                 return
             }
             if let responseString = String(data: data, encoding: .utf8) {
-                if textView == self.editProjectDescTF {
+                if textView == self.editProjectDescTextview {
                     DispatchQueue.main.async {
                         var s = responseString
                         if s.hasPrefix("\"") {
@@ -1195,52 +1353,29 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                         textView.text = s  // Update the UITextView on the main thread
                     }
                 }
-                if textView == self.editProjectRespTF {
+                if textView == self.editProjectRespTextview {
                     DispatchQueue.main.async {
-                        let lines = responseString.split(separator: "\n", omittingEmptySubsequences: false)
-                        
-                        // Mapping each line to remove the leading "- " if it exists
-                        let processedLines = lines.map { line -> String in
-                            var modifiedLine = String(line)
-                            // Check if the line starts with "- " and remove it
-                            if modifiedLine.hasPrefix("- ") {
-                                modifiedLine = String(modifiedLine.dropFirst(2))
-                            }
-                            return modifiedLine
-                        }
-                        
-                        let cleanedSummary = processedLines.joined(separator: " ")
-                        
-                        var s = cleanedSummary
-                        s = String(s.dropFirst().dropLast())
-                        textView.text = s
-                        
-                        // Output to check
-                        let components = responseString.split(separator: ".").map { line -> String in
+                        let components = responseString.components(separatedBy: "\n-").map { line -> String in
                             let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
-                            return trimmedLine.hasPrefix("- ") ? String(trimmedLine.dropFirst(2)) : trimmedLine
+                            return trimmedLine.hasPrefix("---") ? String(trimmedLine.dropFirst(2)) : trimmedLine
                         }
-                        var cleanedArray: [String] = []
-                        
-                        for string in components {
-                            // Find the index of the first space
+
+                        let cleanedArray = components.map { string -> String in
                             if let index = string.firstIndex(of: " ") {
-                                // Create a substring from the first space to the end of the string
-                                let cleanedString = String(string[index...].dropFirst())
-                                cleanedArray.append(cleanedString)
+                                return String(string[index...].dropFirst())
                             } else {
-                                // If there is no space, append the original string
-                                cleanedArray.append(string)
+                                return string
                             }
                         }
+
+                        var finalString = cleanedArray.joined(separator: "")
                         
-                        let modifiedStrings = cleanedArray.map { $0 + "." }
+                        finalString = finalString.replacingOccurrences(of: "\\n-", with: "\n\n ") //•
+                        finalString = finalString.replacingOccurrences(of: "\\n", with: "\n  ")
+                        finalString = String(finalString.dropLast())
                         
-                        // Join all the modified strings into a single string, separating them by a space
-                        var finalString = modifiedStrings.joined(separator: " ")
-                        finalString = String(finalString.dropLast().dropLast())
                         
-                        textView.text = finalString  // Update the UITextView on the main thread
+                        textView.text = finalString
                     }
                 }
             }
@@ -1254,8 +1389,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         // Ensure all fields are non-empty
         guard let name = editProjectNameTF.text, !name.isEmpty,
               let role = editProjectRoleTF.text, !role.isEmpty,
-              let desc = editProjectDescTF.text, !desc.isEmpty,
-              let resp = editProjectRespTF.text, !resp.isEmpty else {
+              let desc = editProjectDescTextview.text, !desc.isEmpty,
+              let resp = editProjectRespTextview.text, !resp.isEmpty else {
             showAlert(withTitle: "Missing Information", message: "Please fill all the fields")
             return
         }
@@ -1326,8 +1461,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     @objc func cancelProjectEdit() {
         editProjectNameTF.text = ""
         editProjectRoleTF.text = ""
-        editProjectDescTF.text = ""
-        editProjectRespTF.text = ""
+        editProjectDescTextview.text = ""
+        editProjectRespTextview.text = ""
         UIView.animate(withDuration: 0.3) {
             self.projectEditView.transform = .identity
             if let tabBar = self.tabBarController?.tabBar {
@@ -1519,7 +1654,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         eduEditView.addSubview(eduCancelButton)
         
         NSLayoutConstraint.activate([
-            eduSaveButton.bottomAnchor.constraint(equalTo: eduEditView.bottomAnchor, constant: -60),
+            eduSaveButton.bottomAnchor.constraint(equalTo: editMarksTF.bottomAnchor, constant: 60),
             eduSaveButton.trailingAnchor.constraint(equalTo: eduEditView.trailingAnchor, constant: -20),
             eduSaveButton.widthAnchor.constraint(equalToConstant: 80),
             eduSaveButton.heightAnchor.constraint(equalToConstant: 40),
@@ -2570,8 +2705,8 @@ extension ProfileController : UICollectionViewDelegateFlowLayout, UICollectionVi
             let project = projectDataArray[indexPath.row]
             editProjectNameTF.text = project.projectName
             editProjectRoleTF.text = project.role
-            editProjectDescTF.text = project.description
-            editProjectRespTF.text = project.responsibility
+            editProjectDescTextview.text = project.description
+            editProjectRespTextview.text = project.responsibility
             
             UIView.animate(withDuration: 0.3) {
                 self.projectEditView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height + 0)

@@ -163,7 +163,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         
         let secondLabel : UILabel = {
             let label = UILabel()
-            label.text = "Welcome back! Please enter your details."
+            label.text = "Continue your job search!"
             label.font = .systemFont(ofSize: 18)
             label.textColor = UIColor(hex: "#475467")
             return label

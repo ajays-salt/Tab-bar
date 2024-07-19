@@ -126,6 +126,7 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         setupCompanySearchInnerSection()
         setupSearchCompanyButton()
         setupCompaniesCollectionView()
+        setupNoJobsView()
     }
     
     func setupFilterIcon() {
@@ -330,6 +331,53 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
+    let noJobsView = UIView()
+    private func setupNoJobsView() {
+        noJobsView.isHidden = true
+        noJobsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noJobsView)
+    
+        
+        let title : UILabel = {
+            let label = UILabel()
+            label.text = "No Companies found"
+            label.font = .boldSystemFont(ofSize: 18)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(title)
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "We couldn’t find any company matching your search, please try searching for something else."
+            label.font = .systemFont(ofSize: 16)
+            label.textColor = UIColor(hex: "#344054")
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(label)
+        
+
+        NSLayoutConstraint.activate([
+            noJobsView.topAnchor.constraint(equalTo: searchCompanySection.bottomAnchor, constant: 50),
+            noJobsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noJobsView.widthAnchor.constraint(lessThanOrEqualToConstant: view.frame.width - 100),
+            noJobsView.heightAnchor.constraint(equalToConstant: 400),
+            
+            title.topAnchor.constraint(equalTo: noJobsView.topAnchor, constant: 20),
+            title.centerXAnchor.constraint(equalTo: noJobsView.centerXAnchor),
+            
+            label.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 10),
+            label.leadingAnchor.constraint(equalTo: noJobsView.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: noJobsView.trailingAnchor),
+        ])
+    }
+    
+    
+    
     // ************************************ collectionView bottom loader *********************************************
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -489,6 +537,12 @@ extension CompanyController {
                 DispatchQueue.main.async {
 //                    print("Current Page: \(response.currentPage)")
 //                    print("Total Pages: \(response.totalPages)")
+                    if response.totalPages == 0 {
+                        self.noJobsView.isHidden = false
+                    }
+                    else {
+                        self.noJobsView.isHidden = true
+                    }
                     
                     self.totalPages = response.totalPages
                     self.companiesArray.append(contentsOf: response.companies)
@@ -498,6 +552,9 @@ extension CompanyController {
                 DispatchQueue.main.async {
                     self.isLoadingData = false
                     self.companiesCollectionView.reloadSections(IndexSet(integer: 0))
+                    if response.totalPages == 0 {
+                        self.noJobsView.isHidden = false
+                    }
                 }
             } catch {
                 print("Failed to decode JSON: \(error)")

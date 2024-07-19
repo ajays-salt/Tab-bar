@@ -13,8 +13,11 @@ class ProjectsVC: UIViewController, UITextViewDelegate, UITextFieldDelegate {
     var circleContainerView : UIView!
     
     var loader: LoadingView!
+    // edit project
     var loader2: LoadingView!
     var loader3: LoadingView!
+    
+    // add project
     var loader4: LoadingView!
     var loader5: LoadingView!
     

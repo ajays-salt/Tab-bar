@@ -96,28 +96,30 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         textField.translatesAutoresizingMaskIntoConstraints = false
         
         // Create a custom accessory view with a Done button
-        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
-        accessoryView.backgroundColor = .clear
+//        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+//        accessoryView.backgroundColor = .clear
+//        
+//        let doneButton = UIButton(type: .system)
+//        doneButton.backgroundColor = .systemGray6
+//        doneButton.layer.cornerRadius = 8
+//        doneButton.setTitle("Done", for: .normal)
+//        doneButton.titleLabel?.font = .systemFont(ofSize: 18)
+//        
+//        doneButton.addTarget(textField, action: #selector(resignFirstResponder), for: .touchUpInside)
+//        doneButton.translatesAutoresizingMaskIntoConstraints = false
+//        accessoryView.addSubview(doneButton)
+//        
+//        // Position the Done button to the right side of the accessory view
+//        NSLayoutConstraint.activate([
+//            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -6),
+//            doneButton.bottomAnchor.constraint(equalTo: accessoryView.bottomAnchor, constant: -4),
+//            doneButton.widthAnchor.constraint(equalToConstant: 60),
+//            doneButton.heightAnchor.constraint(equalToConstant: 40)
+//        ])
         
-        let doneButton = UIButton(type: .system)
-        doneButton.backgroundColor = .systemGray6
-        doneButton.layer.cornerRadius = 8
-        doneButton.setTitle("Done", for: .normal)
-        doneButton.titleLabel?.font = .systemFont(ofSize: 18)
-        
-        doneButton.addTarget(textField, action: #selector(resignFirstResponder), for: .touchUpInside)
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
-        accessoryView.addSubview(doneButton)
-        
-        // Position the Done button to the right side of the accessory view
-        NSLayoutConstraint.activate([
-            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -6),
-            doneButton.bottomAnchor.constraint(equalTo: accessoryView.bottomAnchor, constant: -4),
-            doneButton.widthAnchor.constraint(equalToConstant: 60),
-            doneButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
-        
-        textField.inputAccessoryView = accessoryView
+        textField.addTarget(self, action: #selector(limitTextFieldCharacters(_:)), for: .editingChanged)
+//        textField.inputAccessoryView = accessoryView
+        textField.addDoneButtonOnKeyboard()
         return textField
     }()
     
@@ -227,7 +229,43 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         
         let loginTapGesture = UITapGestureRecognizer(target: self, action: #selector(loginTapped))
         logInLabel.addGestureRecognizer(loginTapGesture)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+    
+    
+    deinit {
+        // Unregister from keyboard notifications
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let activeTextField = UIResponder.currentFirstResponder as? UITextField else {
+            return
+        }
+        
+        let keyboardHeight = keyboardFrame.height
+        let textFieldFrame = activeTextField.convert(activeTextField.bounds, to: self.view)
+        let textFieldBottomY = textFieldFrame.maxY
+        
+        let visibleHeight = self.view.frame.height - keyboardHeight
+        if textFieldBottomY > visibleHeight {
+            let offset = textFieldBottomY - visibleHeight + 20
+            self.view.frame.origin.y = -offset
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame.origin.y = 0
+        }
+    }
+    
+    
     
     func setupViews() {
         setupHeaderView()
@@ -282,7 +320,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         
         let secondLabel : UILabel = {
             let label = UILabel()
-            label.text = "Start your 30-day free trial."
+            label.text = "Please enter your details!"
             label.font = .systemFont(ofSize: 20)
             label.textColor = UIColor(hex: "#475467")
             return label
@@ -413,10 +451,14 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
     @objc private func getStartedButtonTapped() {
         guard let name = nameTextField.text, !name.isEmpty,
               let email = emailTextField.text, !email.isEmpty, email.isValidEmail(),
-              let password = passwordTextField.text, !password.isEmpty,
-              let mobile = numberTextField.text, !mobile.isEmpty, mobile.isValidMobileNumber() else {
+              let password = passwordTextField.text, !password.isEmpty else {
             
             showAlert(title: "Alert!", message: "Fill all the details")
+            return
+        }
+        
+        guard let mobile = numberTextField.text, !mobile.isEmpty, mobile.isValidMobileNumber() else {
+            showAlert(title: "Alert!", message: "Invalid Mobile Number")
             return
         }
 
@@ -496,6 +538,7 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         }
     }
 
+    
     private func showAlert(title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
@@ -533,6 +576,15 @@ class RegistrationVC: UIViewController, UITextFieldDelegate {
         navVC.modalPresentationStyle = .fullScreen
         navVC.navigationBar.isHidden = true
         present(navVC, animated: true)
+    }
+    
+    
+    @objc func limitTextFieldCharacters(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        
+        let text2 = text.prefix(10)
+        
+        return textField.text = String(text2)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
