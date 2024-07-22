@@ -276,3 +276,34 @@ struct Company: Codable {
 
 
 
+struct ApplicationStatusResponse: Codable {
+    let results: [ApplicationStatus]
+    let totalCounts: TotalCounts
+    let totalPages, currentPage: Int
+}
+
+// MARK: - Result
+struct ApplicationStatus: Codable {
+    let id, applicantId: String
+    let assignedTo: AssignedTo
+    let jobId, matchingPercentage, viewStatus, status: String
+    let resume, coverLetter, sop, disQualifyReason: String
+    let disQualifyReasons: [String]
+    let additionalInfo, overallScore, applicationDate, createdAt: String
+    let jobTitle, companyName: String
+
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case applicantId, assignedTo, jobId, matchingPercentage, viewStatus, status, resume, coverLetter, sop, disQualifyReason, disQualifyReasons, additionalInfo, overallScore, applicationDate, createdAt, jobTitle, companyName
+    }
+}
+
+// MARK: - AssignedTo
+struct AssignedTo: Codable {
+    let id, name, email, role: String?
+}
+
+// MARK: - TotalCounts
+struct TotalCounts: Codable {
+    let applied, technical, hr, disqualified: Int
+}
