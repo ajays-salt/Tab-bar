@@ -7,18 +7,35 @@
 
 import UIKit
 
-class ApplicationStatusVC: UIViewController {
-    
+class ApplicationStatusVC: UIViewController, UITextFieldDelegate {
     
     var dataArray : [ApplicationStatus] = []
+    
+    
+    var sortButton = UIButton()
+    var sortOptions = ["Newest", "Oldest"]
+    var sortPicker = UIPickerView()
+    var isSortVisible : Bool = false
+    
+    
+    var searchView = UIView()
+    var jobsTextField = UITextField()
+    
     
     var statusCollectionView : UICollectionView!
     var currentPage: Int = 1
     var totalPages: Int = 1
     var isLoadingData = false
     
-    var filterView = UIView()
-    var isFiltersVisible = false
+    
+    let filters = ["Applied", "Technical", "HR", "Disqualified"]
+    let filterPicker = UIPickerView()
+    var isFilterVisible : Bool = false
+    let toolbar = UIToolbar()
+    
+    var appliedFilter = "applied"
+    var appliedSort = "Newest"
+    var searchJobTitle = ""
     
 
     override func viewDidLoad() {
@@ -39,19 +56,145 @@ class ApplicationStatusVC: UIViewController {
     
     func setupViews() {
         fetchApplicationStatus()
+        setupSortButton()
+        setupSearchBar()
         setupCollectionView()
-        setupFilterView()
+        setupNoJobsView()
     }
     
-    func setupContentView() {
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(view)
+    
+    
+    func setupSortButton() {
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.image = UIImage(systemName: "arrow.up.arrow.down")?.withTintColor(UIColor(hex: "#475467"))
+        
+        let imageOffsetY: CGFloat = -2.0 // Adjust this value to vertically align the image with the text if needed
+        imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: 14, height: 14)
+        
+        // Create attributed string with image and text
+        let imageString = NSAttributedString(attachment: imageAttachment)
+        let textString = NSAttributedString(string: " Sort", attributes: [
+            .font: UIFont.systemFont(ofSize: 14) // Customize font size if needed
+        ])
+        
+        let combinedString = NSMutableAttributedString()
+        combinedString.append(imageString)
+        combinedString.append(textString)
+        
+        // Set the attributed title to the button
+        sortButton.setAttributedTitle(combinedString, for: .normal)
+        sortButton.addTarget(self, action: #selector(didTapSortButton), for: .touchUpInside)
+        sortButton.layer.borderWidth = 1
+        sortButton.layer.cornerRadius = 8
+        sortButton.layer.borderColor = UIColor(hex: "#667085").cgColor
+        
+        sortButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(sortButton)
+        NSLayoutConstraint.activate([
+            sortButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
+            sortButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            sortButton.widthAnchor.constraint(equalToConstant: 70),
+            sortButton.heightAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+    @objc func didTapSortButton() {
+        if isFilterVisible {
+            filterPicker.removeFromSuperview()
+            toolbar.removeFromSuperview()
+            isFilterVisible = false
+        }
+        if !isSortVisible {
+            isSortVisible = true
+            
+            sortPicker.delegate = self
+            sortPicker.dataSource = self
+            sortPicker.backgroundColor = .systemGray6
+            sortPicker.tag = 2
+            
+            toolbar.sizeToFit()
+            
+            let title = UIBarButtonItem(title: "Select sorting order", style: .plain, target: nil, action: nil)
+            let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(dismissSortPicker))
+            let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            
+            toolbar.setItems([ title, flexibleSpace, doneButton], animated: false)
+            
+            toolbar.isUserInteractionEnabled = true
+            toolbar.translatesAutoresizingMaskIntoConstraints = false
+            
+            sortPicker.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(sortPicker)
+            view.addSubview(toolbar)
+            
+            NSLayoutConstraint.activate([
+                sortPicker.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                sortPicker.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                sortPicker.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                sortPicker.heightAnchor.constraint(equalToConstant: 150),
+                
+                toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                toolbar.bottomAnchor.constraint(equalTo: sortPicker.topAnchor),
+                toolbar.heightAnchor.constraint(equalToConstant: 50)
+            ])
+        }
+        else {
+            sortPicker.removeFromSuperview()
+            toolbar.removeFromSuperview()
+            isSortVisible = false
+        }
+    }
+    
+    @objc func dismissSortPicker() {
+        sortPicker.removeFromSuperview()
+        toolbar.removeFromSuperview()
+        isSortVisible = false
+        
+        DispatchQueue.main.async {
+            self.currentPage = 1
+            self.dataArray.removeAll()
+            self.fetchApplicationStatus()
+        }
+    }
+    
+    
+    func setupSearchBar() {
+//        searchView.isHidden = true
+        searchView.layer.borderWidth = 1
+        searchView.layer.borderColor = UIColor(hex: "#667085").cgColor
+        searchView.layer.cornerRadius = 12
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(searchView)
+        
+        var searchIcon : UIImageView = UIImageView()
+        searchIcon.image = UIImage(systemName: "magnifyingglass")
+        searchIcon.tintColor = UIColor(hex: "#667085").withAlphaComponent(0.6)
+        searchIcon.translatesAutoresizingMaskIntoConstraints = false
+        searchView.addSubview(searchIcon)
+        
+        jobsTextField.delegate = self
+        jobsTextField.placeholder = "Enter Job Title"
+//        jobsTextField.borderStyle = .roundedRect
+        jobsTextField.textColor = UIColor(hex: "#101828").withAlphaComponent(0.64)
+        jobsTextField.translatesAutoresizingMaskIntoConstraints = false
+        searchView.addSubview(jobsTextField)
         
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: view.topAnchor),
-            view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            searchView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchView.trailingAnchor.constraint(equalTo: sortButton.leadingAnchor, constant: -16),
+            searchView.heightAnchor.constraint(equalToConstant: 45),
+            
+            searchIcon.topAnchor.constraint(equalTo: searchView.topAnchor, constant: 10),
+            searchIcon.leadingAnchor.constraint(equalTo: searchView.leadingAnchor, constant: 10),
+            searchIcon.widthAnchor.constraint(equalToConstant: 22),
+            searchIcon.heightAnchor.constraint(equalToConstant: 22),
+            
+            jobsTextField.topAnchor.constraint(equalTo: searchView.topAnchor, constant: 10),
+            jobsTextField.leadingAnchor.constraint(equalTo: searchView.leadingAnchor, constant: 46),
+            jobsTextField.widthAnchor.constraint(equalToConstant: view.frame.width - 94),
+            jobsTextField.heightAnchor.constraint(equalToConstant: 25)
         ])
     }
     
@@ -69,7 +212,7 @@ class ApplicationStatusVC: UIViewController {
         view.addSubview(statusCollectionView)
         
         NSLayoutConstraint.activate([
-            statusCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            statusCollectionView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 20),
             statusCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             statusCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             statusCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
@@ -104,36 +247,122 @@ class ApplicationStatusVC: UIViewController {
     }
     
     
-    
-    func setupFilterView() {
-        filterView.backgroundColor = UIColor(hex: "#F3F4F6")
-        filterView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(filterView)
-        
-        NSLayoutConstraint.activate([
-            filterView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
-            filterView.leadingAnchor.constraint(equalTo: view.trailingAnchor),
-            filterView.widthAnchor.constraint(equalToConstant: view.frame.width - 100),
-            filterView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
 
     @objc func didTapFilterIcon() {
-        if !isFiltersVisible {
-            UIView.animate(withDuration: 0.36) {
-                self.filterView.transform = CGAffineTransform(translationX: -self.view.frame.width + 100, y: 0)
-            }
-            isFiltersVisible = true
+        if isSortVisible {
+            sortPicker.removeFromSuperview()
+            toolbar.removeFromSuperview()
+            isSortVisible = false
+        }
+        
+        if !isFilterVisible {
+            isFilterVisible = true
+            
+            filterPicker.delegate = self
+            filterPicker.dataSource = self
+            filterPicker.backgroundColor = .systemGray6
+            filterPicker.tag = 1
+            
+            toolbar.sizeToFit()
+            
+            let title = UIBarButtonItem(title: "Select Pipeline Status", style: .plain, target: nil, action: nil)
+            let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(dismissFilterPicker))
+            let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            
+            toolbar.setItems([ title, flexibleSpace, doneButton], animated: false)
+            
+            toolbar.isUserInteractionEnabled = true
+            toolbar.translatesAutoresizingMaskIntoConstraints = false
+            
+            filterPicker.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(filterPicker)
+            view.addSubview(toolbar)
+            
+            NSLayoutConstraint.activate([
+                filterPicker.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                filterPicker.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                filterPicker.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                filterPicker.heightAnchor.constraint(equalToConstant: 150),
+                
+                toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                toolbar.bottomAnchor.constraint(equalTo: filterPicker.topAnchor),
+                toolbar.heightAnchor.constraint(equalToConstant: 50)
+            ])
         }
         else {
-            UIView.animate(withDuration: 0.36) {
-                self.filterView.transform = .identity
-            }
-            isFiltersVisible = false
+            filterPicker.removeFromSuperview()
+            toolbar.removeFromSuperview()
+            isFilterVisible = false
+        }
+    }
+    
+    @objc func dismissFilterPicker() {
+        filterPicker.removeFromSuperview()
+        toolbar.removeFromSuperview()
+        isFilterVisible = false
+        
+        DispatchQueue.main.async {
+            self.currentPage = 1
+            self.dataArray.removeAll()
+            self.fetchApplicationStatus()
         }
     }
     
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if let text = textField.text as NSString? {
+            searchJobTitle = text.replacingCharacters(in: range, with: string).lowercased()
+            fetchApplicationStatus()
+        }
+        return true
+    }
+    
+    
+    let noJobsView = UIView()
+    private func setupNoJobsView() {
+        noJobsView.isHidden = true
+        noJobsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noJobsView)
+    
+        
+        let title : UILabel = {
+            let label = UILabel()
+            label.text = "No Applications found"
+            label.font = .boldSystemFont(ofSize: 18)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(title)
+        
+        
+        let label : UILabel = {
+            let label = UILabel()
+            label.text = "We couldn’t find any application matching your search/filters, please try searching for something else or adjust your filters."
+            label.font = .systemFont(ofSize: 16)
+            label.textColor = UIColor(hex: "#344054")
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+        }()
+        noJobsView.addSubview(label)
+        
+
+        NSLayoutConstraint.activate([
+            noJobsView.topAnchor.constraint(equalTo: statusCollectionView.topAnchor, constant: 50),
+            noJobsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noJobsView.widthAnchor.constraint(lessThanOrEqualToConstant: view.frame.width - 100),
+            noJobsView.heightAnchor.constraint(equalToConstant: 400),
+            
+            title.topAnchor.constraint(equalTo: noJobsView.topAnchor, constant: 20),
+            title.centerXAnchor.constraint(equalTo: noJobsView.centerXAnchor),
+            
+            label.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 10),
+            label.leadingAnchor.constraint(equalTo: noJobsView.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: noJobsView.trailingAnchor),
+        ])
+    }
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -153,7 +382,8 @@ class ApplicationStatusVC: UIViewController {
 }
 
 
-extension ApplicationStatusVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+extension ApplicationStatusVC : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dataArray.count
     }
@@ -204,6 +434,50 @@ extension ApplicationStatusVC : UICollectionViewDelegateFlowLayout, UICollection
         let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "LoadingFooter", for: indexPath) as! LoadingFooterView
         return footer
     }
+    
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView.tag == 1 {
+            return filters.count
+        }
+        else if pickerView.tag == 2 {
+            return sortOptions.count
+        }
+        
+        return 0
+    }
+    
+    // UIPickerViewDelegate Methods
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView.tag == 1 {
+            return filters[row]
+        }
+        else if pickerView.tag == 2 {
+            return sortOptions[row]
+        }
+        
+        return nil
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if pickerView.tag == 1 {
+            DispatchQueue.main.async {
+                self.appliedFilter = self.filters[row].lowercased()
+            }
+            self.view.endEditing(true)
+        }
+        else if pickerView.tag == 2 {
+            DispatchQueue.main.async {
+                self.appliedSort = self.sortOptions[row]
+            }
+            self.view.endEditing(true)
+        }
+    }
+    
     
     
     
@@ -280,10 +554,12 @@ extension ApplicationStatusVC : UICollectionViewDelegateFlowLayout, UICollection
 
 extension ApplicationStatusVC {
     func fetchApplicationStatus() {
-        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/get-jobs-applied?sort=Newest&page=\(currentPage)") else {
+        guard let url = URL(string: "\(Config.serverURL)/api/v1/user/get-jobs-applied?jobTitle=\(searchJobTitle)&filter=\(appliedFilter)&sort=\(appliedSort)&page=\(currentPage)") else {
             print("Invalid URL")
             return
         }
+        
+        print(url)
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -327,11 +603,11 @@ extension ApplicationStatusVC {
                     self.isLoadingData = false
                 }
             }
-//            DispatchQueue.main.async {
-//                if self.jobs.count == 0 {
-//                    self.noJobsView.isHidden = false
-//                }
-//            }
+            DispatchQueue.main.async {
+                if self.dataArray.count == 0 {
+                    self.noJobsView.isHidden = false
+                }
+            }
         }
         task.resume()
     }

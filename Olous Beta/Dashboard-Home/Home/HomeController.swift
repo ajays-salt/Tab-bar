@@ -483,7 +483,7 @@ class HomeController: UIViewController, UITextFieldDelegate {
         jobSearchIS2.addSubview(locationIcon)
         
         
-        let placeholderText2 = "City, state or zip code"
+        let placeholderText2 = "Enter City"
         let placeholderColor2 = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         locationTextField.attributedPlaceholder = NSAttributedString(string: placeholderText2, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor2])
         locationTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
