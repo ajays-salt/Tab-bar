@@ -201,6 +201,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     func setupViews() {
         setupScrollView()
         
+        setupLogoutAtTop()
+        
         setupHeaderView()
         
         setupContactInfo()
@@ -225,7 +227,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         setupPreferencesView()
         
-        setupLogOut()
+//        setupLogOut()
         
         DispatchQueue.main.async {
             self.updateScrollViewContentSize()
@@ -239,7 +241,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
@@ -257,6 +259,28 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         ])
     }
     
+    
+    func setupLogoutAtTop() {
+        var imageView = UIImageView()
+        imageView.image = UIImage(systemName: "rectangle.portrait.and.arrow.right")?.withTintColor(UIColor(hex: "#667085"))
+        imageView.tintColor = UIColor(hex: "#667085")
+        imageView.isUserInteractionEnabled = true
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(imageView)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
+        imageView.addGestureRecognizer(tap)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            imageView.widthAnchor.constraint(equalToConstant: 30),
+            imageView.heightAnchor.constraint(equalToConstant: 26)
+        ])
+    }
+    
+    
     func setupHeaderView() {
         headerView.layer.borderWidth = 1
         headerView.layer.borderColor = UIColor(hex: "#EAECF0").cgColor
@@ -264,7 +288,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(headerView)
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
+            headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             headerView.heightAnchor.constraint(equalToConstant: 200)
@@ -2413,6 +2437,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             
             preferenceView.bottomAnchor.constraint(equalTo: worktypeLabel.bottomAnchor, constant: 20)
         ])
+        
+        preferenceView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20).isActive = true
     }
     
     @objc func didTapEditPreferencesButton() {

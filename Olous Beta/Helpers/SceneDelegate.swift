@@ -30,10 +30,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
     }
     
+    
     private func setRootViewController(window: UIWindow) {
         
         if let accessToken = UserDefaults.standard.string(forKey: "accessToken") {
             // Access token is present, check if the user has completed onboarding
+            
             checkUserOnboardingStatus(accessToken: accessToken) { hasCompletedOnboarding in
                 DispatchQueue.main.async {
                     if hasCompletedOnboarding {
@@ -41,6 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         let viewController = ViewController()
                         viewController.modalPresentationStyle = .overFullScreen
                         window.rootViewController = viewController
+                        self.checkForUpdate()
                         
 //                        let vc = ProjectsVC()
 //                        let navVC = UINavigationController(rootViewController: vc)
@@ -70,6 +73,57 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
     }
+    
+    
+    private func checkForUpdate() {
+        guard let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else { return }
+        let appID = "6504863474"
+        let urlString = "https://itunes.apple.com/lookup?id=\(appID)"
+        
+        guard let url = URL(string: urlString) else { return }
+        
+        print(url)
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data else { return }
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let results = json["results"] as? [[String: Any]],
+                   let appStoreVersion = results.first?["version"] as? String {
+                    if currentVersion.compare(appStoreVersion, options: .numeric) == .orderedAscending {
+                        DispatchQueue.main.async {
+                            self.showUpdateAlert()
+                        }
+                    }
+                }
+            } catch {
+                print("Error fetching App Store version: \(error)")
+            }
+        }
+        
+        task.resume()
+    }
+
+    private func showUpdateAlert() {
+        let alert = UIAlertController(title: "Update Available", message: "A new version of the app is available. Please update to the latest version.", preferredStyle: .alert)
+        let updateAction = UIAlertAction(title: "Update", style: .default) { _ in
+            if let url = URL(string: "itms-apps://itunes.apple.com/app/id6504863474"),
+               UIApplication.shared.canOpenURL(url) {
+                print("Update Url inside alert ", url)
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        let laterAction = UIAlertAction(title: "Later", style: .cancel, handler: nil)
+        
+        alert.addAction(updateAction)
+        alert.addAction(laterAction)
+        
+        // Assuming the rootViewController is set and visible
+        if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
+            rootViewController.present(alert, animated: true, completion: nil)
+        }
+    }
+    
     
     
     

@@ -8,7 +8,7 @@
 import Foundation
 
 struct Config {
-    static let serverURL = "https://coral-app-8ogk7.ondigitalocean.app"
+    static let serverURL = "https://king-prawn-app-kjp7q.ondigitalocean.app"
     //    "https://king-prawn-app-kjp7q.ondigitalocean.app"
     //    "https://coral-app-8ogk7.ondigitalocean.app"
 }

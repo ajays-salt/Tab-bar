@@ -160,7 +160,6 @@ class ApplicationStatusVC: UIViewController, UITextFieldDelegate {
     
     
     func setupSearchBar() {
-//        searchView.isHidden = true
         searchView.layer.borderWidth = 1
         searchView.layer.borderColor = UIColor(hex: "#667085").cgColor
         searchView.layer.cornerRadius = 12
@@ -174,9 +173,10 @@ class ApplicationStatusVC: UIViewController, UITextFieldDelegate {
         searchView.addSubview(searchIcon)
         
         jobsTextField.delegate = self
+        jobsTextField.addDoneButtonOnKeyboard()
         jobsTextField.placeholder = "Enter Job Title"
-//        jobsTextField.borderStyle = .roundedRect
         jobsTextField.textColor = UIColor(hex: "#101828").withAlphaComponent(0.64)
+        
         jobsTextField.translatesAutoresizingMaskIntoConstraints = false
         searchView.addSubview(jobsTextField)
         
@@ -362,6 +362,18 @@ class ApplicationStatusVC: UIViewController, UITextFieldDelegate {
             label.leadingAnchor.constraint(equalTo: noJobsView.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: noJobsView.trailingAnchor),
         ])
+    }
+    
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Dismiss the keyboard when the return key is tapped
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Dismiss the keyboard when the user taps outside of the text field
+        view.endEditing(true)
     }
     
     
@@ -559,7 +571,6 @@ extension ApplicationStatusVC {
             return
         }
         
-        print(url)
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -592,6 +603,14 @@ extension ApplicationStatusVC {
                 
                 // Update the jobs array on the main thread
                 DispatchQueue.main.async {
+                    if response.totalPages == 0 {
+                        self.noJobsView.isHidden = false
+                    }
+                    else {
+                        self.noJobsView.isHidden = true
+                    }
+                    
+                    
                     self.dataArray.append(contentsOf: response.results)
                     self.totalPages = response.totalPages
                     self.isLoadingData = false
