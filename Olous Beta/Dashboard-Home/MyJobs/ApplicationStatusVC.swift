@@ -310,10 +310,27 @@ class ApplicationStatusVC: UIViewController, UITextFieldDelegate {
     }
     
     
+    // Debounce technique for searching using DispatchWorkItem
+    var previousWorkItem : DispatchWorkItem? = nil
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if let text = textField.text as NSString? {
-            searchJobTitle = text.replacingCharacters(in: range, with: string).lowercased()
-            fetchApplicationStatus()
+            
+            // any previously scheduled search operation is stopped before scheduling a new one
+            previousWorkItem?.cancel()
+            
+            let searchWorkItem = DispatchWorkItem {
+                self.searchJobTitle = text.replacingCharacters(in: range, with: string).lowercased()
+                // reset data and fetch again with new search title
+                self.currentPage = 1
+                self.dataArray.removeAll()
+                self.statusCollectionView.reloadData()
+                
+                self.fetchApplicationStatus()
+            }
+            
+            previousWorkItem = searchWorkItem
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: searchWorkItem)
         }
         return true
     }

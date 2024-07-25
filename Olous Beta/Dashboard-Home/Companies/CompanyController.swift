@@ -208,6 +208,7 @@ class CompanyController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         companyNameTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
         
         companyNameTextField.delegate = self
+        companyNameTextField.addDoneButtonOnKeyboard()
         companyNameTextField.textColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.64)
         companyNameTextField.translatesAutoresizingMaskIntoConstraints = false
         companySearchIS.addSubview(companyNameTextField)
