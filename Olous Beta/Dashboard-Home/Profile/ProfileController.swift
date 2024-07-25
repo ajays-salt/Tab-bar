@@ -201,7 +201,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     func setupViews() {
         setupScrollView()
         
-        setupLogoutAtTop()
+        setupSettingsView()
         
         setupHeaderView()
         
@@ -260,6 +260,108 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
+    let settingsView = UIView()
+    let settingsButton = UIButton(type: .system)
+    var viewHeightOfSettingsView: CGFloat {
+        return view.frame.height / 2
+    }
+    var isSettingsViewVisible = false
+    
+    private func setupSettingsView() {
+        // Settings View Setup
+        settingsView.backgroundColor = UIColor(hex: "#F9FAFB")
+        view.addSubview(settingsView)
+        
+        // Initially position the settings view below the visible area
+        settingsView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: viewHeightOfSettingsView)
+        settingsView.layer.cornerRadius = 20
+        
+        // Add swipe gesture to dismiss the settings view
+        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDown(_:)))
+        swipeDownGesture.direction = .down
+        settingsView.addGestureRecognizer(swipeDownGesture)
+        
+        setupSettingsContentView()
+        setupSettingsButton()
+    }
+    
+    private func setupSettingsButton() {
+        // Settings Button Setup
+        var imageView = UIImageView()
+        imageView.image = UIImage(systemName: "line.3.horizontal")?.withTintColor(UIColor(hex: "#667085"))
+        imageView.tintColor = UIColor(hex: "#667085")
+        imageView.isUserInteractionEnabled = true
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(imageView)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapSettingsButton))
+        imageView.addGestureRecognizer(tap)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            imageView.widthAnchor.constraint(equalToConstant: 25),
+            imageView.heightAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+    @objc private func didTapSettingsButton() {
+        toggleSettingsView()
+    }
+    
+    @objc private func handleSwipeDown(_ gesture: UISwipeGestureRecognizer) {
+        if isSettingsViewVisible {
+            toggleSettingsView()
+        }
+    }
+    
+    private func toggleSettingsView() {
+        isSettingsViewVisible.toggle()
+        UIView.animate(withDuration: 0.36) {
+            if self.isSettingsViewVisible {
+                self.settingsView.frame.origin.y = self.view.frame.height - self.viewHeightOfSettingsView
+                if let tabBar = self.tabBarController?.tabBar {
+                    tabBar.frame = CGRect(
+                        x: tabBar.frame.origin.x,
+                        y: self.view.frame.size.height,
+                        width: tabBar.frame.size.width,
+                        height: tabBar.frame.size.height
+                    )
+                }
+            } else {
+                self.settingsView.frame.origin.y = self.view.frame.height
+                if let tabBar = self.tabBarController?.tabBar {
+                    tabBar.frame = CGRect(
+                        x: tabBar.frame.origin.x,
+                        y: self.view.frame.size.height - tabBar.frame.size.height,
+                        width: tabBar.frame.size.width,
+                        height: tabBar.frame.size.height
+                    )
+                }
+            }
+        }
+    }
+    
+    
+    var settingsContentView = UIView()
+    
+    func setupSettingsContentView() {
+        settingsContentView.backgroundColor = .white
+        settingsContentView.layer.cornerRadius = 16
+        settingsContentView.translatesAutoresizingMaskIntoConstraints = false
+        settingsView.addSubview(settingsContentView)
+        
+        NSLayoutConstraint.activate([
+            settingsContentView.topAnchor.constraint(equalTo: settingsView.topAnchor, constant: 20),
+            settingsContentView.leadingAnchor.constraint(equalTo: settingsView.leadingAnchor, constant: 16),
+            settingsContentView.trailingAnchor.constraint(equalTo: settingsView.trailingAnchor, constant: -16),
+            settingsContentView.bottomAnchor.constraint(equalTo: settingsView.bottomAnchor)
+        ])
+        
+        setupLogoutAtTop()
+    }
+    
     func setupLogoutAtTop() {
         var imageView = UIImageView()
         imageView.image = UIImage(systemName: "rectangle.portrait.and.arrow.right")?.withTintColor(UIColor(hex: "#667085"))
@@ -267,18 +369,96 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         imageView.isUserInteractionEnabled = true
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(imageView)
+        settingsContentView.addSubview(imageView)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
         imageView.addGestureRecognizer(tap)
         
+        var label = UILabel()
+        label.text = "Log out"
+        label.font = .systemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "#667085")
+        label.isUserInteractionEnabled = true
+        
+        let tap2 = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
+        label.addGestureRecognizer(tap2)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(label)
+        
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            imageView.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
+            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
             imageView.widthAnchor.constraint(equalToConstant: 30),
-            imageView.heightAnchor.constraint(equalToConstant: 26)
+            imageView.heightAnchor.constraint(equalToConstant: 26),
+            
+            label.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
+            
         ])
     }
+    
+    @objc func didTapLogOut() {
+        let alertController = UIAlertController(title: nil, message: "Are you sure you want to log out?", preferredStyle: .alert)
+
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            // Perform the logout operation
+            UserDefaults.standard.removeObject(forKey: "accessToken")
+            UserDefaults.standard.synchronize() // To ensure the accessToken is removed
+            
+            let vc = LoginVC()
+            let navVC = UINavigationController(rootViewController: vc)
+            navVC.modalPresentationStyle = .fullScreen
+            navVC.navigationBar.isHidden = true
+            self.present(navVC, animated: true)
+        }
+        
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+
+        present(alertController, animated: true)
+    }
+    
+    func setupPrivacyPolicy() {
+        var imageView = UIImageView()
+        imageView.image = UIImage(systemName: "rectangle.portrait.and.arrow.right")?.withTintColor(UIColor(hex: "#667085"))
+        imageView.tintColor = UIColor(hex: "#667085")
+        imageView.isUserInteractionEnabled = true
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(imageView)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
+        imageView.addGestureRecognizer(tap)
+        
+        var label = UILabel()
+        label.text = "Log out"
+        label.font = .systemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "#667085")
+        label.isUserInteractionEnabled = true
+        
+        let tap2 = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
+        label.addGestureRecognizer(tap2)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
+            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
+            imageView.widthAnchor.constraint(equalToConstant: 30),
+            imageView.heightAnchor.constraint(equalToConstant: 26),
+            
+            label.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
+            
+        ])
+    }
+    
+    
+    
     
     
     func setupHeaderView() {
@@ -2453,54 +2633,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         vc.workTypeString = worktypeLabel.text
         
         navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    
-    
-    func setupLogOut() {
-        let logOutButton = UIButton()
-        logOutButton.setTitle("Log Out", for: .normal)
-        logOutButton.titleLabel?.font = .systemFont(ofSize: 20)
-        logOutButton.setTitleColor(UIColor(hex: "#FFFFFF"), for: .normal)
-        logOutButton.backgroundColor = UIColor(hex: "#0079C4")
-        logOutButton.layer.cornerRadius = 8
-        
-        logOutButton.addTarget(self, action: #selector(didTapLogOut), for: .touchUpInside)
-        
-        logOutButton.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(logOutButton)
-        
-        NSLayoutConstraint.activate([
-            logOutButton.topAnchor.constraint(equalTo: preferenceView.bottomAnchor, constant: 20),
-            logOutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            logOutButton.heightAnchor.constraint(equalToConstant: 60),
-            logOutButton.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-        ])
-        
-        logOutButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20).isActive = true
-    }
-    
-    @objc func didTapLogOut() {
-        let alertController = UIAlertController(title: nil, message: "Are you sure you want to log out?", preferredStyle: .alert)
-
-        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
-            // Perform the logout operation
-            UserDefaults.standard.removeObject(forKey: "accessToken")
-            UserDefaults.standard.synchronize() // To ensure the accessToken is removed
-            
-            let vc = LoginVC()
-            let navVC = UINavigationController(rootViewController: vc)
-            navVC.modalPresentationStyle = .fullScreen
-            navVC.navigationBar.isHidden = true
-            self.present(navVC, animated: true)
-        }
-        
-        let noAction = UIAlertAction(title: "No", style: .cancel)
-
-        alertController.addAction(yesAction)
-        alertController.addAction(noAction)
-
-        present(alertController, animated: true)
     }
     
     
