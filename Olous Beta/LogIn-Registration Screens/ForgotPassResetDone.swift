@@ -148,6 +148,13 @@ class ForgotPassResetDone: UIViewController {
     }
     
     @objc func didTapBackToLogin() {
-        navigationController?.popToRootViewController(animated: true)
+        UserDefaults.standard.removeObject(forKey: "accessToken")
+        UserDefaults.standard.synchronize()
+        
+        let vc = LoginVC()
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.modalPresentationStyle = .fullScreen
+        navVC.navigationBar.isHidden = true
+        present(navVC, animated: true)
     }
 }

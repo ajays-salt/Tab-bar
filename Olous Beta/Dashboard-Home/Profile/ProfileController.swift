@@ -11,6 +11,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     var user : User!
     
+    
+    var settingButton = UIImageView()
+    
+    let settingsView = UIView()
+    var viewHeightOfSettingsView: CGFloat {
+        return view.frame.height / 2
+    }
+    var isSettingsViewVisible = false
+    
+    var settingsContentView = UIView()
+    
+    
     let containerView = UIView()
     let scrollView = UIScrollView()
     
@@ -199,6 +211,8 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     
     
     func setupViews() {
+        setupTitleAndSettingButton()
+        
         setupScrollView()
         
         setupSettingsView()
@@ -227,12 +241,51 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         
         setupPreferencesView()
         
-//        setupLogOut()
-        
         DispatchQueue.main.async {
             self.updateScrollViewContentSize()
         }
     }
+    
+    
+    private func setupTitleAndSettingButton() {
+        
+        let companiesLabel = UILabel()
+        companiesLabel.text = "My  Profile"
+        companiesLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        companiesLabel.textAlignment = .center
+        companiesLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(companiesLabel)
+        
+        NSLayoutConstraint.activate([
+            companiesLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            companiesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+        ])
+        
+        
+        // Settings Button Setup
+        
+        settingButton.image = UIImage(systemName: "line.3.horizontal")?.withTintColor(UIColor(hex: "#667085"))
+        settingButton.tintColor = UIColor(hex: "#667085")
+        settingButton.isUserInteractionEnabled = true
+        
+        settingButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(settingButton)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapSettingsButton))
+        settingButton.addGestureRecognizer(tap)
+        
+        NSLayoutConstraint.activate([
+            settingButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            settingButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            settingButton.widthAnchor.constraint(equalToConstant: 25),
+            settingButton.heightAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+    @objc private func didTapSettingsButton() {
+        toggleSettingsView()
+    }
+    
     
     func setupScrollView() {
         scrollView.delegate = self
@@ -241,7 +294,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            scrollView.topAnchor.constraint(equalTo: settingButton.bottomAnchor, constant: 10),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80)
@@ -260,16 +313,10 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     }
     
     
-    let settingsView = UIView()
-    let settingsButton = UIButton(type: .system)
-    var viewHeightOfSettingsView: CGFloat {
-        return view.frame.height / 2
-    }
-    var isSettingsViewVisible = false
     
     private func setupSettingsView() {
         // Settings View Setup
-        settingsView.backgroundColor = UIColor(hex: "#F9FAFB")
+        settingsView.backgroundColor = UIColor(hex: "#EFEFF1")
         view.addSubview(settingsView)
         
         // Initially position the settings view below the visible area
@@ -282,32 +329,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         settingsView.addGestureRecognizer(swipeDownGesture)
         
         setupSettingsContentView()
-        setupSettingsButton()
-    }
-    
-    private func setupSettingsButton() {
-        // Settings Button Setup
-        var imageView = UIImageView()
-        imageView.image = UIImage(systemName: "line.3.horizontal")?.withTintColor(UIColor(hex: "#667085"))
-        imageView.tintColor = UIColor(hex: "#667085")
-        imageView.isUserInteractionEnabled = true
-        
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(imageView)
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapSettingsButton))
-        imageView.addGestureRecognizer(tap)
-        
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            imageView.widthAnchor.constraint(equalToConstant: 25),
-            imageView.heightAnchor.constraint(equalToConstant: 30)
-        ])
-    }
-    
-    @objc private func didTapSettingsButton() {
-        toggleSettingsView()
     }
     
     @objc private func handleSwipeDown(_ gesture: UISwipeGestureRecognizer) {
@@ -319,8 +340,12 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
     private func toggleSettingsView() {
         isSettingsViewVisible.toggle()
         UIView.animate(withDuration: 0.36) {
+            // show settingsView
             if self.isSettingsViewVisible {
                 self.settingsView.frame.origin.y = self.view.frame.height - self.viewHeightOfSettingsView
+                self.scrollView.isUserInteractionEnabled = false
+                self.containerView.alpha = 0.2
+                self.containerView.backgroundColor = UIColor.black.withAlphaComponent(0.9)
                 if let tabBar = self.tabBarController?.tabBar {
                     tabBar.frame = CGRect(
                         x: tabBar.frame.origin.x,
@@ -329,8 +354,13 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
                         height: tabBar.frame.size.height
                     )
                 }
-            } else {
+            }
+            // hide settingsView
+            else {
                 self.settingsView.frame.origin.y = self.view.frame.height
+                self.scrollView.isUserInteractionEnabled = true
+                self.containerView.alpha = 1
+                self.containerView.backgroundColor = .systemBackground
                 if let tabBar = self.tabBarController?.tabBar {
                     tabBar.frame = CGRect(
                         x: tabBar.frame.origin.x,
@@ -343,8 +373,6 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         }
     }
     
-    
-    var settingsContentView = UIView()
     
     func setupSettingsContentView() {
         settingsContentView.backgroundColor = .white
@@ -359,11 +387,228 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             settingsContentView.bottomAnchor.constraint(equalTo: settingsView.bottomAnchor)
         ])
         
-        setupLogoutAtTop()
+        setupChangePassword()
+        setupPrivacyPolicy()
+        setupTermsOfService()
+        setupLogout()
     }
     
-    func setupLogoutAtTop() {
-        var imageView = UIImageView()
+    
+    func setupChangePassword() {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "lock.circle")?.withTintColor(UIColor(hex: "#667085"))
+        imageView.tintColor = UIColor(hex: "#667085")
+        imageView.isUserInteractionEnabled = true
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(imageView)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapChangePassword))
+        imageView.addGestureRecognizer(tap)
+        
+        let label = UILabel()
+        label.text = "Change Password"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#667085")
+        label.isUserInteractionEnabled = true
+        
+        let tap2 = UITapGestureRecognizer(target: self, action: #selector(didTapChangePassword))
+        label.addGestureRecognizer(tap2)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
+            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
+            imageView.widthAnchor.constraint(equalToConstant: 26),
+            imageView.heightAnchor.constraint(equalToConstant: 26),
+            
+            label.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 24),
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
+        ])
+    }
+    
+    @objc func didTapChangePassword() {
+        let alertController = UIAlertController(title: "Change Password", message: "Are you sure you want to change password?", preferredStyle: .alert)
+
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
+            // Perform the logout operation
+            UserDefaults.standard.removeObject(forKey: "accessToken")
+            UserDefaults.standard.synchronize() // To ensure the accessToken is removed
+            
+            self.goToResetPasswordScreens()
+        }
+        
+        let noAction = UIAlertAction(title: "No", style: .cancel)
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+
+        present(alertController, animated: true)
+    }
+    
+    func goToResetPasswordScreens(){
+        guard let email = user.email, !email.isEmpty else {
+            showAlert(withTitle: "Input Error", message: "Email cannot be empty.")
+            return
+        }
+
+        let url = URL(string: "\(Config.serverURL)/api/v1/auth/send-reset-password-otp")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = ["email": email]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+        
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Failed to send OTP: \(error?.localizedDescription ?? "No error description")")
+                return
+            }
+            
+            defer {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                }
+            }
+
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("OTP sent successfully")
+                
+                DispatchQueue.main.async {
+                    let vc = ForgotPassOTP()
+                    vc.emailLabel.text = email
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            } else {
+                print("Failed to send OTP with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+            }
+        }.resume()
+    }
+    
+    
+    func setupPrivacyPolicy() {
+        let line = UIView()
+        line.backgroundColor = UIColor(hex: "#667085")
+        line.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(line)
+        
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "checkmark.shield")?.withTintColor(UIColor(hex: "#667085"))
+        imageView.tintColor = UIColor(hex: "#667085")
+        imageView.isUserInteractionEnabled = true
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(imageView)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapPrivacyPolicy))
+        imageView.addGestureRecognizer(tap)
+        
+        let label = UILabel()
+        label.text = "Privacy policy"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#667085")
+        label.isUserInteractionEnabled = true
+        
+        let tap2 = UITapGestureRecognizer(target: self, action: #selector(didTapPrivacyPolicy))
+        label.addGestureRecognizer(tap2)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            line.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 60),
+            line.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
+            line.trailingAnchor.constraint(equalTo: settingsContentView.trailingAnchor, constant: -16),
+            line.heightAnchor.constraint(equalToConstant: 1),
+            
+            imageView.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 10),
+            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 14),
+            imageView.widthAnchor.constraint(equalToConstant: 30),
+            imageView.heightAnchor.constraint(equalToConstant: 27),
+            
+            label.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 14),
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
+        ])
+    }
+    
+    @objc func didTapPrivacyPolicy() {
+        guard let url = URL(string: "https://olous.app/privacy") else {
+            print("Invalid URL")
+            return
+        }
+        UIApplication.shared.open(url)
+    }
+    
+    
+    func setupTermsOfService() {
+        let line = UIView()
+        line.backgroundColor = UIColor(hex: "#667085")
+        line.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(line)
+        
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "list.star")?.withTintColor(UIColor(hex: "#667085"))
+        imageView.tintColor = UIColor(hex: "#667085")
+        imageView.isUserInteractionEnabled = true
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(imageView)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapTermsOfService))
+        imageView.addGestureRecognizer(tap)
+        
+        let label = UILabel()
+        label.text = "Terms of Service"
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = UIColor(hex: "#667085")
+        label.isUserInteractionEnabled = true
+        
+        let tap2 = UITapGestureRecognizer(target: self, action: #selector(didTapTermsOfService))
+        label.addGestureRecognizer(tap2)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            line.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 110),
+            line.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
+            line.trailingAnchor.constraint(equalTo: settingsContentView.trailingAnchor, constant: -16),
+            line.heightAnchor.constraint(equalToConstant: 1),
+            
+            imageView.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 10),
+            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
+            imageView.widthAnchor.constraint(equalToConstant: 25),
+            imageView.heightAnchor.constraint(equalToConstant: 26),
+            
+            label.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 14),
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
+        ])
+    }
+    
+    @objc func didTapTermsOfService() {
+        guard let url = URL(string: "https://olous.app/terms-of-services") else {
+            print("Invalid URL")
+            return
+        }
+        UIApplication.shared.open(url)
+    }
+    
+    
+    func setupLogout() {
+        let line = UIView()
+        line.backgroundColor = UIColor(hex: "#667085")
+        line.translatesAutoresizingMaskIntoConstraints = false
+        settingsContentView.addSubview(line)
+        
+        let imageView = UIImageView()
         imageView.image = UIImage(systemName: "rectangle.portrait.and.arrow.right")?.withTintColor(UIColor(hex: "#667085"))
         imageView.tintColor = UIColor(hex: "#667085")
         imageView.isUserInteractionEnabled = true
@@ -374,9 +619,9 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
         imageView.addGestureRecognizer(tap)
         
-        var label = UILabel()
+        let label = UILabel()
         label.text = "Log out"
-        label.font = .systemFont(ofSize: 20)
+        label.font = .systemFont(ofSize: 16)
         label.textColor = UIColor(hex: "#667085")
         label.isUserInteractionEnabled = true
         
@@ -387,14 +632,18 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         settingsContentView.addSubview(label)
         
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
-            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
-            imageView.widthAnchor.constraint(equalToConstant: 30),
-            imageView.heightAnchor.constraint(equalToConstant: 26),
+            line.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 160),
+            line.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
+            line.trailingAnchor.constraint(equalTo: settingsContentView.trailingAnchor, constant: -16),
+            line.heightAnchor.constraint(equalToConstant: 1),
             
-            label.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
+            imageView.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 10),
+            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 18),
+            imageView.widthAnchor.constraint(equalToConstant: 27),
+            imageView.heightAnchor.constraint(equalToConstant: 25),
+            
+            label.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 14),
             label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
-            
         ])
     }
     
@@ -421,45 +670,11 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         present(alertController, animated: true)
     }
     
-    func setupPrivacyPolicy() {
-        var imageView = UIImageView()
-        imageView.image = UIImage(systemName: "rectangle.portrait.and.arrow.right")?.withTintColor(UIColor(hex: "#667085"))
-        imageView.tintColor = UIColor(hex: "#667085")
-        imageView.isUserInteractionEnabled = true
-        
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        settingsContentView.addSubview(imageView)
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
-        imageView.addGestureRecognizer(tap)
-        
-        var label = UILabel()
-        label.text = "Log out"
-        label.font = .systemFont(ofSize: 20)
-        label.textColor = UIColor(hex: "#667085")
-        label.isUserInteractionEnabled = true
-        
-        let tap2 = UITapGestureRecognizer(target: self, action: #selector(didTapLogOut))
-        label.addGestureRecognizer(tap2)
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        settingsContentView.addSubview(label)
-        
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
-            imageView.leadingAnchor.constraint(equalTo: settingsContentView.leadingAnchor, constant: 16),
-            imageView.widthAnchor.constraint(equalToConstant: 30),
-            imageView.heightAnchor.constraint(equalToConstant: 26),
-            
-            label.topAnchor.constraint(equalTo: settingsContentView.topAnchor, constant: 20),
-            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
-            
-        ])
-    }
     
     
     
     
+//   **************************************************************************************************************************************
     
     func setupHeaderView() {
         headerView.layer.borderWidth = 1
@@ -468,7 +683,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
         headerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(headerView)
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40),
+            headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             headerView.heightAnchor.constraint(equalToConstant: 200)
@@ -504,7 +719,7 @@ class ProfileController: UIViewController, UITextFieldDelegate, UIScrollViewDele
             profileImageView.bottomAnchor.constraint(equalTo: profileCircle.bottomAnchor)
         ])
         
-        var editProfileButton : UIButton = {
+        let editProfileButton : UIButton = {
             let button = UIButton()
             button.setTitle("Edit Profile", for: .normal)
             button.tintColor = .white

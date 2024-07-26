@@ -93,7 +93,8 @@ class CompaniesCell: UICollectionViewCell {
             companyLogo.heightAnchor.constraint(equalToConstant: 46),
             
             companyName.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            companyName.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16)
+            companyName.leadingAnchor.constraint(equalTo: companyLogo.trailingAnchor, constant: 16),
+            companyName.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5)
         ])
     }
     
@@ -119,11 +120,11 @@ class CompaniesCell: UICollectionViewCell {
     
     
     func setupCategory() {
-        let locationIcon : UIImageView = UIImageView()
-        locationIcon.image = UIImage(systemName: "square.2.layers.3d")
-        locationIcon.tintColor = UIColor(hex: "#667085")
-        locationIcon.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(locationIcon)
+        let categoryIcon : UIImageView = UIImageView()
+        categoryIcon.image = UIImage(systemName: "square.2.layers.3d")
+        categoryIcon.tintColor = UIColor(hex: "#667085")
+        categoryIcon.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(categoryIcon)
         
         let label = UILabel()
         label.text = "Category"
@@ -136,15 +137,15 @@ class CompaniesCell: UICollectionViewCell {
         addSubview(categoryLabel)
         
         NSLayoutConstraint.activate([
-            locationIcon.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 20),
-            locationIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            locationIcon.widthAnchor.constraint(equalToConstant: 16),
-            locationIcon.heightAnchor.constraint(equalToConstant: 20),
+            categoryIcon.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 10),
+            categoryIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            categoryIcon.widthAnchor.constraint(equalToConstant: 16),
+            categoryIcon.heightAnchor.constraint(equalToConstant: 20),
             
-            label.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 20),
+            label.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 10),
             label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 36),
             
-            categoryLabel.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 20),
+            categoryLabel.topAnchor.constraint(equalTo: jobLocationLabel.bottomAnchor, constant: 10),
             categoryLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 120),
             categoryLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
         ])
